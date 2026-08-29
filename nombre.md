@@ -1,1 +1,2 @@
-Jose pinedo 
+Jose pinedo
+Jonatan Bobadilla
