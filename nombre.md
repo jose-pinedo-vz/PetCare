@@ -1,2 +1,3 @@
 Jose pinedo\
-Jonatan Bobadilla
+Jonatan Bobadilla\
+Tristan Jesus Ayala Garcia
