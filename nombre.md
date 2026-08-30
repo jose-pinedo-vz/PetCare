@@ -3,4 +3,5 @@ Jonatan Bobadilla\
 Tristan Jesus Ayala Garcia\
 Yair Villarreal\
 Carolina Gutierrez Godina\
-Angel Avila
+Angel Avila\
+Manuel Tovar\
