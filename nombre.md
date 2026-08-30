@@ -2,4 +2,5 @@ Jose pinedo\
 Jonatan Bobadilla\
 Tristan Jesus Ayala Garcia
 Yair Villarreal
-Carolina Gutierrez Godina
+Carolina Gutierrez Godina\
+Angel Adrian Avila Salazar
