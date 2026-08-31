@@ -5,3 +5,4 @@ Yair Villarreal\
 Carolina Gutierrez Godina\
 Angel Avila\
 Manuel Tovar\
+Juan Francisco Hernandez Reyna
