@@ -5,6 +5,6 @@ Yair Villarreal\
 Carolina Gutierrez Godina\
 Angel Avila\
 Manuel Tovar\
-Juan Francisco Hernandez Reyna
-
-Emiliano Haro Serrano
+Juan Francisco Hernandez Reyna\
+Emiliano Haro Serrano\
+Karol Jesus Huerta Robledo\
