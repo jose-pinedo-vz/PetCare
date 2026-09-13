@@ -38,14 +38,20 @@ function validacion($datos){
     // Nombre obligatorio
     if (empty($datos['nombre'])) {
         $errores[] = "El nombre de la mascota es obligatorio.";
+    }else if (strlen($datos['nombre']) > 20) {
+        $errores[] = "El nombre no puede tener mas de 20 letras";
     }
     // Especie obligatorio
     if (empty($datos['especie'])) {
         $errores[] = "Debe especificar la especie.";
+    }else if (strlen($datos['especie']) > 20) {
+        $errores[] = "La especie no puede tener mas de 20 letras";
     }
     // Raza obligatorio
     if (empty($datos['raza'])) {
         $errores[] = "Debe especificar la raza.";
+    }else if (strlen($datos['raza']) > 20) {
+        $errores[] = "La raza no puede tener mas de 20 letras";
     }
     // Sexo obligatorio
     if (empty($datos['sexo'])) {
@@ -58,14 +64,19 @@ function validacion($datos){
     // color opcional
     if (empty($datos['color'])) {
         $datos['color'] = NULL;
+    }else if (strlen($datos['color']) > 15) {
+        $errores[] = "Elcolor no puede tener mas de 15 letras";
     }
     // Peso obligatorio
-    if (empty($datos['peso'])) {
-        $errores[] = "Debe especificar el peso.";
+    if (empty($datos['peso']) || !is_numeric($datos['peso'])) {
+        $errores[] = "El peso debe ser un valor numerico.";
     }else{
         $pesopunt = str_replace(',', '.', $datos['peso']);
-
         $datos['peso'] = (float)$pesopunt;
+
+        if ($datos['peso'] <= 0){
+            $errores[] = "El peso debe ser un numero mayor a 0 (ejemplo: 5.5).";
+        }
     }
     // Tamanio obligatorio
     if (empty($datos['tamanio'])) {
@@ -75,13 +86,22 @@ function validacion($datos){
     if (empty($datos['id_cliente'])) {
         $errores[] = "Debe asociar un cliente válido.";
     }else {
-        $datos['id_cliente'] = (int)$datos['id_cliente']; // Conversión limpia a entero
+        $datos['id_cliente'] = (int)$datos['id_cliente'];
+
+        if (!is_numeric($datos['id_cliente']) || $datos['id_cliente'] <= 0) {
+            $errores[] = "El cliente seleccionado no es valido.";
+        }
     }
+
     // Id veterinario opcional
     if (empty($datos['id_veterinario'])) {
         $datos['id_veterinario'] = NULL;
     }else {
         $datos['id_veterinario'] = (int)$datos['id_veterinario'];
+
+        if (!is_numeric($datos['id_veterinario']) || $datos['id_veterinario'] <= 0) {
+            $errores[] = "El cliente seleccionado no es valido.";
+        }
     }
     // Alergias obligatorio
     if (empty($datos['alergias'])) {
