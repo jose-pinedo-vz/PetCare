@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar mascota</title>
-  <link rel="stylesheet" href="estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base.css">
 </head>
 <body>
 
   <header>
     <div class="marca">
-      <img src="logo.svg" alt="Veterinaria PetCare">
+      <img src="/img/logo.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">

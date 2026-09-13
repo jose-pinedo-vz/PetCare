@@ -1,1 +1,58 @@
+# ==========================================
+# CONFIGURACIÓN LOCAL Y CREDENCIALES
+# (Evita que el config.php local de cada quien se sobreescriba)
+# ==========================================
+config.php
 .env
+.env.*
+!.env.example
+
+# ==========================================
+# EDITORES DE CÓDIGO E IDEs
+# (Configuraciones personales de VS Code, Zed, PHPStorm, etc.)
+# ==========================================
+.vscode/
+.idea/
+*.suo
+*.user
+.zed/
+
+# ==========================================
+# BASURA DEL SISTEMA OPERATIVO
+# (Archivos invisibles generados por Windows, macOS y Linux)
+# ==========================================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.apple_names
+._*
+
+# Linux
+*~
+*.swp
+*.swo
+
+# ==========================================
+# LOGS Y ARCHIVOS TEMPORALES
+# (Archivos de error y respaldos locales pesados de base de datos)
+# ==========================================
+*.log
+*.bak
+*.tmp
+*.sql.gz
+/temp/
+/tmp/
+
+# ==========================================
+# ARCHIVOS COMPRIMIDOS
+# (Para evitar que suban .zip o .rar al repositorio)
+# ==========================================
+*.zip
+*.rar
+*.7z

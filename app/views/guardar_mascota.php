@@ -164,8 +164,11 @@ function validacion($datos){
 
 
 function insertar($datos){
-    //require_once 'conexion_db.php'
-    include("conexion_db.php");
+    if (file_exists(__DIR__ . '/../../conexion_db.php')) {
+        include_once __DIR__ . '/../../conexion_db.php';
+    } else {
+        include_once "conexion_db.php";
+    }
     $id = IDmascota($conexion);
 
     $temperamento = 'Equilibrado'; 
