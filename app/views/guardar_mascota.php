@@ -108,53 +108,60 @@ function validacion($datos){
         $errores[] = "Debe especificar la ultima desaparasitación.";
     }
     
-    // Poniendo las rutasd de las imagenes
-    $foto = $datos['fotografia'];
+    // subida de la imagen usando el controlador ImagenController
+    require_once __DIR__ . '/../controllers/ImagenController.php';
 
+    $resultadoImagen = null;
+    $foto = $datos['fotografia'];
     $datos['fotografia'] = null;
 
-    // Se verifica si se suvio una imagen correctamente
-    if (is_array($foto) and !empty($foto['name']) and $foto['error'] === UPLOAD_ERR_OK) {
-
-        // Creamos un nombre único
-        $extension = pathinfo($foto['name'], PATHINFO_EXTENSION);
-        $nombreUnico = uniqid('pet_', true) . '.' . $extension;
-
-        // Definimos la carpeta donde se va a guardar la imagen
-        $carpetaDestino = 'image/' . $nombreUnico;
-
-        // Si se guarda correctamente en la carpeta pasamos la direccion al diccionario
-        if (move_uploaded_file($foto['tmp_name'], $carpetaDestino)) {
-        $datos['fotografia'] = $nombreUnico;
+    if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+        $resultadoImagen = ImagenController::subir($foto);
+        if ($resultadoImagen['exito']) {
+            $datos['fotografia'] = $resultadoImagen['ruta'];
+        } else {
+            $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
+        }
     }
-}
-
-
-
 
     if (count($errores) > 0) {
-        // Se muestra errores de que campos no se llenaron
-        echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px;'>";
-        echo "<h3 style='color: red;'>Falló la validación:</h3><ul>";
+        // se muestra errores de que campos no se llenaron
+        echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
+        echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
         foreach ($errores as $error) {
             echo "<li>$error</li>";
         }
         echo "</ul>";
-        echo "<a href='agregar_mascota.php'>← Volver a intentarlo</a>";
+        echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
         echo "</div>";
 
     } else {
-        // se muestran los campos que se llenaron y con sus datos para corroborar si se aguardaron exactamente como se escribio en el formulario
-        echo "<div style='font-family: Arial; padding: 20px; border: 1px solid green; background: #e6ffe6; width: 400px; border-radius: 5px;'>";
-        echo "<h2 style='color: green;'>¡Formulario validado con éxito!</h2>";
-        echo "<p>Todos los campos pasaron las validaciones correctamente.</p>";
-        echo "<hr>";
-        echo "<p><strong>Datos confirmados:</strong></p>";
+        // Se muestran los campos procesados
+        echo "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #4CAF50; background: #e8f5e9; max-width: 600px; border-radius: 8px; margin: 20px auto;'>";
+        echo "<h2 style='color: #2e7d32; margin-top: 0;'>formulario procesado correctamente</h2>";
+
+        if ($resultadoImagen && $resultadoImagen['exito']) {
+            echo "<div style='background: #c8e6c9; padding: 12px 15px; border-radius: 6px; margin-bottom: 15px;'>";
+            echo "<p style='color: #1b5e20; margin: 0; font-size: 16px; font-weight: bold;'>✔ " . htmlspecialchars($resultadoImagen['mensaje']) . "</p>";
+            echo "<p style='margin: 6px 0 0 0; font-size: 14px;'><strong>Ruta guardada para la BD:</strong> <code>" . htmlspecialchars($resultadoImagen['ruta']) . "</code></p>";
+            echo "</div>";
+            echo "<div style='text-align: center; margin: 15px 0;'>";
+            echo "<p style='margin-bottom: 8px;'><strong>Vista previa de la imagen subida:</strong></p>";
+            echo "<img src='../../" . htmlspecialchars($resultadoImagen['ruta']) . "' alt='Foto de " . htmlspecialchars($datos['nombre']) . "' style='max-width: 250px; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); object-fit: cover;'>";
+            echo "</div>";
+        }
+
+        echo "<p><strong>Datos confirmados de la mascota:</strong></p>";
         echo "<ul>";
         foreach ($datos as $campo => $valor){
-            echo "<li>$campo: $valor</li>";
+            if ($campo === 'fotografia') continue;
+            echo "<li><strong>" . htmlspecialchars((string)$campo) . ":</strong> " . htmlspecialchars((string)($valor ?? 'N/A')) . "</li>";
         }
         echo "</ul>";
+        echo "<div style='margin-top: 20px;'>";
+        echo "<a href='mascotas.php' style='display: inline-block; padding: 8px 16px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;'>← Volver a Mascotas</a> ";
+        echo "<a href='agregar_mascota.php' style='display: inline-block; padding: 8px 16px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;'>+ Registrar otra mascota</a>";
+        echo "</div>";
         echo "</div>";
 
         insertar($datos);
@@ -169,6 +176,14 @@ function insertar($datos){
     } else {
         include_once "conexion_db.php";
     }
+
+    if (!isset($conexion) || !$conexion || $conexion->connect_errno) {
+        echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
+        echo "<strong>Nota de Base de Datos:</strong> No se pudo conectar a la base de datos. <em>Sin embargo, la imagen se guardó correctamente en el servidor.</em>";
+        echo "</div>";
+        return;
+    }
+
     $id = IDmascota($conexion);
 
     $temperamento = 'Equilibrado'; 
@@ -216,44 +231,50 @@ function insertar($datos){
         try {
             // ejecutamos la consulta
             mysqli_stmt_execute($consulta);
-            echo "¡Mascota registrada con éxito!";
+            echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
+            echo "<strong>la mascota fue registrada correctamente</strong> (ID Asignado: $id)";
+            echo "</div>";
 
-        } catch (mysqli_sql_exception) {
-            // revisa si el mensage es 1452 es porque no existe ese id en cliente o sea no  esta registrado
+        } catch (mysqli_sql_exception $e) {
+            echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
             if (mysqli_errno($conexion) === 1452) {
-                 echo "Error: El cliente o el veterinario especificado no existe. Revisa el ID ingresado.";
+                echo "<strong>Aviso de Base de Datos:</strong> El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario no existen en sus respectivas tablas. Se requiere crear primero el cliente para vincular la mascota.";
             } else {
-                echo "Error al guardar en la base de datos: " . mysqli_error($conexion);
-    }
+                echo "<strong>Aviso al guardar en BD:</strong> " . htmlspecialchars($e->getMessage());
+            }
+            echo "<br><small>Nota: La fotografia ya quedo guardada en el servidor.</small>";
+            echo "</div>";
         } finally {
             // cerramos la consulta
             mysqli_stmt_close($consulta);
         }
-        }
+    }
 }
 
 
 function IDmascota($conexion) {
     do {
-        
         $aleatorio = random_int(100, 9999);
 
         // hacemos la consulta
-        $consulta = mysqli_prepare($conexion, "SELECT 1 FROM mascotas WHERE id_mascota = ?");
-        
+        $consulta = @mysqli_prepare($conexion, "SELECT 1 FROM mascotas WHERE id_mascota = ?");
+        if (!$consulta) {
+            return $aleatorio;
+        }
+
         // le paso el id que se creo
         mysqli_stmt_bind_param($consulta, "i", $aleatorio);
 
-        //Enviamos el id creado
-        mysqli_stmt_execute($consulta);
+        // Enviamos el id creado
+        @mysqli_stmt_execute($consulta);
 
-        // Esperamos   el resultado si existe el resultado resivira un 1
-        $resultado = mysqli_stmt_get_result($consulta);
+        // Esperamos el resultado
+        $resultado = @mysqli_stmt_get_result($consulta);
 
-        //Cuenta las lineas que tenian el id si  el resultado ya tenia existe se vuelve true
-        $existe = (mysqli_num_rows($resultado) > 0);
+        // Cuenta las lineas que tenian el id
+        $existe = ($resultado && mysqli_num_rows($resultado) > 0);
 
-        //Cerramos la consulta
+        // Cerramos la consulta
         mysqli_stmt_close($consulta);
     } while ($existe);
 

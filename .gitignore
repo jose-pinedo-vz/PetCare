@@ -15,6 +15,7 @@ config.php
 .idea/
 *.suo
 *.user
+*.py
 .zed/
 
 # ==========================================
@@ -58,10 +59,3 @@ $RECYCLE.BIN/
 *.rar
 *.7z
 
-# ==========================================
-# SCRIPTS PERSONALES DE DESPLIEGUE FTP
-# ==========================================
-*.py
-*.ftp
-deploy*
-subir*
