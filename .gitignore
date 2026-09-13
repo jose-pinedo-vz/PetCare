@@ -57,3 +57,11 @@ $RECYCLE.BIN/
 *.zip
 *.rar
 *.7z
+
+# ==========================================
+# SCRIPTS PERSONALES DE DESPLIEGUE FTP
+# ==========================================
+*.py
+*.ftp
+deploy*
+subir*
