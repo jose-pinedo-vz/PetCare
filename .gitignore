@@ -46,6 +46,7 @@ $RECYCLE.BIN/
 *.bak
 *.tmp
 *.sql.gz
+*.sql
 /temp/
 /tmp/
 
