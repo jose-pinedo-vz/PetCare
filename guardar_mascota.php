@@ -74,10 +74,14 @@ function validacion($datos){
     // Id cliente obligatorio
     if (empty($datos['id_cliente'])) {
         $errores[] = "Debe asociar un cliente válido.";
+    }else {
+        $datos['id_cliente'] = (int)$datos['id_cliente']; // Conversión limpia a entero
     }
     // Id veterinario opcional
     if (empty($datos['id_veterinario'])) {
         $datos['id_veterinario'] = NULL;
+    }else {
+        $datos['id_veterinario'] = (int)$datos['id_veterinario'];
     }
     // Alergias obligatorio
     if (empty($datos['alergias'])) {
@@ -142,7 +146,7 @@ function validacion($datos){
     } else {
         // se muestran los campos que se llenaron y con sus datos para corroborar si se aguardaron exactamente como se escribio en el formulario
         echo "<div style='font-family: Arial; padding: 20px; border: 1px solid green; background: #e6ffe6; width: 400px; border-radius: 5px;'>";
-        echo "<h2 style='color: green;'>✅ ¡Formulario validado con éxito!</h2>";
+        echo "<h2 style='color: green;'>¡Formulario validado con éxito!</h2>";
         echo "<p>Todos los campos pasaron las validaciones correctamente.</p>";
         echo "<hr>";
         echo "<p><strong>Datos confirmados:</strong></p>";
@@ -152,10 +156,105 @@ function validacion($datos){
         }
         echo "</ul>";
         echo "</div>";
+
+        insertar($datos);
     }
 }
 
 
+
+function insertar($datos){
+    //require_once 'conexion_db.php'
+    include("conexion_db.php");
+    $id = IDmascota($conexion);
+
+    $temperamento = 'Equilibrado'; 
+    $restricciones = null;
+    $observaciones = 'Sin observaciones iniciales';
+
+    $insert = "INSERT INTO mascotas (
+        id_mascota, nombre, especie, raza, sexo, edad, color, peso, tamanio, fotografia,
+        id_cliente, id_veterinario, alergias, enfermedades, medicamentos,
+        condiciones_especiales, temperamento, restricciones_para_manejo,
+        vacunas, ultima_desparasitacion, observaciones
+    )VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+
+    $consulta = mysqli_prepare($conexion, $insert);
+    if ($consulta) {
+
+        $tipos = "issssssdssiisssssssss";
+
+        mysqli_stmt_bind_param($consulta,
+            $tipos,
+            $id,
+            $datos['nombre'],
+            $datos['especie'],
+            $datos['raza'],
+            $datos['sexo'],
+            $datos['edad'],
+            $datos['color'],
+            $datos['peso'],
+            $datos['tamanio'],
+            $datos['fotografia'],
+            $datos['id_cliente'],
+            $datos['id_veterinario'],
+            $datos['alergias'],
+            $datos['enfermedades'],
+            $datos['medicamentos'],
+            $datos['condiciones_especiales'],
+            $temperamento,
+            $restricciones,
+            $datos['vacunas'],
+            $datos['ultima_desparasitacion'],
+            $observaciones
+        );
+
+        try {
+            // ejecutamos la consulta
+            mysqli_stmt_execute($consulta);
+            echo "¡Mascota registrada con éxito!";
+
+        } catch (mysqli_sql_exception) {
+            // revisa si el mensage es 1452 es porque no existe ese id en cliente o sea no  esta registrado
+            if (mysqli_errno($conexion) === 1452) {
+                 echo "Error: El cliente o el veterinario especificado no existe. Revisa el ID ingresado.";
+            } else {
+                echo "Error al guardar en la base de datos: " . mysqli_error($conexion);
+    }
+        } finally {
+            // cerramos la consulta
+            mysqli_stmt_close($consulta);
+        }
+        }
+}
+
+
+function IDmascota($conexion) {
+    do {
+        
+        $aleatorio = random_int(100, 9999);
+
+        // hacemos la consulta
+        $consulta = mysqli_prepare($conexion, "SELECT 1 FROM mascotas WHERE id_mascota = ?");
+        
+        // le paso el id que se creo
+        mysqli_stmt_bind_param($consulta, "i", $aleatorio);
+
+        //Enviamos el id creado
+        mysqli_stmt_execute($consulta);
+
+        // Esperamos   el resultado si existe el resultado resivira un 1
+        $resultado = mysqli_stmt_get_result($consulta);
+
+        //Cuenta las lineas que tenian el id si  el resultado ya tenia existe se vuelve true
+        $existe = (mysqli_num_rows($resultado) > 0);
+
+        //Cerramos la consulta
+        mysqli_stmt_close($consulta);
+    } while ($existe);
+
+    return $aleatorio;
+}
+
 ?>
-
-

@@ -2,13 +2,9 @@
 
 $server = "localhost";
 $user = "root";
-$passwword =  "";
-$db = "";
+$passwword = "";
+$db = "petcare";
 
 $conexion = new mysqli($server, $user, $passwword, $db);
 
-if ($conexion -> connect_errno){
-    die("Conexion fallida" . $conexion->connect_errno);
-}else{
-    echo  "Conectado";
-}
+mysqli_set_charset($conexion, "utf8");
