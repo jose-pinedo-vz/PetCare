@@ -161,6 +161,24 @@
                 <label class="label-campo" for="nombre_del_campo">Observaciones:</label>
                 <textarea class="campo" id="observaciones" name="observaciones" rows="2"></textarea>
               </div>
+
+              <div>
+                <label class="label-campo">Estado:</label>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                  
+                  <!-- Botón Switch -->
+                  <label class="switch">
+                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" checked>
+                    <span class="slider round"></span>
+                  </label>
+
+                  <!-- Caja de texto visual NO editable -->
+                  <input type="text" id="texto_estado" class="campo" value="Activo" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
+
+                  <!-- Campo oculto para enviar 1 o 0 a PHP -->
+                  <input type="hidden" id="activo" name="activo" value="1">
+
+                </div>
               
             </div>
           </fieldset>
