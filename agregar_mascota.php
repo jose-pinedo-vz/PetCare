@@ -145,6 +145,23 @@
                 <label class="label-campo" for="ultima_desparasitacion" >Última Desparasitación:</label>
                 <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" >
               </div>
+
+              <!-- campos que faltaron -->
+              <div>
+                <label class="label-campo" for="nombre_del_campo">Temperamento:</label>
+                <textarea class="campo" id="temperamento" name="temperamento" rows="2"></textarea>
+              </div>
+
+              <div>
+                <label class="label-campo" for="nombre_del_campo">Restricciones para manejo:</label>
+                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"></textarea>
+              </div>
+
+              <div>
+                <label class="label-campo" for="nombre_del_campo">Observaciones:</label>
+                <textarea class="campo" id="observaciones" name="observaciones" rows="2"></textarea>
+              </div>
+              
             </div>
           </fieldset>
 
