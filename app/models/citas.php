@@ -2,6 +2,7 @@
     declare(strict_types=1);
     require_once 'conexion_db.php';
 
+    // nueva base de datos instalada
     class ConexionesClientes 
     {
         public function consultarIdCliente(int $clave):bool
