@@ -13,4 +13,8 @@ class Mascota {
     public static function obtenerTodas() {
         // SELECT * FROM mascotas
     }
+    //Funcion para eliminar mascota 
+    public static function eliminar($id){
+    //se eliminara mascota por medio del id 
+    }
 }
