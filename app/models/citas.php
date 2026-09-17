@@ -39,5 +39,22 @@
                 return false;
             }
         }
+
+        public function insertarCita(int $clave_cliente,string $fecha,string $motivo):bool
+        {
+            try
+            {
+                $query = "INSERT INTO consulta_veterinaria (id_cliente, fecha, motivo_de_consulta, estado_de_pago) VALUES (?, ?, ?, ?)";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$clave_cliente, $fecha, $motivo, "Pendiente"]);
+                return true;
+            }
+            catch (Exception $e)
+            {
+               throw new Exception("Error al consultar los productos".$e->getMessage());
+               return false; 
+            }
+        }
     }
 ?>

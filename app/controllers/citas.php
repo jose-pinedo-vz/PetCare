@@ -57,6 +57,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     }
 
 
+    // insercin de la cita 
+    $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
+    if (!$seInserto)
+    {
+        errorSession("Hubo un error en la insercino de los datos.");
+    }
+
+
     //session_destroy();
     // Si pasa la validación del backend, continúa a la BD...
     header("Location: ../views/citas.html");
