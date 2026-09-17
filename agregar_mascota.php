@@ -23,7 +23,7 @@
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
 
-      <li><a href="#" class="deshabilitado">Clientes</a></li>
+      <li><a href="clientes.php" class="activo">Clientes</a></li>
       <li><a href="#" class="deshabilitado">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
@@ -42,16 +42,16 @@
     <form action="guardar_mascota.php" method="POST" enctype="multipart/form-data">
 
 <fieldset>
-            <legend style="font-weight: bold; color: #333; padding: 0 5px;"> Datos Básicos</legend>
+            <legend style="font-weight: bold; color: #333; padding: 0 5px;">📄 Datos básicos</legend>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div>
-                <label class="label-campo" class="label-campo" for="nombre" >Nombre *:</label>
+                <label class="label-campo" class="label-campo" for="nombre" >Nombre:</label>
                 <input type="text" class="campo" id="nombre" name="nombre" required >
               </div>
 
               <div>
-                <label class="label-campo" for="especie" >Especie *:</label>
+                <label class="label-campo" for="especie" >Especie:</label>
                 <input type="text" class="campo" id="especie" name="especie" placeholder="Ej. Perro, Gato" required >
               </div>
 
@@ -61,7 +61,7 @@
               </div>
 
               <div>
-                <label class="label-campo" for="sexo" >Sexo *:</label>
+                <label class="label-campo" for="sexo" >Sexo:</label>
                 <select class="campo" id="sexo" name="sexo" required >
                   <option value="Macho">Macho</option>
                   <option value="Hembra">Hembra</option>
@@ -69,7 +69,7 @@
               </div>
 
               <div>
-                <label class="label-campo" for="edad" >Edad / Fecha nacimiento *:</label>
+                <label class="label-campo" for="edad" >Edad / Fecha nacimiento:</label>
                 <input type="date" class="campo" id="edad" name="edad" required >
               </div>
 
@@ -95,12 +95,12 @@
               </div>
 
               <div>
-                <label class="label-campo" for="id_cliente" >Dueño (ID Cliente) *:</label>
+                <label class="label-campo" for="id_cliente" >Dueño (ID Cliente):</label>
                 <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" >
               </div>
 
               <div>
-                <label class="label-campo" for="id_veterinario" >Veterinario Asignado (ID):</label>
+                <label class="label-campo" for="id_veterinario" >Veterinario asignado (ID):</label>
                 <input type="number" class="campo" id="id_veterinario" name="id_veterinario" placeholder="ID del Veterinario" >
               </div>
             </div>
@@ -113,7 +113,7 @@
 
           <!-- 2. Datos clínicos -->
           <fieldset>
-            <legend> Datos Clínicos</legend>
+            <legend>🩺 Datos clínicos</legend>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div>
@@ -162,23 +162,6 @@
                 <textarea class="campo" id="observaciones" name="observaciones" rows="2"></textarea>
               </div>
 
-              <div>
-                <label class="label-campo">Estado:</label>
-                <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                  
-                  <!-- Botón Switch -->
-                  <label class="switch">
-                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" checked>
-                    <span class="slider round"></span>
-                  </label>
-
-                  <!-- Caja de texto visual NO editable -->
-                  <input type="text" id="texto_estado" class="campo" value="Activo" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
-
-                  <!-- Campo oculto para enviar 1 o 0 a PHP -->
-                  <input type="hidden" id="activo" name="activo" value="1">
-
-                </div>
               
             </div>
           </fieldset>
