@@ -99,7 +99,7 @@ function validacion(array $datos){
     }
     
     // subida de la imagen usando el controlador ImagenController
-    require_once __DIR__ . '/../../ImagenController.php';
+    require_once __DIR__ . '/../controllers/ImagenController.php';
 
     $resultadoImagen = null;
     $foto = $datos['fotografia'];
