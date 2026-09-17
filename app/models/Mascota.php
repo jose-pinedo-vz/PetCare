@@ -78,11 +78,12 @@ function insertar(array $datos){
             mysqli_stmt_close($consulta);
         }
     }
-    //Funcion para eliminar mascota 
-    public static function eliminar($id){
-    //se eliminara mascota por medio del id 
-    }
 }
+    //Funcion para eliminar mascota 
+    function eliminar($id){
+    //se eliminara mascota por medio del id 
+    };
+
 
 
 function IDmascota($conexion) {
