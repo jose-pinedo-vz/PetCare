@@ -4,6 +4,17 @@ declare(strict_types=1);
 require_once __DIR__ . '/../models/citas.php';
 session_start();
 
+function errorSession(string $error):null 
+{
+    $_SESSION['error'] = $error;
+    $_SESSION['oldClave'] = $_POST['claveCliente'];
+    $_SESSION['oldFecha'] = $_POST['fecha'];
+    $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
+
+    header("Location: ../views/agendarCita.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") 
 {
     $claveCliente = trim($_POST['claveCliente'] ?? '');
@@ -11,47 +22,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
 
     // validar campos completos
-    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "")
+    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "") 
     {
-        $_SESSION['error'] = "Todos los campos son obligatorios.";
-        $_SESSION['oldClave'] = $_POST['claveCliente'];
-        $_SESSION['oldFecha'] = $_POST['fecha'];
-        $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
+        errorSession("Todos los campos son obligatorios.");
+    }
 
-        header("Location: ../views/agendarCita.php");
-        exit();
+    // formato correcto de la fecha
+    $d = DateTime::createFromFormat('Y-m-d', $fecha);
+    if (!$d || $d->format('Y-m-d') != $fecha) 
+    {
+        errorSession("El formato de la fecha no es válido.");
     }
 
     // validar fecha
     $fechaActual = date('Y-m-d');
-
-    if ($fecha < $fechaActual)
+    if ($fecha < $fechaActual) 
     {
-        $_SESSION['error'] = "Verifique la fecha por favor. Tiene que ingresar una fecha valida.";
-        $_SESSION['oldClave'] = $_POST['claveCliente'];
-        $_SESSION['oldFecha'] = $_POST['fecha'];
-        $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
-
-        header("Location: ../views/agendarCita.php");
-        exit();
+        errorSession("Verifique la fecha por favor. Tiene que ingresar una fecha valida.");   
     }
 
     // validar existencia del cliente
     $consultasCitas = new ConexionesClientes();
-    $claveCliente = (int) $claveCliente;
-    $clienteExiste = $consultasCitas->consultarIdCliente($claveCliente);
-
-    if (!$clienteExiste)
+    $clienteExiste = $consultasCitas->consultarIdCliente((int) $claveCliente);
+    if (!$clienteExiste) 
     {
-        $_SESSION['error'] = "Verifique el usuario. Tiene que ingresar un usuario existente.";
-        $_SESSION['oldClave'] = $_POST['claveCliente'];
-        $_SESSION['oldFecha'] = $_POST['fecha'];
-        $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
-
-        header("Location: ../views/agendarCita.php");
-        exit();
+        errorSession("Verifique el usuario. Tiene que ingresar un usuario existente.");   
     }
-    
+
+    // longitud del motivo de la  consulta
+    $longitud = mb_strlen($motivoConsulta);
+    if ($longitud < 5 || $longitud > 150) 
+    {
+        errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");   
+    }
 
 
     //session_destroy();

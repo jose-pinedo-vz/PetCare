@@ -7,6 +7,13 @@
     {
         public function consultarIdCliente(int $clave):bool
         {
+            // resivido una clave de un supuesto usuario consulto a la base de datos esa misma clave.
+
+            // si la base de datos me retornauna tupla bacia o nula entonces ese usuario no existe, lo que quiere 
+            // deceir que no tiene permiso para hacer una consulta
+            
+            // retorno true o false segun se el caso 
+
             try
             {
                 $query = "SELECT id_cliente FROM clientes WHERE id_cliente = ?";
@@ -31,7 +38,6 @@
                 throw new Exception("Error al consultar los productos".$e->getMessage());
                 return false;
             }
-            
         }
     }
 ?>
