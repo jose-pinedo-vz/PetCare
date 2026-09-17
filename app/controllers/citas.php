@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../models/citas.php';
-
 declare(strict_types=1);
+
+require_once __DIR__ . '/../models/citas.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") 
@@ -37,7 +37,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     }
 
     // validar existencia del cliente
-    $consultasCitas = new consultarIdCliente();
+    $consultasCitas = new ConexionesClientes();
+    $claveCliente = (int) $claveCliente;
+    $clienteExiste = $consultasCitas->consultarIdCliente($claveCliente);
+
+    if (!$clienteExiste)
+    {
+        $_SESSION['error'] = "Verifique el usuario. Tiene que ingresar un usuario existente.";
+        $_SESSION['oldClave'] = $_POST['claveCliente'];
+        $_SESSION['oldFecha'] = $_POST['fecha'];
+        $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
+
+        header("Location: ../views/agendarCita.php");
+        exit();
+    }
     
 
 
