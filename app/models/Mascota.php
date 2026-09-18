@@ -16,9 +16,9 @@ function insertar(array $datos){
 
     $id = IDmascota($conexion);
 
-    $temperamento = 'Equilibrado'; 
-    $restricciones = null;
-    $observaciones = 'Sin observaciones iniciales';
+    $temperamento = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado'; 
+    $restricciones = !empty($datos['restricciones_para_manejo']) ? $datos['restricciones_para_manejo'] : null;
+    $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales';
 
     $insert = "INSERT INTO mascotas (
         id_mascota, nombre, especie, raza, sexo, edad, color, peso, tamanio, fotografia,

@@ -19,14 +19,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'medicamentos'           => htmlspecialchars(trim($_POST['medicamentos'] ?? '')),
         'condiciones_especiales' => htmlspecialchars(trim($_POST['condiciones_especiales'] ?? '')),
         'vacunas'                => htmlspecialchars(trim($_POST['vacunas'] ?? '')),
-        'ultima_desparasitacion' => trim($_POST['ultima_desparasitacion'] ?? '')
+        'ultima_desparasitacion' => trim($_POST['ultima_desparasitacion'] ?? ''),
+        'temperamento'           => htmlspecialchars(trim($_POST['temperamento'] ?? '')),
+        'restricciones_para_manejo' => htmlspecialchars(trim($_POST['restricciones_para_manejo'] ?? '')),
+        'observaciones'          => htmlspecialchars(trim($_POST['observaciones'] ?? ''))
     ];
 
     validacion($datos);
 
 } else {
     // Si intentan entrar directo a este archivo sin pasar por el formulario
-    header("Location: agregar_mascotas.php");
+    header("Location: agregar_mascota.php");
     exit();
 }
 
