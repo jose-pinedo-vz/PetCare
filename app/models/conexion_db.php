@@ -54,5 +54,27 @@ class ConexionDB
             throw new Exception("Error de conexión a la Base de Datos: " . $e->getMessage());
         }
     }
+
+    public static function buscarUsuarioPorNombre(PDO $conexion, string $usuario)
+    {
+        $base=$conexion->prepare("SELECT id_usuario, contrasena, rol, estado FROM usuarios WHERE usuario = ?");
+        $base->execute([$usuario]);
+        return $base->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function registrarUltimoAcceso(PDO $conexion, int $id_usuario)
+    {
+        $base=$conexion->prepare("UPDATE usuarios SET ultimo_acceso = NOW() WHERE id_usuario = ?");
+        $base->execute([$id_usuario]);
+    }
+
+    public static function insertarUsuario(PDO $conexion, string $usuario, string $password_hash, ?string $empleado, string $rol, string $permisos, string $estado)
+    {
+        $base=$conexion->prepare("INSERT INTO usuarios (id_usuario,usuario, contrasena, empleado_asociado, rol, permisos, estado) 
+                                  VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u),?, ?, ?, ?, ?, ?)");
+        $base->execute([$usuario, $password_hash, $empleado, $rol, $permisos, $estado]);
+        return $base->rowCount();
+    }
 }
+
 ?>
