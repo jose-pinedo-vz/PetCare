@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veterinaria PetCare - Editar mascota</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <title>Veterinaria PetCare - Editar cliente</title>
+  <link rel="stylesheet" href="estilos_base.css">
 </head>
 <body>
 
   <header>
     <div class="marca">
-      <img src="./img/logo.svg" alt="Veterinaria PetCare">
+      <img src="logo.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
@@ -22,9 +22,8 @@
   <nav>
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php" class="activo">Citas</a></li>
 
-      <li><a href="#" class="deshabilitado">Clientes</a></li>
+      <li><a href="#clientes.php" class="activo">Clientes</a></li>
       <li><a href="#" class="deshabilitado">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
@@ -38,14 +37,9 @@
   </nav>
 
   <main>
-    <h1>Editar mascota</h1>
+    <h1>Editar cliente</h1>
 
     <!--
-      NOTA PARA BACKEND:
-      - El id de la mascota debe venir precargado en el campo oculto "id_mascota".
-      - Todos los campos de abajo deben venir con el valor actual de la mascota
-        (aquí están con datos de ejemplo de "Firulais" solo para referencia visual).
-      - El action debe apuntar al script que actualiza el registro (ej. actualizar_mascota.php).
     -->
     <form action="actualizar_mascota.php" method="POST" enctype="multipart/form-data">
 
@@ -194,7 +188,7 @@
       </fieldset>
 
       <button type="submit">Guardar cambios</button>
-      <a class="btn" href="mascotas.php">Cancelar</a>
+      <a class="btn" href="clientes.php">Cancelar</a>
     </form>
   </main>
 

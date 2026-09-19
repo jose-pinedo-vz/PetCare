@@ -4,17 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Mascotas</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
-
-  <!-- <title>Veterinaria PetCare - Clientes</title>
-  <link rel="stylesheet" href="estilos_base.css"> -->
-
+  <link rel="stylesheet" href="estilos_base.css">
 </head>
 <body>
 
   <header>
     <div class="marca">
-      <img src="./img/logo.svg" alt="Veterinaria PetCare">
+      <img src="logo.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
@@ -26,7 +22,6 @@
   <nav>
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php" class="activo">Citas</a></li>
 
       <li><a href="clientes.php" class="activo">Clientes</a></li>
       <li><a href="#" class="deshabilitado">Empleados</a></li>
@@ -42,59 +37,34 @@
   </nav>
 
   <main>
-    <h1>Módulo de Mascotas</h1>
+    <h1>Módulo de Clientes</h1>
     <div style="margin-bottom: 20px;">
-      <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+      <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
     <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Especie</th>
-          <th>Raza</th>
           <th>Sexo</th>
-          <th>Edad</th>
+          <th>Telefono</th>
+          <th>Codigo postal</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Firulais</td>
-          <td>Perro</td>
-          <td>Labrador</td>
-          <td>Macho</td>
-          <td>3 años</td>
+          <td>Jose</td>
+          <td>Hombre</td>
+          <td>4371084048</td>
+          <td>99700</td>
           <td>Activo</td>
           <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=1">Editar</a>
+            <a class="btn" href="editar_cliente.php?id=1">Editar</a>
             <a href="#">Eliminar</a>
           </td>
         </tr>
-        <tr>
-          <td>Michi</td>
-          <td>Gato</td>
-          <td>Siamés</td>
-          <td>Hembra</td>
-          <td>2 años</td>
-          <td>Activo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=2">Editar</a>
-            <a href="#">Eliminar</a>
-          </td>
-        </tr>
-        <tr>
-          <td>Rocky</td>
-          <td>Perro</td>
-          <td>Bulldog</td>
-          <td>Macho</td>
-          <td>5 años</td>
-          <td>Inactivo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=3">Editar</a>
-            <a href="#">Eliminar</a>
-          </td>
-        </tr>
+        
       </tbody>
     </table>
   </main>
