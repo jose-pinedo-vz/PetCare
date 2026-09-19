@@ -10,7 +10,7 @@
 
   <header>
     <div class="marca">
-      <img src="/img/logo.svg" alt="Veterinaria PetCare">
+      <img src="img/logo.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
@@ -23,9 +23,8 @@
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
       <li><a href="citas.php" class="activo">citas</a></li>
-
-
       <li><a href="clientes.php" class="activo">Clientes</a></li>
+
       <li><a href="#" class="deshabilitado">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
@@ -97,8 +96,8 @@
               </div>
 
               <div>
-                <label class="label-campo" for="id_cliente" >Dueño (ID Cliente):</label>
-                <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" >
+                <label class="label-campo" for="id_cliente" >Dueño (ID Cliente) *:</label>
+                <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?php echo htmlspecialchars((string)($_GET['id_cliente'] ?? '')); ?>" >
               </div>
 
               <div>
@@ -148,23 +147,20 @@
                 <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" >
               </div>
 
-              <!-- campos que faltaron -->
               <div>
-                <label class="label-campo" for="nombre_del_campo">Temperamento:</label>
-                <textarea class="campo" id="temperamento" name="temperamento" rows="2"></textarea>
+                <label class="label-campo" for="temperamento">Temperamento:</label>
+                <textarea class="campo" id="temperamento" name="temperamento" rows="2" placeholder="Ej. Dócil, juguetón, tímido"></textarea>
               </div>
 
               <div>
-                <label class="label-campo" for="nombre_del_campo">Restricciones para manejo:</label>
-                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"></textarea>
+                <label class="label-campo" for="restricciones_para_manejo">Restricciones para manejo:</label>
+                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2" placeholder="Ej. Cuidado con las patas"></textarea>
               </div>
 
-              <div>
-                <label class="label-campo" for="nombre_del_campo">Observaciones:</label>
-                <textarea class="campo" id="observaciones" name="observaciones" rows="2"></textarea>
+              <div style="grid-column: 1 / -1;">
+                <label class="label-campo" for="observaciones">Observaciones:</label>
+                <textarea class="campo" id="observaciones" name="observaciones" rows="2" placeholder="Observaciones generales"></textarea>
               </div>
-
-              
             </div>
           </fieldset>
 

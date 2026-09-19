@@ -15,6 +15,7 @@ config.php
 .idea/
 *.suo
 *.user
+*.py
 .zed/
 
 # ==========================================
@@ -46,6 +47,7 @@ $RECYCLE.BIN/
 *.bak
 *.tmp
 *.sql.gz
+*.sql
 /temp/
 /tmp/
 
@@ -56,3 +58,4 @@ $RECYCLE.BIN/
 *.zip
 *.rar
 *.7z
+
