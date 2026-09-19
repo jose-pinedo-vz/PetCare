@@ -1,10 +1,10 @@
 <?php
     declare(strict_types=1);
-    if (file_exists(__DIR__ . '/conexion_db.php')) {
-        require_once __DIR__ . '/conexion_db.php';
-    } elseif (file_exists(__DIR__ . '/../../conexion_db.php')) {
-        require_once __DIR__ . '/../../conexion_db.php';
-    }
+    // if (file_exists(__DIR__ . '/conexion_db.php')) {
+    //     require_once __DIR__ . '/conexion_db.php';
+    // } elseif (file_exists(__DIR__ . '/../../conexion_db.php')) {
+    //     require_once __DIR__ . '/../../conexion_db.php';
+    // }
 
     require_once 'conexion_db.php';
 

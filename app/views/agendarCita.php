@@ -86,7 +86,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
       <div style="margin-top: 20px;">
         <button type="submit" class="btn">Guardar Cita</button>
-        <a class="btn" href="citas.html" style="background: #757575; margin-left: 8px;">Cancelar</a>
+        <a class="btn" href="citas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
     </form>
   </main>
