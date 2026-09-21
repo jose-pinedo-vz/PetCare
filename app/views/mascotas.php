@@ -69,7 +69,7 @@
           <td>Activo</td>
           <td style="padding: 15px;">
             <a class="btn" href="editar_mascota.php?id=1">Editar</a>
-            <a href="#">Eliminar</a>
+            <a class="btn" href="eliminar_mascota.php">Eliminar</a>
           </td>
         </tr>
         <tr>
@@ -81,7 +81,7 @@
           <td>Activo</td>
           <td style="padding: 15px;">
             <a class="btn" href="editar_mascota.php?id=2">Editar</a>
-            <a href="#">Eliminar</a>
+            <a class="btn" href="eliminar_mascota.php">Eliminar</a>
           </td>
         </tr>
         <tr>
@@ -93,7 +93,7 @@
           <td>Inactivo</td>
           <td style="padding: 15px;">
             <a class="btn" href="editar_mascota.php?id=3">Editar</a>
-            <a href="#">Eliminar</a>
+            <a class="btn" href="eliminar_mascota.php">Eliminar</a>
           </td>
         </tr>
       </tbody>
