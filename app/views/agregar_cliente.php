@@ -43,7 +43,7 @@
     <form action="../controllers/guardar_cliente.php" method="POST">
 
       <fieldset>
-        <legend>👤 Datos personales</legend>
+        <legend> Datos personales</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
@@ -78,7 +78,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>📞 Datos de contacto</legend>
+        <legend> Datos de contacto</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="telefono">Teléfono *:</label>
@@ -98,7 +98,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🏠 Dirección / Domicilio</legend>
+        <legend> Dirección / Domicilio</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="calle">Calle *:</label>
@@ -138,7 +138,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🚨 Contactos de Emergencia</legend>
+        <legend> Contactos de Emergencia</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia *:</label>

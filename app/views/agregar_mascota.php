@@ -43,7 +43,7 @@
     <form action="guardar_mascota.php" method="POST" enctype="multipart/form-data">
 
 <fieldset>
-            <legend style="font-weight: bold; color: #333; padding: 0 5px;">📄 Datos básicos</legend>
+            <legend style="font-weight: bold; color: #333; padding: 0 5px;"> Datos básicos</legend>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div>
@@ -114,7 +114,7 @@
 
           <!-- 2. Datos clínicos -->
           <fieldset>
-            <legend>🩺 Datos clínicos</legend>
+            <legend> Datos clínicos</legend>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div>
