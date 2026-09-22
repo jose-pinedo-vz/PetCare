@@ -1,6 +1,7 @@
 <?php
-require_once __DIR__ . '/../controllers/validar_mascota.php';
+
 function insertar(array $datos){
+    require_once __DIR__ . '/../controllers/validar_mascota.php';
     if (file_exists(__DIR__ . '/../../conexion_db.php')) {
         include_once __DIR__ . '/../../conexion_db.php';
     } else {
@@ -80,11 +81,12 @@ function insertar(array $datos){
     }
 }
     //Funcion para eliminar mascota 
-    function eliminar($id){
+function eliminar($id){
     //se eliminara mascota por medio del id 
-    };
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $cliente = $id > 0 ? Mascotas::obtenerPorId($id) : null;
 
-
+}
 
 function IDmascota($conexion) {
     do {
@@ -113,4 +115,35 @@ function IDmascota($conexion) {
     } while ($existe);
 
     return $aleatorio;
+}
+//Funcion para obtener todas las mascotas 
+function obtenerDatosMascotas() {
+    if (file_exists(__DIR__ . '/../../conexion_db.php')) {
+        include_once __DIR__ . '/../../conexion_db.php';
+    } else {
+        include_once "conexion_db.php";
+    }
+
+    if (!isset($conexion) || !$conexion || $conexion->connect_errno) {
+        return [];
+    }
+
+    $sql = "SELECT id_mascota, nombre, especie, raza, sexo, edad, color, peso, tamanio,
+                   id_cliente, observaciones
+            FROM mascotas
+            WHERE esta_activo = 1
+            ORDER BY id_mascota DESC";
+
+    $resultado = mysqli_query($conexion, $sql);
+
+    if (!$resultado) {
+        return [];
+    }
+
+    $mascotas = [];
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $mascotas[] = $fila;
+    }
+
+    return $mascotas;
 }

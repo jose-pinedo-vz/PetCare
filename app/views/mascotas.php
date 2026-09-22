@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../controllers/MascotaController.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +13,6 @@
     <div class="marca">
       <img src="img/logo.svg" alt="Veterinaria PetCare">
     </div>
-
     <div class="sesion">
       <span>Empleado: Nombre del Empleado</span>
       <a href="#">Cerrar sesión</a>
@@ -49,47 +49,27 @@
           <th>Raza</th>
           <th>Sexo</th>
           <th>Edad</th>
-          <th>Estado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Firulais</td>
-          <td>Perro</td>
-          <td>Labrador</td>
-          <td>Macho</td>
-          <td>3 años</td>
-          <td>Activo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=1">Editar</a>
-            <a href="#">Eliminar</a>
-          </td>
-        </tr>
-        <tr>
-          <td>Michi</td>
-          <td>Gato</td>
-          <td>Siamés</td>
-          <td>Hembra</td>
-          <td>2 años</td>
-          <td>Activo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=2">Editar</a>
-            <a href="#">Eliminar</a>
-          </td>
-        </tr>
-        <tr>
-          <td>Rocky</td>
-          <td>Perro</td>
-          <td>Bulldog</td>
-          <td>Macho</td>
-          <td>5 años</td>
-          <td>Inactivo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=3">Editar</a>
-            <a href="#">Eliminar</a>
-          </td>
-        </tr>
+        <?php if (!empty($mascotas)): ?>
+          <?php foreach ($mascotas as $mascota): ?>
+            <tr>
+              <td><?= htmlspecialchars($mascota['nombre']) ?></td>
+              <td><?= htmlspecialchars($mascota['especie']) ?></td>
+              <td><?= htmlspecialchars($mascota['raza']) ?></td>
+              <td><?= htmlspecialchars($mascota['sexo']) ?></td>
+              <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
+              <td style="padding: 15px;">
+                <a class="btn" href="editar_mascota.php?id=<?= $mascota['id_mascota'] ?>">Editar</a>
+                <a href="#">Eliminar</a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <tr><td colspan="6">No hay mascotas registradas.</td></tr>
+        <?php endif; ?>
       </tbody>
     </table>
   </main>

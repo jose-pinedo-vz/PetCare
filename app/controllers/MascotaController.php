@@ -77,3 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<p><strong>ID Cliente:</strong> " . $id_cliente . "</p>";
     }
 }
+require_once __DIR__ . '/../models/Mascota.php';
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    $mascotas = obtenerDatosMascotas();
+}
