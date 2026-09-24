@@ -147,3 +147,30 @@ function obtenerDatosMascotas() {
 
     return $mascotas;
 }
+//Funcion para obtener una sola mascota por su ID (para precargar el formulario de editar)
+function obtenerMascotaPorId(int $id) {
+    if (file_exists(__DIR__ . '/../../conexion_db.php')) {
+        include_once __DIR__ . '/../../conexion_db.php';
+    } else {
+        include_once "conexion_db.php";
+    }
+
+    if (!isset($conexion) || !$conexion || $conexion->connect_errno) {
+        return null;
+    }
+
+    $sql = "SELECT * FROM mascotas WHERE id_mascota = ?";
+    $consulta = mysqli_prepare($conexion, $sql);
+
+    if (!$consulta) {
+        return null;
+    }
+
+    mysqli_stmt_bind_param($consulta, "i", $id);
+    mysqli_stmt_execute($consulta);
+    $resultado = mysqli_stmt_get_result($consulta);
+    $mascota = mysqli_fetch_assoc($resultado);
+    mysqli_stmt_close($consulta);
+
+    return $mascota ?: null;
+}

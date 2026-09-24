@@ -1,3 +1,25 @@
+<?php
+require_once __DIR__ . '/../models/Mascota.php';
+
+$idMascota = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+if ($idMascota === false || $idMascota === null) {
+    header('Location: mascotas.php');
+    exit;
+}
+
+$mascota = obtenerMascotaPorId($idMascota);
+
+if (!$mascota) {
+    header('Location: mascotas.php');
+    exit;
+}
+
+// Función chiquita para no repetir htmlspecialchars() en cada campo
+function v($valor) {
+    return htmlspecialchars((string)($valor ?? ''));
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -39,16 +61,9 @@
   <main>
     <h1>Editar mascota</h1>
 
-    <!--
-      NOTA PARA BACKEND:
-      - El id de la mascota debe venir precargado en el campo oculto "id_mascota".
-      - Todos los campos de abajo deben venir con el valor actual de la mascota
-        (aquí están con datos de ejemplo de "Firulais" solo para referencia visual).
-      - El action debe apuntar al script que actualiza el registro (ej. actualizar_mascota.php).
-    -->
     <form action="actualizar_mascota.php" method="POST" enctype="multipart/form-data">
 
-      <input type="hidden" id="id_mascota" name="id_mascota" value="1">
+      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= v($mascota['id_mascota']) ?>">
 
       <fieldset>
         <legend>Datos Básicos</legend>
@@ -56,61 +71,61 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
-            <input type="text" class="campo" id="nombre" name="nombre" value="Firulais" required>
+            <input type="text" class="campo" id="nombre" name="nombre" value="<?= v($mascota['nombre']) ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="especie">Especie *:</label>
-            <input type="text" class="campo" id="especie" name="especie" value="Perro" required>
+            <input type="text" class="campo" id="especie" name="especie" value="<?= v($mascota['especie']) ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="raza">Raza:</label>
-            <input type="text" class="campo" id="raza" name="raza" value="Labrador">
+            <input type="text" class="campo" id="raza" name="raza" value="<?= v($mascota['raza']) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="sexo">Sexo *:</label>
             <select class="campo" id="sexo" name="sexo" required>
-              <option value="Macho" selected>Macho</option>
-              <option value="Hembra">Hembra</option>
+              <option value="Macho" <?= $mascota['sexo'] === 'Macho' ? 'selected' : '' ?>>Macho</option>
+              <option value="Hembra" <?= $mascota['sexo'] === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
             </select>
           </div>
 
           <div>
             <label class="label-campo" for="edad">Edad / Fecha nacimiento *:</label>
-            <input type="date" class="campo" id="edad" name="edad" value="2023-05-10" required>
+            <input type="date" class="campo" id="edad" name="edad" value="<?= v($mascota['edad']) ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="color">Color:</label>
-            <input type="text" class="campo" id="color" name="color" value="Café">
+            <input type="text" class="campo" id="color" name="color" value="<?= v($mascota['color']) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="peso">Peso (kg):</label>
-            <input type="number" step="0.01" class="campo" id="peso" name="peso" value="28.5">
+            <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= v($mascota['peso']) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="tamanio">Tamaño:</label>
             <select class="campo" id="tamanio" name="tamanio">
               <option value="">Seleccionar...</option>
-              <option value="Pequeño">Pequeño</option>
-              <option value="Mediano">Mediano</option>
-              <option value="Grande" selected>Grande</option>
-              <option value="Gigante">Gigante</option>
+              <option value="Pequeño" <?= $mascota['tamanio'] === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
+              <option value="Mediano" <?= $mascota['tamanio'] === 'Mediano' ? 'selected' : '' ?>>Mediano</option>
+              <option value="Grande" <?= $mascota['tamanio'] === 'Grande' ? 'selected' : '' ?>>Grande</option>
+              <option value="Gigante" <?= $mascota['tamanio'] === 'Gigante' ? 'selected' : '' ?>>Gigante</option>
             </select>
           </div>
 
           <div>
             <label class="label-campo" for="id_cliente">Dueño (ID Cliente) *:</label>
-            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="12" required placeholder="ID del Cliente">
+            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="<?= v($mascota['id_cliente']) ?>" required placeholder="ID del Cliente">
           </div>
 
           <div>
             <label class="label-campo" for="id_veterinario">Veterinario Asignado (ID):</label>
-            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="3" placeholder="ID del Veterinario">
+            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="<?= v($mascota['id_veterinario']) ?>" placeholder="ID del Veterinario">
           </div>
         </div>
 
@@ -121,39 +136,38 @@
         </div>
       </fieldset>
 
-      <!-- 2. Datos clínicos -->
       <fieldset>
         <legend>Datos Clínicos</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="alergias">Alergias:</label>
-            <textarea class="campo" id="alergias" name="alergias" rows="2">Ninguna conocida</textarea>
+            <textarea class="campo" id="alergias" name="alergias" rows="2"><?= v($mascota['alergias']) ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="enfermedades">Enfermedades:</label>
-            <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"></textarea>
+            <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"><?= v($mascota['enfermedades']) ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="medicamentos">Medicamentos:</label>
-            <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"></textarea>
+            <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"><?= v($mascota['medicamentos']) ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="condiciones_especiales">Condiciones Especiales:</label>
-            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"></textarea>
+            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= v($mascota['condiciones_especiales']) ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="vacunas">Vacunas:</label>
-            <textarea class="campo" id="vacunas" name="vacunas" rows="2">Rabia, Parvovirus</textarea>
+            <textarea class="campo" id="vacunas" name="vacunas" rows="2"><?= v($mascota['vacunas']) ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="ultima_desparasitacion">Última Desparasitación:</label>
-            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="2026-06-15">
+            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= v($mascota['ultima_desparasitacion']) ?>">
           </div>
         </div>
       </fieldset>
