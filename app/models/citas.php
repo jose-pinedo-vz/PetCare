@@ -46,6 +46,8 @@
             }
         }
 
+
+        // insercino natural a la base de datos
         public function insertarCita(int $clave_cliente,string $fecha,string $motivo):bool
         {
             try
@@ -61,6 +63,23 @@
                throw new Exception("Error al consultar los productos".$e->getMessage());
                return false; 
             }
+        }
+
+
+        // rescatar la base de datos
+        public function datosCitas():array
+        {
+            // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
+            $query = "SELECT c.id_cliente, c.fecha, c.motivo_de_consulta, cl.nombre, cl.apellido, c.atendido
+              FROM consulta_veterinaria c
+              INNER JOIN clientes cl ON c.id_cliente = cl.id_cliente";
+
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute();
+            $datos = $stml->fetchAll(PDO::FETCH_ASSOC);
+
+            return $datos;
         }
     }
 ?>

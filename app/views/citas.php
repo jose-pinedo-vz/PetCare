@@ -1,3 +1,49 @@
+<?php  require_once __DIR__ . '/../controllers/citas.php'; ?>
+
+
+<?php
+  function mostrarProximasCitas()
+  {
+
+    $datos = estraerDatosConsultas();
+    // echo $datos[0]['atendido'];
+    foreach ($datos as $d) 
+    {
+      if ($d['atendido'] === 0)
+      {?>
+        <div class="Card_cita">
+          <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
+          <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
+          <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
+          <button class="btn" id="btn_consultas">Consulta</button>
+        </div>
+      <?php 
+      }
+    } 
+  } 
+?>
+
+<?php
+  function mostrarCitasAtendidas()
+  {
+          $datos = estraerDatosConsultas();
+
+          foreach($datos as $d)
+          {
+            if ($d['atendido'] === 1)
+            {?>
+              <div class="Card_cita">
+                <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
+                <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
+                <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
+                <button class="btn" id="btn_consultas">Pagar</button>
+              </div>
+            <?php }
+          } 
+  }
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -46,31 +92,22 @@
     
     <div class="contenedor_citas">
       <div class="boton_control">
-        <button class="btn_active active" onclick="mostrarSeccion('espera', event)">En espera</button>
-        <button class="btn_active" onclick="mostrarSeccion('atendidas', event)">Atendidas</button>
+        <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
+        <button id="btn_active" onclick="mostrarSeccion('atendidas', event)" class="btn" style="background: #757575; margin-left: 8px;">Atendidas</button>
       </div>
 
       <div class="panel_contenido">
-        <!-- Sección de espera (Visible por defecto) -->
+        <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3>
-          <div class="Card_cita">
-            <p><strong>Paciente:</strong> max</p>
-            <p><strong>Fecha:</strong> Y-m-d</p>
-            <p><strong>Motivo de consulta:</strong> Y-m-d</p>
-          </div>
+          <h3>Citas en espera</h3> 
+          <?php mostrarProximasCitas(); ?>
         </div>
 
-        <!-- Sección de atendidos (Oculta por defecto con la clase .oculto) -->
+        <!-- Sección de atendidos-->
         <div id="seccion_atendidos" class="seccion-panel oculto">
-          <h3>Citas atendidas</h3>
-          <div class="Card_cita">
-            <p><strong>Paciente:</strong>Felipe</p>
-            <p><strong>Fecha:</strong> Y-m-d</p>
-            <p><strong>Motivo de consulta:</strong>Tos</p>
-          </div>
+          <h3>Nombre del dueño</h3>
+          <?php mostrarCitasAtendidas(); ?>
         </div>
-
       </div>
     </div>
   </main>
@@ -82,6 +119,8 @@
     }
   </style>
 
+
+  <!-- eventos de los botones  -->
   <script>
       function mostrarSeccion(tipo, evt)
       {
