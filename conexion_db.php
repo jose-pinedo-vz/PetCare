@@ -1,5 +1,6 @@
-<?php
 
+<?php
+/*
 $envPath = __DIR__ . '/.env';
 if (file_exists($envPath)) {
     $lineas = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -25,3 +26,4 @@ $db = getenv('DB_NAME') ?: "petcare";
 $conexion = new mysqli($server, $user, $passwword, $db);
 
 mysqli_set_charset($conexion, "utf8");
+*/
