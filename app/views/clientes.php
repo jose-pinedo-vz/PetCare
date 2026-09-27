@@ -25,12 +25,12 @@ $listaClientes = Cliente::obtenerTodos();
 
   <nav>
     <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php" class="activo">citas</a></li>
+      <li><a href="mascotas.php">Mascotas</a></li>
+      <li><a href="citas.php">citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
 
 
-      <li><a href="#" class="deshabilitado">Empleados</a></li>
+      <li><a href="empleados.php">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
