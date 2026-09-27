@@ -222,3 +222,23 @@ table tbody tr:nth-child(even) {
 table tbody tr:hover {
   background-color: var(--border-light);
 }
+
+
+.Card_cita{
+  background-color: #F0F4F9;
+  /* border-color: #1c616f; */
+  padding: 5px;
+  border: 2px solid #E0E0E0;
+  border-radius: 4px;
+  /* que los elementos se acomoden uno despues de otro */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* separacion entre elementos */
+  gap: 20px; 
+}
+
+#btn_consultas 
+{
+  margin-left: 45%;
+}

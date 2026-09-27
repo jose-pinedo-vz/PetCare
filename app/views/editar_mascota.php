@@ -32,7 +32,7 @@ function v($valor) {
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="./img/logo.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
@@ -44,8 +44,9 @@ function v($valor) {
   <nav>
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="citas.html">Citas</a></li>
+      <li><a href="citas.php" class="activo">citas</a></li>
+      <li><a href="clientes.php" class="activo">Clientes</a></li>
+
       <li><a href="#" class="deshabilitado">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
@@ -169,6 +170,40 @@ function v($valor) {
             <label class="label-campo" for="ultima_desparasitacion">Última Desparasitación:</label>
             <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= v($mascota['ultima_desparasitacion']) ?>">
           </div>
+
+          <!-- campos que faltaron -->
+              <div>
+                <label class="label-campo" for="nombre_del_campo">Temperamento:</label>
+                <textarea class="campo" id="temperamento" name="temperamento" rows="2"></textarea>
+              </div>
+
+              <div>
+                <label class="label-campo" for="nombre_del_campo">Restricciones para manejo:</label>
+                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"></textarea>
+              </div>
+
+              <div>
+                <label class="label-campo" for="nombre_del_campo">Observaciones:</label>
+                <textarea class="campo" id="observaciones" name="observaciones" rows="2"></textarea>
+              </div>
+
+              <div>
+                <label class="label-campo">Estado:</label>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                  
+                  <!-- Botón Switch -->
+                  <label class="switch">
+                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" checked>
+                    <span class="slider round"></span>
+                  </label>
+
+                  <!-- Caja de texto visual NO editable -->
+                  <input type="text" id="texto_estado" class="campo" value="Activo" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
+
+                  <!-- Campo oculto para enviar 1 o 0 a PHP -->
+                  <input type="hidden" id="activo" name="activo" value="1">
+
+                </div>
         </div>
       </fieldset>
 

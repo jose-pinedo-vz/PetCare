@@ -6,12 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Mascotas</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+
+  <!-- <title>Veterinaria PetCare - Clientes</title>
+  <link rel="stylesheet" href="estilos_base.css"> -->
+
 </head>
 <body>
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="./img/logo.svg" alt="Veterinaria PetCare">
     </div>
     <div class="sesion">
       <span>Empleado: Nombre del Empleado</span>
@@ -22,8 +26,10 @@
   <nav>
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="citas.html">Citas</a></li>
+      <li><a href="citas.php" class="activo">citas</a></li>
+      <li><a href="clientes.php" class="activo">Clientes</a></li>
+
+
       <li><a href="#" class="deshabilitado">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>

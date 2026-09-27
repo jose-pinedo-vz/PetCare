@@ -2,17 +2,40 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/citas.php';
+session_start();
+
+
+// intermediario entre front y base de datos
+function estraerDatosConsultas():array
+{
+    $resultados = [];
+    $consultasCitas = new ConexionesClientes();
+    $datos = $consultasCitas->datosCitas();
+    
+    foreach ($datos as $cita)
+    {
+        $resultados[] =
+        [
+            'nombre' => $cita['nombre'].' '.$cita['apellido'],
+            'fecha' => $cita['fecha'],
+            'motivo' => $cita['motivo_de_consulta'],
+            'atendido' => $cita['atendido']
+        ];
+    }
+
+    return $resultados;
+}
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error): void 
+function errorSession(string $error):null 
 {
     $_SESSION['error'] = $error;
-    $_SESSION['oldClave'] = $_POST['claveCliente'] ?? '';
-    $_SESSION['oldFecha'] = $_POST['fecha'] ?? '';
-    $_SESSION['oldMotivo'] = $_POST['motivoConsulta'] ?? '';
+    $_SESSION['oldClave'] = $_POST['claveCliente'];
+    $_SESSION['oldFecha'] = $_POST['fecha'];
+    $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
 
     header("Location: ../views/agendarCita.php");
     exit();
@@ -65,18 +88,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");   
     }
 
+
+
+    // insercin de la cita 
+    $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
+    if (!$seInserto)
+    {
+        errorSession("Hubo un error en la insercino de los datos.");
+    }
+
+
     // insertar la cita
     $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
     if (!$seInserto)
     {
         errorSession("Hubo un error al registrar la cita en la base de datos.");
     }
+    
 
-    $_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
+    //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/agendarCita.php?exito=1");
     exit();
-} else {
-    header("Location: ../views/agendarCita.php");
-    exit();
+
 }
 ?>
