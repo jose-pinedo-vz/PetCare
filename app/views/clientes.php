@@ -18,7 +18,7 @@ $listaClientes = Cliente::obtenerTodos();
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -43,7 +43,7 @@ $listaClientes = Cliente::obtenerTodos();
   </nav>
 
   <main>
-    <h1>Módulo de Clientes</h1>
+    <h1>Módulo de clientes</h1>
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
