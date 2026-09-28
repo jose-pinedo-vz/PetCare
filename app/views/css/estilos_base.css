@@ -36,7 +36,38 @@ a {
 .btn:hover {
   background-color: var(--accent-teal-dark);
 }
+.botones {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
 
+/*------------------------------------------------------------------------*/
+button {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+button[type="submit"] {
+    background-color: #059669;
+    color: #ecfdf5;
+}
+button[type="submit"]:hover {
+    background-color: #047857;
+    box-shadow: 0 0 12px rgba(5, 150, 105, 0.4);
+}
+button[type="reset"] {
+    background-color: #374151;
+    color: #9ca3af;
+}
+button[type="reset"]:hover {
+    background-color: #1f2937;
+}
+/*-------------------------------------------------------------------------------*/
 .campo {
   width: 100%;
   padding: 8px;
@@ -221,4 +252,58 @@ table tbody tr:nth-child(even) {
 
 table tbody tr:hover {
   background-color: var(--border-light);
+}
+/* Menús de opciones del panel */
+.panel-opciones {
+  background-color: var(--sidebar-light);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 15px 20px;
+  margin: 20px 0;
+}
+
+.panel-opciones h3 {
+  margin-top: 0;
+  color: var(--primary-dark);
+}
+
+.btn-link {
+  display: inline-block;
+  margin-right: 15px;
+  margin-top: 10px;
+  color: var(--accent-teal);
+  font-weight: bold;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+  color: var(--accent-teal-dark);
+}
+
+.btn-logout {
+  color: #d9534f;
+  font-weight: bold;
+}
+
+.btn-logout:hover {
+  text-decoration: underline;
+}
+
+/* Mensajes del sistema */
+.msg-error {
+  padding: 10px 15px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.msg-success {
+  padding: 10px 15px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  margin-bottom: 15px;
 }
