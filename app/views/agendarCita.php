@@ -27,11 +27,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
   <nav>
     <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
+      <li><a href="mascotas.php">Mascotas</a></li>
       <li><a href="citas.php" class="activo">citas</a></li>
-      <li><a href="clientes.php" class="activo">Clientes</a></li>
+      <li><a href="clientes.php">Clientes</a></li>
 
-      <li><a href="#" class="deshabilitado">Empleados</a></li>
+      <li><a href="empleados.php">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -46,6 +46,8 @@ if (session_status() === PHP_SESSION_NONE) {
   <main>
     <h1>Agendar Cita</h1>
 
+
+    <!-- mensaje en caso de algun error o mostrar informaicon nesesaria -->
     <?php if (isset($_SESSION['exito'])): ?>
       <div style="background: #e8f5e9; color: #2e7d32; padding: 12px 15px; border-radius: 6px; border: 1px solid #c8e6c9; margin-bottom: 20px; font-weight: bold;">
         <?php echo htmlspecialchars($_SESSION['exito']); unset($_SESSION['exito']); ?>
@@ -58,27 +60,34 @@ if (session_status() === PHP_SESSION_NONE) {
       </div>
     <?php endif; ?>
 
+
+
     <form id="formCita" action="../controllers/citas.php" method="POST">
       <fieldset>
         <legend style="font-weight: bold; color: #333; padding: 0 5px;">Datos de la Cita</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
           <div>
-            <label class="label-campo" for="claveCliente">Clave del Cliente (ID) *:</label>
+            <label class="label-campo" for="claveCliente">Clave del cliente *:</label>
             <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
+
               value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? '')); unset($_SESSION['oldClave']); ?>">
           </div>
 
           <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="fecha" name="fecha" required 
+
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
+
           </div>
 
           <div style="grid-column: 1 / -1;">
             <label class="label-campo" for="motivoConsulta">Motivo de consulta *:</label>
-            <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revision general" required
+            <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
+
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
+
           </div>
         </div>
       </fieldset>

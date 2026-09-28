@@ -25,12 +25,12 @@ $listaClientes = Cliente::obtenerTodos();
 
   <nav>
     <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php" class="activo">citas</a></li>
+      <li><a href="mascotas.php">Mascotas</a></li>
+      <li><a href="citas.php">citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
 
 
-      <li><a href="#" class="deshabilitado">Empleados</a></li>
+      <li><a href="empleados.php">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -47,8 +47,10 @@ $listaClientes = Cliente::obtenerTodos();
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
-
-    <?php if (empty($listaClientes)): ?>
+    
+    <?php 
+    $listaClientes = Cliente::obtenerTodos();
+    if (empty($listaClientes)): ?>
       <div style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
         <p style="font-size: 16px; color: #666; margin-bottom: 15px;">No hay clientes registrados en la base de datos.</p>
         <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>

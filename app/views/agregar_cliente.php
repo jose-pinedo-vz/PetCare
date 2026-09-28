@@ -21,11 +21,11 @@
 
   <nav>
     <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php" class="activo">citas</a></li>
+      <li><a href="mascotas.php">Mascotas</a></li>
+      <li><a href="citas.php">citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
 
-      <li><a href="#" class="deshabilitado">Empleados</a></li>
+      <li><a href="empleados.php">Empleados</a></li>
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -43,7 +43,7 @@
     <form action="../controllers/guardar_cliente.php" method="POST">
 
       <fieldset>
-        <legend>👤 Datos personales</legend>
+        <legend> Datos personales</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
@@ -78,7 +78,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>📞 Datos de contacto</legend>
+        <legend> Datos de contacto</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="telefono">Teléfono *:</label>
@@ -98,7 +98,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🏠 Dirección / Domicilio</legend>
+        <legend> Dirección / Domicilio</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="calle">Calle *:</label>
@@ -138,7 +138,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🚨 Contactos de Emergencia</legend>
+        <legend> Contactos de Emergencia</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia *:</label>
