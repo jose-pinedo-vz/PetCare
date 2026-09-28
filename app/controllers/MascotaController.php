@@ -1,7 +1,7 @@
 <?php
 
 // 1. si el formulario es enviado por POST
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (($_SERVER["REQUEST_METHOD"] ?? '') === "POST") {
 
     // arreglo de errores
     $errores = [];
@@ -76,4 +76,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<p><strong>Peso:</strong> " . $peso . " kg</p>";
         echo "<p><strong>ID Cliente:</strong> " . $id_cliente . "</p>";
     }
+}
+require_once __DIR__ . '/../models/Mascota.php';
+if (($_SERVER["REQUEST_METHOD"] ?? '') !== "POST") {
+    $mascotas = obtenerDatosMascotas();
 }
