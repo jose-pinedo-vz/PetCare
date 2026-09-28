@@ -173,35 +173,35 @@ function v($valor) {
 
           <!-- campos que faltaron -->
               <div>
-                <label class="label-campo" for="nombre_del_campo">Temperamento:</label>
-                <textarea class="campo" id="temperamento" name="temperamento" rows="2"></textarea>
+                <label class="label-campo" for="temperamento">Temperamento:</label>
+                <textarea class="campo" id="temperamento" name="temperamento" rows="2"><?= v($mascota['temperamento'] ?? '') ?></textarea>
               </div>
 
               <div>
-                <label class="label-campo" for="nombre_del_campo">Restricciones para manejo:</label>
-                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"></textarea>
+                <label class="label-campo" for="restricciones_para_manejo">Restricciones para manejo:</label>
+                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"><?= v($mascota['restricciones_para_manejo'] ?? '') ?></textarea>
               </div>
 
               <div>
-                <label class="label-campo" for="nombre_del_campo">Observaciones:</label>
-                <textarea class="campo" id="observaciones" name="observaciones" rows="2"></textarea>
+                <label class="label-campo" for="observaciones">Observaciones:</label>
+                <textarea class="campo" id="observaciones" name="observaciones" rows="2"><?= v($mascota['observaciones'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo">Estado:</label>
                 <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                  
+                  <?php $activo = !isset($mascota['esta_activo']) || $mascota['esta_activo'] == 1; ?>
                   <!-- Botón Switch -->
                   <label class="switch">
-                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" checked>
+                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" <?= $activo ? 'checked' : '' ?>>
                     <span class="slider round"></span>
                   </label>
 
                   <!-- Caja de texto visual NO editable -->
-                  <input type="text" id="texto_estado" class="campo" value="Activo" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
+                  <input type="text" id="texto_estado" class="campo" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
 
                   <!-- Campo oculto para enviar 1 o 0 a PHP -->
-                  <input type="hidden" id="activo" name="activo" value="1">
+                  <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
 
                 </div>
         </div>

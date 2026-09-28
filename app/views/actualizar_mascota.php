@@ -81,6 +81,11 @@ try {
         // agregamos fotografia al final de las columnas que se van a actualizar
         $camposEditables[] = 'fotografia';
 
+        if (isset($_POST['activo'])) {
+            $camposEditables[] = 'esta_activo';
+            $valoresFinales['esta_activo'] = (int)$_POST['activo'];
+        }
+
         // ( fn($c) => "$c = ?" ) = esto se puede considerar una funcion lambda de python
         // array_map (funcion, arreglo) = aplica la funcion a cada elemento del arreglo
         // implode (', ', resultado de array_map) = pega en una string el resultado de array_map y lo separa con una ,

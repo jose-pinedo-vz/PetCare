@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../views/guardar_mascota.php';
 
 function validacion(array $datos){
 
