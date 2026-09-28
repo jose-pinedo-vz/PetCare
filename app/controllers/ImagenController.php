@@ -11,7 +11,7 @@ class ImagenController
         'image/gif'  => 'gif'
     ];
 
-    private static int $tamanioMaximo = 10485760; // 10 MB
+    private static int $tamanioMaximo = 10485760/2; // 5 MB 
 
     public static function subir(?array $archivo): array
     {
@@ -36,7 +36,7 @@ class ImagenController
         if ($archivo['size'] > self::$tamanioMaximo) {
             return [
                 'exito' => false,
-                'mensaje' => 'La imagen excede el tamaño máximo permitido (10 MB).',
+                'mensaje' => 'La imagen excede el tamaño máximo permitido (5 MB).',
                 'ruta' => null,
                 'nombre_archivo' => null
             ];

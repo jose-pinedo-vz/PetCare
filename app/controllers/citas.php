@@ -2,8 +2,29 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/citas.php';
-
 session_start();
+
+
+// intermediario entre front y base de datos
+function estraerDatosConsultas():array
+{
+    $resultados = [];
+    $consultasCitas = new ConexionesClientes();
+    $datos = $consultasCitas->datosCitas();
+    
+    foreach ($datos as $cita)
+    {
+        $resultados[] =
+        [
+            'nombre' => $cita['nombre'].' '.$cita['apellido'],
+            'fecha' => $cita['fecha'],
+            'motivo' => $cita['motivo_de_consulta'],
+            'atendido' => $cita['atendido']
+        ];
+    }
+
+    return $resultados;
+}
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

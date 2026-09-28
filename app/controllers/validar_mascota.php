@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../views/guardar_mascota.php';
 
 function validacion(array $datos){
 
@@ -30,6 +29,12 @@ function validacion(array $datos){
     // Edad obligatoria
     if (empty($datos['edad'])) {
         $errores[] = "Debe especificar la edad.";
+    }else{
+        $fechaActual  = new DateTime('today');
+        $fechaIngresada = new DateTime($datos['edad']);
+        if ($fechaIngresada > $fechaActual) {
+            $errores[] = "Edad: No puede ser una fechadespues de hoy.";
+        }
     }
     // color opcional
     if (empty($datos['color'])) {
@@ -96,6 +101,25 @@ function validacion(array $datos){
     // Ultima Desaparasitacion obligatorio
     if (empty($datos['ultima_desparasitacion'])) {
         $errores[] = "Debe especificar la ultima desaparasitación.";
+    }else{
+        $fechaActual  = new DateTime('today');
+        $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
+        if ($fechaIngresada > $fechaActual) {
+            $errores[] = "Desparasitación: No puede ser una fechadespues de hoy.";
+        }
+    }
+
+    //temperamento Opcional
+    if (empty($datos['temperamento'])) {
+        $datos['temperamento'] = null;
+    }
+    //restricciones para manejo Opcional
+    if (empty($datos['restricciones_para_manejo'])) {
+        $datos['restricciones_para_manejo'] = null;
+    }
+    //observaciones Opcional
+    if (empty($datos['observaciones'])) {
+        $datos['observaciones'] = null;
     }
     
     // subida de la imagen usando el controlador ImagenController
