@@ -25,7 +25,7 @@ class Cliente
     {
         try {
             $db = ConexionDB::obtenerConexion();
-            $query = "SELECT * FROM clientes ORDER BY id_cliente DESC";
+            $query = "SELECT * FROM clientes where esta_activo=1 ORDER BY id_cliente DESC";
             $stmt = $db->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
@@ -139,7 +139,9 @@ class Cliente
     {
         try {
             $db = ConexionDB::obtenerConexion();
-            $stmt = $db->prepare("DELETE FROM clientes WHERE id_cliente = ?");
+            $stmt = $db->prepare("UPDATE clientes 
+                                  SET esta_activo = 0
+                                  WHERE id_cliente = ? AND esta_activo = 1");
             return $stmt->execute([$id]);
         } catch (Exception $e) {
             return false;
