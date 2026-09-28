@@ -62,7 +62,7 @@ function v($valor) {
   <main>
     <h1>Editar mascota</h1>
 
-    <form action="actualizar_mascota.php" method="POST" enctype="multipart/form-data">
+    <form action="../controllers/actualizar_mascota.php" method="POST" enctype="multipart/form-data">
 
       <input type="hidden" id="id_mascota" name="id_mascota" value="<?= v($mascota['id_mascota']) ?>">
 
