@@ -43,61 +43,68 @@
   </nav>
 
   <main>
-    <h1>Módulo de Mascotas</h1>
+    <h1>Módulo de mascotas</h1>
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
     </div>
-    <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Especie</th>
-          <th>Raza</th>
-          <th>Sexo</th>
-          <th>Edad</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Firulais</td>
-          <td>Perro</td>
-          <td>Labrador</td>
-          <td>Macho</td>
-          <td>3 años</td>
-          <td>Activo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=1">Editar</a>
-            <a class="btn" href="eliminar_mascota.php">Eliminar</a>
-          </td>
-        </tr>
-        <tr>
-          <td>Michi</td>
-          <td>Gato</td>
-          <td>Siamés</td>
-          <td>Hembra</td>
-          <td>2 años</td>
-          <td>Activo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=2">Editar</a>
-            <a class="btn" href="eliminar_mascota.php">Eliminar</a>
-          </td>
-        </tr>
-        <tr>
-          <td>Rocky</td>
-          <td>Perro</td>
-          <td>Bulldog</td>
-          <td>Macho</td>
-          <td>5 años</td>
-          <td>Inactivo</td>
-          <td style="padding: 15px;">
-            <a class="btn" href="editar_mascota.php?id=3">Editar</a>
-            <a class="btn" href="eliminar_mascota.php">Eliminar</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+
+    <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
+    <div class="table-responsive"> 
+
+      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Especie</th>
+            <th>Raza</th>
+            <th>Sexo</th>
+            <th>Edad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Firulais</td>
+            <td>Perro</td>
+            <td>Labrador</td>
+            <td>Macho</td>
+            <td>3 años</td>
+            <td>Activo</td>
+            <td style="padding: 15px;">
+              <a class="btn" href="editar_mascota.php?id=1">Editar</a>
+              <a class="btn" href="eliminar_mascota.php">Eliminar</a>
+            </td>
+          </tr>
+          <tr>
+            <td>Michi</td>
+            <td>Gato</td>
+            <td>Siamés</td>
+            <td>Hembra</td>
+            <td>2 años</td>
+            <td>Activo</td>
+            <td style="padding: 15px;">
+              <a class="btn" href="editar_mascota.php?id=2">Editar</a>
+              <a class="btn" href="eliminar_mascota.php">Eliminar</a>
+            </td>
+          </tr>
+          <tr>
+            <td>Rocky</td>
+            <td>Perro</td>
+            <td>Bulldog</td>
+            <td>Macho</td>
+            <td>5 años</td>
+            <td>Inactivo</td>
+            <td style="padding: 15px;">
+              <a class="btn" href="editar_mascota.php?id=3">Editar</a>
+              <a class="btn" href="eliminar_mascota.php">Eliminar</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div> <!-- AQUÍ TERMINA EL CONTENEDOR RESPONSIVE -->
+
   </main>
 
   <footer>
