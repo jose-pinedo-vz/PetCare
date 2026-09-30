@@ -150,6 +150,9 @@ function validacion(array $datos){
         echo "</div>";
 
     } else {
+        require_once __DIR__ . '/../models/Mascota.php';
+        insertar($datos);
+
         // Se muestran los campos procesados
         echo "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #4CAF50; background: #e8f5e9; max-width: 600px; border-radius: 8px; margin: 20px auto;'>";
         echo "<h2 style='color: #2e7d32; margin-top: 0;'>formulario procesado correctamente</h2>";
@@ -178,7 +181,6 @@ function validacion(array $datos){
         echo "</div>";
         echo "</div>";
 
-        require_once __DIR__ . '/../models/Mascota.php';
-        insertar($datos);
+        
     }
 }
