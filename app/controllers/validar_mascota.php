@@ -157,10 +157,11 @@ function validacion(array $datos){
             echo "<strong>Aviso de Base de Datos:</strong> El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario (ID: " . htmlspecialchars((string)($datos['id_veterinario'] ?? '')) . ") no existen en sus respectivas tablas. Se requiere que existan previamente para poder vincular la mascota.";
         }elseif($advert[0]=="Error al aguardar"){
             echo "<strong>Aviso al guardar en BD:</strong> " . $advert[1];
-        }
+        }else{
         
         header('Location: ../views/mascotas.php');
         exit;
+        }
 
         
     }
