@@ -176,13 +176,8 @@ function v($valor) {
           </div>
 
           <div>
-<<<<<<< HEAD
-            <label class="label-campo" for="condiciones_especiales">Condiciones especiales:</label>
-            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"></textarea>
-=======
             <label class="label-campo" for="condiciones_especiales">Condiciones Especiales:</label>
             <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= v($mascota['condiciones_especiales']) ?></textarea>
->>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
           </div>
 
           <div>
@@ -191,13 +186,8 @@ function v($valor) {
           </div>
 
           <div>
-<<<<<<< HEAD
-            <label class="label-campo" for="ultima_desparasitacion">Última desparasitación:</label>
-            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="2026-06-15">
-=======
             <label class="label-campo" for="ultima_desparasitacion">Última Desparasitación:</label>
             <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= v($mascota['ultima_desparasitacion']) ?>">
->>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
           </div>
 
           <!-- campos que faltaron -->
