@@ -225,9 +225,27 @@ table tbody tr:hover {
 }
 
 
-/*DISEÑO RESPONSIVE (Moviles y Tablets)*/
+/* Contenedor para tablas con scroll (Aplica para todas las pantallas) */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+td .btn {
+  display: inline-block;
+  margin-right: 8px; /* Da un espacio limpio y parejo entre botones */
+  margin-bottom: 5px; /* Evita que se empalmen hacia abajo si la pantalla se encoge */
+  white-space: nowrap; /* Obliga al botón a mantener su forma original sin aplastarse */
+}
+
+td .btn:last-child {
+  margin-right: 0;
+}
+
+/* 
+  DISEÑO RESPONSIVE (celus y tablets) */
 @media (max-width: 768px) {
-  /* 1. Encabezado: Apiloel logo y la sesión */
   header {
     flex-direction: column;
     gap: 15px;
@@ -235,11 +253,12 @@ table tbody tr:hover {
     text-align: center;
   }
 
+  
+
   .sesion {
     text-align: center;
   }
 
-  /*Navegacion: hago que los enlaces se ajusten mejor */
   nav a {
     padding: 10px;
     font-size: 14px;
@@ -247,29 +266,23 @@ table tbody tr:hover {
     text-align: center;
   }
 
-  /*Contenedor principal: Reducimos margenes para aprovechar el espacio */
   main {
     margin: 15px 10px;
     padding: 15px;
   }
 
-  /*Botones de acción en la tabla: Los ponemos uno sobre otro para que quepan */
+
+/* Adentro de tu @media (max-width: 768px) */
   td .btn {
     display: block;
     width: 100%;
+    margin-right: 0; /* Importante para centrar bien en celular */
     margin-bottom: 5px;
     text-align: center;
     box-sizing: border-box;
   }
-  
-  td .btn:last-child {
-    margin-bottom: 0;
-  }
 
-  /*Contenedor para que la tabla se pueda deslizar (scroll) y no deforme la pagina */
-  .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+td .btn:last-child {
+  margin-right: 0;
 }
+
