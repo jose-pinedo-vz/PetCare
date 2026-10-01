@@ -10,7 +10,7 @@
 
   <header>
     <div class="marca">
-      <img src="logo.png" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">

@@ -225,7 +225,7 @@ table tbody tr:hover {
 }
 
 
-/* Contenedor para tablas con scroll (Aplica para todas las pantallas) */
+/* Contenedor para tablas con scroll */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -276,7 +276,7 @@ td .btn:last-child {
   td .btn {
     display: block;
     width: 100%;
-    margin-right: 0; /* Importante para centrar bien en celular */
+    margin-right: 0;
     margin-bottom: 5px;
     text-align: center;
     box-sizing: border-box;
@@ -286,3 +286,4 @@ td .btn:last-child {
   margin-right: 0;
 }
 
+}
