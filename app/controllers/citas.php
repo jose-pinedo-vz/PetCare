@@ -88,14 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");   
     }
 
-    // insercin de la cita 
-    $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
-    if (!$seInserto)
-    {
-        errorSession("Hubo un error en la insercino de los datos.");
-    }
-
-
     // insertar la cita
     $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
     if (!$seInserto)
