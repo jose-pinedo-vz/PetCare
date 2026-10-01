@@ -25,7 +25,7 @@
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
 
