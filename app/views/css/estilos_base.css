@@ -225,6 +225,7 @@ table tbody tr:hover {
 }
 
 
+<<<<<<< HEAD
 /* Contenedor para tablas con scroll */
 .table-responsive {
   width: 100%;
@@ -246,6 +247,35 @@ td .btn:last-child {
 /* 
   DISEÑO RESPONSIVE (celus y tablets) */
 @media (max-width: 768px) {
+=======
+.Card_cita{
+  background-color: #F0F4F9;
+  /* border-color: #1c616f; */
+  padding: 5px;
+  border: 2px solid #E0E0E0;
+  border-radius: 4px;
+  /* que los elementos se acomoden uno despues de otro */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* separacion entre elementos */
+  gap: 20px; 
+}
+
+#btn_consultas 
+{
+  margin-left: 45%;
+}
+
+/* me permite ocultar los divs en citas */
+.oculto {
+  display: none !important;
+
+/*DISEÑO RESPONSIVE (Moviles y Tablets) 1:1 de frontend */
+
+@media (max-width: 768px) {
+  /* 1. Encabezado: Apiloel logo y la sesión */
+>>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
   header {
     flex-direction: column;
     gap: 15px;
@@ -253,12 +283,19 @@ td .btn:last-child {
     text-align: center;
   }
 
+<<<<<<< HEAD
   
 
+=======
+>>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
   .sesion {
     text-align: center;
   }
 
+<<<<<<< HEAD
+=======
+  /*Navegacion: hago que los enlaces se ajusten mejor */
+>>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
   nav a {
     padding: 10px;
     font-size: 14px;
@@ -266,24 +303,50 @@ td .btn:last-child {
     text-align: center;
   }
 
+<<<<<<< HEAD
+=======
+  /*Contenedor principal: Reducimos margenes para aprovechar el espacio */
+>>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
   main {
     margin: 15px 10px;
     padding: 15px;
   }
 
+<<<<<<< HEAD
 
 /* Adentro de tu @media (max-width: 768px) */
   td .btn {
     display: block;
     width: 100%;
     margin-right: 0;
+=======
+  /*Botones de acción en la tabla: Los ponemos uno sobre otro para que quepan */
+  td .btn {
+    display: block;
+    width: 100%;
+>>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7
     margin-bottom: 5px;
     text-align: center;
     box-sizing: border-box;
   }
+<<<<<<< HEAD
 
 td .btn:last-child {
   margin-right: 0;
 }
 
 }
+=======
+  
+  td .btn:last-child {
+    margin-bottom: 0;
+  }
+
+  /*Contenedor para que la tabla se pueda deslizar (scroll) y no deforme la pagina */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+>>>>>>> 2b234077962c1f019aec7ce159548d6a6115e5e7

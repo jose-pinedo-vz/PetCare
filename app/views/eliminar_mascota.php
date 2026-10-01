@@ -41,7 +41,7 @@
 
     <form action="procesar_eliminar_mascota.php" method="POST">
 
-      <input type="hidden" id="id_mascota" name="id_mascota" value="1">
+      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= htmlspecialchars($_GET['id'] ?? '') ?>">
 
       <fieldset>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">

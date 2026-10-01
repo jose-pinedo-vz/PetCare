@@ -1,3 +1,53 @@
+<?php  require_once __DIR__ . '/../controllers/citas.php'; ?>
+
+
+<!-- se encrga de mostrar todas las citas pendientes -->
+<?php
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // y los muestra dentro de otro div
+  function mostrarProximasCitas()
+  {
+    $datos = estraerDatosConsultas();
+    // echo $datos[0]['atendido'];
+    foreach ($datos as $d) 
+    {
+      if ($d['atendido'] === 0)
+      {?>
+        <div class="Card_cita">
+          <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
+          <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
+          <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
+          <button class="btn" id="btn_consultas">Consulta</button>
+        </div>
+      <?php }
+    } 
+  } 
+?>
+
+<!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
+<?php
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // y los muestra dentro de otro div
+  function mostrarCitasAtendidas()
+  {
+    $datos = estraerDatosConsultas();
+
+    foreach($datos as $d)
+    {
+      if ($d['atendido'] === 1)
+      {?>
+        <div class="Card_cita">
+          <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
+          <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
+          <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
+          <button class="btn" id="btn_consultas">Pagar</button>
+        </div>
+      <?php }
+    } 
+  }
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,6 +55,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Clientes</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+  <script src="js/citas.js"></script>
+
 </head>
 <body>
 
@@ -12,7 +64,6 @@
     <div class="marca">
       <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
-
     <div class="sesion">
       <span>Empleado: Nombre del Empleado</span>
       <a href="#">Cerrar sesión</a>
@@ -45,63 +96,26 @@
     
     <div class="contenedor_citas">
       <div class="boton_control">
-        <button class="btn_active active" onclick="mostrarSeccion('espera', event)">En espera</button>
-        <button class="btn_active" onclick="mostrarSeccion('atendidas', event)">Atendidas</button>
+        <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
+        <button id="btn_active" onclick="mostrarSeccion('atendidas', event)" class="btn" style="background: #757575; margin-left: 8px;">Atendidas</button>
       </div>
 
       <div class="panel_contenido">
-        <!-- Sección de espera (Visible por defecto) -->
+        <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3>
-          <div class="Card_cita">
-            <p><strong>Paciente:</strong> max</p>
-            <p><strong>Fecha:</strong> Y-m-d</p>
-            <p><strong>Motivo de consulta:</strong> Y-m-d</p>
-          </div>
+          <h3>Citas en espera</h3> 
+          <?php mostrarProximasCitas(); ?>
         </div>
 
-        <!-- Sección de atendidos (Oculta por defecto con la clase .oculto) -->
+        <!-- Sección de atendidos-->
         <div id="seccion_atendidos" class="seccion-panel oculto">
-          <h3>Citas atendidas</h3>
-          <div class="Card_cita">
-            <p><strong>Paciente:</strong>Felipe</p>
-            <p><strong>Fecha:</strong> Y-m-d</p>
-            <p><strong>Motivo de consulta:</strong>Tos</p>
-          </div>
+          <h3>Nombre del dueño</h3>
+          <?php mostrarCitasAtendidas(); ?>
         </div>
-
+         
       </div>
     </div>
   </main>
-
-  <style>
-    /* Clase universal para ocultar elementos */
-    .oculto {
-      display: none !important;
-    }
-  </style>
-
-  <script>
-      function mostrarSeccion(tipo, evt)
-      {
-        const seccionEspera = document.getElementById("seccion_espera");
-        const seccionAtendidos = document.getElementById('seccion_atendidos');
-        const botones = document.querySelectorAll('.btn_active');
-
-        // 1. Quitamos la clase 'active' de todos los botones y se la ponemos al presionado
-        botones.forEach(btn => btn.classList.remove('active'));
-        evt.target.classList.add('active');
-
-        // 2. Evaluamos qué sección mostrar u ocultar de manera explícita
-        if (tipo === 'espera') {
-            seccionEspera.classList.remove('oculto');
-            seccionAtendidos.classList.add('oculto');
-        } else if (tipo === 'atendidas') {
-            seccionAtendidos.classList.remove('oculto');
-            seccionEspera.classList.add('oculto');
-        }
-      }
-    </script>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
