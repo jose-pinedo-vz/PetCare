@@ -242,3 +242,8 @@ table tbody tr:hover {
 {
   margin-left: 45%;
 }
+
+/* me permite ocultar los divs en citas */
+.oculto {
+  display: none !important;
+}
