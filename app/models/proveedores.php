@@ -36,21 +36,21 @@ function insertar(array $datos) {
 
     try {
         $stmt = $conexion->prepare($insert);
-        $stmt->execute([
-            ':id_proveedor'         => $id,
-            ':razon_social'         => $datos['razon_social'],
-            ':nombre_comercial'     => $datos['nombre_comercial'],
-            ':rfc'                  => $datos['rfc'],
-            ':telefono'             => $datos['telefono'],
-            ':correo'               => $datos['correo'],
-            ':domicilio'            => $datos['domicilio'],
-            ':ciudad'               => $datos['ciudad'],
-            ':estado'               => $datos['estado'],
-            ':codigo_postal'        => $datos['codigo_postal' ],
-            ':condicion_pago'       => $datos['condicion_pago'],
-            ':tiempo_entrega'       => $datos['tiempo_entrega'],
-            ':observaciones'        => $datos['observaciones']
-        ]);
+        $stmt->bindParam(":id_proveedor",     $id,                        PDO::PARAM_INT);
+        $stmt->bindParam(":razon_social",     $datos['razon_social'],     PDO::PARAM_STR);
+        $stmt->bindParam(":nombre_comercial", $datos['nombre_comercial'], PDO::PARAM_STR);
+        $stmt->bindParam(":rfc",              $datos['rfc'],              PDO::PARAM_STR);
+        $stmt->bindParam(":telefono",         $datos['telefono'],         PDO::PARAM_STR);
+        $stmt->bindParam(":correo",           $datos['correo'],           PDO::PARAM_STR);
+        $stmt->bindParam(":domicilio",        $datos['domicilio'],        PDO::PARAM_STR);
+        $stmt->bindParam(":ciudad",           $datos['ciudad'],           PDO::PARAM_STR);
+        $stmt->bindParam(":estado",           $datos['estado'],           PDO::PARAM_STR);
+        $stmt->bindParam(":codigo_postal",    $datos['codigo_postal' ],   PDO::PARAM_STR);
+        $stmt->bindParam(":condicion_pago",   $datos['condicion_pago'],   PDO::PARAM_STR);
+        $stmt->bindParam(":tiempo_entrega",   $datos['tiempo_entrega'],   PDO::PARAM_INT);
+        $stmt->bindParam(":observaciones",    $datos['observaciones'],    PDO::PARAM_INT);
+        
+        $stmt->execute();
 
     }catch(PDOException $e){
         return ["Error al Insertar",htmlspecialchars($e->getMessage())];
