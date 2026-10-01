@@ -39,11 +39,11 @@ function v($valor) {
 
   <header>
     <div class="marca">
-      <img src="./img/logo.svg" alt="Veterinaria PetCare">
+      <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -74,7 +74,7 @@ function v($valor) {
       <input type="hidden" id="id_mascota" name="id_mascota" value="<?= v($mascota['id_mascota']) ?>">
 
       <fieldset>
-        <legend>Datos Básicos</legend>
+        <legend>Datos básicos</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
@@ -93,7 +93,7 @@ function v($valor) {
           </div>
 
           <div>
-            <label class="label-campo" for="sexo">Sexo *:</label>
+            <label class="label-campo" for="sexo">Sexo:</label>
             <select class="campo" id="sexo" name="sexo" required>
               <option value="Macho" <?= $mascota['sexo'] === 'Macho' ? 'selected' : '' ?>>Macho</option>
               <option value="Hembra" <?= $mascota['sexo'] === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
@@ -157,7 +157,7 @@ function v($valor) {
       </fieldset>
 
       <fieldset>
-        <legend>Datos Clínicos</legend>
+        <legend>Datos clínicos</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
