@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar mascota</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+  <style>
+    #preview-crop { max-width: 200px; border-radius: 8px; display: none; margin-top: 8px; }
+    #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
+    #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
+    #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
+  </style>
 </head>
 <body>
 
@@ -109,6 +116,19 @@
             <div style="margin-top: 12px;">
               <label class="label-campo" for="fotografia" >Fotografía:</label>
               <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*" >
+              <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
+              <p style="font-size: 13px; color: var(--texto-suave); margin: 6px 0 0;">Al elegir una foto se abrirá el cuadrado de recorte.</p>
+            </div>
+
+            <div id="modal-crop">
+              <div class="caja">
+                <h3 style="margin-top:0;">Recortar foto (cuadrado)</h3>
+                <img id="imagen-a-recortar" alt="Imagen a recortar">
+                <div style="margin-top:10px; text-align:right; display:flex; gap:8px; justify-content:flex-end;">
+                  <button type="button" id="btn-cancelar-crop">Cancelar</button>
+                  <button type="button" id="btn-recortar">Recortar y usar</button>
+                </div>
+              </div>
             </div>
           </fieldset>
 
@@ -172,6 +192,9 @@
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  <script src="js/crop-mascota.js"></script>
 
 </body>
 </html>
