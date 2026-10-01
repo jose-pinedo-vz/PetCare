@@ -21,7 +21,7 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -103,7 +103,7 @@
               </div>
 
               <div>
-                <label class="label-campo" for="id_cliente" >Dueño (ID Cliente) *:</label>
+                <label class="label-campo" for="id_cliente" >Dueño (ID cliente):</label>
                 <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?php echo htmlspecialchars((string)($_GET['id_cliente'] ?? '')); ?>" >
               </div>
 
@@ -153,7 +153,7 @@
               </div>
 
               <div>
-                <label class="label-campo" for="condiciones_especiales" >Condiciones Especiales:</label>
+                <label class="label-campo" for="condiciones_especiales" >Condiciones especiales:</label>
                 <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2" ></textarea>
               </div>
 
@@ -163,7 +163,7 @@
               </div>
 
               <div>
-                <label class="label-campo" for="ultima_desparasitacion" >Última Desparasitación:</label>
+                <label class="label-campo" for="ultima_desparasitacion" >Última desparasitación:</label>
                 <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" >
               </div>
 
