@@ -43,10 +43,13 @@
   </nav>
 
   <main>
-    <h1>Módulo de Mascotas</h1>
+    <h1>Módulo de mascotas</h1>
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
     </div>
+    <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
+    <div class="table-responsive"> 
+
     <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
       <thead>
         <tr>
@@ -78,6 +81,8 @@
         <?php endif; ?>
       </tbody>
     </table>
+
+    </div> <!-- AQUÍ TERMINA EL CONTENEDOR RESPONSIVE -->
   </main>
 
   <footer>

@@ -49,18 +49,6 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
-          <div>
-            <label class="label-campo" for="id_empleado">
-              ID Empleado *:
-            </label>
-
-            <input
-              type="number"
-              class="campo"
-              id="id_empleado"
-              name="id_empleado"
-              required>
-          </div>
 
 
           <div>
@@ -259,15 +247,18 @@
               Puesto *:
             </label>
 
-            <input
-              type="text"
+            <select 
               class="campo"
               id="puesto"
               name="puesto"
-              maxlength="35"
               required>
+              <option value="">Selecciona un puesto</option>
+              <option value="Gerente">Gerente</option>
+              <option value="Veterinario/a">Veterinario</option>
+              <option value="Vendedor">Vendedor</option>
+              <option value="Estilista">Estilista</option>
+            </select>
           </div>
-
 
           <div>
             <label class="label-campo" for="especialidad">
@@ -315,13 +306,15 @@
               Horario *:
             </label>
 
-            <input
-              type="text"
+            <select 
               class="campo"
               id="horario"
               name="horario"
-              maxlength="20"
               required>
+              <option value="">Selecciona un horario</option>
+              <option value="Matutino">Matutino</option>
+              <option value="Vespertino">Vespertino</option>
+            </select>
           </div>
 
         </div>
