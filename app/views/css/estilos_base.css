@@ -224,18 +224,26 @@ table tbody tr:hover {
 }
 
 
-.Card_cita{
+.Card_cita {
   background-color: #F0F4F9;
-  /* border-color: #1c616f; */
-  padding: 5px;
   border: 2px solid #E0E0E0;
-  border-radius: 4px;
-  /* que los elementos se acomoden uno despues de otro */
+  border-radius: 6px;
+  
+  /* Flexbox para alinear los bloques horizontalmente */
   display: flex;
   flex-direction: row;
+  justify-content: space-between; /* Distribuye el espacio de forma uniforme */
   align-items: center;
-  /* separacion entre elementos */
-  gap: 20px; 
+  
+  /* Un padding más generoso para que "respire" el contenido dentro de la tarjeta */
+  padding: 15px 20px;
+  
+  /* Separación entre una tarjeta y otra */
+  margin-bottom: 15px;
+}
+
+.Card_cita div, .Card_cita p {
+  margin: 0; /* Quitamos márgenes por defecto de los párrafos */
 }
 
 #btn_consultas 
