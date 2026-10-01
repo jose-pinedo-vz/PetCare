@@ -41,7 +41,7 @@
 
     <h1>Agregar empleado</h1>
 
-    <form action="guardar_empleado.php" method="POST">
+    <form action="../controllers/guardar_empleado.php" method="POST">
 
       <fieldset>
 
@@ -247,7 +247,7 @@
               Puesto *:
             </label>
 
-            <select 
+            <select
               class="campo"
               id="puesto"
               name="puesto"
@@ -306,7 +306,7 @@
               Horario *:
             </label>
 
-            <select 
+            <select
               class="campo"
               id="horario"
               name="horario"

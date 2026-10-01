@@ -121,7 +121,7 @@ function validacion(array $datos){
     if (empty($datos['observaciones'])) {
         $datos['observaciones'] = null;
     }
-    
+
     // subida de la imagen usando el controlador ImagenController
     require_once __DIR__ . '/../controllers/ImagenController.php';
 
@@ -181,6 +181,6 @@ function validacion(array $datos){
         echo "</div>";
         echo "</div>";
 
-        
+
     }
 }
