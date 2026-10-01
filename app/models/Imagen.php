@@ -1,7 +1,5 @@
 <?php
-
 require_once __DIR__ . '/conexion_db.php';
-
 class Imagen
 {
     // Actualiza la ruta de la fotografía de una mascota existente en la base de datos.
