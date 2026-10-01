@@ -10,7 +10,7 @@
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
@@ -22,7 +22,7 @@
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
 

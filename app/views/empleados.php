@@ -14,11 +14,11 @@
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -26,7 +26,7 @@
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
 
@@ -42,7 +42,7 @@
   </nav>
 
   <main>
-    <h1>Módulo de Empleados</h1>
+    <h1>Módulo de empleados</h1>
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
     </div>

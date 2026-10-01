@@ -225,18 +225,89 @@ table tbody tr:hover {
 }
 
 
-.Card_cita{
+/* Contenedor para tablas con scroll (Aplica para todas las pantallas) */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+td .btn {
+  display: inline-block;
+  margin-right: 8px; /* Da un espacio limpio y parejo entre botones */
+  margin-bottom: 5px; /* Evita que se empalmen hacia abajo si la pantalla se encoge */
+  white-space: nowrap; /* Obliga al botón a mantener su forma original sin aplastarse */
+}
+
+td .btn:last-child {
+  margin-right: 0;
+}
+
+/* 
+  DISEÑO RESPONSIVE (celus y tablets) */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  
+
+  .sesion {
+    text-align: center;
+  }
+
+  nav a {
+    padding: 10px;
+    font-size: 14px;
+    flex-grow: 1; 
+    text-align: center;
+  }
+
+  main {
+    margin: 15px 10px;
+    padding: 15px;
+  }
+
+}
+/* Adentro de tu @media (max-width: 768px) */
+  td .btn {
+    display: block;
+    width: 100%;
+    margin-right: 0; /* Importante para centrar bien en celular */
+    margin-bottom: 5px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+td .btn:last-child {
+  margin-right: 0;
+}
+
+
+
+.Card_cita {
   background-color: #F0F4F9;
-  /* border-color: #1c616f; */
-  padding: 5px;
   border: 2px solid #E0E0E0;
-  border-radius: 4px;
-  /* que los elementos se acomoden uno despues de otro */
+  border-radius: 6px;
+  
+  /* Flexbox para alinear los bloques horizontalmente */
   display: flex;
   flex-direction: row;
+  justify-content: space-between; /* Distribuye el espacio de forma uniforme */
   align-items: center;
-  /* separacion entre elementos */
-  gap: 20px; 
+  
+  /* Un padding más generoso para que "respire" el contenido dentro de la tarjeta */
+  padding: 15px 20px;
+  
+  /* Separación entre una tarjeta y otra */
+  margin-bottom: 15px;
+}
+
+.Card_cita div, .Card_cita p {
+  margin: 0; /* Quitamos márgenes por defecto de los párrafos */
 }
 
 #btn_consultas 
@@ -247,53 +318,5 @@ table tbody tr:hover {
 /* me permite ocultar los divs en citas */
 .oculto {
   display: none !important;
-
-/*DISEÑO RESPONSIVE (Moviles y Tablets) 1:1 de frontend */
-
-@media (max-width: 768px) {
-  /* 1. Encabezado: Apiloel logo y la sesión */
-  header {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    text-align: center;
-  }
-
-  .sesion {
-    text-align: center;
-  }
-
-  /*Navegacion: hago que los enlaces se ajusten mejor */
-  nav a {
-    padding: 10px;
-    font-size: 14px;
-    flex-grow: 1; 
-    text-align: center;
-  }
-
-  /*Contenedor principal: Reducimos margenes para aprovechar el espacio */
-  main {
-    margin: 15px 10px;
-    padding: 15px;
-  }
-
-  /*Botones de acción en la tabla: Los ponemos uno sobre otro para que quepan */
-  td .btn {
-    display: block;
-    width: 100%;
-    margin-bottom: 5px;
-    text-align: center;
-    box-sizing: border-box;
-  }
-  
-  td .btn:last-child {
-    margin-bottom: 0;
-  }
-
-  /*Contenedor para que la tabla se pueda deslizar (scroll) y no deforme la pagina */
-  .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
 }
+

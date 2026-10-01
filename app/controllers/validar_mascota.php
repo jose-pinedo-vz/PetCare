@@ -151,35 +151,19 @@ function validacion(array $datos){
 
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
-        insertar($datos);
-
-        // Se muestran los campos procesados
-        echo "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #4CAF50; background: #e8f5e9; max-width: 600px; border-radius: 8px; margin: 20px auto;'>";
-        echo "<h2 style='color: #2e7d32; margin-top: 0;'>formulario procesado correctamente</h2>";
-
-        if ($resultadoImagen && $resultadoImagen['exito']) {
-            echo "<div style='background: #c8e6c9; padding: 12px 15px; border-radius: 6px; margin-bottom: 15px;'>";
-            echo "<p style='color: #1b5e20; margin: 0; font-size: 16px; font-weight: bold;'>✔ " . htmlspecialchars($resultadoImagen['mensaje']) . "</p>";
-            echo "<p style='margin: 6px 0 0 0; font-size: 14px;'><strong>Ruta guardada para la BD:</strong> <code>" . htmlspecialchars($resultadoImagen['ruta']) . "</code></p>";
-            echo "</div>";
-            echo "<div style='text-align: center; margin: 15px 0;'>";
-            echo "<p style='margin-bottom: 8px;'><strong>Vista previa de la imagen subida:</strong></p>";
-            echo "<img src='../../" . htmlspecialchars($resultadoImagen['ruta']) . "' alt='Foto de " . htmlspecialchars($datos['nombre']) . "' style='max-width: 250px; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); object-fit: cover;'>";
-            echo "</div>";
-        }
-
-        echo "<p><strong>Datos confirmados de la mascota:</strong></p>";
-        echo "<ul>";
-        foreach ($datos as $campo => $valor){
-            if ($campo === 'fotografia') continue;
-            echo "<li><strong>" . htmlspecialchars((string)$campo) . ":</strong> " . htmlspecialchars((string)($valor ?? 'N/A')) . "</li>";
-        }
-        echo "</ul>";
-        echo "<div style='margin-top: 20px;'>";
-        echo "<a href='mascotas.php' style='display: inline-block; padding: 8px 16px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;'>← Volver a Mascotas</a> ";
-        echo "<a href='agregar_mascota.php' style='display: inline-block; padding: 8px 16px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;'>+ Registrar otra mascota</a>";
-        echo "</div>";
-        echo "</div>";
+        $advert = Mascota::insertar($datos);
+        $advert = insertar($datos);
+        //$advert = insertar($datos);
+        // echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
+        // if($advert[0]=="Error ID"){
+        //     echo "<strong>Aviso de Base de Datos:</strong> El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario (ID: " . htmlspecialchars((string)($datos['id_veterinario'] ?? '')) . ") no existen en sus respectivas tablas. Se requiere que existan previamente para poder vincular la mascota.";
+        // }elseif($advert[0]=="Error al aguardar"){
+        //     echo "<strong>Aviso al guardar en BD:</strong> " . $advert[1];
+        // }else{
+        
+        header('Location: ../views/mascotas.php');
+        exit;
+        //}
 
 
     }
