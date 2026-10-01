@@ -224,26 +224,22 @@ table tbody tr:hover {
 }
 
 
-.Card_cita {
+.Card_cita 
+{
   background-color: #F0F4F9;
   border: 2px solid #E0E0E0;
   border-radius: 6px;
-  
-  /* Flexbox para alinear los bloques horizontalmente */
   display: flex;
   flex-direction: row;
-  justify-content: space-between; /* Distribuye el espacio de forma uniforme */
+  justify-content: space-between; 
   align-items: center;
-  
-  /* Un padding más generoso para que "respire" el contenido dentro de la tarjeta */
   padding: 15px 20px;
-  
-  /* Separación entre una tarjeta y otra */
   margin-bottom: 15px;
 }
 
-.Card_cita div, .Card_cita p {
-  margin: 0; /* Quitamos márgenes por defecto de los párrafos */
+.Card_cita div, .Card_cita p 
+{
+  margin: 0; 
 }
 
 #btn_consultas 
@@ -252,6 +248,21 @@ table tbody tr:hover {
 }
 
 /* me permite ocultar los divs en citas */
-.oculto {
+.oculto 
+{
   display: none !important;
+}
+
+#filtrado_en_espera
+{
+  background-color: #757575;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px; 
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 3px 10px; 
+  margin-bottom: 5px;
+  color: #FFFFFF;
 }

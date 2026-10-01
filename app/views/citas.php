@@ -100,16 +100,30 @@
         <button id="btn_active" onclick="mostrarSeccion('atendidas', event)" class="btn" style="background: #757575; margin-left: 8px;">Atendidas</button>
       </div>
 
+      <div></div>
+
       <div class="panel_contenido">
         <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
           <h3>Citas en espera</h3> 
+          <div id="filtrado_en_espera">
+              <h4>Filtrado</h4>
+              <select id="filtro_espera" name="filtro_espera">
+                <option value="Hoy">Hoy</option>
+                <option value="Semana">Semana</option>
+                <option value="Mes">Mes</option>
+              </select>
+          </div>
+          <hr>
+          
           <?php mostrarProximasCitas(); ?>
         </div>
 
         <!-- Sección de atendidos-->
         <div id="seccion_atendidos" class="seccion-panel oculto">
-          <h3>Nombre del dueño</h3>
+          <h3>Citas atendidas</h3>
+          <div id="filtrado_atendidos"></div>
+
           <?php mostrarCitasAtendidas(); ?>
         </div>
          
