@@ -89,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     }
 
 
-
     // insercin de la cita 
     $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
     if (!$seInserto)
@@ -107,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
-    header("Location: ../views/agendarCita.php?exito=1");
+    header("Location: ../views/citas.php?exito=1");
     exit();
 
 }
