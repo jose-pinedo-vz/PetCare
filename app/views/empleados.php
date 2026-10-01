@@ -1,6 +1,6 @@
 <?php
     require_once __DIR__ . '/../models/Empleados.php';
-    $empleados = Listar_empleados_activos();
+    $empleados = Empleados::Listar_empleados_activos();
 ?>
 <!DOCTYPE html>
 <html lang="es">
