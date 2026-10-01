@@ -96,12 +96,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     }
 
 
-    // insertar la cita
-    $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
-    if (!$seInserto)
-    {
-        errorSession("Hubo un error al registrar la cita en la base de datos.");
-    }
+    // // insertar la cita
+    // $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
+    // if (!$seInserto)
+    // {
+    //     errorSession("Hubo un error al registrar la cita en la base de datos.");
+    // }
     
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
