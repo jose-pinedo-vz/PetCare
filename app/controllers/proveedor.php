@@ -21,6 +21,7 @@ function validar_datos(){
         ];
 
         //validacion($datos);
+        $errores = [];
         // La razon social es obligatorio
         if (empty($datos['razon_social'])) {
             $errores[] = "La razon social es obligatoria.";
@@ -120,6 +121,32 @@ function validar_datos(){
         if (empty($datos['observaciones'])) {
             //$errores[] = "Las observaciones son obligatorias.";
             $datos['observaciones'] = NULL;
+        }
+
+
+        if (count($errores) > 0) {
+            // se muestra errores de que campos no se llenaron
+            echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
+            echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
+            foreach ($errores as $error) {
+                echo "<li>$error</li>";
+            }
+            echo "</ul>";
+            echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
+            echo "</div>";
+
+        } else {
+            require_once __DIR__ . '/../models/proveedores.php';
+            $alerta = insertar($datos);
+            if($alerta[0] == "Error BD"){
+                echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
+                echo "<strong>Nota de Base de Datos:</strong> No se pudo conectar a la base de datos: " . $alerta[1] . ". <em>Sin embargo, la imagen se guardó correctamente en el servidor.</em>";
+                echo "</div>";
+            }
+            if($alerta[0] == "Error al Insertar"){
+                echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
+                echo "<strong>Aviso al guardar en BD:</strong> " . $alerta[1];
+            }
         }
 
     } else {
