@@ -125,16 +125,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if ($res['exito']) {
-        echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Cliente guardado</title><link rel='stylesheet' href='../views/css/estilos_base.css'></head><body>";
-        echo "<div style='font-family: Arial, sans-serif; padding: 25px; border: 1px solid #4CAF50; background: #e8f5e9; max-width: 550px; border-radius: 8px; margin: 40px auto; text-align: center;'>";
-        echo "<h2 style='color: #2e7d32; margin-top: 0;'>✔ " . htmlspecialchars($res['mensaje']) . "</h2>";
-        echo "<p style='font-size: 16px;'><strong>ID Asignado al cliente:</strong> <code>#" . htmlspecialchars((string)$idClienteFinal) . "</code></p>";
-        echo "<p style='color: #555;'>Cliente: <strong>" . htmlspecialchars($nombre . ' ' . $apellido) . "</strong> (" . htmlspecialchars($telefono) . ")</p>";
-        echo "<div style='margin-top: 25px;'>";
-        echo "<a href='../views/clientes.php' class='btn' style='margin-right: 10px;'>Ver Lista de Clientes</a> ";
-        echo "<a href='../views/agregar_mascota.php?id_cliente=" . urlencode((string)$idClienteFinal) . "' class='btn' style='background: #2196F3;'>+ Registrar Mascota para este Cliente</a>";
-        echo "</div>";
-        echo "</div></body></html>";
+        header("Location: ../views/clientes.php");
+        exit();
+        
+        // echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Cliente guardado</title><link rel='stylesheet' href='../views/css/estilos_base.css'></head><body>";
+        // echo "<div style='font-family: Arial, sans-serif; padding: 25px; border: 1px solid #4CAF50; background: #e8f5e9; max-width: 550px; border-radius: 8px; margin: 40px auto; text-align: center;'>";
+        // echo "<h2 style='color: #2e7d32; margin-top: 0;'>✔ " . htmlspecialchars($res['mensaje']) . "</h2>";
+        // echo "<p style='font-size: 16px;'><strong>ID Asignado al cliente:</strong> <code>#" . htmlspecialchars((string)$idClienteFinal) . "</code></p>";
+        // echo "<p style='color: #555;'>Cliente: <strong>" . htmlspecialchars($nombre . ' ' . $apellido) . "</strong> (" . htmlspecialchars($telefono) . ")</p>";
+        // echo "<div style='margin-top: 25px;'>";
+        // echo "<a href='../views/clientes.php' class='btn' style='margin-right: 10px;'>Ver Lista de Clientes</a> ";
+        // echo "<a href='../views/agregar_mascota.php?id_cliente=" . urlencode((string)$idClienteFinal) . "' class='btn' style='background: #2196F3;'>+ Registrar Mascota para este Cliente</a>";
+        // echo "</div>";
+        // echo "</div></body></html>";
     } else {
         echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Error al guardar</title><link rel='stylesheet' href='../views/css/estilos_base.css'></head><body>";
         echo "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ff9800; background: #fff3e0; max-width: 500px; border-radius: 8px; margin: 40px auto;'>";
