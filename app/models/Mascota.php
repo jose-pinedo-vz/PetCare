@@ -72,18 +72,13 @@ function insertar(array $datos) {
             ':observaciones'          => $observaciones
         ]);
 
-        echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
-        echo "<strong>La mascota fue registrada correctamente</strong> (ID Asignado: $id)";
-        echo "</div>";
     } catch (PDOException $e) {
-        echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
+    
         if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1452) {
-            echo "<strong>Aviso de Base de Datos:</strong> El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario (ID: " . htmlspecialchars((string)($datos['id_veterinario'] ?? '')) . ") no existen en sus respectivas tablas. Se requiere que existan previamente para poder vincular la mascota.";
+            return ["Error ID",null];
         } else {
-            echo "<strong>Aviso al guardar en BD:</strong> " . htmlspecialchars($e->getMessage());
+            return["Error al aguardar",htmlspecialchars($e->getMessage())];
         }
-        echo "<br><small>Nota: La fotografía ya quedó guardada en el servidor.</small>";
-        echo "</div>";
     }
 }
 
