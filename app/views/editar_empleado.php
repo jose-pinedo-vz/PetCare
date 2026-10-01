@@ -15,7 +15,7 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
 
@@ -57,13 +57,13 @@
 
       <fieldset>
 
-        <legend>Datos Personales</legend>
+        <legend>Datos personales</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
             <label class="label-campo" for="nombre">
-              Nombre *:
+              Nombre:
             </label>
 
             <input
@@ -79,7 +79,7 @@
 
           <div>
             <label class="label-campo" for="apellido">
-              Apellido *:
+              Apellido:
             </label>
 
             <input
@@ -98,13 +98,13 @@
 
       <fieldset>
 
-        <legend>Datos de Contacto</legend>
+        <legend>Datos de contacto</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
             <label class="label-campo" for="telefono">
-              Teléfono *:
+              Teléfono:
             </label>
 
             <input
@@ -120,7 +120,7 @@
 
           <div>
             <label class="label-campo" for="correo">
-              Correo Electrónico *:
+              Correo electrónico:
             </label>
 
             <input
@@ -148,7 +148,7 @@
 
           <div>
             <label class="label-campo" for="calle">
-              Calle *:
+              Calle:
             </label>
 
             <input
@@ -164,7 +164,7 @@
 
           <div>
             <label class="label-campo" for="numero_exterior">
-              Número Exterior *:
+              Número exterior:
             </label>
 
             <input
@@ -180,7 +180,7 @@
 
           <div>
             <label class="label-campo" for="numero_interior">
-              Número Interior:
+              Número interior:
             </label>
 
             <input
@@ -195,7 +195,7 @@
 
           <div>
             <label class="label-campo" for="colonia">
-              Colonia *:
+              Colonia:
             </label>
 
             <input
@@ -211,7 +211,7 @@
 
           <div>
             <label class="label-campo" for="ciudad">
-              Ciudad *:
+              Ciudad:
             </label>
 
             <input
@@ -227,7 +227,7 @@
 
           <div>
             <label class="label-campo" for="estado">
-              Estado *:
+              Estado:
             </label>
 
             <input
@@ -243,7 +243,7 @@
 
           <div>
             <label class="label-campo" for="codigo_postal">
-              Código Postal *:
+              Código Postal:
             </label>
 
             <input
@@ -262,13 +262,13 @@
 
       <fieldset>
 
-        <legend>Información Laboral</legend>
+        <legend>Información laboral</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
             <label class="label-campo" for="puesto">
-              Puesto *:
+              Puesto:
             </label>
 
             <input
@@ -299,7 +299,7 @@
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Cédula Profesional:
+              Cédula profesional:
             </label>
 
             <input
@@ -314,7 +314,7 @@
 
           <div>
             <label class="label-campo" for="fecha_de_contratacion">
-              Fecha de Contratación:
+              Fecha de contratación:
             </label>
 
             <input
@@ -328,7 +328,7 @@
 
           <div>
             <label class="label-campo" for="horario">
-              Horario *:
+              Horario:
             </label>
 
             <input

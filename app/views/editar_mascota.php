@@ -14,7 +14,7 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -52,16 +52,16 @@
       <input type="hidden" id="id_mascota" name="id_mascota" value="1">
 
       <fieldset>
-        <legend>Datos Básicos</legend>
+        <legend>Datos básicos</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label class="label-campo" for="nombre">Nombre *:</label>
+            <label class="label-campo" for="nombre">Nombre:</label>
             <input type="text" class="campo" id="nombre" name="nombre" value="Firulais" required>
           </div>
 
           <div>
-            <label class="label-campo" for="especie">Especie *:</label>
+            <label class="label-campo" for="especie">Especie:</label>
             <input type="text" class="campo" id="especie" name="especie" value="Perro" required>
           </div>
 
@@ -71,7 +71,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="sexo">Sexo *:</label>
+            <label class="label-campo" for="sexo">Sexo:</label>
             <select class="campo" id="sexo" name="sexo" required>
               <option value="Macho" selected>Macho</option>
               <option value="Hembra">Hembra</option>
@@ -79,7 +79,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="edad">Edad / Fecha nacimiento *:</label>
+            <label class="label-campo" for="edad">Edad / Fecha nacimiento:</label>
             <input type="date" class="campo" id="edad" name="edad" value="2023-05-10" required>
           </div>
 
@@ -105,12 +105,12 @@
           </div>
 
           <div>
-            <label class="label-campo" for="id_cliente">Dueño (ID Cliente) *:</label>
+            <label class="label-campo" for="id_cliente">Dueño (ID Cliente):</label>
             <input type="number" class="campo" id="id_cliente" name="id_cliente" value="12" required placeholder="ID del Cliente">
           </div>
 
           <div>
-            <label class="label-campo" for="id_veterinario">Veterinario Asignado (ID):</label>
+            <label class="label-campo" for="id_veterinario">Veterinario asignado (ID):</label>
             <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="3" placeholder="ID del Veterinario">
           </div>
         </div>
@@ -124,7 +124,7 @@
 
       <!-- 2. Datos clínicos -->
       <fieldset>
-        <legend>Datos Clínicos</legend>
+        <legend>Datos clínicos</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
@@ -143,7 +143,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="condiciones_especiales">Condiciones Especiales:</label>
+            <label class="label-campo" for="condiciones_especiales">Condiciones especiales:</label>
             <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"></textarea>
           </div>
 
@@ -153,7 +153,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="ultima_desparasitacion">Última Desparasitación:</label>
+            <label class="label-campo" for="ultima_desparasitacion">Última desparasitación:</label>
             <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="2026-06-15">
           </div>
 
