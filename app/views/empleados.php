@@ -1,3 +1,7 @@
+<?php
+    require_once __DIR__ . '/../models/Empleados.php';
+    $empleados = Listar_empleados_activos();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -67,75 +71,31 @@
               </tr>
             </thead>
             <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Ana</td>
-                  <td>López García</td>
-                  <td>4921234567</td>
-                  <td>ana.lopez@gmail.com</td>
-                  <td>Hidalgo</td>
-                  <td>125</td>
-                  <td>2</td>
-                  <td>Centro</td>
-                  <td>Zacatecas</td>
-                  <td>Zacatecas</td>
-                  <td>98000</td>
-                  <td>Veterinaria</td>
-                  <td>Medicina veterinaria</td>
-                  <td>VET123456</td>
-                  <td>2024-02-15</td>
-                  <td>08:00 - 16:00</td>
-                  <td style="padding: 15px; white-space: nowrap;">
-                    <a class="btn" href="editar_empleado.php?id=1">Editar</a>
-                    <a class="btn" href="eliminar_empleado.php?id=1" style="margin-left: 6px;">Eliminar</a>
-                  </td>
-                </tr>
+<?php foreach ($empleados as $e): ?>
               <tr>
-                <td>2</td>
-                <td>Carlos</td>
-                <td>Martínez Pérez</td>
-                <td>4927654321</td>
-                <td>carlos.martinez@gmail.com</td>
-                <td>Juárez</td>
-                <td>230</td>
-                <td>4</td>
-                <td>La Loma</td>
-                <td>Zacatecas</td>
-                <td>Zacatecas</td>
-                <td>98050</td>
-                <td>Veterinario</td>
-                <td>Cirugía veterinaria</td>
-                <td>VET234567</td>
-                <td>2023-08-10</td>
-                <td>10:00 - 18:00</td>
+                <td><?= $e['id_empleado'] ?></td>
+                <td><?= htmlspecialchars($e['nombre']) ?></td>
+                <td><?= htmlspecialchars($e['apellido']) ?></td>
+                <td><?= htmlspecialchars($e['telefono']) ?></td>
+                <td><?= htmlspecialchars($e['correo']) ?></td>
+                <td><?= htmlspecialchars($e['calle']) ?></td>
+                <td><?= htmlspecialchars($e['numero_exterior']) ?></td>
+                <td><?= htmlspecialchars($e['numero_interior'] ?? '') ?></td>
+                <td><?= htmlspecialchars($e['colonia']) ?></td>
+                <td><?= htmlspecialchars($e['ciudad']) ?></td>
+                <td><?= htmlspecialchars($e['estado']) ?></td>
+                <td><?= htmlspecialchars($e['codigo_postal']) ?></td>
+                <td><?= htmlspecialchars($e['puesto']) ?></td>
+                <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
+                <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
+                <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
+                <td><?= htmlspecialchars($e['horario']) ?></td>
                 <td style="padding: 15px; white-space: nowrap;">
-                  <a class="btn" href="editar_empleado.php?id=2">Editar</a>
-                  <a class="btn" href="eliminar_empleado.php?id=2" style="margin-left: 6px;">Eliminar</a>
+                  <a class="btn" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
+                  <a class="btn" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
                 </td>
               </tr>
-              <tr>
-                <td>3</td>
-                <td>María</td>
-                <td>Hernández Torres</td>
-                <td>4929876543</td>
-                <td>maria.hernandez@gmail.com</td>
-                <td>Morelos</td>
-                <td>87</td>
-                <td>1</td>
-                <td>Las Flores</td>
-                <td>Guadalupe</td>
-                <td>Zacatecas</td>
-                <td>98600</td>
-                <td>Recepcionista</td>
-                <td>Atención al cliente</td>
-                <td>N/A</td>
-                <td>2025-01-20</td>
-                <td>09:00 - 17:00</td>
-                <td style="padding: 15px; white-space: nowrap;">
-                  <a class="btn" href="editar_empleado.php?id=3">Editar</a>
-                  <a class="btn" href="eliminar_empleado.php?id=3" style="margin-left: 6px;">Eliminar</a>
-                </td>
-              </tr>
+<?php endforeach; ?>
             </tbody>
     </table>
     </div>
