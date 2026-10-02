@@ -63,16 +63,12 @@ try {
                 if ($fechaIngresada > $fechaActual) {
                     $msg = urlencode("La fecha de nacimiento no puede ser posterior a hoy.");
                     header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-                    // header('Location: ../views/editar_mascota.php');
-                    // echo "Error: La fecha de edad no puede ser una fecha despues de hoy";
                     exit;
                 }
             }
             catch (\Exception $error) {
                 $msg = urlencode("Error: la fecha de edad no es valida");
                 header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-                // header('Location: ../views/mascotas.php');
-                // echo "Error: la fecha de edad no es valida";
                 exit;
             }
         }
@@ -83,15 +79,14 @@ try {
                 $fechaActual = new DateTime('today');
                 $fechaIngresada = new DateTime($valoresFinales['ultima_desparasitacion']);
                 if ($fechaIngresada > $fechaActual) {
-                    header('Location: ../views/editar_mascota.php');
-                    // echo "Error: La fecha de la ultima desparasitacion no puede ser una fecha despues de hoy";
+                    $msg = urlencode("Error: La fecha de la ultima desparasitacion no puede ser una fecha despues de hoy");
+                    header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
                     exit;
                 }
             }
             catch (\Exception $error) {
-                header('Location: ../views/editar_mascota.php');
-                // header('Location: ../views/mascotas.php');
-                // echo "Error: la fecha de desparasitacion no es valida";
+                $msg = urlencode("Error: la fecha de desparasitacion no es valida");
+                header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
                 exit;
             }
         }
