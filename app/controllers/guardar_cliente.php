@@ -14,7 +14,7 @@ function errorSession(string $error) : null
     // $_SESSION['oldFecha'] = $_POST['fecha'];
     // $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
 
-    $_SESSION['oldClave'] = $_POST['nombre'] ?? '';
+    $_SESSION['oldnombre'] = $_POST['nombre'] ?? '';
     $_SESSION['oldApellido'] = $_POST['apellido'] ?? '';
     $_SESSION['oldFechaNacimiento'] = $_POST['fecha_nacimiento'] ?? '';
     $_SESSION['oldSexo'] = $_POST['sexo'] ?? '';
@@ -66,6 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         errorSession("El nombre del cliente es obligatorio.");
         //$errores[] = "El nombre del cliente es obligatorio.";
     } elseif (mb_strlen($nombre) > 50) {
+        errorSession("El nombre no puede exceder los 50 caracteres");
         $errores[] = "El nombre no puede exceder los 50 caracteres.";
     }
 

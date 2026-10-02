@@ -61,18 +61,22 @@ if (session_status() === PHP_SESSION_NONE) {
           <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
         </div>
       <?php endif; ?>
+      <!-- hata aqui -->
 
       <fieldset>
         <legend> Datos personales</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="nombre">Nombre:</label>
-            <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required placeholder="Ej. Juan Carlos">
+            <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required placeholder="Ej. Juan Carlos"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnombre'] ?? '')); unset($_SESSION['oldnombre']); ?>">
+            
           </div>
 
           <div>
             <label class="label-campo" for="apellido">Apellido:</label>
-            <input type="text" class="campo" id="apellido" name="apellido" maxlength="100" required placeholder="Ej. Pérez García">
+            <input type="text" class="campo" id="apellido" name="apellido" maxlength="100" required placeholder="Ej. Pérez García"
+             value="<?php echo htmlspecialchars((string)($_SESSION['oldApellido'] ?? '')); unset($_SESSION['oldApellido']); ?>">
           </div>
 
           <div>
