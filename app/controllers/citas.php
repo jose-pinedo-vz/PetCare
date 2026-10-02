@@ -22,7 +22,6 @@ function estraerDatosConsultas():array
             'atendido' => $cita['atendido']
         ];
     }
-
     return $resultados;
 }
 
@@ -33,6 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession(string $error) : null 
 {
     $_SESSION['error'] = $error;
+
     $_SESSION['oldClave'] = $_POST['claveCliente'];
     $_SESSION['oldFecha'] = $_POST['fecha'];
     $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
-    header("Location: ../views/agendarCita.php?exito=1");
+    header("Location: ../views/citas.php?exito=1");
     exit();
 
 }

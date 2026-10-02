@@ -48,7 +48,17 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
     <!-- mensaje en caso de algun error o mostrar informaicon nesesaria -->
-    
+    <?php if (isset($_SESSION['exito'])): ?>
+      <div style="background: #e8f5e9; color: #2e7d32; padding: 12px 15px; border-radius: 6px; border: 1px solid #c8e6c9; margin-bottom: 20px; font-weight: bold;">
+        <?php echo htmlspecialchars($_SESSION['exito']); unset($_SESSION['exito']); ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+      <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+      </div>
+    <?php endif; ?>
 
 
     <form id="formCita" action="../controllers/citas.php" method="POST">
