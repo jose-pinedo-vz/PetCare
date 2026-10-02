@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
-    header("Location: ../views/agendarCita.php?exito=1");
+    header("Location: ../views/citas.php?exito=1");
     exit();
 
 }
