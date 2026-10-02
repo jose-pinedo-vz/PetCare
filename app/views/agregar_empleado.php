@@ -10,11 +10,11 @@
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -22,7 +22,7 @@
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
 
@@ -45,27 +45,15 @@
 
       <fieldset>
 
-        <legend>Datos Personales</legend>
+        <legend>Datos personales</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
-          <div>
-            <label class="label-campo" for="id_empleado">
-              ID Empleado *:
-            </label>
-
-            <input
-              type="number"
-              class="campo"
-              id="id_empleado"
-              name="id_empleado"
-              required>
-          </div>
 
 
           <div>
             <label class="label-campo" for="nombre">
-              Nombre *:
+              Nombre:
             </label>
 
             <input
@@ -80,7 +68,7 @@
 
           <div>
             <label class="label-campo" for="apellido">
-              Apellido *:
+              Apellido:
             </label>
 
             <input
@@ -98,13 +86,13 @@
 
       <fieldset>
 
-        <legend>Datos de Contacto</legend>
+        <legend>Datos de contacto</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
             <label class="label-campo" for="telefono">
-              Teléfono *:
+              Teléfono:
             </label>
 
             <input
@@ -119,7 +107,7 @@
 
           <div>
             <label class="label-campo" for="correo">
-              Correo Electrónico *:
+              Correo electrónico:
             </label>
 
             <input
@@ -143,7 +131,7 @@
 
           <div>
             <label class="label-campo" for="calle">
-              Calle *:
+              Calle:
             </label>
 
             <input
@@ -158,7 +146,7 @@
 
           <div>
             <label class="label-campo" for="numero_exterior">
-              Número Exterior *:
+              Número exterior:
             </label>
 
             <input
@@ -173,7 +161,7 @@
 
           <div>
             <label class="label-campo" for="numero_interior">
-              Número Interior:
+              Número interior:
             </label>
 
             <input
@@ -187,7 +175,7 @@
 
           <div>
             <label class="label-campo" for="colonia">
-              Colonia *:
+              Colonia:
             </label>
 
             <input
@@ -202,7 +190,7 @@
 
           <div>
             <label class="label-campo" for="ciudad">
-              Ciudad *:
+              Ciudad:
             </label>
 
             <input
@@ -217,7 +205,7 @@
 
           <div>
             <label class="label-campo" for="estado">
-              Estado *:
+              Estado:
             </label>
 
             <input
@@ -232,7 +220,7 @@
 
           <div>
             <label class="label-campo" for="codigo_postal">
-              Código Postal *:
+              Código Postal:
             </label>
 
             <input
@@ -250,7 +238,7 @@
 
       <fieldset>
 
-        <legend>Información Laboral</legend>
+        <legend>Información laboral</legend>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
@@ -259,15 +247,18 @@
               Puesto *:
             </label>
 
-            <input
-              type="text"
+            <select 
               class="campo"
               id="puesto"
               name="puesto"
-              maxlength="35"
               required>
+              <option value="">Selecciona un puesto</option>
+              <option value="Gerente">Gerente</option>
+              <option value="Veterinario/a">Veterinario</option>
+              <option value="Vendedor">Vendedor</option>
+              <option value="Estilista">Estilista</option>
+            </select>
           </div>
-
 
           <div>
             <label class="label-campo" for="especialidad">
@@ -285,7 +276,7 @@
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Cédula Profesional:
+              Cédula profesional:
             </label>
 
             <input
@@ -299,7 +290,7 @@
 
           <div>
             <label class="label-campo" for="fecha_de_contratacion">
-              Fecha de Contratación:
+              Fecha de contratación:
             </label>
 
             <input
@@ -312,16 +303,18 @@
 
           <div>
             <label class="label-campo" for="horario">
-              Horario *:
+              Horario:
             </label>
 
-            <input
-              type="text"
+            <select 
               class="campo"
               id="horario"
               name="horario"
-              maxlength="20"
               required>
+              <option value="">Selecciona un horario</option>
+              <option value="Matutino">Matutino</option>
+              <option value="Vespertino">Vespertino</option>
+            </select>
           </div>
 
         </div>

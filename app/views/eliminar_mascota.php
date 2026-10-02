@@ -10,7 +10,7 @@
 
   <header>
     <div class="marca">
-      <img src="logo.png" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
@@ -22,9 +22,11 @@
   <nav>
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-
-      <li><a href="#" class="deshabilitado">Clientes</a></li>
+      <li><a href="citas.php">Citas</a></li>
+      <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
+
+
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -46,12 +48,12 @@
       <fieldset>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label class="label-campo" for="nombre_empleado">Nombre de empleado *:</label>
+            <label class="label-campo" for="nombre_empleado">Nombre de empleado:</label>
             <input type="text" class="campo" id="nombre_empleado" name="nombre_empleado" required>
           </div>
 
           <div>
-            <label class="label-campo" for="password_empleado">Contraseña *:</label>
+            <label class="label-campo" for="password_empleado">Contraseña:</label>
             <input type="password" class="campo" id="password_empleado" name="password_empleado" required>
           </div>
         </div>

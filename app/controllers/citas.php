@@ -22,7 +22,6 @@ function estraerDatosConsultas():array
             'atendido' => $cita['atendido']
         ];
     }
-
     return $resultados;
 }
 
@@ -30,9 +29,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error):null 
+function errorSession(string $error) : null 
 {
     $_SESSION['error'] = $error;
+
     $_SESSION['oldClave'] = $_POST['claveCliente'];
     $_SESSION['oldFecha'] = $_POST['fecha'];
     $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
@@ -88,13 +88,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");   
     }
 
-
-    // insercin de la cita 
-    $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
+    // insertar la cita
+    $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
     if (!$seInserto)
     {
-        errorSession("Hubo un error en la insercino de los datos.");
+        errorSession("Hubo un error al registrar la cita en la base de datos.");
     }
+    
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");

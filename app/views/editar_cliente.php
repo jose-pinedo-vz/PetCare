@@ -14,18 +14,18 @@ if (!$cliente) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veterinaria PetCare - Editar Cliente</title>
+  <title>Veterinaria PetCare - Editar cliente</title>
   <link rel="stylesheet" href="css/estilos_base.css">
 </head>
 <body>
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -33,11 +33,10 @@ if (!$cliente) {
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
-
-
       <li><a href="empleados.php">Empleados</a></li>
+
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -50,22 +49,22 @@ if (!$cliente) {
   </nav>
 
   <main>
-    <h1>Editar Cliente (#<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>)</h1>
+    <h1>Editar cliente (#<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>)</h1>
 
     <form action="../controllers/guardar_cliente.php" method="POST">
       <input type="hidden" name="id_cliente" value="<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>">
 
       <fieldset>
-        <legend>👤 Datos personales</legend>
+        <legend> Datos personales</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label class="label-campo" for="nombre">Nombre *:</label>
+            <label class="label-campo" for="nombre">Nombre:</label>
             <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required 
               value="<?php echo htmlspecialchars($cliente['nombre']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="apellido">Apellido *:</label>
+            <label class="label-campo" for="apellido">Apellido:</label>
             <input type="text" class="campo" id="apellido" name="apellido" maxlength="100" required 
               value="<?php echo htmlspecialchars($cliente['apellido']); ?>">
           </div>
@@ -95,10 +94,10 @@ if (!$cliente) {
       </fieldset>
 
       <fieldset>
-        <legend>📞 Datos de contacto</legend>
+        <legend> Datos de contacto</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label class="label-campo" for="telefono">Teléfono *:</label>
+            <label class="label-campo" for="telefono">Teléfono:</label>
             <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required 
               value="<?php echo htmlspecialchars($cliente['telefono']); ?>">
           </div>
@@ -110,7 +109,7 @@ if (!$cliente) {
           </div>
 
           <div style="grid-column: 1 / -1;">
-            <label class="label-campo" for="correo">Correo electrónico *:</label>
+            <label class="label-campo" for="correo">Correo electrónico:</label>
             <input type="email" class="campo" id="correo" name="correo" maxlength="100" required 
               value="<?php echo htmlspecialchars($cliente['correo']); ?>">
           </div>
@@ -118,16 +117,16 @@ if (!$cliente) {
       </fieldset>
 
       <fieldset>
-        <legend>🏠 Dirección / Domicilio</legend>
+        <legend> Dirección / Domicilio</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label class="label-campo" for="calle">Calle *:</label>
+            <label class="label-campo" for="calle">Calle:</label>
             <input type="text" class="campo" id="calle" name="calle" maxlength="100" required 
               value="<?php echo htmlspecialchars($cliente['calle']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="numero_exterior">Número exterior *:</label>
+            <label class="label-campo" for="numero_exterior">Número exterior:</label>
             <input type="text" class="campo" id="numero_exterior" name="numero_exterior" maxlength="15" required 
               value="<?php echo htmlspecialchars($cliente['numero_exterior']); ?>">
           </div>
@@ -139,25 +138,25 @@ if (!$cliente) {
           </div>
 
           <div>
-            <label class="label-campo" for="colonia">Colonia *:</label>
+            <label class="label-campo" for="colonia">Colonia:</label>
             <input type="text" class="campo" id="colonia" name="colonia" maxlength="60" required 
               value="<?php echo htmlspecialchars($cliente['colonia']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="codigo_postal">Código postal *:</label>
+            <label class="label-campo" for="codigo_postal">Código postal:</label>
             <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required 
               value="<?php echo htmlspecialchars($cliente['codigo_postal']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="ciudad">Ciudad *:</label>
+            <label class="label-campo" for="ciudad">Ciudad:</label>
             <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required 
               value="<?php echo htmlspecialchars($cliente['ciudad']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="estado">Estado *:</label>
+            <label class="label-campo" for="estado">Estado:</label>
             <input type="text" class="campo" id="estado" name="estado" maxlength="60" required 
               value="<?php echo htmlspecialchars($cliente['estado']); ?>">
           </div>
@@ -165,16 +164,16 @@ if (!$cliente) {
       </fieldset>
 
       <fieldset>
-        <legend>🚨 Contactos de Emergencia</legend>
+        <legend> Contactos de Emergencia</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-            <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia *:</label>
+            <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia:</label>
             <input type="text" class="campo" id="contacto_emergencia" name="contacto_emergencia" maxlength="100" required 
               value="<?php echo htmlspecialchars($cliente['contacto_emergencia']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="telefono_emergencia">Teléfono de emergencia *:</label>
+            <label class="label-campo" for="telefono_emergencia">Teléfono de emergencia:</label>
             <input type="tel" class="campo" id="telefono_emergencia" name="telefono_emergencia" maxlength="15" required 
               value="<?php echo htmlspecialchars($cliente['telefono_emergencia']); ?>">
           </div>
@@ -187,7 +186,7 @@ if (!$cliente) {
       </fieldset>
 
       <div style="margin-top: 20px;">
-        <button type="submit" class="btn">Guardar Cambios</button>
+        <button type="submit" class="btn">Guardar cambios</button>
         <a class="btn" href="clientes.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
     </form>
