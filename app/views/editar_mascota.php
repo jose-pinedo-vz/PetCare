@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Mascota.php';
 
-$idMascota = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$idMascota = filter_input(INPUT_GET, 'id_mascota', FILTER_VALIDATE_INT);
 
 if ($idMascota === false || $idMascota === null) {
     header('Location: mascotas.php');

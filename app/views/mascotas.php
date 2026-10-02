@@ -47,7 +47,7 @@
       <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
     </div>
     <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
-    <div class="table-responsive"> 
+    <div class="table-responsive">
 
     <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
       <thead>
@@ -70,8 +70,8 @@
               <td><?= htmlspecialchars($mascota['sexo']) ?></td>
               <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
               <td style="padding: 15px;">
-                <a class="btn" href="editar_mascota.php?id=<?= $mascota['id_mascota'] ?>">Editar</a>
-                <a class="btn" href="eliminar_mascota.php?id=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+                <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
+                <a class="btn" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
               </td>
             </tr>
           <?php endforeach; ?>

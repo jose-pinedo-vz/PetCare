@@ -152,7 +152,7 @@ function validacion(array $datos){
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
         $advert = Mascota::insertar($datos);
-        $advert = insertar($datos);
+        // $advert = insertar($datos);
         //$advert = insertar($datos);
         // echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
         // if($advert[0]=="Error ID"){
@@ -160,7 +160,7 @@ function validacion(array $datos){
         // }elseif($advert[0]=="Error al aguardar"){
         //     echo "<strong>Aviso al guardar en BD:</strong> " . $advert[1];
         // }else{
-        
+
         header('Location: ../views/mascotas.php');
         exit;
         //}
