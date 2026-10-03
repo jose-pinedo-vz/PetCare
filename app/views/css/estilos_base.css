@@ -288,6 +288,8 @@ td .btn:last-child {
 
 
 
+
+
 .Card_cita {
   background-color: #F0F4F9;
   border: 2px solid #E0E0E0;
@@ -321,8 +323,9 @@ td .btn:last-child {
   display: none !important;
 }
 
-#filtrado_en_espera
+#FiltroCitas
 {
+  height: 5%;
   background-color: #757575;
   border: 1px solid #E0E0E0;
   border-radius: 8px; 

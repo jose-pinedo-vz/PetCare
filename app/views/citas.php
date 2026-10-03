@@ -106,7 +106,7 @@
         <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
           <h3>Citas en espera</h3> 
-          <div id="filtrado_en_espera">
+          <div id="FiltroCitas">
               <h4>Filtrado</h4>
               <select id="filtro_espera" name="filtro_espera">
                 <option value="Hoy">Hoy</option>
