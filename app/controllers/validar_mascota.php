@@ -7,29 +7,29 @@ function validacion(array $datos, bool $actualizacion = false){
     $errores = [];
 
     // Nombre obligatorio
-    if (empty($datos['nombre'])) {
+    if (empty(trim($datos['nombre']))) {
         $errores[] = "El nombre de la mascota es obligatorio.";
     }else if (strlen($datos['nombre']) > 20) {
         $errores[] = "El nombre no puede tener mas de 20 letras";
     }
     // Especie obligatorio
-    if (empty($datos['especie'])) {
+    if (empty(trim($datos['especie']))) {
         $errores[] = "Debe especificar la especie.";
     }else if (strlen($datos['especie']) > 20) {
         $errores[] = "La especie no puede tener mas de 20 letras";
     }
     // Raza obligatorio
-    if (empty($datos['raza'])) {
+    if (empty(trim($datos['raza']))) {
         $errores[] = "Debe especificar la raza.";
     }else if (strlen($datos['raza']) > 20) {
         $errores[] = "La raza no puede tener mas de 20 letras";
     }
     // Sexo obligatorio
-    if (empty($datos['sexo'])) {
+    if (empty(trim($datos['sexo']))) {
         $errores[] = "Debe seleccionar el sexo.";
     }
     // Edad obligatoria
-    if (!empty($datos['edad'])) {
+    if (empty(trim($datos['edad']))) {
         $errores[] = "Debe especificar la edad.";
     }else{
         $fechaActual  = new DateTime('today');
@@ -39,13 +39,13 @@ function validacion(array $datos, bool $actualizacion = false){
         }
     }
     // color opcional
-    if (empty($datos['color'])) {
+    if (empty(trim($datos['color']))) {
         $datos['color'] = NULL;
     }else if (strlen($datos['color']) > 15) {
         $errores[] = "Elcolor no puede tener mas de 15 letras";
     }
     // Peso obligatorio
-    if (empty($datos['peso']) || !is_numeric($datos['peso'])) {
+    if (empty(trim($datos['peso']) || !is_numeric($datos['peso']))) {
         $errores[] = "El peso debe ser un valor numerico.";
     }else{
         $pesopunt = str_replace(',', '.', $datos['peso']);
@@ -56,11 +56,11 @@ function validacion(array $datos, bool $actualizacion = false){
         }
     }
     // Tamanio obligatorio
-    if (empty($datos['tamanio'])) {
+    if (empty(trim($datos['tamanio']))) {
         $errores[] = "Debe especificar el Tamaño.";
     }
     // Id cliente obligatorio
-    if (empty($datos['id_cliente'])) {
+    if (empty(trim($datos['id_cliente']))) {
         $errores[] = "Debe asociar un cliente válido.";
     }else {
         $datos['id_cliente'] = (int)$datos['id_cliente'];
@@ -71,7 +71,7 @@ function validacion(array $datos, bool $actualizacion = false){
     }
 
     // Id veterinario opcional
-    if (empty($datos['id_veterinario'])) {
+    if (empty(trim($datos['id_veterinario']))) {
         $datos['id_veterinario'] = NULL;
     }else {
         $datos['id_veterinario'] = (int)$datos['id_veterinario'];
@@ -81,27 +81,27 @@ function validacion(array $datos, bool $actualizacion = false){
         }
     }
     // Alergias obligatorio
-    if (empty($datos['alergias'])) {
+    if (empty(trim($datos['alergias']))) {
         $errores[] = "Debe especificar las alergias.";
     }
     // Enfermedades obligatorio
-    if (empty($datos['enfermedades'])) {
+    if (empty(trim($datos['enfermedades']))) {
         $errores[] = "Debe especificar las enfermedades.";
     }
     // Medicamentos obligatorio
-    if (empty($datos['medicamentos'])) {
+    if (empty(trim($datos['medicamentos']))) {
         $errores[] = "Debe especificar los medicamentos.";
     }
     // Condiciones especiales obligatorio
-    if (empty($datos['condiciones_especiales'])) {
+    if (empty(trim($datos['condiciones_especiales']))) {
         $errores[] = "Debe especificar las condiciones especiales.";
     }
     // Vacunas Opcional
-    if (empty($datos['vacunas'])) {
+    if (empty(trim($datos['vacunas']))) {
         $datos['vacunas'] = null;
     }
     // Ultima Desaparasitacion obligatorio
-    if (empty($datos['ultima_desparasitacion'])) {
+    if (empty(trim($datos['ultima_desparasitacion']))) {
         $errores[] = "Debe especificar la ultima desaparasitación.";
     }else{
         $fechaActual  = new DateTime('today');
@@ -112,15 +112,15 @@ function validacion(array $datos, bool $actualizacion = false){
     }
 
     //temperamento Opcional
-    if (empty($datos['temperamento'])) {
+    if (empty(trim($datos['temperamento']))) {
         $datos['temperamento'] = null;
     }
     //restricciones para manejo Opcional
-    if (empty($datos['restricciones_para_manejo'])) {
+    if (empty(trim($datos['restricciones_para_manejo']))) {
         $datos['restricciones_para_manejo'] = null;
     }
     //observaciones Opcional
-    if (empty($datos['observaciones'])) {
+    if (empty(trim($datos['observaciones']))) {
         $datos['observaciones'] = null;
     }
 
@@ -146,18 +146,24 @@ function validacion(array $datos, bool $actualizacion = false){
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
-        echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
-        echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
-        foreach ($errores as $error) {
-            echo "<li>$error</li>";
-        }
-        echo "</ul>";
-        echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
-        echo "</div>";
+        $msg = urlencode(implode(' | ', $errores));
+        header("Location: ../views/agregar_mascota.php?error={$msg}");
+        exit;
+
+        // header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+        // echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
+        // echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
+        // foreach ($errores as $error) {
+        //     echo "<li>$error</li>";
+        // }
+        // echo "</ul>";
+        // echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
+        // echo "</div>";
 
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
         $advert = Mascota::insertar($datos);
+
         //$advert = insertar($datos);
 
         //$advert = insertar($datos);
