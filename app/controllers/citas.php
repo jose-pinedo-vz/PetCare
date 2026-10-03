@@ -88,15 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");   
     }
 
-<<<<<<< HEAD
-    // insertar la cita
-    $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
-    if (!$seInserto)
-    {
-        errorSession("Hubo un error al registrar la cita en la base de datos.");
-    }
-    
-=======
 
     // insercin de la cita 
     $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
@@ -104,7 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     {
         errorSession("Hubo un error en la insercino de los datos.");
     }
->>>>>>> 5e97e13c32e0f7695cb83cb4cf6aad155887e428
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");
