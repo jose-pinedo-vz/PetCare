@@ -1,6 +1,8 @@
 <?php
 
-function validacion(array $datos){
+date_default_timezone_set('America/Mexico_City');
+
+function validacion(array $datos, bool $actualizacion = false){
 
     $errores = [];
 
@@ -27,7 +29,7 @@ function validacion(array $datos){
         $errores[] = "Debe seleccionar el sexo.";
     }
     // Edad obligatoria
-    if (empty($datos['edad'])) {
+    if (!empty($datos['edad'])) {
         $errores[] = "Debe especificar la edad.";
     }else{
         $fechaActual  = new DateTime('today');
@@ -120,6 +122,10 @@ function validacion(array $datos){
     //observaciones Opcional
     if (empty($datos['observaciones'])) {
         $datos['observaciones'] = null;
+    }
+
+    if ($actualizacion) {
+        return $errores;
     }
 
     // subida de la imagen usando el controlador ImagenController

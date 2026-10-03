@@ -11,7 +11,7 @@ function estraerDatosConsultas():array
     $resultados = [];
     $consultasCitas = new ConexionesClientes();
     $datos = $consultasCitas->datosCitas();
-    
+
     foreach ($datos as $cita)
     {
         $resultados[] =
@@ -29,7 +29,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error) : null 
+function errorSession(string $error) : null
 {
     $_SESSION['error'] = $error;
 
@@ -41,14 +41,14 @@ function errorSession(string $error) : null
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") 
+if ($_SERVER["REQUEST_METHOD"] === "POST")
 {
     $claveCliente = trim($_POST['claveCliente'] ?? '');
     $fecha = trim($_POST['fecha'] ?? '');
     $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
 
     // validar campos obligatorios
-    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "") 
+    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "")
     {
         errorSession("Todos los campos marcados con asterisco son obligatorios.");
     }
@@ -61,50 +61,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
     // validar formato correcto de la fecha (YYYY-MM-DD)
     $d = DateTime::createFromFormat('Y-m-d', $fecha);
-    if (!$d || $d->format('Y-m-d') !== $fecha) 
+    if (!$d || $d->format('Y-m-d') !== $fecha)
     {
         errorSession("El formato de la fecha no es válido.");
     }
 
     // validar que no sea fecha pasada
     $fechaActual = date('Y-m-d');
-    if ($fecha < $fechaActual) 
+    if ($fecha < $fechaActual)
     {
-        errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");   
+        errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");
     }
 
     // verificar que el cliente exista en la base de datos
     $consultasCitas = new ConexionesClientes();
     $clienteExiste = $consultasCitas->consultarIdCliente((int)$claveCliente);
-    if (!$clienteExiste) 
+    if (!$clienteExiste)
     {
-        errorSession("El cliente con clave #$claveCliente no se encuentra registrado en el sistema. Registre al cliente primero.");   
+        errorSession("El cliente con clave #$claveCliente no se encuentra registrado en el sistema. Registre al cliente primero.");
     }
 
     // Longitud minima y maxima
     $longitud = mb_strlen($motivoConsulta);
-    if ($longitud < 5 || $longitud > 250) 
+    if ($longitud < 5 || $longitud > 250)
     {
-        errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");   
+        errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");
     }
 
-<<<<<<< HEAD
     // insertar la cita
     $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
     if (!$seInserto)
     {
         errorSession("Hubo un error al registrar la cita en la base de datos.");
     }
-    
-=======
 
-    // insercin de la cita 
+
+    // insercin de la cita
     $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
     if (!$seInserto)
     {
         errorSession("Hubo un error en la insercino de los datos.");
     }
->>>>>>> 5e97e13c32e0f7695cb83cb4cf6aad155887e428
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");

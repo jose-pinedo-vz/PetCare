@@ -2,6 +2,8 @@
 
 // la direccion del archivo que conecta la base de datos
 require __DIR__ . '/../models/conexion_db.php';
+require_once __DIR__ . '/../controllers/validar_mascota.php';
+require_once __DIR__ . '/../controllers/ImagenController.php';
 
 date_default_timezone_set('America/Mexico_City');
 
@@ -55,41 +57,49 @@ try {
             $valoresFinales[$campo] = !empty($_POST[$campo]) ? $_POST[$campo] : $datosActuales[$campo];
         }
 
-        // edad
-        if (!empty($valoresFinales['edad'])) {
-            try {
-                $fechaActual = new DateTime('today');
-                $fechaIngresada = new DateTime($valoresFinales['edad']);
-                if ($fechaIngresada > $fechaActual) {
-                    $msg = urlencode("La fecha de nacimiento no puede ser posterior a hoy.");
-                    header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-                    exit;
-                }
-            }
-            catch (\Exception $error) {
-                $msg = urlencode("Error: la fecha de edad no es valida");
-                header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-                exit;
-            }
-        }
 
-        // ultima desparasitacion
-        if (!empty($valoresFinales['ultima_desparasitacion'])) {
-            try {
-                $fechaActual = new DateTime('today');
-                $fechaIngresada = new DateTime($valoresFinales['ultima_desparasitacion']);
-                if ($fechaIngresada > $fechaActual) {
-                    $msg = urlencode("Error: La fecha de la ultima desparasitacion no puede ser una fecha despues de hoy");
-                    header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-                    exit;
-                }
-            }
-            catch (\Exception $error) {
-                $msg = urlencode("Error: la fecha de desparasitacion no es valida");
-                header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-                exit;
-            }
+        $errores = validacion($valoresFinales, true);
+
+        if (count($errores) > 0) {
+            $msg = urlencode(implode(' | ', $errores));
+            header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+            exit;
         }
+        // edad
+//         if (!empty($valoresFinales['edad'])) {
+//             try {
+//                 $fechaActual = new DateTime('today');
+//                 $fechaIngresada = new DateTime($valoresFinales['edad']);
+//                 if ($fechaIngresada > $fechaActual) {
+//                     $msg = urlencode("La fecha de nacimiento no puede ser posterior a hoy.");
+//                     header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+//                     exit;
+//                 }
+//             }
+//             catch (\Exception $error) {
+//                 $msg = urlencode("Error: la fecha de edad no es valida");
+//                 header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+//                 exit;
+//             }
+//         }
+//
+//         // ultima desparasitacion
+//         if (!empty($valoresFinales['ultima_desparasitacion'])) {
+//             try {
+//                 $fechaActual = new DateTime('today');
+//                 $fechaIngresada = new DateTime($valoresFinales['ultima_desparasitacion']);
+//                 if ($fechaIngresada > $fechaActual) {
+//                     $msg = urlencode("Error: La fecha de la ultima desparasitacion no puede ser una fecha despues de hoy");
+//                     header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+//                     exit;
+//                 }
+//             }
+//             catch (\Exception $error) {
+//                 $msg = urlencode("Error: la fecha de desparasitacion no es valida");
+//                 header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+//                 exit;
+//             }
+//         }
 
         // la foto se agrega al final por si no se cambio (se envia por $_FILE)
         $valoresFinales['fotografia'] = $datosActuales['fotografia'];
@@ -102,7 +112,6 @@ try {
         if (!empty($_FILES['fotografia']['name']) && $_FILES['fotografia']['error'] !== UPLOAD_ERR_NO_FILE) {
 
             // carga el 'filtro para subir imagenes' y la guarda si es correcta
-            require_once __DIR__ . '/../controllers/ImagenController.php';
             $resultadoImagen = ImagenController::subir($_FILES['fotografia']);
 
             if ($resultadoImagen['exito']) {
