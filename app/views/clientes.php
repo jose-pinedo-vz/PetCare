@@ -14,11 +14,11 @@ $listaClientes = Cliente::obtenerTodos();
 
   <header>
     <div class="marca">
-      <img src="img/logo.svg" alt="Veterinaria PetCare">
+      <img src="img/logo3.svg" alt="Veterinaria PetCare">
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
+      <span>Empleado: Nombre del empleado</span>
       <a href="#">Cerrar sesión</a>
     </div>
   </header>
@@ -26,11 +26,10 @@ $listaClientes = Cliente::obtenerTodos();
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
-
-
       <li><a href="empleados.php">Empleados</a></li>
+
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -43,7 +42,7 @@ $listaClientes = Cliente::obtenerTodos();
   </nav>
 
   <main>
-    <h1>Módulo de Clientes</h1>
+    <h1>Módulo de clientes</h1>
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
@@ -56,34 +55,42 @@ $listaClientes = Cliente::obtenerTodos();
         <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
       </div>
     <?php else: ?>
-      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
-        <thead>
-          <tr style="background: #f5f5f5;">
-            <th style="padding: 10px;">ID</th>
-            <th style="padding: 10px;">Nombre</th>
-            <th style="padding: 10px;">Teléfono</th>
-            <th style="padding: 10px;">Correo</th>
-            <th style="padding: 10px;">Ciudad / Estado</th>
-            <th style="padding: 10px; text-align: center;">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($listaClientes as $c): ?>
-            <tr>
-              <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
-              <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
-              <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
-              <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
-              <td style="padding: 10px;"><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-              <td style="padding: 10px; text-align: center;">
-                <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
-                <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #2196F3; margin-left: 5px;">+ Mascota</a>
-                <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #ff9800; margin-left: 5px;">+ Cita</a>
-              </td>
+      
+      <!-- INICIA CONTENEDOR RESPONSIVE -->
+      <div class="table-responsive">
+        <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
+          <thead>
+            <tr style="background: #f5f5f5;">
+              <th style="padding: 10px;">ID</th>
+              <th style="padding: 10px;">Nombre</th>
+              <th style="padding: 10px;">Teléfono</th>
+              <th style="padding: 10px;">Correo</th>
+              <th style="padding: 10px;">Ciudad / Estado</th>
+              <th style="padding: 10px; text-align: center;">Acciones</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($listaClientes as $c): ?>
+              <tr>
+                <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
+                
+                <!-- Celda de acciones con white-space: nowrap; -->
+                <td style="padding: 10px; text-align: center; white-space: nowrap;">
+                  <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
+                  <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #2196F3;">+ Mascota</a>
+                  <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #ff9800;">+ Cita</a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div> 
+      <!-- TERMINA CONTENEDOR RESPONSIVE -->
+
     <?php endif; ?>
   </main>
 

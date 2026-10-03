@@ -22,7 +22,6 @@ function estraerDatosConsultas():array
             'atendido' => $cita['atendido']
         ];
     }
-
     return $resultados;
 }
 
@@ -30,9 +29,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error):null 
+function errorSession(string $error) : null 
 {
     $_SESSION['error'] = $error;
+
     $_SESSION['oldClave'] = $_POST['claveCliente'];
     $_SESSION['oldFecha'] = $_POST['fecha'];
     $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];

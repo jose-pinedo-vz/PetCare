@@ -2,7 +2,8 @@
 
 // la direccion del archivo que conecta la base de datos
 require __DIR__ . '/../models/conexion_db.php';
-// include error_reporting(E_ALL); ini_set('display_errors', 1);
+
+date_default_timezone_set('America/Mexico_City');
 
 try {
 
@@ -52,6 +53,42 @@ try {
         foreach ($camposEditables as $campo) {
             // $valoresFinales[$campo] = isset($_POST[$campo]) ? $_POST[$campo] : $datosActuales[$campo];
             $valoresFinales[$campo] = !empty($_POST[$campo]) ? $_POST[$campo] : $datosActuales[$campo];
+        }
+
+        // edad
+        if (!empty($valoresFinales['edad'])) {
+            try {
+                $fechaActual = new DateTime('today');
+                $fechaIngresada = new DateTime($valoresFinales['edad']);
+                if ($fechaIngresada > $fechaActual) {
+                    $msg = urlencode("La fecha de nacimiento no puede ser posterior a hoy.");
+                    header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+                    exit;
+                }
+            }
+            catch (\Exception $error) {
+                $msg = urlencode("Error: la fecha de edad no es valida");
+                header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+                exit;
+            }
+        }
+
+        // ultima desparasitacion
+        if (!empty($valoresFinales['ultima_desparasitacion'])) {
+            try {
+                $fechaActual = new DateTime('today');
+                $fechaIngresada = new DateTime($valoresFinales['ultima_desparasitacion']);
+                if ($fechaIngresada > $fechaActual) {
+                    $msg = urlencode("Error: La fecha de la ultima desparasitacion no puede ser una fecha despues de hoy");
+                    header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+                    exit;
+                }
+            }
+            catch (\Exception $error) {
+                $msg = urlencode("Error: la fecha de desparasitacion no es valida");
+                header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+                exit;
+            }
         }
 
         // la foto se agrega al final por si no se cambio (se envia por $_FILE)

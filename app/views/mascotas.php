@@ -15,7 +15,7 @@
 
   <header>
     <div class="marca">
-      <img src="./img/logo.svg" alt="Veterinaria PetCare">
+      <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
     <div class="sesion">
       <span>Empleado: Nombre del Empleado</span>
@@ -26,11 +26,10 @@
   <nav>
     <ul>
       <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php">citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
-
-
       <li><a href="empleados.php">Empleados</a></li>
+
       <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
@@ -43,10 +42,13 @@
   </nav>
 
   <main>
-    <h1>Módulo de Mascotas</h1>
+    <h1>Módulo de mascotas</h1>
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
     </div>
+    <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
+    <div class="table-responsive">
+
     <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
       <thead>
         <tr>
@@ -68,8 +70,8 @@
               <td><?= htmlspecialchars($mascota['sexo']) ?></td>
               <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
               <td style="padding: 15px;">
-                <a class="btn" href="editar_mascota.php?id=<?= $mascota['id_mascota'] ?>">Editar</a>
-                <a class="btn" href="eliminar_mascota.php?id=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+                <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
+                <a class="btn" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -78,6 +80,8 @@
         <?php endif; ?>
       </tbody>
     </table>
+
+    </div> <!-- AQUÍ TERMINA EL CONTENEDOR RESPONSIVE -->
   </main>
 
   <footer>
