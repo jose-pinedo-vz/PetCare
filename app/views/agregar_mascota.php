@@ -1,3 +1,16 @@
+<?php
+// Iniciar la sesión al principio
+session_start();
+
+// Obtener errores y datos enviados previamente (si existen)
+$errores = $_SESSION['errores'] ?? [];
+$old     = $_SESSION['old'] ?? [];
+
+// Limpiar la sesión para que las alertas no reaparezcan al recargar
+unset($_SESSION['errores']);
+unset($_SESSION['old']);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,6 +24,24 @@
     #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
     #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
     #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
+
+    /* Estilo para el contenedor de errores */
+    .alerta-errores {
+      background-color: #f8d7da;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .alerta-errores h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    .alerta-errores ul {
+      margin: 0;
+      padding-left: 20px;
+    }
   </style>
 </head>
 <body>
@@ -47,12 +78,16 @@
   <main>
     <h1>Registrar mascota</h1>
 
-    <!--poner el error de jose-->
-
-    <?php if (isset($_SESSION['error'])): ?>
-    <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
-        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
-    </div>
+    <!-- BLOQUE DE ALERTAS: Muestra los errores guardados en la sesión -->
+    <?php if (!empty($errores)): ?>
+      <div class="alerta-errores">
+        <h4>Por favor corrige los siguientes errores:</h4>
+        <ul>
+          <?php foreach ($errores as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
     <?php endif; ?>
 
     <form action="guardar_mascota.php" method="POST" enctype="multipart/form-data">
@@ -63,61 +98,62 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div>
                 <label class="label-campo" class="label-campo" for="nombre" >Nombre:</label>
-                <input type="text" class="campo" id="nombre" name="nombre" required >
+                <input type="text" class="campo" id="nombre" name="nombre" value="<?= htmlspecialchars($old['nombre'] ?? '') ?>" required >
               </div>
 
               <div>
                 <label class="label-campo" for="especie" >Especie:</label>
-                <input type="text" class="campo" id="especie" name="especie" placeholder="Ej. Perro, Gato" required >
+                <input type="text" class="campo" id="especie" name="especie" placeholder="Ej. Perro, Gato" value="<?= htmlspecialchars($old['especie'] ?? '') ?>" required >
               </div>
 
               <div>
                 <label class="label-campo" for="raza" >Raza:</label>
-                <input type="text" class="campo" id="raza" name="raza" >
+                <input type="text" class="campo" id="raza" name="raza" value="<?= htmlspecialchars($old['raza'] ?? '') ?>" >
               </div>
 
               <div>
                 <label class="label-campo" for="sexo" >Sexo:</label>
                 <select class="campo" id="sexo" name="sexo" required >
-                  <option value="Macho">Macho</option>
-                  <option value="Hembra">Hembra</option>
+                  <option value="Macho" <?= ($old['sexo'] ?? '') === 'Macho' ? 'selected' : '' ?>>Macho</option>
+                  <option value="Hembra" <?= ($old['sexo'] ?? '') === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
                 </select>
               </div>
 
               <div>
                 <label class="label-campo" for="edad" >Edad / Fecha nacimiento:</label>
-                <input type="date" class="campo" id="edad" name="edad" required >
+                <input type="date" class="campo" id="edad" name="edad" value="<?= htmlspecialchars($old['edad'] ?? '') ?>" required >
               </div>
 
               <div>
                 <label class="label-campo" for="color" >Color:</label>
-                <input type="text" class="campo" id="color" name="color" >
+                <input type="text" class="campo" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? '') ?>">
               </div>
 
               <div>
                 <label class="label-campo" for="peso" >Peso (kg):</label>
-                <input type="number" step="0.01" class="campo" id="peso" name="peso" >
+                <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
               </div>
 
               <div>
                 <label class="label-campo" for="tamanio" >Tamaño:</label>
+                <?php $tam = $old['tamanio'] ?? ''; ?>
                 <select class="campo" id="tamanio" name="tamanio" >
                   <option value="">Seleccionar...</option>
-                  <option value="Pequeño">Pequeño</option>
-                  <option value="Mediano">Mediano</option>
-                  <option value="Grande">Grande</option>
-                  <option value="Gigante">Gigante</option>
+                  <option value="Pequeño" <?= $tam === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
+                  <option value="Mediano" <?= $tam === 'Mediano' ? 'selected' : '' ?>>Mediano</option>
+                  <option value="Grande" <?= $tam === 'Grande' ? 'selected' : '' ?>>Grande</option>
+                  <option value="Gigante" <?= $tam === 'Gigante' ? 'selected' : '' ?>>Gigante</option>
                 </select>
               </div>
 
               <div>
                 <label class="label-campo" for="id_cliente" >Dueño (ID cliente):</label>
-                <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?php echo htmlspecialchars((string)($_GET['id_cliente'] ?? '')); ?>" >
+                <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?= htmlspecialchars($old['id_cliente'] ?? '') ?>" >
               </div>
 
               <div>
                 <label class="label-campo" for="id_veterinario" >Veterinario asignado (ID):</label>
-                <input type="number" class="campo" id="id_veterinario" name="id_veterinario" placeholder="ID del Veterinario" >
+                <input type="number" class="campo" id="id_veterinario" name="id_veterinario" placeholder="ID del Veterinario" value="<?= htmlspecialchars($old['id_veterinario'] ?? '') ?>">
               </div>
             </div>
 
@@ -147,47 +183,47 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
               <div>
                 <label class="label-campo" for="alergias" >Alergias:</label>
-                <textarea class="campo" id="alergias" name="alergias" rows="2" ></textarea>
+                <textarea class="campo" id="alergias" name="alergias" rows="2" ><?= htmlspecialchars($old['alergias'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo" for="enfermedades" >Enfermedades:</label>
-                <textarea class="campo" id="enfermedades" name="enfermedades" rows="2" ></textarea>
+                <textarea class="campo" id="enfermedades" name="enfermedades" rows="2" ><?= htmlspecialchars($old['enfermedades'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo" for="medicamentos" >Medicamentos:</label>
-                <textarea class="campo" id="medicamentos" name="medicamentos" rows="2" ></textarea>
+                <textarea class="campo" id="medicamentos" name="medicamentos" rows="2" ><?= htmlspecialchars($old['medicamentos'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo" for="condiciones_especiales" >Condiciones especiales:</label>
-                <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2" ></textarea>
+                <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2" ><?= htmlspecialchars($old['condiciones_especiales'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo" for="vacunas" >Vacunas:</label>
-                <textarea class="campo" id="vacunas" name="vacunas" rows="2" ></textarea>
+                <textarea class="campo" id="vacunas" name="vacunas" rows="2" ><?= htmlspecialchars($old['vacunas'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo" for="ultima_desparasitacion" >Última desparasitación:</label>
-                <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" >
+                <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= htmlspecialchars($old['ultima_desparasitacion'] ?? '') ?>">
               </div>
 
               <div>
                 <label class="label-campo" for="temperamento">Temperamento:</label>
-                <textarea class="campo" id="temperamento" name="temperamento" rows="2" placeholder="Ej. Dócil, juguetón, tímido"></textarea>
+                <textarea class="campo" id="temperamento" name="temperamento" rows="2" placeholder="Ej. Dócil, juguetón, tímido"><?= htmlspecialchars($old['temperamento'] ?? '') ?></textarea>
               </div>
 
               <div>
                 <label class="label-campo" for="restricciones_para_manejo">Restricciones para manejo:</label>
-                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2" placeholder="Ej. Cuidado con las patas"></textarea>
+                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2" placeholder="Ej. Cuidado con las patas"><?= htmlspecialchars($old['restricciones_para_manejo'] ?? '') ?></textarea>
               </div>
 
               <div style="grid-column: 1 / -1;">
                 <label class="label-campo" for="observaciones">Observaciones:</label>
-                <textarea class="campo" id="observaciones" name="observaciones" rows="2" placeholder="Observaciones generales"></textarea>
+                <textarea class="campo" id="observaciones" name="observaciones" rows="2" placeholder="Observaciones generales"><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
               </div>
             </div>
           </fieldset>
