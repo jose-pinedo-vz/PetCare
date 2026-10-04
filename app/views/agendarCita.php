@@ -71,7 +71,6 @@ if (session_status() === PHP_SESSION_NONE) {
             <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? '')); unset($_SESSION['oldClave']); ?>">
-
           </div>
 
           <div>
