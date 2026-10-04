@@ -95,7 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("Hubo un error al registrar la cita en la base de datos.");
     }
 
-
     // insercin de la cita
     $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
     if (!$seInserto)

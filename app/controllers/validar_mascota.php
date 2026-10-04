@@ -35,7 +35,7 @@ function validacion(array $datos, bool $actualizacion = false){
         $fechaActual  = new DateTime('today');
         $fechaIngresada = new DateTime($datos['edad']);
         if ($fechaIngresada > $fechaActual) {
-            $errores[] = "Edad: No puede ser una fechadespues de hoy.";
+            $errores[] = "Edad: No puede ser una fecha despues de hoy.";
         }
     }
     // color opcional
@@ -45,7 +45,8 @@ function validacion(array $datos, bool $actualizacion = false){
         $errores[] = "Elcolor no puede tener mas de 15 letras";
     }
     // Peso obligatorio
-    if (empty(trim($datos['peso']) || !is_numeric($datos['peso']))) {
+    // if (empty(trim($datos['peso']) || !is_numeric($datos['peso']))) {
+    if (trim((string)$datos['peso']) === '' || !is_numeric($datos['peso'])) {
         $errores[] = "El peso debe ser un valor numerico.";
     }else{
         $pesopunt = str_replace(',', '.', $datos['peso']);
@@ -107,7 +108,7 @@ function validacion(array $datos, bool $actualizacion = false){
         $fechaActual  = new DateTime('today');
         $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
         if ($fechaIngresada > $fechaActual) {
-            $errores[] = "Desparasitación: No puede ser una fechadespues de hoy.";
+            $errores[] = "Desparasitación: No puede ser una fecha despues de hoy.";
         }
     }
 
