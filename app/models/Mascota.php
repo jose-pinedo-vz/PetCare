@@ -75,7 +75,7 @@ function insertar(array $datos) {
     } catch (PDOException $e) {
     
         if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1452) {
-            return ["Error ID",null];
+            return ["Error ID"];
         } else {
             return["Error al aguardar",htmlspecialchars($e->getMessage())];
         }
@@ -140,8 +140,8 @@ class Mascota {
     public static function obtenerPorId(int $id): ?array {
         return obtenerMascotaPorId($id);
     }
-    public static function insertar(array $datos): void {
-        insertar($datos);
+    public static function insertar(array $datos){
+        return insertar($datos);
     }
     public static function eliminar(int $id): bool {
         return eliminar($id);

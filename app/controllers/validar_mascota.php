@@ -3,6 +3,11 @@
 date_default_timezone_set('America/Mexico_City');
 
 function validacion(array $datos, bool $actualizacion = false){
+    session_start();
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
     $errores = [];
 
@@ -31,11 +36,15 @@ function validacion(array $datos, bool $actualizacion = false){
     // Edad obligatoria
     if (empty(trim($datos['edad']))) {
         $errores[] = "Debe especificar la edad.";
-    }else{
-        $fechaActual  = new DateTime('today');
-        $fechaIngresada = new DateTime($datos['edad']);
-        if ($fechaIngresada > $fechaActual) {
-            $errores[] = "Edad: No puede ser una fechadespues de hoy.";
+    } else {
+        try {
+            $fechaActual    = new DateTime('today');
+            $fechaIngresada = new DateTime($datos['edad']);
+            if ($fechaIngresada > $fechaActual) {
+                $errores[] = "Edad: No puede ser una fecha posterior a hoy.";
+            }
+        } catch (Exception $e) {
+            $errores[] = "Edad: Formato de fecha no válido.";
         }
     }
     // color opcional
@@ -45,14 +54,13 @@ function validacion(array $datos, bool $actualizacion = false){
         $errores[] = "Elcolor no puede tener mas de 15 letras";
     }
     // Peso obligatorio
-    if (empty(trim($datos['peso']) || !is_numeric($datos['peso']))) {
-        $errores[] = "El peso debe ser un valor numerico.";
-    }else{
-        $pesopunt = str_replace(',', '.', $datos['peso']);
-        $datos['peso'] = (float)$pesopunt;
-
-        if ($datos['peso'] <= 0){
-            $errores[] = "El peso debe ser un numero mayor a 0 (ejemplo: 5.5).";
+    $pesoLimpio = str_replace(',', '.', $datos['peso'] ?? '');
+    if (empty(trim($datos['peso'])) || !is_numeric($pesoLimpio)) {
+        $errores[] = "El peso debe ser un valor numérico.";
+    } else {
+        $datos['peso'] = (float)$pesoLimpio;
+        if ($datos['peso'] <= 0) {
+            $errores[] = "El peso debe ser un número mayor a 0 (ejemplo: 5.5).";
         }
     }
     // Tamanio obligatorio
@@ -102,12 +110,16 @@ function validacion(array $datos, bool $actualizacion = false){
     }
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
-        $errores[] = "Debe especificar la ultima desaparasitación.";
-    }else{
-        $fechaActual  = new DateTime('today');
-        $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
-        if ($fechaIngresada > $fechaActual) {
-            $errores[] = "Desparasitación: No puede ser una fechadespues de hoy.";
+        $errores[] = "Debe especificar la última desparasitación.";
+    } else {
+        try {
+            $fechaActual    = new DateTime('today');
+            $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
+            if ($fechaIngresada > $fechaActual) {
+                $errores[] = "Desparasitación: No puede ser una fecha posterior a hoy.";
+            }
+        } catch (Exception $e) {
+            $errores[] = "Desparasitación: Formato de fecha no válido.";
         }
     }
 
@@ -146,37 +158,31 @@ function validacion(array $datos, bool $actualizacion = false){
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
-        $msg = urlencode(implode(' | ', $errores));
-        header("Location: ../views/agregar_mascota.php?error={$msg}");
-        exit;
+        $_SESSION['errores'] = $errores;
+        $_SESSION['old']     = $datos;
 
-        // header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-        // echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
-        // echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
-        // foreach ($errores as $error) {
-        //     echo "<li>$error</li>";
-        // }
-        // echo "</ul>";
-        // echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
-        // echo "</div>";
+        header("Location: ../views/agregar_mascota.php");
+        exit;
 
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
         $advert = Mascota::insertar($datos);
 
-        //$advert = insertar($datos);
+        if (is_array($advert) && count($advert) > 0) {
+            if ($advert[0] === "Error ID") {
+                $_SESSION['errores'] = ["El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario no existen en el sistema."];
+            } else if($advert[0] === "Error al aguardar") {
+                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+            }
+            $_SESSION['old'] = $datos;
 
-        //$advert = insertar($datos);
-        // echo "<div style='font-family: Arial, sans-serif; padding: 12px 15px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; max-width: 600px; margin: 10px auto;'>";
-        // if($advert[0]=="Error ID"){
-        //     echo "<strong>Aviso de Base de Datos:</strong> El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario (ID: " . htmlspecialchars((string)($datos['id_veterinario'] ?? '')) . ") no existen en sus respectivas tablas. Se requiere que existan previamente para poder vincular la mascota.";
-        // }elseif($advert[0]=="Error al aguardar"){
-        //     echo "<strong>Aviso al guardar en BD:</strong> " . $advert[1];
-        // }else{
-
-        header('Location: ../views/mascotas.php');
-        exit;
-        //}
+            header("Location: ../views/agregar_mascota.php");
+            exit;
+        } else {
+            // Éxito: redirige a la lista de mascotas
+            header('Location: ../views/mascotas.php');
+            exit;
+        }
 
 
     }
