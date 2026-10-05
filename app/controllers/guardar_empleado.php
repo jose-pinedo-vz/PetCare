@@ -3,7 +3,7 @@ require_once __DIR__ . '/../controllers/validar_empleados.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $datos = [
-        $nombre = htmlspecialchars(trim($_POST['nombre'] ?? ''));
+        $nombre = htmlspecialchars(trim($_POST['nombre'] ?? '')),
         $apellido = htmlspecialchars(trim($_POST['apellido'] ?? ''));
         $telefono = htmlspecialchars(trim($_POST['telefono'] ?? ''));
         $correo = htmlspecialchars(trim($_POST['correo'] ?? ''));
@@ -24,8 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     validacion($datos);
 
     if ($errores) {
-            header("Location: agregar_empleado.php");
-            exit;
+        header("Location: agregar_empleado.php");
+        exit;
     }
 
 }

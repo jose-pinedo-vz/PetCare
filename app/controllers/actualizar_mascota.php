@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 // la direccion del archivo que conecta la base de datos
 require __DIR__ . '/../models/conexion_db.php';
+require_once __DIR__ . '/../models/Mascota.php';
 require_once __DIR__ . '/../controllers/validar_mascota.php';
 require_once __DIR__ . '/../controllers/ImagenController.php';
 
@@ -93,14 +94,11 @@ try {
             $valoresFinales[$campo] = array_key_exists($campo, $_POST) ? trim((string) $_POST[$campo]) : $datosActuales[$campo];
         }
 
-
         $errores = validacion($valoresFinales, true);
 
         if (count($errores) > 0) {
             $msg = implode(' | ', $errores);
             errorSession($msg);
-            // $msg = urlencode(implode(' | ', $errores));
-            // header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
             exit;
         }
 
@@ -117,42 +115,6 @@ try {
                 $valoresFinales[$campo] = null;
             }
         }
-
-        // edad
-//         if (!empty($valoresFinales['edad'])) {
-//             try {
-//                 $fechaActual = new DateTime('today');
-//                 $fechaIngresada = new DateTime($valoresFinales['edad']);
-//                 if ($fechaIngresada > $fechaActual) {
-//                     $msg = urlencode("La fecha de nacimiento no puede ser posterior a hoy.");
-//                     header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-//                     exit;
-//                 }
-//             }
-//             catch (\Exception $error) {
-//                 $msg = urlencode("Error: la fecha de edad no es valida");
-//                 header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-//                 exit;
-//             }
-//         }
-//
-//         // ultima desparasitacion
-//         if (!empty($valoresFinales['ultima_desparasitacion'])) {
-//             try {
-//                 $fechaActual = new DateTime('today');
-//                 $fechaIngresada = new DateTime($valoresFinales['ultima_desparasitacion']);
-//                 if ($fechaIngresada > $fechaActual) {
-//                     $msg = urlencode("Error: La fecha de la ultima desparasitacion no puede ser una fecha despues de hoy");
-//                     header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-//                     exit;
-//                 }
-//             }
-//             catch (\Exception $error) {
-//                 $msg = urlencode("Error: la fecha de desparasitacion no es valida");
-//                 header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-//                 exit;
-//             }
-//         }
 
         // la foto se agrega al final por si no se cambio (se envia por $_FILE)
         $valoresFinales['fotografia'] = $datosActuales['fotografia'];
@@ -190,17 +152,7 @@ try {
         // implode (', ', resultado de array_map) = pega en una string el resultado de array_map y lo separa con una ,
         $sets = implode(', ', array_map( fn($camposEdi) => "$camposEdi = ?", $camposEditables) );
 
-        // consulta
-        $sqlActualizacion = "
-            UPDATE mascotas
-            SET $sets
-            WHERE id_mascota = ?
-        ";
-        $sentenciaActualizacion = $conexion -> prepare($sqlActualizacion); // prepara la consulta escrita antes
-
-        // array_values() = toma el arreglo le quita las llaves ej. 'nombre' por un valor enumerado desde 0 hasta el final
-        // [... arreglo enumerado, el id de la mascota] = los ... desarman los valores uno por uno dentro de otro arreglo y al final agrega el id de la mascota
-        $sentenciaActualizacion -> execute([...array_values($valoresFinales), $idMascota]);
+        $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
 
         // echo "Informacion de mascota actualizada correctamente";
         header('Location: ../views/mascotas.php');
