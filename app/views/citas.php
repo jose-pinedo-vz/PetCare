@@ -1,4 +1,14 @@
-<?php  require_once __DIR__ . '/../controllers/citas.php'; ?>
+<?php  require_once __DIR__ . '/../controllers/citas.php'; 
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: /PetCare/app/views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+?>
 
 
 <!-- se encrga de mostrar todas las citas pendientes -->
@@ -65,8 +75,10 @@
       <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="/PetCare/app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 
