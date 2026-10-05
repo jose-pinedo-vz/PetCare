@@ -58,16 +58,7 @@ try {
             exit;
         }
 
-        // Datos actuales de la mascota
-        $consultaBusqueda = $conexion -> prepare(
-            "
-            SELECT *
-            FROM mascotas
-            WHERE id_mascota = ?
-            "
-        ); // Prepara la consulta
-        $consultaBusqueda -> execute([$idMascota]); //ejecuta la consulta
-        $datosActuales = $consultaBusqueda -> fetch(PDO::FETCH_ASSOC); // regresa un arreglo asociativo ['nombre' => 'Max', ...]
+        $datosActuales = Mascota::obtenerPorId($idMascota);
 
         // verifica que exita el id de la mascota
         if (!$datosActuales) {
