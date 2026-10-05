@@ -243,6 +243,10 @@ td .btn:last-child {
   margin-right: 0;
 }
 
+.contenido {
+  margin: 20px;
+}
+
 /* 
   DISEÑO RESPONSIVE (celus y tablets) */
 @media (max-width: 768px) {
