@@ -56,7 +56,7 @@
           <fieldset>
             <legend>Datos de la consulta</legend>
               <div class="grid-formulario">
-
+                <div>
                 <label>Mascota</label>
                 <select name="mascota" id="mascota" required> 
                     <option value="">Selecciona una mascota</option>
@@ -67,12 +67,15 @@
                     <?php endforeach; ?>
                 </select>
 
-              <!-- Ventana de datos -->
-              <dialog id="datosModal" class="modal">
+              <!--Precio--> 
+                <div style=" display:flex; justify-content:flex-end;">
+                  <label class="label-campo">Costo</label> <!--Decimal(10,2)-->
+                  <input type="number" name="precio" min="1" placeholder="Ingresa el precio" required>
+                </div>
+
+                <!-- Ventana de datos -->
+              
                 <h2>Datos del paciente</h2>
-                <div class="grid-formulario">
-                  <label>Sintomas</label>
-                  <textarea name="sintomas" placeholder="Sintomas presentados"></textarea> 
                   <label>Temperatura</label>
                   <input type="number" id="temperatura" name="temperatura" min="10" max="60" step="0.1" placeholder="c*">
                   <label>Peso</label>
@@ -81,47 +84,48 @@
                   <input type="number" id="frecuenciaC" name="frecuenciaC" placeholder="Frecuencia Cardiaca">
                   <label>Frecuencia Respiratoria</label>
                   <input type="number" id="frecuenciaR" name="frecuenciaR" placeholder="Frecuencia Respiratoria">
-                </div>
-                <button type="button" id="cerrarDatos">Cerrar</button>
-              </dialog>
+                  <div class="grid-formulario">
+                    <label class="label-campo">Sintomas</label>
+                    <textarea class="campo" name="sintomas" placeholder="Sintomas presentados" rows=15></textarea> 
+                  <div>
 
-              <!--Precio-->
-                <div class="grid-formulario">
-                  <label class="label-campo">Costo</label> <!--Decimal(10,2)-->
-                  <input type="number" name="precio" min="1" placeholder="Ingresa el precio" required>
-                </div>
-
-                
+   
               <!--           VENTANA DE TRATAMIENTOS,MEDICAMENTOS Y DETALLES -->
-              <dialog id="tratamientoModal" class="modal">
+              
                 <h2>Detalles del tratamiento del paciente</h2>
                 <div class="grid-formulario">
-                  <label>Tratamiento</label> 
-                  <textarea name="tratamiento" placeholder="tratamiento para el paciente"></textarea>
-                  <label>Medicamentos</label> 
-                  <textarea name="Medicamento" placeholder="medicamentos recetados"></textarea>
-                  <label>Dosis</label> 
-                  <textarea name="Dosis" placeholder="dosis"></textarea>
-                  <label>Indicaciones</label> 
-                  <textarea name="indicaciones" placeholder="Indicaciones para papa y mama"></textarea>
-                  <label>Estudios Asociados</label> 
-                  <textarea name="estudiosA" placeholder="Estudios asociados"></textarea>
+                  <label classs="label-campo">Tratamiento</label> 
+                  <textarea class="campo" rows=8 name="tratamiento" placeholder="tratamiento para el paciente"></textarea>
                 </div>
-                <button type="button" id="cerrarTratamiento">Cerrar</button>
-              </dialog>
+                <div class="grid-formulario">
+                  <label classs="label-campo">Medicamentos</label> 
+                  <textarea class="campo" rows=8 name="Medicamento" placeholder="medicamentos recetados"></textarea>
+                </div>
+                <div class="grid-formulario">
+                  <label classs="label-campo">Dosis</label> 
+                  <textarea class="campo" rows=8 name="Dosis" placeholder="dosis"></textarea>
+                </div>
+                <div class="grid-formulario">
+                  <label classs="label-campo">Indicaciones</label> 
+                  <textarea class="campo" rows=8 name="indicaciones" placeholder="Indicaciones para papa y mama"></textarea>
+                </div>
+                <div class="grid-formulario">
+                  <label classs="label-campo">Estudios Asociados</label> 
+                  <textarea class="campo" rows=8 name="estudiosA" placeholder="Estudios asociados"></textarea>
+                </div>
 
               <!--Datos finales de la cita-->
                 <div class="grid-formulario">
-                  <label class="label-campo">Proxima Cita</label> <!--Date time-->
-                  <input type="date" id="fecha" name="fecha" min="<?= date('Y-m-d') ?>">
-                </div>
-                <div class="campo">
                   <label class="label-campo">Observaciones</label> 
                   <textarea class="campo" name="observaciones" placeholder="Escriba observaciones" rows=15></textarea>
                 </div>
-                <div class="campo">
+                <div class="grid-formulario">
                   <label class="label-campo">Diagnostico</label> 
                   <textarea class="campo" name="diagnostico" placeholder="Diagnostico del paciente" rows=15 required></textarea>
+                </div>
+                <div class="grid-formulario">
+                  <label class="label-campo">Proxima Cita</label> <!--Date time-->
+                  <input type="date" id="fecha" name="fecha" min="<?= date('Y-m-d') ?>">
                 </div>
               </div>
           </fieldset>
@@ -132,7 +136,6 @@
               <button type="button" id="abrirDatos">Datos del paciente</button>
               <button type="button" id="abrirTratamiento">Detalles tratamiento</button>
             </div>
-
             <div>
                 <button type="submit" class="BtnDerecha">Terminar consulta</button> 
             </div>         

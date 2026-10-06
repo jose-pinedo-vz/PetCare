@@ -106,6 +106,50 @@ class Empleados {
         }
     }
 
+    public static function actualizar(int $id, array $datos) : array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+
+            $consulta_sql = "
+            INSERT INTO empleados (
+            id_cliente, nombre, apellido, telefono, correo, calle,
+            numero_exterior, numero_interior, colonia, ciudad, estado,
+            codigo_postal, puesto, especialidad, num_cedula_profecional,
+            Fecha_de_contratacion, horario
+            )
+            VALUES (
+            ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?
+            )
+            ";
+
+            $consulta = $conexion -> prepare($consulta_sql);
+            $consulta -> execute([
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                $datos['calle'],
+                $datos['numero_exterior'],
+                !empty($datos['numero_interior']) ? $datos['numero_interior'] : null,
+                $datos['colonia'],
+                $datos['ciudad'],
+                $datos['estado'],
+                $datos['codigo_postal'],
+                $datos['puesto'],
+                !empty($datos['especialidad']) ? $datos['especialidad'] : null,
+                !empty($datos['num_cedula_profecional']) ? $datos['num_cedula_profecional'] : null,
+                $datos['horario'],
+                $id
+            ]);
+
+            return ['exito' => true, 'mensaje' => 'Empleado actualizado con exito'];
+        } catch (Exception $error) {
+            return ['exito' => false, 'mensaje' => $error -> getMessage()];
+        }
+    }
+
     public static function eliminar (int $id) : bool {
         try {
             $conexion = ConexionDB::obtenerConexion();

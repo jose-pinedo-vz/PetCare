@@ -175,9 +175,11 @@ function validacion(array $datos, bool $actualizacion = false){
         }
     }
 
+
     //if ($actualizacion) {
     //    return $errores;
     //}
+
 
     // subida de la imagen usando el controlador ImagenController
     require_once __DIR__ . '/../controllers/ImagenController.php';
