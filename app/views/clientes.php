@@ -40,8 +40,9 @@ $usuario=$_SESSION['usuario'];
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
+      
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
