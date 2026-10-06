@@ -34,7 +34,7 @@
       <li><a href="empleados.php">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="productos.php" class="activo">Inventario</a></li>
+      <li><a href="inventario.php" class="activo">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -148,7 +148,6 @@
         </div>
       </fieldset>
 
-      <!-- 2. Precios e Inventario -->
       <fieldset>
         <legend style="font-weight: bold; color: #333; padding: 0 5px;">Precios e Inventario</legend>
 
@@ -222,7 +221,6 @@
         </div>
       </fieldset>
 
-      <!-- 3. Logística y Almacén -->
       <fieldset>
         <legend style="font-weight: bold; color: #333; padding: 0 5px;">Logística y Almacén</legend>
 
@@ -269,7 +267,7 @@
       </fieldset>
 
       <button type="submit">Guardar</button>
-      <a class="btn" href="productos.php">Cancelar</a>
+      <a class="btn" href="inventario.php">Cancelar</a>
     </form>
   </main>
 
