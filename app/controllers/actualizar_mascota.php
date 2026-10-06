@@ -143,6 +143,8 @@ try {
             SET $sets
             WHERE id_mascota = ?
         ";
+
+        
         $sentenciaActualizacion = $conexion -> prepare($sqlActualizacion); // prepara la consulta escrita antes
 
         // array_values() = toma el arreglo le quita las llaves ej. 'nombre' por un valor enumerado desde 0 hasta el final
