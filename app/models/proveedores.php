@@ -48,7 +48,7 @@ function insertar(array $datos) {
         $stmt->bindParam(":codigo_postal",    $datos['codigo_postal' ],   PDO::PARAM_STR);
         $stmt->bindParam(":condicion_pago",   $datos['condicion_pago'],   PDO::PARAM_STR);
         $stmt->bindParam(":tiempo_entrega",   $datos['tiempo_entrega'],   PDO::PARAM_INT);
-        $stmt->bindParam(":observaciones",    $datos['observaciones'],    PDO::PARAM_INT);
+        $stmt->bindParam(":observaciones",    $datos['observaciones'],    PDO::PARAM_STR);
         
         $stmt->execute();
 

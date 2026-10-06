@@ -3,7 +3,6 @@
 date_default_timezone_set('America/Mexico_City');
 
 function validacion(array $datos, bool $actualizacion = false){
-    session_start();
 
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -22,13 +21,19 @@ function validacion(array $datos, bool $actualizacion = false){
         $errores[] = "Debe especificar la especie.";
     }else if (strlen($datos['especie']) > 20) {
         $errores[] = "La especie no puede tener mas de 20 letras";
+    }else if (preg_match('/\d/', $datos['especie'])) {
+        $errores[] = "La especie no puede contener números.";
     }
+
     // Raza obligatorio
     if (empty(trim($datos['raza']))) {
         $errores[] = "Debe especificar la raza.";
     }else if (strlen($datos['raza']) > 20) {
         $errores[] = "La raza no puede tener mas de 20 letras";
+    }else if (preg_match('/\d/', $datos['raza'])) {
+        $errores[] = "La raza no puede contener números.";
     }
+
     // Sexo obligatorio
     if (empty(trim($datos['sexo']))) {
         $errores[] = "Debe seleccionar el sexo.";
@@ -52,7 +57,10 @@ function validacion(array $datos, bool $actualizacion = false){
         $datos['color'] = NULL;
     }else if (strlen($datos['color']) > 15) {
         $errores[] = "Elcolor no puede tener mas de 15 letras";
+    }else if (preg_match('/\d/', $datos['color'])) {
+        $errores[] = "El color no puede contener números.";
     }
+
     // Peso obligatorio
     $pesoLimpio = str_replace(',', '.', $datos['peso'] ?? '');
     if (empty(trim($datos['peso'])) || !is_numeric($pesoLimpio)) {
@@ -91,23 +99,40 @@ function validacion(array $datos, bool $actualizacion = false){
     // Alergias obligatorio
     if (empty(trim($datos['alergias']))) {
         $errores[] = "Debe especificar las alergias.";
+    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['alergias'])) {
+        $errores[] = "Las alergias deben incluir texto explicativo, no solo números.";
     }
+
     // Enfermedades obligatorio
     if (empty(trim($datos['enfermedades']))) {
         $errores[] = "Debe especificar las enfermedades.";
+    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['enfermedades'])) {
+        $errores[] = "Las enfermedades deben incluir texto explicativo, no solo números.";
     }
+
     // Medicamentos obligatorio
     if (empty(trim($datos['medicamentos']))) {
         $errores[] = "Debe especificar los medicamentos.";
+    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['medicamentos'])) {
+        $errores[] = "Los medicamentos deben incluir texto explicativo, no solo números.";
     }
+
     // Condiciones especiales obligatorio
     if (empty(trim($datos['condiciones_especiales']))) {
         $errores[] = "Debe especificar las condiciones especiales.";
+    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['condiciones_especiales'])) {
+        $errores[] = "Las condiciones especiales deben incluir texto explicativo, no solo números.";
     }
+
     // Vacunas Opcional
     if (empty(trim($datos['vacunas']))) {
         $datos['vacunas'] = null;
-    }
+    }//else{
+     //   if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['vacunas'])) {
+     //       $errores[] = "Las vacunas deben incluir el nombre o texto, no solo números.";
+     //   }
+     //}
+     
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
         $errores[] = "Debe especificar la última desparasitación.";
@@ -126,19 +151,33 @@ function validacion(array $datos, bool $actualizacion = false){
     //temperamento Opcional
     if (empty(trim($datos['temperamento']))) {
         $datos['temperamento'] = null;
+    }else{
+        if (preg_match('/\d/', $datos['temperamento'])) {
+            $errores[] = "El temperamento no puede contener números.";
+        }
     }
+
     //restricciones para manejo Opcional
     if (empty(trim($datos['restricciones_para_manejo']))) {
         $datos['restricciones_para_manejo'] = null;
+    }else{
+        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['restricciones_para_manejo'])) {
+            $errores[] = "Las restricciones de manejo deben incluir texto explicativo, no solo números.";
+        }
     }
+
     //observaciones Opcional
     if (empty(trim($datos['observaciones']))) {
         $datos['observaciones'] = null;
+    }else{
+        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['observaciones'])) {
+            $errores[] = "Las observaciones deben incluir texto explicativo, no solo números.";
+        }
     }
 
-    if ($actualizacion) {
-        return $errores;
-    }
+    //if ($actualizacion) {
+    //    return $errores;
+    //}
 
     // subida de la imagen usando el controlador ImagenController
     require_once __DIR__ . '/../controllers/ImagenController.php';
