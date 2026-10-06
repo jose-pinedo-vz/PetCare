@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") { //Si no es POST lo manda a citas de
 //Datos
 $consulta=trim($_POST['id_consulta'] ?? '');
 $fecha=date("Y-m-d H:i");
-$mascota=trim($_POST['id_mascota'] ?? '')
+$mascota=trim($_POST['id_mascota'] ?? '');
 $veterinario=trim($_POST['id_veterinario'] ?? '');
 
 //Datos
@@ -40,22 +40,22 @@ $errores=[];
 
 if ($consulta==='')
     {
-        $errores[]="No esta ligado a una consulta"
+        $errores[]="No esta ligado a una consulta";
     }
 
 if ($veterinario==='')
     {
-        $errores[]="No esta ligado a un veterinario"
+        $errores[]="No esta ligado a un veterinario";
     }
 
 if ($sintomas==='' || $temperatura==='' || $peso==='' || $FrecCar==='' || $FrecResp==='')
     {
-        $errores[]="Porfavor, llene los campos obligatorios del apartado de Datos del paciente"
+        $errores[]="Porfavor, llene los campos obligatorios del apartado de Datos del paciente";
     }
 
 if ($tratamiento==='' || $medicamento==='' || $indicaciones==='')
     {
-        $errores[]="Porfavor, llene los campos obligatorios del apartado Detalles de tratamiento"
+        $errores[]="Porfavor, llene los campos obligatorios del apartado Detalles de tratamiento";
     }
 
 
@@ -63,7 +63,7 @@ if ($tratamiento==='' || $medicamento==='' || $indicaciones==='')
 //Datos a insertar
 $datos=[
     'id_consulta'=>(int)$consulta,
-    'fecha'=>$fecha
+    'fecha'=>$fecha,
     'id_mascota'=>(int)$mascota,
     'id_veterinario'=>(int)$veterinario,
     'sintomas'=>$sintomas,
@@ -76,9 +76,9 @@ $datos=[
     'medicamentos'=>$medicamento,
     'dosis'=>$dosis,
     'indicaciones'=>$indicaciones,
-    'estudios_asociados'=>$estudiosAs,
-    'proxima_cita'=>$proximaCita,
-    'observaciones'=>$observaciones,
+    'estudios_asociados'=>$estudioAs,
+    'proxima_cita'=>$proximaCita,   
+    'observaciones'=>$observacion,
     'costo'=>$costo,
 ];
 
@@ -86,7 +86,7 @@ $ficha=new FichaMedica();
 $resultado=$ficha->insertar($datos);
 
 if($resultado===false){
-    $_SESSION['errores']=["no se logro guardar la ficha"]
+    $_SESSION['errores']="no se logro guardar la ficha";
     header("Location: ../views/FichaMedica.php?id_consulta=" . (int)$consulta);
     exit();
 }
