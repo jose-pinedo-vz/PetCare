@@ -40,13 +40,13 @@
 
         <!-- 1. ENCABEZADO SUPERIOR -->
         <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd; padding-bottom: 15px;">
-            <h1 style="margin: 0; color: #333;"> Control de Inventario</h1>
+            <h1 style="margin: 0; color: #333;"> Control de inventario</h1>
             
             <div style="display: flex; gap: 15px; align-items: center;">
                 <input type="text" placeholder=" Buscar por código de barra..." size="40" style="padding: 8px;">
                 <!-- Botón de alertas destacado -->
                 <button style="background-color: #D2691E; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;">
-                    Alertas de Reorden (x)
+                    Alertas de reorden (x)
                 </button>
             </div>
         </header>
@@ -66,7 +66,7 @@
             </div>
             
             <div class="inventario-tarjeta">
-                <h3> Movimientos Hoy</h3>
+                <h3> Movimientos hoy</h3>
                 <p>------------</p>
             </div>
         </section>
