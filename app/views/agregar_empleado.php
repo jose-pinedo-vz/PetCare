@@ -1,3 +1,11 @@
+<?php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,6 +48,12 @@
   <main>
 
     <h1>Agregar empleado</h1>
+
+    <?php if (isset($_SESSION['error'])): ?>
+      <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+      </div>
+    <?php endif; ?>
 
     <form action="../controllers/guardar_empleado.php" method="POST">
 
