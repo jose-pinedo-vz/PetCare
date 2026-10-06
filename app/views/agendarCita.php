@@ -75,7 +75,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="fecha">Fecha:</label>
-            <input type="date" class="campo" id="fecha" name="fecha" required 
+            <input type="date" class="campo" id="fecha" name="fecha" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
 
