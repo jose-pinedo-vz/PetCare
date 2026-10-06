@@ -45,11 +45,31 @@
             <div style="display: flex; gap: 15px; align-items: center;">
                 <input type="text" placeholder=" Buscar por código de barra..." size="40" style="padding: 8px;">
                 <!-- Botón de alertas destacado -->
-                <button style="background-color: #ff4d4d; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;">
-                    Alertas de Reorden
+                <button style="background-color: #D2691E; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                    Alertas de Reorden (x)
                 </button>
             </div>
         </header>
+
+        <section class="inventario-resumen">
+            <!-- Tarjeta de alerta crtica -->
+            <div class="inventario-tarjeta inventario-alerta">
+                <h3> Riesgo de desabasto</h3>
+                <p>-----------</p>
+                <button type="button" class="boe" onclick="window.location.href='proveedores.php'">Proveedores</button>
+            </div>
+            
+            <!-- Tarjetas informativas normales -->
+            <div class="inventario-tarjeta">
+                <h3> Total catálogo</h3>
+                <p>x Productos</p>
+            </div>
+            
+            <div class="inventario-tarjeta">
+                <h3> Movimientos Hoy</h3>
+                <p>------------</p>
+            </div>
+        </section>
 </main>
 </body>
 </html>

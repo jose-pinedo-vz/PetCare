@@ -247,6 +247,35 @@ td .btn:last-child {
   margin: 20px;
 }
 
+.inventario-resumen {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    text-align: center;
+    gap: 15px;
+}
+
+.inventario-tarjeta {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.inventario-tarjeta h3 {
+    margin: 0 0 10px;
+}
+
+.inventario-tarjeta p {
+    margin: 0;
+}
+
+
+
+.inventario-btn-contactar {
+    margin-top: 10px;
+}
+
 /* 
   DISEÑO RESPONSIVE (celus y tablets) */
 @media (max-width: 768px) {
