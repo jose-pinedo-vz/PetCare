@@ -1,35 +1,6 @@
 <?php
 /* codigo aqui*/
 
-function datos(){
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-        $datos = [
-            'razon_social'      => trim($_POST['razon_social'] ?? ''),
-            'nombre_comercial'  => trim($_POST['nombre_comercial'] ?? ''),
-            'rfc'               => trim($_POST['rfc'] ?? ''),
-            'telefono'          => trim($_POST['telefono'] ?? ''),
-            'correo'            => trim($_POST['correo'] ?? ''),
-            'domicilio'         => trim($_POST['domicilio'] ?? ''),
-            'ciudad'            => trim($_POST['ciudad'] ?? ''),
-            'estado'            => trim($_POST['estado'] ?? ''),
-            'codigo_postal'     => trim($_POST['codigo_postal'] ?? ''),
-            'condicion_pago'    => trim($_POST['condicion_pago'] ?? ''),
-            'tiempo_entrega'    => trim($_POST['tiempo_entrega'] ?? ''),
-            'observaciones'     => trim($_POST['observaciones'] ?? '')
-        ];
-
-        validar_datos($datos);
-
-
-    } else {
-        // Si intentan entrar directo a este archivo sin pasar por el formulario
-        header("Location: agregar_mascota.php");
-        exit();
-    }
-}
-
-
 
 function validar_datos($datos){
     if (session_status() === PHP_SESSION_NONE) {
@@ -159,7 +130,7 @@ function validar_datos($datos){
         // se muestra errores de que campos no se llenaron
         $_SESSION['errores'] = $errores;
         $_SESSION['old']     = $datos;
-        header("Location: ../views/agregar_mascota.php");
+        header("Location: ../views/agregar_proveedor.php");
         exit;
     } else {
         require_once __DIR__ . '/../models/proveedores.php';
@@ -171,6 +142,14 @@ function validar_datos($datos){
             if($advert[0] == "Error al Insertar"){
                 $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
             }
+            $_SESSION['old'] = $datos;
+
+            header("Location: ../views/agregar_proveedor.php");
+            exit;
+        }else {
+            // Éxito: redirige a la lista de proveedores
+            header('Location: ../views/proveedores.php');
+            exit;
         }
     }
 }

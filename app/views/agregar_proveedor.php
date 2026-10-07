@@ -1,3 +1,16 @@
+<?php
+    // Iniciar la sesión al principio
+    session_start();
+
+    // Obtener errores y datos enviados previamente (si existen)
+    $errores = $_SESSION['errores'] ?? [];
+    $old     = $_SESSION['old'] ?? [];
+
+    // Limpiar la sesión para que las alertas no reaparezcan al recargar
+    unset($_SESSION['errores']);
+    unset($_SESSION['old']);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -42,6 +55,17 @@
 
         <h1>Agregar proveedor</h1>
 
+        <?php if (!empty($errores)): ?>
+            <div class="alerta-errores">
+              <h4>Por favor corrige los siguientes errores:</h4>
+              <ul>
+                <?php foreach ($errores as $error): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+        <?php endif; ?>
+
         <form action="guardar_proveedor.php" method="POST">
 
             <fieldset>
@@ -61,6 +85,7 @@
                           id="razon_social"
                           name="razon_social"
                           maxlength="100"
+                          value="<?= htmlspecialchars($old['razon_social'] ?? '') ?>"
                           required>
                     </div>
 
@@ -75,6 +100,7 @@
                           id="nombre_comercial"
                           name="nombre_comercial"
                           maxlength="100"
+                          value="<?= htmlspecialchars($old['nombre_comercial'] ?? '') ?>"
                           required>
 
                     </div>
@@ -90,6 +116,7 @@
                           id="rfc"
                           name="rfc"
                           maxlength="13"
+                            value="<?= htmlspecialchars($old['rfc'] ?? '') ?>"
                           required>
 
                     </div>
@@ -114,6 +141,7 @@
                           id="telefono"
                           name="telefono"
                           maxlenght="15"
+                          value="<?= htmlspecialchars($old['telefono'] ?? '') ?>"
                           required>
                     </div>
 
@@ -130,6 +158,7 @@
                           id="correo"
                           name="correo"
                           maxlength="100"
+                          value="<?= htmlspecialchars($old['correo'] ?? '') ?>"
                           required>
                     </div>
                     
@@ -152,6 +181,7 @@
                           id="domicilio"
                           name="domicilio"
                           maxlength="100"
+                          value="<?= htmlspecialchars($old['domicilio'] ?? '') ?>"
                           required>
                     </div>
 
@@ -166,6 +196,7 @@
                           id="ciudad"
                           name="ciudad"
                           maxlength="60"
+                          value="<?= htmlspecialchars($old['ciudad'] ?? '') ?>"
                           required>
 
                     </div>
@@ -181,6 +212,7 @@
                           id="estado"
                           name="estado"
                           maxlength="60"
+                          value="<?= htmlspecialchars($old['estado'] ?? '') ?>"
                           required>
 
                     </div>
@@ -196,6 +228,7 @@
                           id="codigo_postal"
                           name="codigo_postal"
                           maxlength="10"
+                          value="<?= htmlspecialchars($old['codigo_postal'] ?? '') ?>"
                           required>
                     </div>
                 </fieldset>    
@@ -216,7 +249,8 @@
                           class="campo"
                           id="condicion_pago"
                           name="condicion_pago"
-                          maxlength="60">
+                          maxlength="60"
+                          value="<?= htmlspecialchars($old['condicion_pago'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -229,7 +263,8 @@
                           class="campo"
                           id="tiempo_entrega"
                           name="tiempo_entrega"
-                          maxlength="60">
+                          maxlength="60"
+                          value="<?= htmlspecialchars($old['tiempo_entrega'] ?? '') ?>">
                     </div>
 
                     <div tyle="grid-column: 1 / -1;">
@@ -242,7 +277,7 @@
                           id="observaciones"
                           name="observaciones"
                           rows="3"
-                          maxlength="255"></textarea>
+                          maxlength="255" ><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
                     </div>
 
                 </div>
