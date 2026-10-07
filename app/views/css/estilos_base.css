@@ -257,9 +257,10 @@ td .btn:last-child {
 
 .inventario-tarjeta {
     flex: 1;
-    border: 1px solid #ccc;
     padding: 15px;
     border-radius: 8px;
+    background-color: var(--sidebar-light);
+    border: 1px solid var(--border-light);
 }
 
 .inventario-tarjeta h3 {
@@ -270,10 +271,70 @@ td .btn:last-child {
     margin: 0;
 }
 
+.inventario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 2px solid var(--gray-light);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
 
+.inventario-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.inventario-buscador {
+    min-width: 260px;
+}
+
+.inventario-alerta {
+    background-color: #D2691E;
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.inventario-alerta:hover {
+    background-color: #b85717;
+}
 
 .inventario-btn-contactar {
     margin-top: 10px;
+}
+
+.inventario-dialog {
+    width: min(520px, calc(100% - 40px));
+    padding: 24px;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+.inventario-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.inventario-dialog h2 {
+    margin-top: 0;
+}
+
+.inventario-dialog-acciones {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.inventario-acciones {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* 

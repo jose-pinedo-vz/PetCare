@@ -235,7 +235,7 @@
       </fieldset>
 
       <button type="submit">Guardar</button>
-      <a class="btn" href="productos.php">Cancelar</a>
+      <a class="btn" href="inventario.php">Cancelar</a>
     </form>
   </main>
 
