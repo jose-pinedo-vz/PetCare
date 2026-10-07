@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar producto</title>
-  <link rel="stylesheet" href="estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
   <style>
     #preview-crop { max-width: 200px; border-radius: 8px; display: none; margin-top: 8px; }
