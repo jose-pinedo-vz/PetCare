@@ -96,7 +96,7 @@
                     <td style="padding: 15px; white-space: nowrap;">
                         <a class="btn" href="enespera.php?id=1" style="margin-left: 3px";>Pedir</a>
                         <a class="btn" href="editar_producto.php?id=1" style="margin-left: 3px;">Editar</a>
-                        <a class="btn" href="enespera.php?id=1" style="margin-left: 3px">Eliminar</a>
+                        <a class="btn" href="eliminar_producto.php?id=1" style="margin-left: 3px">Eliminar</a>
                     </td>
                 </tr>
             </tbody>
