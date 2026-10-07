@@ -4,45 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria PetCare - Proveedores</title>
-    <link rel="stylesheet" href="css/estilos_base.css">
+    <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
-    <header>
-        <div class="marca">
-            <img src="img/logo.svg" alt="Veterinaria PetCare">
-        </div>
-
-        <div class="sesion">
-            <span>Empleado: Nombre del empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
-            <li><a href="inventario.php">Inventario</a></li>
-
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+    <div class="layout">
+        <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php';?>
 
     <main>
-        <h1>Módulo de Proveedores</h1>
-        <div style="margin-bottom: 20px;">
+        <div class="migaja">Gestión de Proveedores /</div>
+        <div class="encabezado-pagina">
+            <h1>Proveedores</h1>
+        <div>
             <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>  
         </div>
-        <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
-        <table border="1" style="widht: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
+        <div>
+        <table border="1">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -76,9 +52,9 @@
                     <td>Crédito a 30 días</td>
                     <td>5 días hábiles</td>
                     <td>Entrega de productos veterinarios.</td>
-                    <td style="pading: 15px; white-space: nowrap;">
+                    <td>
                         <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px:">Eliminar</a>
+                        <a class="btn" href="eliminar_proveedor.php?id=1">Eliminar</a>
                     </td>
                 </tr>
                 <tr>
@@ -95,9 +71,9 @@
                     <td>Contado</td>
                     <td>3 días hábiles</td>
                     <td>Realiza entregas de medicamentos.</td>
-                    <td style="pading: 15px; white-space: nowrap;">
+                    <td>
                         <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px:">Eliminar</a>
+                        <a class="btn" href="eliminar_proveedor.php?id=1">Eliminar</a>
                     </td>
                 </tr>
                 <tr>
@@ -114,9 +90,9 @@
                     <td>Crédito a 15 días</td>
                     <td>7 días hábiles</td>
                     <td>Proveedor de alimentos y accesorios.</td>
-                    <td style="pading: 15px; white-space: nowrap;">
+                    <td>
                         <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px:">Eliminar</a>
+                        <a class="btn" href="eliminar_proveedor.php?id=1">Eliminar</a>
                     </td>
                 </tr>
             </tbody>
