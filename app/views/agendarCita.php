@@ -71,12 +71,11 @@ if (session_status() === PHP_SESSION_NONE) {
             <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? '')); unset($_SESSION['oldClave']); ?>">
-
           </div>
 
           <div>
             <label class="label-campo" for="fecha">Fecha:</label>
-            <input type="date" class="campo" id="fecha" name="fecha" required 
+            <input type="date" class="campo" id="fecha" name="fecha" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
 

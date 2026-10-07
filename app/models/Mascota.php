@@ -28,7 +28,7 @@ function insertar(array $datos) {
 
     $id = IDmascota($conexion);
 
-    $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado'; 
+    $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado';
     $restricciones = !empty($datos['restricciones_para_manejo']) ? $datos['restricciones_para_manejo'] : null;
     $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales';
     $fotografia    = !empty($datos['fotografia']) ? $datos['fotografia'] : null;
@@ -73,12 +73,31 @@ function insertar(array $datos) {
         ]);
 
     } catch (PDOException $e) {
-    
+
         if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1452) {
-            return ["Error ID",null];
+            return ["Error ID"];
         } else {
             return["Error al aguardar",htmlspecialchars($e->getMessage())];
         }
+    }
+}
+
+function actualizar(int $idMascota, string $sets, array $valoresFinales): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+        UPDATE mascotas
+        SET $sets
+        WHERE id_mascota = ?
+        ";
+        $sentenciaActualizacion = $conexion -> prepare($sql);
+        $sentenciaActualizacion -> execute([...array_values($valoresFinales), $idMascota]);
+
+        return  true;
+
+    } catch (Exception $e) {
+        error_log("Error en actualizar mascota: " . $e -> getMessage());
+        return false;
     }
 }
 
@@ -140,8 +159,11 @@ class Mascota {
     public static function obtenerPorId(int $id): ?array {
         return obtenerMascotaPorId($id);
     }
-    public static function insertar(array $datos): void {
-        insertar($datos);
+    public static function insertar(array $datos){
+        return insertar($datos);
+    }
+    public static function actualizar(int $idMascota, string $sets, array $valoresFinales): bool {
+        return actualizar($idMascota, $sets, $valoresFinales);
     }
     public static function eliminar(int $id): bool {
         return eliminar($id);

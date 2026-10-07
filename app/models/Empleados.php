@@ -63,20 +63,61 @@ class Empleados {
     public static function insertar(array $datos) : array {
         try {
             $conexion = ConexionDB::obtenerConexion();
-            $id = obtenerPorId($conexion);
+            $id = self::generarIdEmpleados($conexion);
 
             $consulta_sql = "
-            INSERT INTO empleados (
-                id_cliente, nombre, apellido, telefono, correo, calle,
-                numero_exterior, numero_interior, colonia, ciudad, estado,
-                codigo_postal, puesto, especialidad, num_cedula_profecional,
-                Fecha_de_contratacion, horario
-            )
-            VALUES (
-                ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?
-            )
+                INSERT INTO empleados (
+                    id_empleado, nombre, apellido, telefono, correo, calle,
+                    numero_exterior, numero_interior, colonia, ciudad, estado,
+                    codigo_postal, puesto, especialidad, num_cedula_profesional,
+                    Fecha_de_contratacion, horario
+                )
+                VALUES (
+                    ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?
+                )
+            ";
+
+            $consulta = $conexion -> prepare($consulta_sql);
+            $consulta -> execute([
+                $id,
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                $datos['calle'],
+                $datos['numero_exterior'],
+                !empty($datos['numero_interior']) ? $datos['numero_interior'] : null,
+                $datos['colonia'],
+                $datos['ciudad'],
+                $datos['estado'],
+                $datos['codigo_postal'],
+                $datos['puesto'],
+                !empty($datos['especialidad']) ? $datos['especialidad'] : null,
+                !empty($datos['num_cedula_profesional']) ? $datos['num_cedula_profesional'] : null,
+                !empty($datos['Fecha_de_contratacion']) ? $datos['Fecha_de_contratacion'] : null,
+                $datos['horario'],
+            ]);
+
+            return ['exito' => true, 'mensaje' => 'Empleado guardado con exito'];
+        }
+        catch (Exception $error) {
+            return ['exito' => false, 'mensaje' => $error -> getMessage()];
+        }
+    }
+
+    public static function actualizar(int $id, array $datos) : array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+
+            $consulta_sql = "
+                UPDATE empleados SET
+                    nombre = ?, apellido = ?, telefono = ?, correo = ?, calle = ?,
+                    numero_exterior = ?, numero_interior = ?, colonia = ?, ciudad = ?, estado = ?,
+                    codigo_postal = ?, puesto = ?, especialidad = ?, num_cedula_profesional = ?,
+                    Fecha_de_contratacion = ?, horario = ?
+                WHERE id_empleado = ?
             ";
 
             $consulta = $conexion -> prepare($consulta_sql);
@@ -94,14 +135,14 @@ class Empleados {
                 $datos['codigo_postal'],
                 $datos['puesto'],
                 !empty($datos['especialidad']) ? $datos['especialidad'] : null,
-                !empty($datos['num_cedula_profecional']) ? $datos['num_cedula_profecional'] : null,
+                !empty($datos['num_cedula_profesional']) ? $datos['num_cedula_profesional'] : null,
+                !empty($datos['Fecha_de_contratacion']) ? $datos['Fecha_de_contratacion'] : null,
                 $datos['horario'],
                 $id
             ]);
 
             return ['exito' => true, 'mensaje' => 'Empleado actualizado con exito'];
-        }
-        catch (Exception $error) {
+        } catch (Exception $error) {
             return ['exito' => false, 'mensaje' => $error -> getMessage()];
         }
     }
