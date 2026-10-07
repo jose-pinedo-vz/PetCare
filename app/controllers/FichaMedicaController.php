@@ -1,97 +1,117 @@
 <?php
 declare(strict_types=1);
 date_default_timezone_set('America/Mexico_City');
-session_start(); //Que es session start?
 //requiere_once hace que se cargue el archivo que se le pone en este
-require_once __DIR__ . '/../models/fichaMedicaModelo.php';
+require_once __DIR__ . '/../models/fichaMedicaModelo.php'
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST") { //Si no es POST lo manda a citas de nuevo
-    header("Location: ../views/citas.php");
-    exit();
-} 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+};
 
+function errorSession(string $error) : null
+{
+    $_SESSION['error']=$error
+    $_SESSION['oldid_consulta']=$_POST['id_consulta'] ?? '';
+    $_SESSION['oldid_mascota']=$_POST['id_mascota'] ?? '';
+    $_SESSION['oldid_veterinario']=$_POST['id_veterinario'] ?? '';
+    $_SESSION['oldSintomas']=$_POST['sintomas'] ?? '';
+    $_SESSION['oldTemperatura']=$_POST['temperatura'] ?? '';
+    $_SESSION['oldPeso']=$_POST['peso'] ?? '';
+    $_SESSION['oldFrecuenciaC']=$_POST['frecuenciaC'] ?? '';
+    $_SESSION['oldFrecuenciaR']=$_POST['frecuenciaR'] ?? '';
+    $_SESSION['oldTratamiento']=$_POST['tratamiento'] ?? '';
+    $_SESSION['oldMedicamento']=$_POST['Medicamento'] ?? '';
+    $_SESSION['oldIndicacion']=$_POST["indicaciones"] ?? '';
+    $_SESSION['oldDosis']=$_POST['Dosis'] ?? '';
+    $_SESSION['oldEstudiosaA']=$_POST['estudiosA'] ?? '';
+    $_SESSION['oldDiagnostico']=$_POST['diagnostico'] ?? '';
+    $_SESSION['oldFecha']=$_POST['fecha'] ?? '';
+    $_SESSION['oldPrecio']=$_POST['precio'] ?? '';
+    $_SESSION['oldObservaciones']=$_POST['observaciones'] ?? '';
 
-//Datos
-$consulta=trim($_POST['id_consulta'] ?? '');
-$fecha=date("Y-m-d H:i");
-$mascota=trim($_POST['id_mascota'] ?? '');
-$veterinario=trim($_POST['id_veterinario'] ?? '');
-
-//Datos
-$sintomas=trim($_POST['sintomas'] ?? '');
-$temperatura=trim($_POST['temperatura'] ?? '');
-$peso=trim($_POST['peso'] ?? '');
-$FrecCar=trim($_POST['frecuenciaC'] ?? '');
-$FrecResp=trim($_POST['frecuenciaR'] ?? '');
-
-//Tratamiento
-$tratamiento=trim($_POST['tratamiento'] ?? '');
-$medicamento=trim($_POST['Medicamento'] ?? '');
-$indicaciones=trim($_POST["indicaciones"] ?? '');
-$dosis=trim($_POST['Dosis'] ?? '');
-$estudioAs=trim($_POST['estudiosA'] ?? '');
-
-$diagnostico=trim($_POST['diagnostico'] ?? '');
-$proximaCita=trim($_POST['fecha'] ?? '');
-$costo=trim($_POST['precio'] ?? '');
-$observacion=trim($_POST['observaciones'] ?? '');
-
-$errores=[];
-
-if ($consulta==='')
-    {
-        $errores[]="No esta ligado a una consulta";
-    }
-
-if ($veterinario==='')
-    {
-        $errores[]="No esta ligado a un veterinario";
-    }
-
-if ($sintomas==='' || $temperatura==='' || $peso==='' || $FrecCar==='' || $FrecResp==='')
-    {
-        $errores[]="Porfavor, llene los campos obligatorios del apartado de Datos del paciente";
-    }
-
-if ($tratamiento==='' || $medicamento==='' || $indicaciones==='')
-    {
-        $errores[]="Porfavor, llene los campos obligatorios del apartado Detalles de tratamiento";
-    }
-
-
-
-//Datos a insertar
-$datos=[
-    'id_consulta'=>(int)$consulta,
-    'fecha'=>$fecha,
-    'id_mascota'=>(int)$mascota,
-    'id_veterinario'=>(int)$veterinario,
-    'sintomas'=>$sintomas,
-    'temperatura'=>$temperatura,
-    'peso'=>$peso,
-    'frecuencia_cardiaca'=>$FrecCar,
-    'frecuencia_respiratoria'=>$FrecResp,
-    'diagnostico'=>$diagnostico,
-    'tratamiento'=>$tratamiento,
-    'medicamentos'=>$medicamento,
-    'dosis'=>$dosis,
-    'indicaciones'=>$indicaciones,
-    'estudios_asociados'=>$estudioAs,
-    'proxima_cita'=>$proximaCita,   
-    'observaciones'=>$observacion,
-    'costo'=>$costo,
-];
-
-$ficha=new FichaMedica();
-$resultado=$ficha->insertar($datos);
-
-if($resultado===false){
-    $_SESSION['errores']="no se logro guardar la ficha";
-    header("Location: ../views/FichaMedica.php?id_consulta=" . (int)$consulta);
+    header("Location: ../views/FichaMedica.php");
     exit();
 }
 
-header("Location: ../views/citas.php?exito=1");
+if ($_SERVER["REQUEST_METHOD"] === "POST") 
+{
+
+    //Datos
+    //$consulta=trim($_POST['id_consulta'] ?? '');
+    $consulta=1; 
+    $fecha=date("Y-m-d H:i");
+    $mascota=trim($_POST['id_mascota'] ?? '');
+    $veterinario=trim($_POST['id_veterinario'] ?? '');
+
+    //Datos
+    $sintomas=trim($_POST['sintomas'] ?? '');
+    $temperatura=trim($_POST['temperatura'] ?? '');
+    $peso=trim($_POST['peso'] ?? '');
+    $FrecCar=trim($_POST['frecuenciaC'] ?? '');
+    $FrecResp=trim($_POST['frecuenciaR'] ?? '');
+
+    //Tratamiento
+    $tratamiento=trim($_POST['tratamiento'] ?? '');
+    $medicamento=trim($_POST['Medicamento'] ?? '');
+    $indicaciones=trim($_POST["indicaciones"] ?? '');
+    $dosis=trim($_POST['Dosis'] ?? '');
+    $estudioAs=trim($_POST['estudiosA'] ?? '');
+
+    $diagnostico=trim($_POST['diagnostico'] ?? '');
+    $proximaCita=trim($_POST['fecha'] ?? '');
+    $costo=trim($_POST['precio'] ?? '');
+    $observacion=trim($_POST['observaciones'] ?? '');
+
+    $errores=[];
+
+    if ($consulta==='')
+        {
+            errorSession("No esta ligado a un veterinario")
+            $errores[]="No esta ligado a una consulta";
+        }
+
+    if ($veterinario==='')
+        {
+            errorSession("No esta ligado a un veterinario")
+            $errores[]="No esta ligado a un veterinario";
+        }
+    
+
+    //Datos a insertar
+    $datos=[
+        'id_consulta'=>(int)$consulta,
+        'fecha'=>$fecha,
+        'id_mascota'=>(int)$mascota,
+        'id_veterinario'=>(int)$veterinario,
+        'sintomas'=>$sintomas,
+        'temperatura'=>$temperatura,
+        'peso'=>$peso,
+        'frecuencia_cardiaca'=>$FrecCar,
+        'frecuencia_respiratoria'=>$FrecResp,
+        'diagnostico'=>$diagnostico,
+        'tratamiento'=>$tratamiento,
+        'medicamentos'=>$medicamento,
+        'dosis'=>$dosis,
+        'indicaciones'=>$indicaciones,
+        'estudios_asociados'=>$estudioAs,
+        'proxima_cita'=>$proximaCita,
+        'observaciones'=>$observacio,
+        'costo'=>$costo,
+    ];
+
+    $ficha=new FichaMedica();
+    $resultado=$ficha->insertar($datos);
+
+    if($resultado===false){
+        $_SESSION['errores']=["no se logro guardar la ficha"];
+        header("Location: ../views/FichaMedica.php?id_consulta=" . (int)$consulta);
+        exit();
+    }
+
+
+
+    header("Location: ../views/citas.php?exito=1");
+}
 ?>
 
 

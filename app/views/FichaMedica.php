@@ -1,3 +1,9 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +59,16 @@
       <!--La tarjetita de la interfaz real del modulo -->
       <div class="tarjeta">
         <form action="../controllers/FichaMedicaController.php" method="POST">
+
+        <!-- Para mostrar errores-->
+        <?php if (isset($_SESSION['error'])): ?>
+          <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+            <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+          </div>
+        <?php endif; ?>
+
+        <!-- -->
+          
           <fieldset>
             <legend>Datos de la consulta</legend>
               <div class="grid-formulario">
@@ -77,16 +93,16 @@
               
                 <h2>Datos del paciente</h2>
                   <label>Temperatura</label>
-                  <input type="number" id="temperatura" name="temperatura" min="10" max="60" step="0.1" placeholder="c*">
+                  <input type="number" id="temperatura" name="temperatura" min="30" max="45" step="0.1" placeholder="c*" required>
                   <label>Peso</label>
-                  <input type="number" id="peso" name="peso" min="0.5" max="100" step="0.1" placeholder="kg">
+                  <input type="number" id="peso" name="peso" min="0.5" max="100" step="0.1" placeholder="kg" required>
                   <label>Frecuencia Cardiaca</label>
-                  <input type="number" id="frecuenciaC" name="frecuenciaC" placeholder="Frecuencia Cardiaca">
+                  <input type="number" id="frecuenciaC" name="frecuenciaC" placeholder="Frecuencia Cardiaca" required>
                   <label>Frecuencia Respiratoria</label>
-                  <input type="number" id="frecuenciaR" name="frecuenciaR" placeholder="Frecuencia Respiratoria">
+                  <input type="number" id="frecuenciaR" name="frecuenciaR" placeholder="Frecuencia Respiratoria" required>
                   <div class="grid-formulario">
                     <label class="label-campo">Sintomas</label>
-                    <textarea class="campo" name="sintomas" placeholder="Sintomas presentados" rows=15></textarea> 
+                    <textarea class="campo" name="sintomas" placeholder="Sintomas presentados" rows=15 required></textarea> 
                   <div>
 
    
@@ -95,11 +111,11 @@
                 <h2>Detalles del tratamiento del paciente</h2>
                 <div class="grid-formulario">
                   <label classs="label-campo">Tratamiento</label> 
-                  <textarea class="campo" rows=8 name="tratamiento" placeholder="tratamiento para el paciente"></textarea>
+                  <textarea class="campo" rows=8 name="tratamiento" placeholder="tratamiento para el paciente" required></textarea>
                 </div>
                 <div class="grid-formulario">
                   <label classs="label-campo">Medicamentos</label> 
-                  <textarea class="campo" rows=8 name="Medicamento" placeholder="medicamentos recetados"></textarea>
+                  <textarea class="campo" rows=8 name="Medicamento" placeholder="medicamentos recetados" required></textarea>
                 </div>
                 <div class="grid-formulario">
                   <label classs="label-campo">Dosis</label> 
@@ -107,7 +123,7 @@
                 </div>
                 <div class="grid-formulario">
                   <label classs="label-campo">Indicaciones</label> 
-                  <textarea class="campo" rows=8 name="indicaciones" placeholder="Indicaciones para papa y mama"></textarea>
+                  <textarea class="campo" rows=8 name="indicaciones" placeholder="Indicaciones para papa y mama" required></textarea>
                 </div>
                 <div class="grid-formulario">
                   <label classs="label-campo">Estudios Asociados</label> 
@@ -132,10 +148,6 @@
           
           <!-- BOtonsitos finales-->
           <div class="grid-formulario">
-            <div>
-              <button type="button" id="abrirDatos">Datos del paciente</button>
-              <button type="button" id="abrirTratamiento">Detalles tratamiento</button>
-            </div>
             <div>
                 <button type="submit" class="BtnDerecha">Terminar consulta</button> 
             </div>         
