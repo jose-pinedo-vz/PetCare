@@ -5,51 +5,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Mascotas</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
-
-  <!-- <title>Veterinaria PetCare - Clientes</title>
-  <link rel="stylesheet" href="estilos_base.css"> -->
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="./img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
-    <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <div class="layout">
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Módulo de mascotas</h1>
-    <div style="margin-bottom: 20px;">
+      <div class="migaja">Gestión de Mascotas /</div>
+      <div class="encabezado-pagina">
+        <h1>Mascotas</h1>
+      </div>
+
+      <div class="tarjeta">
+    
+    <div class="barra-acciones">
       <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
     </div>
     <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
-    <div class="table-responsive">
+    <div class="tabla-envoltura">
 
-    <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <table>
       <thead>
         <tr>
           <th>Nombre</th>
@@ -69,9 +49,9 @@
               <td><?= htmlspecialchars($mascota['raza']) ?></td>
               <td><?= htmlspecialchars($mascota['sexo']) ?></td>
               <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
-              <td style="padding: 15px;">
+              <td class="acciones">
                 <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
-                <a class="btn" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+                <a class="btn btn-peligro" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -82,7 +62,11 @@
     </table>
 
     </div> <!-- AQUÍ TERMINA EL CONTENEDOR RESPONSIVE -->
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

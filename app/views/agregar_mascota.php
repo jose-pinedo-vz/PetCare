@@ -4,57 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar mascota</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-  <style>
-    #preview-crop { max-width: 200px; border-radius: 8px; display: none; margin-top: 8px; }
-    #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
-    #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
-    #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
-  </style>
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Registrar mascota</h1>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Agregar</div>
+      <div class="encabezado-pagina">
+        <h1>Registrar mascota</h1>
+      </div>
+
+      <div class="tarjeta">
+    
 
     <form action="guardar_mascota.php" method="POST" enctype="multipart/form-data">
 
 <fieldset>
-            <legend style="font-weight: bold; color: #333; padding: 0 5px;"> Datos básicos</legend>
+            <legend> Datos básicos</legend>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="grid-formulario">
               <div>
-                <label class="label-campo" class="label-campo" for="nombre" >Nombre:</label>
+                <label class="label-campo" for="nombre" >Nombre:</label>
                 <input type="text" class="campo" id="nombre" name="nombre" required >
               </div>
 
@@ -113,19 +89,19 @@
               </div>
             </div>
 
-            <div style="margin-top: 12px;">
+            <div class="campo-completo-sep">
               <label class="label-campo" for="fotografia" >Fotografía:</label>
               <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*" >
               <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
-              <p style="font-size: 13px; color: var(--texto-suave); margin: 6px 0 0;">Al elegir una foto se abrirá el cuadrado de recorte.</p>
+              <p class="nota-campo">Al elegir una foto se abrirá el cuadrado de recorte.</p>
             </div>
 
             <div id="modal-crop">
               <div class="caja">
-                <h3 style="margin-top:0;">Recortar foto (cuadrado)</h3>
+                <h3>Recortar foto (cuadrado)</h3>
                 <img id="imagen-a-recortar" alt="Imagen a recortar">
-                <div style="margin-top:10px; text-align:right; display:flex; gap:8px; justify-content:flex-end;">
-                  <button type="button" id="btn-cancelar-crop">Cancelar</button>
+                <div class="crop-acciones">
+                  <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
                   <button type="button" id="btn-recortar">Recortar y usar</button>
                 </div>
               </div>
@@ -136,7 +112,7 @@
           <fieldset>
             <legend> Datos clínicos</legend>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="grid-formulario">
               <div>
                 <label class="label-campo" for="alergias" >Alergias:</label>
                 <textarea class="campo" id="alergias" name="alergias" rows="2" ></textarea>
@@ -177,17 +153,23 @@
                 <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2" placeholder="Ej. Cuidado con las patas"></textarea>
               </div>
 
-              <div style="grid-column: 1 / -1;">
+              <div class="campo-completo">
                 <label class="label-campo" for="observaciones">Observaciones:</label>
                 <textarea class="campo" id="observaciones" name="observaciones" rows="2" placeholder="Observaciones generales"></textarea>
               </div>
             </div>
           </fieldset>
 
-      <button type="submit">Guardar</button>
-      <a class="btn" href="mascotas.php">Cancelar</a>
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+        <button type="submit">Guardar</button>
+      </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

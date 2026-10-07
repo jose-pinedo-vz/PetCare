@@ -4,41 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Eliminar empleado</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php" class="activo">Empleados</a></li>
-
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Eliminar empleado</h1>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Eliminar</div>
+      <div class="encabezado-pagina">
+        <h1>Eliminar empleado</h1>
+      </div>
+
+      <div class="tarjeta">
+    
 
     <form action="procesar_eliminar_empleado.php" method="POST">
 
@@ -47,7 +29,7 @@
       <fieldset>
         <p>¿Está seguro de que desea eliminar a <strong>Ana López García</strong>? Esta acción no se puede deshacer.</p>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="nombre_empleado">Nombre de empleado *:</label>
             <input type="text" class="campo" id="nombre_empleado" name="nombre_empleado" required>
@@ -60,12 +42,16 @@
         </div>
       </fieldset>
 
-      <div style="margin-top: 20px;">
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="empleados.php">Cancelar</a>
         <button type="submit" class="btn">Eliminar empleado</button>
-        <a class="btn" href="empleados.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

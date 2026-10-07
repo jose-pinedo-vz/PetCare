@@ -26,48 +26,24 @@ function v($valor) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar mascota</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-  <style>
-    #preview-crop { max-width: 200px; border-radius: 8px; display: none; margin-top: 8px; }
-    #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
-    #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
-    #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
-  </style>
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="./img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Editar mascota</h1>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Editar</div>
+      <div class="encabezado-pagina">
+        <h1>Editar mascota</h1>
+      </div>
+
+      <div class="tarjeta">
+    
 
     <form action="../controllers/actualizar_mascota.php" method="POST" enctype="multipart/form-data">
 
@@ -76,7 +52,7 @@ function v($valor) {
       <fieldset>
         <legend>Datos básicos</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
             <input type="text" class="campo" id="nombre" name="nombre" value="<?= v($mascota['nombre']) ?>" required>
@@ -137,19 +113,19 @@ function v($valor) {
           </div>
         </div>
 
-        <div style="margin-top: 12px;">
+        <div class="campo-completo-sep">
           <label class="label-campo" for="fotografia">Fotografía:</label>
           <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*">
           <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
-          <p style="font-size: 13px; color: var(--texto-suave); margin: 6px 0 0;">Deja este campo vacío si no quieres cambiar la foto actual.</p>
+          <p class="nota-campo">Deja este campo vacío si no quieres cambiar la foto actual.</p>
         </div>
 
         <div id="modal-crop">
           <div class="caja">
-            <h3 style="margin-top:0;">Recortar foto (cuadrado)</h3>
+            <h3>Recortar foto (cuadrado)</h3>
             <img id="imagen-a-recortar" alt="Imagen a recortar">
-            <div style="margin-top:10px; text-align:right; display:flex; gap:8px; justify-content:flex-end;">
-              <button type="button" id="btn-cancelar-crop">Cancelar</button>
+            <div class="crop-acciones">
+              <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
               <button type="button" id="btn-recortar">Recortar y usar</button>
             </div>
           </div>
@@ -159,7 +135,7 @@ function v($valor) {
       <fieldset>
         <legend>Datos clínicos</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="alergias">Alergias:</label>
             <textarea class="campo" id="alergias" name="alergias" rows="2"><?= v($mascota['alergias']) ?></textarea>
@@ -208,7 +184,7 @@ function v($valor) {
 
               <div>
                 <label class="label-campo">Estado:</label>
-                <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                <div class="estado-fila">
                   <?php $activo = !isset($mascota['esta_activo']) || $mascota['esta_activo'] == 1; ?>
                   <!-- Botón Switch -->
                   <label class="switch">
@@ -217,19 +193,26 @@ function v($valor) {
                   </label>
 
                   <!-- Caja de texto visual NO editable -->
-                  <input type="text" id="texto_estado" class="campo" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
+                  <input type="text" id="texto_estado" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled class="campo estado-texto">
 
                   <!-- Campo oculto para enviar 1 o 0 a PHP -->
                   <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
 
                 </div>
-        </div>
-      </fieldset>
+              </div>
+            </div>
+          </fieldset>
 
-      <button type="submit">Guardar cambios</button>
-      <a class="btn" href="mascotas.php">Cancelar</a>
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+        <button type="submit">Guardar cambios</button>
+      </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
@@ -237,6 +220,13 @@ function v($valor) {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-mascota.js"></script>
+
+  <script>
+    function cambiarEstado(check) {
+      document.getElementById('activo').value = check.checked ? '1' : '0';
+      document.getElementById('texto_estado').value = check.checked ? 'Activo' : 'Inactivo';
+    }
+  </script>
 
 </body>
 </html>

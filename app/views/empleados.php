@@ -8,46 +8,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Empleados</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php" class="activo">Empleados</a></li>
-
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Módulo de empleados</h1>
-    <div style="margin-bottom: 20px;">
+      <div class="migaja">Gestión de Empleados /</div>
+      <div class="encabezado-pagina">
+        <h1>Empleados</h1>
+      </div>
+
+      <div class="tarjeta">
+    
+    <div class="barra-acciones">
       <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
     </div>
-    <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
-    <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
+    <div class="tabla-envoltura">
+    <table class="tabla-ancha">
       <thead>
               <tr>
                 <th>ID</th>
@@ -90,16 +72,20 @@
                 <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
                 <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
                 <td><?= htmlspecialchars($e['horario']) ?></td>
-                <td style="padding: 15px; white-space: nowrap;">
+                <td class="acciones">
                   <a class="btn" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
-                  <a class="btn" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
+                  <a class="btn btn-peligro" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
                 </td>
               </tr>
 <?php endforeach; ?>
             </tbody>
     </table>
     </div>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
