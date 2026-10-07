@@ -1,6 +1,6 @@
-<?php 
+<?php
 $titulo = "Registrar Usuario";
-include 'layout/encabezado.php'; 
+include 'layout/encabezado.php';
 ?>
 
 <main>
@@ -11,7 +11,7 @@ include 'layout/encabezado.php';
     <?php if (!empty($mensaje)): ?>
         <p class='msg-success'><?= htmlspecialchars($mensaje) ?></p>
     <?php endif; ?>
-    
+
     <?php if (!empty($error)): ?>
         <p class='msg-error'><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>

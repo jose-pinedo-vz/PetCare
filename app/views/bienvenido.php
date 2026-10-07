@@ -1,6 +1,6 @@
-<?php 
+<?php
 $titulo = "Bienvenido";
-include 'layout/encabezado.php'; 
+include 'layout/encabezado.php';
 ?>
 
 <main>

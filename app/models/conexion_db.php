@@ -70,11 +70,10 @@ class ConexionDB
 
     public static function insertarUsuario(PDO $conexion, string $usuario, string $password_hash, ?string $empleado, string $rol, string $permisos, string $estado)
     {
-        $base=$conexion->prepare("INSERT INTO usuarios (id_usuario,usuario, contrasena, empleado_asociado, rol, permisos, estado) 
-                                  VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u),?, ?, ?, ?, ?, ?)");
+        $base=$conexion->prepare("INSERT INTO usuarios (id_usuario, usuario, contrasena, empleado_asociado, rol, permisos, estado) 
+                                  VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u), ?, ?, ?, ?, ?, ?)");
         $base->execute([$usuario, $password_hash, $empleado, $rol, $permisos, $estado]);
         return $base->rowCount();
     }
 }
-
 ?>

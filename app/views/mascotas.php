@@ -1,0 +1,105 @@
+<?php require_once __DIR__ . '/../controllers/MascotaController.php'; 
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../app/views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veterinaria PetCare - Mascotas</title>
+  <link rel="stylesheet" href="css/estilos_base.css">
+
+  <!-- <title>Veterinaria PetCare - Clientes</title>
+  <link rel="stylesheet" href="estilos_base.css"> -->
+
+</head>
+<body>
+
+  <header>
+    <div class="marca">
+      <img src="./img/logo3.svg" alt="Veterinaria PetCare">
+    </div>
+    <div class="sesion">
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="../app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
+    </div>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
+      <li><a href="citas.php">Citas</a></li>
+      <li><a href="clientes.php">Clientes</a></li>
+      <li><a href="empleados.php">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
+
+
+      <li><a href="#" class="deshabilitado">Inventario</a></li>
+      <li><a href="#" class="deshabilitado">Ventas</a></li>
+      <li><a href="#" class="deshabilitado">Servicios</a></li>
+      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
+      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
+      <li><a href="#" class="deshabilitado">Pagos</a></li>
+      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1>Módulo de mascotas</h1>
+    <div style="margin-bottom: 20px;">
+      <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+    </div>
+    <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
+    <div class="table-responsive">
+
+    <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Especie</th>
+          <th>Raza</th>
+          <th>Sexo</th>
+          <th>Edad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if (!empty($mascotas)): ?>
+          <?php foreach ($mascotas as $mascota): ?>
+            <tr>
+              <td><?= htmlspecialchars($mascota['nombre']) ?></td>
+              <td><?= htmlspecialchars($mascota['especie']) ?></td>
+              <td><?= htmlspecialchars($mascota['raza']) ?></td>
+              <td><?= htmlspecialchars($mascota['sexo']) ?></td>
+              <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
+              <td style="padding: 15px;">
+                <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
+                <a class="btn" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <tr><td colspan="6">No hay mascotas registradas.</td></tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+
+    </div> <!-- AQUÍ TERMINA EL CONTENEDOR RESPONSIVE -->
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
+
+</body>
+</html>
