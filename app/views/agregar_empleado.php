@@ -75,6 +75,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="nombre"
               name="nombre"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnombre_empleado'] ?? '')); unset($_SESSION['oldnombre_empleado']); ?>"
               maxlength="20"
               required>
           </div>
@@ -90,6 +91,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="apellido"
               name="apellido"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldapellido'] ?? '')); unset($_SESSION['oldapellido']); ?>"
               maxlength="40"
               required>
           </div>
@@ -114,6 +116,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="telefono"
               name="telefono"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldtelefono'] ?? '')); unset($_SESSION['oldtelefono']); ?>"
               maxlength="15"
               required>
           </div>
@@ -129,6 +132,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="correo"
               name="correo"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcorreo'] ?? '')); unset($_SESSION['oldcorreo']); ?>"
               maxlength="100"
               required>
           </div>
@@ -153,6 +157,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="calle"
               name="calle"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcalle'] ?? '')); unset($_SESSION['oldcalle']); ?>"
               maxlength="100"
               required>
           </div>
@@ -168,6 +173,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="numero_exterior"
               name="numero_exterior"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnumero_exterior'] ?? '')); unset($_SESSION['oldnumero_exterior']); ?>"
               maxlength="15"
               required>
           </div>
@@ -183,6 +189,8 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="numero_interior"
               name="numero_interior"
+
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnumero_interior'] ?? '')); unset($_SESSION['oldnumero_interior']); ?>"
               maxlength="15">
           </div>
 
@@ -197,6 +205,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="colonia"
               name="colonia"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcolonia'] ?? '')); unset($_SESSION['oldcolonia']); ?>"
               maxlength="60"
               required>
           </div>
@@ -212,6 +221,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="ciudad"
               name="ciudad"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldciudad'] ?? '')); unset($_SESSION['oldciudad']); ?>"
               maxlength="60"
               required>
           </div>
@@ -227,6 +237,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="estado"
               name="estado"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldestado'] ?? '')); unset($_SESSION['oldestado']); ?>"
               maxlength="60"
               required>
           </div>
@@ -242,6 +253,7 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="codigo_postal"
               name="codigo_postal"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>"
               maxlength="10"
               required>
           </div>
@@ -261,16 +273,17 @@ if (session_status() === PHP_SESSION_NONE) {
               Puesto *:
             </label>
 
+            <?php $p = $_SESSION['oldpuesto'] ?? ''; unset($_SESSION['oldpuesto']); ?>
             <select
               class="campo"
               id="puesto"
               name="puesto"
               required>
               <option value="">Selecciona un puesto</option>
-              <option value="Gerente">Gerente</option>
-              <option value="Veterinario/a">Veterinario</option>
-              <option value="Vendedor">Vendedor</option>
-              <option value="Estilista">Estilista</option>
+              <option value="Gerente" <?= $p === 'Gerente' ? 'selected' : '' ?> >Gerente</option>
+              <option value="Veterinario/a" <?= $p === 'Veterinario/a' ? 'selected' : '' ?> >Veterinario</option>
+              <option value="Vendedor" <?= $p === 'Vendedor' ? 'selected' : '' ?> >Vendedor</option>
+              <option value="Estilista" <?= $p === 'Estilista' ? 'selected' : '' ?> >Estilista</option>
             </select>
           </div>
 
@@ -283,6 +296,7 @@ if (session_status() === PHP_SESSION_NONE) {
               type="text"
               class="campo"
               id="especialidad"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldespecialidad'] ?? '')); unset($_SESSION['oldespecialidad']); ?>"
               name="especialidad"
               maxlength="50">
           </div>
@@ -298,20 +312,23 @@ if (session_status() === PHP_SESSION_NONE) {
               class="campo"
               id="num_cedula_profesional"
               name="num_cedula_profesional"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnum_cedula_profesional'] ?? '')); unset($_SESSION['oldnum_cedula_profesional']); ?>"
               maxlength="20">
           </div>
 
 
           <div>
-            <label class="label-campo" for="fecha_de_contratacion">
+            <label class="label-campo" for="Fecha_de_contratacion">
               Fecha de contratación:
             </label>
 
             <input
               type="date"
               class="campo"
-              id="fecha_de_contratacion"
-              name="fecha_de_contratacion">
+              id="Fecha_de_contratacion"
+              name="Fecha_de_contratacion"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha_de_contratacion'] ?? '')); unset($_SESSION['oldFecha_de_contratacion']); ?>"
+            >
           </div>
 
 
@@ -320,14 +337,15 @@ if (session_status() === PHP_SESSION_NONE) {
               Horario:
             </label>
 
+            <?php $h = $_SESSION['oldhorario'] ?? ''; unset($_SESSION['oldhorario']); ?>
             <select
               class="campo"
               id="horario"
               name="horario"
               required>
               <option value="">Selecciona un horario</option>
-              <option value="Matutino">Matutino</option>
-              <option value="Vespertino">Vespertino</option>
+              <option value="Matutino" <?= $h === 'Matutino' ? 'selected' : '' ?> >Matutino</option>
+              <option value="Vespertino" <?= $h === 'Vespertino' ? 'selected' : '' ?> >Vespertino</option>
             </select>
           </div>
 

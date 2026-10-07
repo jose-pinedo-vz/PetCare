@@ -88,10 +88,10 @@
                 <td><?= htmlspecialchars($e['puesto']) ?></td>
                 <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
                 <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
-                <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
+                <td><?= htmlspecialchars(substr((string)($e['Fecha_de_contratacion'] ?? ''), 0, 10)) ?></td>
                 <td><?= htmlspecialchars($e['horario']) ?></td>
                 <td style="padding: 15px; white-space: nowrap;">
-                  <a class="btn" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
+                  <a class="btn" href="editar_empleado.php?id_empleado=<?= $e['id_empleado'] ?>">Editar</a>
                   <a class="btn" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
                 </td>
               </tr>

@@ -100,7 +100,7 @@ class Empleados {
                 $datos['horario'],
             ]);
 
-            return ['exito' => true, 'mensaje' => 'Empleado actualizado con exito'];
+            return ['exito' => true, 'mensaje' => 'Empleado guardado con exito'];
         }
         catch (Exception $error) {
             return ['exito' => false, 'mensaje' => $error -> getMessage()];
