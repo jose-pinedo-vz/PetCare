@@ -3,7 +3,7 @@
 session_start();
 if (!isset($_SESSION['usuario']))
 {
-  header("Location: ../app/views/login.php");
+  header("Location: ../views/login.php");
   exit();
 }
 $usuario=$_SESSION['usuario'];
@@ -17,9 +17,6 @@ $usuario=$_SESSION['usuario'];
   <title>Veterinaria PetCare - Mascotas</title>
   <link rel="stylesheet" href="css/estilos_base.css">
 
-  <!-- <title>Veterinaria PetCare - Clientes</title>
-  <link rel="stylesheet" href="estilos_base.css"> -->
-
 </head>
 <body>
 
@@ -30,7 +27,7 @@ $usuario=$_SESSION['usuario'];
     <div class="sesion">
       <!-- Mostrar nombre del usuario -->
       <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
-      <a href="../app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
       <!-- Mostrar nombre del usuario -->
     </div>
   </header>
@@ -51,6 +48,11 @@ $usuario=$_SESSION['usuario'];
       <li><a href="#" class="deshabilitado">Veterinaria</a></li>
       <li><a href="#" class="deshabilitado">Pagos</a></li>
       <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+      <!-- Usuarios para administradores -->
+      <?php if ($_SESSION['rol'] === 'admin'): ?>
+        <li><a href="usuarios.php">Usuarios</a></li>
+      <?php endif; ?>
+      <!-- Usuarios para administradores -->
     </ul>
   </nav>
 
