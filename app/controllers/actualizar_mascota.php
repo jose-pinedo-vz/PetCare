@@ -143,13 +143,11 @@ try {
         // implode (', ', resultado de array_map) = pega en una string el resultado de array_map y lo separa con una ,
         $sets = implode(', ', array_map( fn($camposEdi) => "$camposEdi = ?", $camposEditables) );
 
-<<<<<<< HEAD
+
 
         $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
 
-=======
-<<<<<<< HEAD
->>>>>>> d5bf02c41c08460015b3b9493fae377d1ff65849
+
         // consulta
         $sqlActualizacion = "
             UPDATE mascotas
@@ -163,13 +161,9 @@ try {
         // array_values() = toma el arreglo le quita las llaves ej. 'nombre' por un valor enumerado desde 0 hasta el final
         // [... arreglo enumerado, el id de la mascota] = los ... desarman los valores uno por uno dentro de otro arreglo y al final agrega el id de la mascota
         $sentenciaActualizacion -> execute([...array_values($valoresFinales), $idMascota]);
-<<<<<<< HEAD
 
-=======
-=======
         $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
->>>>>>> recuperarCodifo
->>>>>>> d5bf02c41c08460015b3b9493fae377d1ff65849
+
 
         // echo "Informacion de mascota actualizada correctamente";
         header('Location: ../views/mascotas.php');
