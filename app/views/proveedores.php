@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../controllers/proveedor.php';
+$proveedores = listar_proveedores();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -62,6 +66,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
+<<<<<<< HEAD
             <tbody>
                 <tr>
                     <td>1</td>
@@ -120,6 +125,34 @@
                         <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px">Eliminar</a>
                     </td>
                 </tr>
+=======
+                        <tbody>
+                <?php if (!empty($proveedores)): ?>
+                    <?php foreach ($proveedores as $proveedor): ?>
+                        <tr>
+                            <td><?= htmlspecialchars((string)$proveedor['id_proveedor']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['razon_social']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['nombre_comercial']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['rfc']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['telefono']) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['correo'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['domicilio'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['ciudad'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['codigo_postal'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['condicion_pago'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
+                            <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
+                            <td style="padding: 15px; white-space: nowrap;">
+                                <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
+                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>" style="margin-left: 6px;">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="14">No hay proveedores registrados.</td></tr>
+                <?php endif; ?>
+>>>>>>> d5bf02c41c08460015b3b9493fae377d1ff65849
             </tbody>
         </table>
         </div>

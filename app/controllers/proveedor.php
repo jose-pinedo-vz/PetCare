@@ -154,4 +154,8 @@ function validar_datos($datos){
     }
 }
 
+function listar_proveedores(): array {
+    require_once __DIR__ . '/../models/proveedores.php';
+    return obtenerProveedoresActivos();
+}
 ?>
