@@ -1,12 +1,5 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario']))
-{
-  header("Location: /PetCare/app/views/login.php");
-  exit();
-}
-$usuario=$_SESSION['usuario'];
-
 ?>
 
 <!DOCTYPE html>

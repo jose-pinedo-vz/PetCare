@@ -3,13 +3,6 @@
     $empleados = Empleados::Listar_empleados_activos();
     // Mostrar nombre del usuario
     session_start();
-    if (!isset($_SESSION['usuario']))
-    {
-      header("Location: /PetCare/app/views/login.php");
-      exit();
-    }
-    $usuario=$_SESSION['usuario'];
-    // Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">

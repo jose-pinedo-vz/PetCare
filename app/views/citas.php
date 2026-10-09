@@ -1,13 +1,6 @@
 <?php  require_once __DIR__ . '/../controllers/citas.php'; 
 // Mostrar nombre del usuario
 session_start();
-if (!isset($_SESSION['usuario']))
-{
-  header("Location: /PetCare/app/views/login.php");
-  exit();
-}
-$usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
 ?>
 
 
