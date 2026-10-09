@@ -98,7 +98,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($telefono === '') {
         $errores[] = "El telefono es obligatorio";
     } else if (!preg_match($soloTelefono, $telefono) || mb_strlen($telefono) > 15) {
-        $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+        // $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+        $errores[] = "El telefono debe de tener mas de 7 y menos de 15 numeros (no debe de tener letras ni espacios)";
     }
 
     // correo es obligatorio (100)
