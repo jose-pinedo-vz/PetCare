@@ -1,7 +1,12 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: /PetCare/app/views/login.php");
+  exit();
 }
+$usuario=$_SESSION['usuario'];
+
 ?>
 
 <!DOCTYPE html>
@@ -20,8 +25,13 @@ if (session_status() === PHP_SESSION_NONE) {
     <aside class="sidebar">
       <div class="marca">
         <div class="logo-circulo">
-          <img src="img/logo.svg" alt="Veterinaria PetCare">
+          <img src="img/logo3.svg" alt="Veterinaria PetCare">
         </div>
+      </div>
+  
+      <div class="sesion">
+        <span>Empleado <?php echo htmlspecialchars($usuario);?></span>
+        <a href="/PetCare/app/controllers/Login.php?action=logout">Cerrar sesión</a>
       </div>
 
       <nav>
@@ -41,11 +51,6 @@ if (session_status() === PHP_SESSION_NONE) {
           <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
         </ul>
       </nav>
-
-      <div class="sesion">
-        <span>Empleado: Nombre del Empleado</span>
-        <a href="#">Cerrar sesión</a>
-      </div>
     </aside>
 
     <main>
@@ -54,26 +59,26 @@ if (session_status() === PHP_SESSION_NONE) {
       <div class="encabezado-pagina">
         <h1>Ficha Veterinaria</h1>
       </div>
-      <div class="migaja">Bienvenido "Inserte veterinario"</div>
+      
+      <!-- Para mostrar errores-->
+      <?php if (isset($_SESSION['error'])): ?>
+        <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+          <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+        </div>
+      <?php endif; ?>
+      <!-- -->
+
 
       <!--La tarjetita de la interfaz real del modulo -->
       <div class="tarjeta">
         <form action="../controllers/FichaMedicaController.php" method="POST">
-
-        <!-- Para mostrar errores-->
-        <?php if (isset($_SESSION['error'])): ?>
-          <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
-            <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
-          </div>
-        <?php endif; ?>
-
-        <!-- -->
           
           <fieldset>
             <legend>Datos de la consulta</legend>
               <div class="grid-formulario">
                 <div>
                 <label>Mascota</label>
+
                 <select name="mascota" id="mascota" required> 
                     <option value="">Selecciona una mascota</option>
                     <?php foreach ($mascotas as $m): ?>

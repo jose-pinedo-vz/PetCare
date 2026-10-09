@@ -2,15 +2,20 @@
 declare(strict_types=1);
 date_default_timezone_set('America/Mexico_City');
 //requiere_once hace que se cargue el archivo que se le pone en este
-require_once __DIR__ . '/../models/fichaMedicaModelo.php'
+require_once __DIR__ . '/../models/fichaMedicaModelo.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
+$idVeterinario=(int)$_SESSION['id_usuario'];
+$idConsulta=(int)$_SESSION['id_consulta'];
+
+$ficha=new FichaMedica();
+
 function errorSession(string $error) : null
 {
-    $_SESSION['error']=$error
+    $_SESSION['error']=$error;
     $_SESSION['oldid_consulta']=$_POST['id_consulta'] ?? '';
     $_SESSION['oldid_mascota']=$_POST['id_mascota'] ?? '';
     $_SESSION['oldid_veterinario']=$_POST['id_veterinario'] ?? '';
@@ -33,14 +38,27 @@ function errorSession(string $error) : null
     exit();
 }
 
+$Datosconsulta=$ficha->datosConsulta($idConsulta);
+if ($Datosconsulta===null){
+    $_SESSION['error']="La consulta no existe o ya fue atendida";
+    header("Location: ../views/citas.php");
+    exit();
+}
+$idCliente=(int)$Datosconsulta['id_cliente'];
+
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+    $mascotas = $ficha->agarraMascotas($idCliente);
+    require __DIR__ . '/../views/FichaMedica.php';   // la vista usa $mascotas e $idConsulta
+    exit();
+    }
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") 
 {
 
     //Datos
-    //$consulta=trim($_POST['id_consulta'] ?? '');
-    $consulta=1; 
+    $consulta=trim($_POST['id_consulta'] ?? '');
     $fecha=date("Y-m-d H:i");
-    $mascota=trim($_POST['id_mascota'] ?? '');
+    $mascota=trim($_POST['mascota'] ?? '');
     $veterinario=trim($_POST['id_veterinario'] ?? '');
 
     //Datos
@@ -62,18 +80,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $costo=trim($_POST['precio'] ?? '');
     $observacion=trim($_POST['observaciones'] ?? '');
 
-    $errores=[];
-
     if ($consulta==='')
         {
-            errorSession("No esta ligado a un veterinario")
-            $errores[]="No esta ligado a una consulta";
+            errorSession("No esta ligado a un veterinario");
+        }
+
+    if ($mascota === '' || !ctype_digit($mascota))
+        {
+            errorSession("No esta ligado a una mascota");
         }
 
     if ($veterinario==='')
         {
-            errorSession("No esta ligado a un veterinario")
-            $errores[]="No esta ligado a un veterinario";
+            errorSession("No esta ligado a un veterinario");
+        }
+
+    if (!is_numeric($temperatura) || !is_numeric($peso) || !is_numeric($costo))
+        {
+            errorSession("Temperatura, peso y precio deben ser numéricos");
         }
     
 
@@ -93,16 +117,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         'medicamentos'=>$medicamento,
         'dosis'=>$dosis,
         'indicaciones'=>$indicaciones,
-        'estudios_asociados'=>$estudioAs,
-        'proxima_cita'=>$proximaCita,
-        'observaciones'=>$observacio,
+        'estudios_asociados'=>$estudioAs !=='' ? $estudioAs:null, //Si la variable tiene contenido la guardas, sino pos pone null
+        'proxima_cita'=>$proximaCita !=='' ? $estudioAs:null,
+        'observaciones'=>$observacion,
         'costo'=>$costo,
     ];
 
-    $ficha=new FichaMedica();
     $resultado=$ficha->insertar($datos);
 
-    if($resultado===false){
+    if($resultado['exito']===false){
         $_SESSION['errores']=["no se logro guardar la ficha"];
         header("Location: ../views/FichaMedica.php?id_consulta=" . (int)$consulta);
         exit();
@@ -111,6 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
 
     header("Location: ../views/citas.php?exito=1");
+    exit();
 }
 ?>
 
