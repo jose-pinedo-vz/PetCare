@@ -5,6 +5,58 @@ require_once __DIR__ . '/../models/citas.php';
 session_start();
 
 
+function consultarFechas(string $fecha):array
+{
+    $datos = [];
+
+    echo "llego " . $fecha;
+    return [];
+
+    if ("hoy" === $fecha)
+    {
+
+    }
+    else if ("semana" === $fecha)
+    {
+
+    }
+    else if ("mes" === $fecha)
+    {
+
+    }
+    else if ("todos" === $fecha)
+    {
+        $datos = estraerDatosConsultas();
+    }
+    else if ("SemanaPasada" === $fecha)
+    {
+
+    }
+    else if ("MesPasado" === $fecha)
+    {
+
+    }
+    else
+    {
+        return [];
+    }
+
+    foreach ($datos as $citas)
+    {
+        $resultados[] =
+        [
+            'id' => $citas['id_cita'],
+            'nombre' => $citas['nombre'],
+            'fecha' => $citas['fecha'],
+            'motivo' => $citas['motivo'],
+            'atendido' => $citas['atendido']
+        ];
+    }
+
+    return $resultados ?? [];
+        
+}
+
 // intermediario entre front y base de datos
 function estraerDatosConsultas():array
 {
@@ -16,6 +68,7 @@ function estraerDatosConsultas():array
     {
         $resultados[] =
         [
+            'id' => $cita['id_consulta'],
             'nombre' => $cita['nombre'].' '.$cita['apellido'],
             'fecha' => $cita['fecha'],
             'motivo' => $cita['motivo_de_consulta'],

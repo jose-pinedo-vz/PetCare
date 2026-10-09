@@ -15,3 +15,9 @@ function mostrarSeccion(tipo, evt)
         seccionEspera.classList.add('oculto');
     }
 }
+
+
+function mostrarFechasDeCitas()
+{
+    
+}

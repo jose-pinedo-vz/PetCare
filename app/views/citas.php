@@ -14,6 +14,7 @@
       if ($d['atendido'] === 0)
       {?>
         <div class="Card_cita">
+          <p><strong class="oculto"><?php echo $d['id']; ?></strong></p>
           <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
@@ -37,6 +38,7 @@
       if ($d['atendido'] === 1)
       {?>
         <div class="Card_cita">
+          <p><strong class="oculto"><?php echo $d['id']; ?></strong></p>
           <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
@@ -99,7 +101,6 @@
         <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
         <button id="btn_active" onclick="mostrarSeccion('atendidas', event)" class="btn" style="background: #757575; margin-left: 8px;">Atendidas</button>
       </div>
-
       <div></div>
 
       <div class="panel_contenido">
@@ -109,6 +110,7 @@
           <div id="FiltroCitas">
               <h4>Filtrado</h4>
               <select id="filtro_espera" name="filtro_espera">
+                <option value="Todos">Todos</option>
                 <option value="Hoy">Hoy</option>
                 <option value="Semana">Semana</option>
                 <option value="Mes">Mes</option>
@@ -123,6 +125,16 @@
         <div id="seccion_atendidos" class="seccion-panel oculto">
           <h3>Citas atendidas</h3>
           <div id="filtrado_atendidos"></div>
+          <div id="FiltroCitas">
+              <h4>Filtrado</h4>
+              <select id="filtro_espera" name="filtro_espera">
+                <option value="Todos">Todos</option>
+                <option value="Hoy">Hoy</option>
+                <option value="SemanaPasada">Semana pasada</option>
+                <option value="MesPasado">Mes pasado</option>
+              </select>
+          </div>
+          <hr>
 
           <?php mostrarCitasAtendidas(); ?>
         </div>
