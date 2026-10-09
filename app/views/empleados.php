@@ -20,10 +20,6 @@
     </div>
 
     <div class="sesion">
-      <!-- Mostrar nombre del usuario -->
-      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
-      <a href="/PetCare/app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
-      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 

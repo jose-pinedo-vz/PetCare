@@ -23,8 +23,6 @@ session_start();
       </div>
   
       <div class="sesion">
-        <span>Empleado <?php echo htmlspecialchars($usuario);?></span>
-        <a href="/PetCare/app/controllers/Login.php?action=logout">Cerrar sesión</a>
       </div>
 
       <nav>
