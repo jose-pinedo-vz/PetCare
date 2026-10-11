@@ -2,7 +2,7 @@
 $sbActiva = $paginaActiva ?? '';
 
 $sbModulos = [
-    'inicio'        => ['Inicio',            null],
+    'inicio'        => ['Inicio',            'inicio.php'],
     'clientes'      => ['Clientes',          'clientes.php'],
     'mascotas'      => ['Mascotas',          'mascotas.php'],
     'citas'         => ['Citas',             'citas.php'],
