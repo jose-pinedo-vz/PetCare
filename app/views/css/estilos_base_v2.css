@@ -872,3 +872,86 @@ form button,
     grid-template-columns: 1fr;
   }
 }
+.inventario-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.inventario-tarjeta {
+  background-color: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 18px 20px;
+  text-align: center;
+}
+
+.inventario-tarjeta h3 {
+  margin: 0 0 10px;
+}
+
+.inventario-tarjeta p {
+  margin: 0;
+}
+
+.inventario-btn-contactar {
+  margin-top: 10px;
+}
+
+.subtitulo {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.inventario-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.inventario-buscador {
+  flex: 1;
+  min-width: 260px;
+}
+
+.producto-imagen {
+  width: 100px;
+  height: auto;
+}
+
+.inventario-dialog {
+  width: min(520px, calc(100% - 40px));
+  padding: 24px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--card);
+  color: var(--primary-dark);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+.inventario-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.inventario-dialog h2 {
+  margin-top: 0;
+}
+
+.inventario-dialog-acciones {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.confirmacion p {
+  margin: 0 0 20px;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .inventario-resumen {
+    grid-template-columns: 1fr;
+  }
+}

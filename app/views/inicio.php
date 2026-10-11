@@ -12,37 +12,7 @@
 
   <div class="layout">
 
-    <aside class="sidebar">
-      <div class="marca">
-        <div class="logo-circulo">
-          <img src="img/logo3.svg" alt="Veterinaria PetCare">
-        </div>
-      </div>
-
-      <nav>
-        <ul>
-          <li><a href="inicio.php" class="activo">Inicio</a></li>
-          <li><a href="clientes.php">Clientes</a></li>
-          <li><a href="mascotas.php">Mascotas</a></li>
-          <li><a href="citas.php">Citas</a></li>
-          <li><a href="empleados.php">Empleados</a></li>
-          <li><a href="proveedores.php">Proveedores</a></li>
-          <li><a href="inventario.php">Inventario</a></li>
-          <li><a href="#" class="deshabilitado">Ventas</a></li>
-          <li><a href="#" class="deshabilitado">Servicios</a></li>
-          <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-          <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-          <li><a href="#" class="deshabilitado">Pagos</a></li>
-          <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-          <li><a href="#" class="deshabilitado">Configuración</a></li>
-        </ul>
-      </nav>
-
-      <div class="sesion">
-        <span>Empleado: Nombre del Empleado</span>
-        <a href="#">Cerrar sesión</a>
-      </div>
-    </aside>
+  <?php $paginaActiva = 'inicio'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
       <div class="migaja">Panel principal /</div>
