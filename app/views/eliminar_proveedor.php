@@ -1,3 +1,7 @@
+<?php
+  include_once '../app/controllers/eliminar_proveedor.php';
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
