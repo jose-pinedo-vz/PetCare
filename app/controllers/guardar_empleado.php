@@ -95,11 +95,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // telefono es obligatorio (15)
-    if ($telefono === '') {
-        $errores[] = "El telefono es obligatorio";
-    } else if (mb_strlen($telefono) < 10 || mb_strlen($telefono) > 10) {
-        // $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
-        $errores[] = "El telefono debe de tener 10 numeros exactos (no debe de tener letras ni espacios)";
+    //if ($telefono === '') {
+    //    $errores[] = "El telefono es obligatorio";
+    //} else if (mb_strlen($telefono) < 10 || mb_strlen($telefono) > 10) {
+    //    // $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+    //    $errores[] = "El telefono debe de tener 10 numeros exactos (no debe de tener letras ni espacios)";
+    //}
+
+    if (empty($telefono)) {
+        $errores[] = "El telefono es obligatoria.";
+    }else if (preg_match('/[a-zA-Z]/', $telefono)) {
+        $errores[] = "El teléfono no puede contener letras.";
+    } else {
+        // Extraer solo los números ignorando guiones, espacios y paréntesis
+        $soloNumerosTel = preg_replace('/\D/', '', $telefono);
+        if (strlen($soloNumerosTel) !== 10) {
+            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678 o 345-103-2345).";
+        }
     }
 
     // correo es obligatorio (100)
