@@ -138,9 +138,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 }
 ?>
 
-
-
-
 <!-- Session ayuda a crear sesiones en lo que el cliente permanece en una pagina web
 
 Lo que mas me intereso es el uso de $_SESSION que es una variable global que se usa

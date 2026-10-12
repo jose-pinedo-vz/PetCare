@@ -1,12 +1,5 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario']))
-{
-  header("Location: /PetCare/app/views/login.php");
-  exit();
-}
-$usuario=$_SESSION['usuario'];
-
 ?>
 
 <!DOCTYPE html>
@@ -30,8 +23,6 @@ $usuario=$_SESSION['usuario'];
       </div>
   
       <div class="sesion">
-        <span>Empleado <?php echo htmlspecialchars($usuario);?></span>
-        <a href="/PetCare/app/controllers/Login.php?action=logout">Cerrar sesión</a>
       </div>
 
       <nav>

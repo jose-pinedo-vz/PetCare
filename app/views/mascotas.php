@@ -1,13 +1,6 @@
 <?php require_once __DIR__ . '/../controllers/MascotaController.php';
 // Mostrar nombre del usuario
 session_start();
-// if (!isset($_SESSION['usuario']))
-// {
-//   header("Location: /PetCare/app/views/login.php");
-//   exit();
-// }
-// $usuario=$_SESSION['usuario'];
-// // Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -28,7 +21,6 @@ session_start();
       <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
     <div class="sesion">
-      <!-- Mostrar nombre del usuario -->
       <a href="/PetCare/app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
       <!-- Mostrar nombre del usuario -->
     </div>
@@ -43,7 +35,7 @@ session_start();
       <li><a href="proveedores.php">Proveedores</a></li>
 
 
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
