@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../controllers/proveedor.php';
+$proveedores = listar_proveedores();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -26,8 +30,7 @@
             <li><a href="empleados.php">Empleados</a></li>
             <li><a href="proveedores.php" class="activo">Proveedores</a></li>
 
-            
-            <li><a href="#" class="deshabilitado">Proveedores</a></li>
+
             <li><a href="#" class="deshabilitado">Inventario</a></li>
             <li><a href="#" class="deshabilitado">Ventas</a></li>
             <li><a href="#" class="deshabilitado">Servicios</a></li>
@@ -41,10 +44,10 @@
     <main>
         <h1>Módulo de Proveedores</h1>
         <div style="margin-bottom: 20px;">
-            <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>  
+            <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>
         </div>
         <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
-        <table border="1" style="widht: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
+        <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -63,6 +66,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
+
             <tbody>
                 <tr>
                     <td>1</td>
@@ -78,9 +82,9 @@
                     <td>Crédito a 30 días</td>
                     <td>5 días hábiles</td>
                     <td>Entrega de productos veterinarios.</td>
-                    <td style="pading: 15px; white-space: nowrap;">
+                    <td style="padding: 15px; white-space: nowrap;">
                         <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px:">Eliminar</a>
+                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px">Eliminar</a>
                     </td>
                 </tr>
                 <tr>
@@ -97,9 +101,9 @@
                     <td>Contado</td>
                     <td>3 días hábiles</td>
                     <td>Realiza entregas de medicamentos.</td>
-                    <td style="pading: 15px; white-space: nowrap;">
+                    <td style="padding: 15px; white-space: nowrap;">
                         <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px:">Eliminar</a>
+                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px">Eliminar</a>
                     </td>
                 </tr>
                 <tr>
@@ -116,11 +120,39 @@
                     <td>Crédito a 15 días</td>
                     <td>7 días hábiles</td>
                     <td>Proveedor de alimentos y accesorios.</td>
-                    <td style="pading: 15px; white-space: nowrap;">
+                    <td style="padding: 15px; white-space: nowrap;">
                         <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px:">Eliminar</a>
+                        <a class="btn" href="eliminar_proveedor.php?id=1" style="margin-left: 6px">Eliminar</a>
                     </td>
                 </tr>
+
+                        <tbody>
+                <?php if (!empty($proveedores)): ?>
+                    <?php foreach ($proveedores as $proveedor): ?>
+                        <tr>
+                            <td><?= htmlspecialchars((string)$proveedor['id_proveedor']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['razon_social']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['nombre_comercial']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['rfc']) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['telefono']) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['correo'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['domicilio'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['ciudad'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['codigo_postal'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)($proveedor['condicion_pago'] ?? '')) ?></td>
+                            <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
+                            <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
+                            <td style="padding: 15px; white-space: nowrap;">
+                                <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
+                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>" style="margin-left: 6px;">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="14">No hay proveedores registrados.</td></tr>
+                <?php endif; ?>
+
             </tbody>
         </table>
         </div>

@@ -7,7 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error) : null
+// function errorSession(string $error) : null
+function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
     // $_SESSION['oldClave'] = $_POST['claveCliente'];

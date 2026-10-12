@@ -9,7 +9,7 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 function IDproveedor(PDO $conexion): int {
     try {
         // Consultamos el ID máximo actual y le sumamos 1
-        $stmt = $conexion->query("SELECT COALESCE(MAX(id_mascota), 0) + 1 FROM mascotas");
+        $stmt = $conexion->query("SELECT COALESCE(MAX(id_proveedor), 0) + 1 FROM proveedores");
         return (int) $stmt->fetchColumn();
     } catch (PDOException $e) {
         return 1;
@@ -25,13 +25,15 @@ function insertar(array $datos) {
     }
 
     $id = IDproveedor($conexion);
+    // Por defecto, el proveedor se considera activo al insertarlo
+    $activo = 1;
 
-    $insert = "INSERT INTO mascotas (
+    $insert = "INSERT INTO proveedores (
         id_proveedor, razon_social, nombre_comercial, rfc, telefono, correo, domicilio, ciudad, estado, codigo_postal,
-        condicion_pago, tiempo_entrega, observaciones
+        condicion_pago, tiempo_entrega, observaciones, esta_activo
     ) VALUES (
         :id_proveedor, :razon_social, :nombre_comercial, :rfc, :telefono, :correo, :domicilio, :ciudad, :estado, :codigo_postal,
-        :condicion_pago, :tiempo_entrega, :observaciones,  1
+        :condicion_pago, :tiempo_entrega, :observaciones,  :esta_activo
     )";
 
     try {
@@ -48,7 +50,8 @@ function insertar(array $datos) {
         $stmt->bindParam(":codigo_postal",    $datos['codigo_postal' ],   PDO::PARAM_STR);
         $stmt->bindParam(":condicion_pago",   $datos['condicion_pago'],   PDO::PARAM_STR);
         $stmt->bindParam(":tiempo_entrega",   $datos['tiempo_entrega'],   PDO::PARAM_INT);
-        $stmt->bindParam(":observaciones",    $datos['observaciones'],    PDO::PARAM_INT);
+        $stmt->bindParam(":observaciones",    $datos['observaciones'],    PDO::PARAM_STR);
+        $stmt->bindParam(":esta_activo",      $activo,                    PDO::PARAM_INT);
         
         $stmt->execute();
 
@@ -67,6 +70,24 @@ function eliminar(int $id): bool
         return $stmt->execute([$id]);
     } catch (Exception $e) {
         return htmlspecialchars($e->getMessage());
+    }
+}
+// Obtiene los proveedores activos para mostrarlos en la vista
+function obtenerProveedoresActivos(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT id_proveedor, razon_social, nombre_comercial, rfc, telefono, correo,
+                       domicilio, ciudad, estado, codigo_postal, condicion_pago,
+                       tiempo_entrega, observaciones
+                FROM proveedores
+                WHERE esta_activo = 1
+                ORDER BY id_proveedor DESC";
+
+        $resultado = $conexion->query($sql);
+        return $resultado ? $resultado->fetchAll(PDO::FETCH_ASSOC) : [];
+    } catch (Exception $e) {
+        error_log("Error en obtenerProveedoresActivos: " . $e->getMessage());
+        return [];
     }
 }
 ?>

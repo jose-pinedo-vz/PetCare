@@ -54,8 +54,9 @@ if (!$empleado) {
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
+      
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>

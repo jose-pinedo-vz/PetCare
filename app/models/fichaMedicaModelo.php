@@ -1,4 +1,4 @@
-<?php
+<?php //Falta cambiar la consulta a atendido(1) si se inserto la ficha
 declare(strict_types=1);
 
 if (file_exists(__DIR__ . '/conexion_db.php')) {
@@ -9,7 +9,7 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 
 class FichaMedica
 {
-    public function insertar(array $datos): bool
+    public function insertar(array $datos): array
     {
         try{
             $db = ConexionDB::obtenerConexion(); //Se crea la conexion
@@ -47,10 +47,30 @@ class FichaMedica
                 ':observaciones'           => $datos['observaciones'],
                 ':costo'                   => $datos['costo'],
                 ]);
-            return ['exito' => true, 'id' => $id, 'mensaje' => 'Cliente registrado con éxito'];
+            return ['exito' => true, 'id' => $datos['id_consulta'], 'mensaje' => 'ficha medica registrada con éxito'];
         //Sisi dice que pos si con true y si no da false y el error
         }catch (Exception $e) {
-            return ['exito' => false, 'id' => null, 'mensaje' => $e->getMessage()];
+            return ['exito' => false, 'id' => null, 'mensaje' => 'No se pudo guardar la ficha'];
         }
+    }
+
+    public function datosConsulta(int $idConsulta): ?array
+    {
+        $db=ConexionDB::obtenerConexion();
+        $stmt=$db->prepare("SELECT id_consulta,id_cliente from consulta_veterinaria where id_consulta= :consulta and atendido = 0");
+        $stmt->execute([':consulta'=>$idConsulta]);
+        $datos=$stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+        return $datos;
+    }
+
+    public function agarraMascotas(int $idCliente): ?array
+    {
+        $db=ConexionDB::obtenerConexion();
+        $stmt=$db->prepare("SELECT id,nombre From mascotas where id_cliente= :clientesito order by nombre");
+        $stmt->execute([':clientesito'=>$idCliente]);
+        $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $datos;
     }
 }

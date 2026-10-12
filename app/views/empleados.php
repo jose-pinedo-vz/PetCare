@@ -1,6 +1,15 @@
 <?php
     require_once __DIR__ . '/../models/Empleados.php';
     $empleados = Empleados::Listar_empleados_activos();
+    // Mostrar nombre del usuario
+    // session_start();
+    // if (!isset($_SESSION['usuario']))
+    // {
+    //   header("Location: /PetCare/app/views/login.php");
+    //   exit();
+    // }
+    // $usuario=$_SESSION['usuario'];
+    // // Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,8 +27,9 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
+      <!-- Mostrar nombre del usuario -->
+      <a href="/PetCare/app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 
@@ -29,8 +39,9 @@
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
+
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>

@@ -243,6 +243,39 @@ td .btn:last-child {
   margin-right: 0;
 }
 
+.contenido {
+  margin: 20px;
+}
+
+.inventario-resumen {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    text-align: center;
+    gap: 15px;
+}
+
+.inventario-tarjeta {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.inventario-tarjeta h3 {
+    margin: 0 0 10px;
+}
+
+.inventario-tarjeta p {
+    margin: 0;
+}
+
+
+
+.inventario-btn-contactar {
+    margin-top: 10px;
+}
+
 /* 
   DISEÑO RESPONSIVE (celus y tablets) */
 @media (max-width: 768px) {
@@ -319,3 +352,21 @@ td .btn:last-child {
 .oculto {
   display: none !important;
 }
+
+/* Estilo para el contenedor de errores */
+    .alerta-errores {
+      background-color: #f8d7da;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .alerta-errores h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    .alerta-errores ul {
+      margin: 0;
+      padding-left: 20px;
+    }

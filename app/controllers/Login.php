@@ -1,130 +1,67 @@
 <?php
-
 session_start();
-
 require_once '../models/conexion_db.php';
-require_once '../views/bienvenida.php';
-
 $conexion=ConexionDB::obtenerConexion();
-$action=$_GET['action']??'home';
+$action=$_GET['action'] ?? '';
 
-if($action==='logout')
+if ($action==='logout')
 {
+    $_SESSION=array();
+    if (ini_get("session.use_cookies"))
+    {
+        $params=session_get_cookie_params();
+        setcookie(session_name(),'',time()-42000,$params["path"],$params["domain"],$params["secure"],$params["httponly"]);
+    }
     session_destroy();
-    header("Location: Login.php");
+    header("Location: login.php");
     exit();
 }
 
-if($_SERVER['REQUEST_METHOD']==='POST')
+if (isset($_SESSION['usuario']))
 {
-    $post_action=$_POST['action']??'';
+    header("Location: /PetCare/app/views/clientes.php");
+    exit();
+}
+ 
+$error='';
 
-    if($post_action==='login')
+if ($_SERVER['REQUEST_METHOD']==='POST')
+{
+    $usuario=trim($_POST['usuario'] ?? '');
+    $password=trim($_POST['password'] ?? '');
+    if (empty($usuario) || empty($password))
     {
-        $usuario=trim($_POST['usuario']??'');
-        $password=trim($_POST['password']??'');
-
+        $error='ingrese su usuario y contraseña.';
+    }
+    else
+    {
         $datosUsuario=ConexionDB::buscarUsuarioPorNombre($conexion, $usuario);
 
-        if($datosUsuario)
+        if ($datosUsuario)
         {
-            if($datosUsuario['estado'] !== 'activo')
+            if ($datosUsuario['estado'] !== 'activo')
             {
-                vistaLogin("La cuenta se encuentra inactiva.");
-                exit();
+                $error="La cuenta se encuentra inactiva.";
             }
-            elseif(password_verify($password, $datosUsuario['contrasena']))
+            elseif (password_verify($password, $datosUsuario['contrasena']))
             {
+                session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);
-
                 $_SESSION['id_usuario']=$datosUsuario['id_usuario'];
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
-
-                header("Location: Login.php?action=bienvenido");
+                header("Location: /PetCare/app/views/clientes.php");
                 exit();
             }
-        }
-        vistaLogin("Usuario o contraseña incorrectos.");
-        exit();
-    }
-
-    if($post_action==='registro')
-    {
-        if (!isset($_SESSION['usuario'])||$_SESSION['rol'] !== 'admin')
-        {
-            header("Location: Login.php?action=bienvenido");
-            exit();
-        }
-
-        $nuevo_usuario=trim($_POST['nuevo_usuario']??'');
-        $nueva_password=trim($_POST['nueva_password']??'');
-        $empleado_asociado=!empty($_POST['empleado_asociado'])?$_POST['empleado_asociado']:null;
-        $rol=$_POST['rol']??'usuario';
-        $permisos=$_POST['permisos']??'todos';
-        $estado=$_POST['estado']??'activo';
-
-        if(!empty($nuevo_usuario)&&!empty($nueva_password))
-        {
-            $password_hash=password_hash($nueva_password, PASSWORD_DEFAULT);
-            try
+            else
             {
-                ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
-                vistaRegistro("Usuario '$nuevo_usuario' creado con éxito", "");
-            } 
-            catch(PDOException $e)
-            {
-                if($e->getCode()===1062)
-                {
-                    vistaRegistro("", "El nombre de usuario '$nuevo_usuario' ya existe.");
-                } else {
-                    vistaRegistro("", "Error al guardar el usuario: ".$e->getMessage());
-                }
+                $error="usuario o contraseña incorrectos.";
             }
         }
         else
         {
-            vistaRegistro("", "Por favor completa los campos obligatorios.");
+            $error="usuario o contraseña incorrectos.";
         }
-        exit();
     }
 }
-
-if($action==='home'||$action==='login')
-{
-    if(isset($_SESSION['usuario']))
-    {
-        header("Location: Login.php?action=bienvenido");
-        exit();
-    }
-    vistaLogin();
-}
-elseif($action==='bienvenido')
-{
-    if(!isset($_SESSION['usuario']))
-    {
-        header("Location: Login.php");
-        exit();
-    }
-    vistaBienvenido($_SESSION['usuario'], $_SESSION['rol']);
-}
-elseif ($action==='registro')
-{
-    if(!isset($_SESSION['usuario'])||$_SESSION['rol']!=='admin')
-    {
-        header("Location: Login.php?action=bienvenido");
-        exit();
-    }
-    vistaRegistro();
-}
-
-elseif ($action==='modificar')
-{
-    if(!isset($_SESSION['usuario'])||$_SESSION['rol']!=='admin')
-    {
-        header("Location: Login.php?action=bienvenido");
-        exit();
-    }
-    vistaModificar();
-}
-?>
+require_once '../views/login.php';

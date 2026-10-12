@@ -1,15 +1,25 @@
-<?php  require_once __DIR__ . '/../controllers/citas.php'; ?>
+<?php  require_once __DIR__ . '/../controllers/citas.php';
+// Mostrar nombre del usuario
+// session_start();
+// if (!isset($_SESSION['usuario']))
+// {
+//   header("Location: /PetCare/app/views/login.php");
+//   exit();
+// }
+// $usuario=$_SESSION['usuario'];
+// // Mostrar nombre del usuario
+?>
 
 
 <!-- se encrga de mostrar todas las citas pendientes -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarProximasCitas()
   {
     $datos = estraerDatosConsultas();
     // echo $datos[0]['atendido'];
-    foreach ($datos as $d) 
+    foreach ($datos as $d)
     {
       if ($d['atendido'] === 0)
       {?>
@@ -20,13 +30,13 @@
           <button class="btn" id="btn_consultas">Consulta</button>
         </div>
       <?php }
-    } 
-  } 
+    }
+  }
 ?>
 
 <!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarCitasAtendidas()
   {
@@ -43,7 +53,7 @@
           <button class="btn" id="btn_consultas">Pagar</button>
         </div>
       <?php }
-    } 
+    }
   }
 ?>
 
@@ -65,8 +75,9 @@
       <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
+      <!-- Mostrar nombre del usuario -->
+      <a href="/PetCare/app/controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 
@@ -76,8 +87,8 @@
       <li><a href="citas.php" class="activo">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
       <li><a href="#" class="deshabilitado">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
@@ -93,7 +104,7 @@
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agendarCita.php">+ Agendar cita</a>
     </div>
-    
+
     <div class="contenedor_citas">
       <div class="boton_control">
         <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
@@ -103,7 +114,7 @@
       <div class="panel_contenido">
         <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3> 
+          <h3>Citas en espera</h3>
           <?php mostrarProximasCitas(); ?>
         </div>
 
@@ -112,7 +123,7 @@
           <h3>Nombre del dueño</h3>
           <?php mostrarCitasAtendidas(); ?>
         </div>
-         
+
       </div>
     </div>
   </main>
