@@ -39,7 +39,7 @@ function errorSession(string $error) : void {
     $idMascota = (int)($_POST['id_mascota'] ?? 0);
 
     header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}");
-    exit;
+    exit();
 }
 
 try {
@@ -55,7 +55,7 @@ try {
 
         if ($idMascota === false || $idMascota === null) {
             echo "Error: no se recibio un ID de mascota valido";
-            exit;
+            exit();
         }
 
         $datosActuales = Mascota::obtenerPorId($idMascota);
@@ -63,7 +63,7 @@ try {
         // verifica que exita el id de la mascota
         if (!$datosActuales) {
             echo "Error: no existe una mascota con ese ID";
-            exit;
+            exit();
         }
 
         // Campos editables "llegan como texto/numero desde $_POST "
@@ -90,7 +90,7 @@ try {
         if (count($errores) > 0) {
             $msg = implode(' | ', $errores);
             errorSession($msg);
-            exit;
+            exit();
         }
 
 
@@ -126,7 +126,7 @@ try {
 
             else {
                 echo "Error en la foto: " . $resultadoImagen['mensaje'];
-                exit;
+                exit();
             }
         }
 
@@ -144,7 +144,9 @@ try {
         $sets = implode(', ', array_map( fn($camposEdi) => "$camposEdi = ?", $camposEditables) );
 
 
+
         $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
+
 
         // consulta
         $sqlActualizacion = "
@@ -160,10 +162,12 @@ try {
         // [... arreglo enumerado, el id de la mascota] = los ... desarman los valores uno por uno dentro de otro arreglo y al final agrega el id de la mascota
         $sentenciaActualizacion -> execute([...array_values($valoresFinales), $idMascota]);
 
+        $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
+
 
         // echo "Informacion de mascota actualizada correctamente";
         header('Location: ../views/mascotas.php');
-        exit;
+        exit();
     }
 }
 

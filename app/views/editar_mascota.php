@@ -9,14 +9,14 @@ $idMascota = filter_input(INPUT_GET, 'id_mascota', FILTER_VALIDATE_INT);
 
 if ($idMascota === false || $idMascota === null) {
     header('Location: mascotas.php');
-    exit;
+    exit();
 }
 
 $mascota = obtenerMascotaPorId($idMascota);
 
 if (!$mascota) {
     header('Location: mascotas.php');
-    exit;
+    exit();
 }
 
 // Función chiquita para no repetir htmlspecialchars() en cada campo
@@ -60,7 +60,7 @@ function v($valor) {
       <li><a href="empleados.php">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>

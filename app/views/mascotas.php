@@ -17,6 +17,9 @@ $usuario=$_SESSION['usuario'];
   <title>Veterinaria PetCare - Mascotas</title>
   <link rel="stylesheet" href="css/estilos_base.css">
 
+  <!-- <title>Veterinaria PetCare - Clientes</title>
+  <link rel="stylesheet" href="estilos_base.css"> -->
+
 </head>
 <body>
 
@@ -41,7 +44,7 @@ $usuario=$_SESSION['usuario'];
       <li><a href="proveedores.php">Proveedores</a></li>
 
 
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>

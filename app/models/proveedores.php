@@ -72,4 +72,22 @@ function eliminar(int $id): bool
         return htmlspecialchars($e->getMessage());
     }
 }
+// Obtiene los proveedores activos para mostrarlos en la vista
+function obtenerProveedoresActivos(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT id_proveedor, razon_social, nombre_comercial, rfc, telefono, correo,
+                       domicilio, ciudad, estado, codigo_postal, condicion_pago,
+                       tiempo_entrega, observaciones
+                FROM proveedores
+                WHERE esta_activo = 1
+                ORDER BY id_proveedor DESC";
+
+        $resultado = $conexion->query($sql);
+        return $resultado ? $resultado->fetchAll(PDO::FETCH_ASSOC) : [];
+    } catch (Exception $e) {
+        error_log("Error en obtenerProveedoresActivos: " . $e->getMessage());
+        return [];
+    }
+}
 ?>

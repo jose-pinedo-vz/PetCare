@@ -41,7 +41,7 @@
             <li><a href="proveedores.php" class="activo">Proveedores</a></li>
 
 
-            <li><a href="#" class="deshabilitado">Inventario</a></li>
+            <li><a href="inventario.php">Inventario</a></li>
             <li><a href="#" class="deshabilitado">Ventas</a></li>
             <li><a href="#" class="deshabilitado">Servicios</a></li>
             <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -241,7 +241,7 @@
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
-                            Condición de pago:
+                            Condición de pago *:
                         </label>
 
                         <input
@@ -255,7 +255,7 @@
 
                     <div>
                         <label class="label-campo" for="tiempo_entrega">
-                            Tiempo de entrega *:
+                            Tiempo de entrega (Días) *:
                         </label>
 
                         <input
