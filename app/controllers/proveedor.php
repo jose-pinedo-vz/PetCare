@@ -1,7 +1,6 @@
 <?php
 /* codigo aqui*/
 
-
 function validar_datos($datos){
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -158,4 +157,6 @@ function listar_proveedores(): array {
     require_once __DIR__ . '/../models/proveedores.php';
     return obtenerProveedoresActivos();
 }
+
+
 ?>
