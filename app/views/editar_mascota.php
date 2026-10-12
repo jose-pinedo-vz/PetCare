@@ -183,22 +183,12 @@ function v($valor) {
               </div>
 
               <div>
-                <label class="label-campo">Estado:</label>
-                <div class="estado-fila">
-                  <?php $activo = !isset($mascota['esta_activo']) || $mascota['esta_activo'] == 1; ?>
-                  <!-- Botón Switch -->
-                  <label class="switch">
-                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" <?= $activo ? 'checked' : '' ?>>
-                    <span class="slider round"></span>
-                  </label>
-
-                  <!-- Caja de texto visual NO editable -->
-                  <input type="text" id="texto_estado" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled class="campo estado-texto">
-
-                  <!-- Campo oculto para enviar 1 o 0 a PHP -->
-                  <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
-
-                </div>
+                <label class="label-campo" for="activo">Estado:</label>
+                <?php $activo = !isset($mascota['esta_activo']) || $mascota['esta_activo'] == 1; ?>
+                <select class="campo" id="activo" name="activo">
+                  <option value="1" <?= $activo ? 'selected' : '' ?>>Activo</option>
+                  <option value="0" <?= $activo ? '' : 'selected' ?>>Inactivo</option>
+                </select>
               </div>
             </div>
           </fieldset>
@@ -220,13 +210,6 @@ function v($valor) {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-mascota.js"></script>
-
-  <script>
-    function cambiarEstado(check) {
-      document.getElementById('activo').value = check.checked ? '1' : '0';
-      document.getElementById('texto_estado').value = check.checked ? 'Activo' : 'Inactivo';
-    }
-  </script>
 
 </body>
 </html>

@@ -41,7 +41,7 @@
 
       <div class="panel-inicio">
 
-        <div class="tarjeta">
+        <div class="tarjeta columna-principal">
           <h2>Citas de hoy</h2>
           <div class="tabla-envoltura">
             <table>
