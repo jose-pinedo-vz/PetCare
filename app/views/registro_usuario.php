@@ -1,13 +1,17 @@
 <?php
-require_once __DIR__ . '/../models/usuarios_db.php';
-$listaUsuarios = UsuariosDB::obtenerTodosUsuarios(ConexionDB::obtenerConexion());
 // Mostrar nombre del usuario
-session_start();
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
 if (!isset($_SESSION['usuario']))
 {
   header("Location: ../views/login.php");
   exit();
 }
+$mensaje=$_SESSION['mensaje']??'';
+$error=$_SESSION['error']??'';
+unset($_SESSION['mensaje'],$_SESSION['error']);
 $usuario=$_SESSION['usuario'];
 // Mostrar nombre del usuario
 ?>
@@ -70,7 +74,7 @@ $usuario=$_SESSION['usuario'];
         <p class='msg-error'><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <form action="Registro.php" method="POST">
+    <form action="../controllers/Registro.php" method="POST">
         <div style="margin-bottom: 12px;">
             <label class="label-campo">Usuario (Obligatorio):</label>
             <input type="text" name="nuevo_usuario" class="campo" required>
@@ -119,7 +123,7 @@ $usuario=$_SESSION['usuario'];
         </div>
 
         <button type="submit">Guardar Usuario</button>
-        <a class="btn" href="usuarios.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+        <a class="btn" href="../views/usuarios.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
     </form>
   </main> 
   <footer>

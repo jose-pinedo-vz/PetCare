@@ -1,6 +1,9 @@
 <?php require_once __DIR__ . '/../controllers/MascotaController.php'; 
 // Mostrar nombre del usuario
-session_start();
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
 if (!isset($_SESSION['usuario']))
 {
   header("Location: ../views/login.php");
