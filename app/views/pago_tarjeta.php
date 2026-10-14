@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../models/pago_tarjeta_db.php';
+// require_once __DIR__ . '/../models/pago_tarjeta_db.php';
 // Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
