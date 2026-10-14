@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../controllers/MascotaController.php'; 
+<?php require_once __DIR__ . '/../controllers/MascotaController.php';
 // Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {

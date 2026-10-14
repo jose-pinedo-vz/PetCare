@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'observaciones'          => trim($_POST['observaciones'] ?? '')
     ];
 
-    validacion($datos);
+    validacion($datos, false, 0, '');
 
 } else {
     // Si intentan entrar directo a este archivo sin pasar por el formulario

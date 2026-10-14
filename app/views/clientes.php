@@ -47,7 +47,7 @@ $usuario=$_SESSION['usuario'];
       <li><a href="empleados.php">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
-      
+
       <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
@@ -69,8 +69,8 @@ $usuario=$_SESSION['usuario'];
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
-    
-    <?php 
+
+    <?php
     $listaClientes = Cliente::obtenerTodos();
     if (empty($listaClientes)): ?>
       <div style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
@@ -78,7 +78,7 @@ $usuario=$_SESSION['usuario'];
         <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
       </div>
     <?php else: ?>
-      
+
       <!-- INICIA CONTENEDOR RESPONSIVE -->
       <div class="table-responsive">
         <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
@@ -95,12 +95,12 @@ $usuario=$_SESSION['usuario'];
           <tbody>
             <?php foreach ($listaClientes as $c): ?>
               <tr>
-                <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-                
+
                 <!-- Celda de acciones con white-space: nowrap; -->
                 <td style="padding: 10px; text-align: center; white-space: nowrap;">
                   <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
@@ -111,7 +111,7 @@ $usuario=$_SESSION['usuario'];
             <?php endforeach; ?>
           </tbody>
         </table>
-      </div> 
+      </div>
       <!-- TERMINA CONTENEDOR RESPONSIVE -->
 
     <?php endif; ?>

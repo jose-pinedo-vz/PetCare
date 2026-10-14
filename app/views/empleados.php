@@ -45,7 +45,7 @@ $usuario=$_SESSION['usuario'];
       <li><a href="empleados.php" class="activo">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
-      
+
       <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
