@@ -1,5 +1,14 @@
 <?php
-  include_once '../app/controllers/eliminar_proveedor.php';
+// Validar si realmente llegaron los datos por la URL (GET)
+if (!isset($_GET['id']) || !isset($_GET['razon_social'])) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: proveedores.php");
+    exit();
+}
+
+// Si sí llegaron, los guardamos con seguridad
+$id_proveedor = (int) $_GET['id'];
+$razon_social = $_GET['razon_social'];
 ?>
 
 <!DOCTYPE html>
@@ -46,15 +55,15 @@
 
     <h1>Eliminar proveedor</h1>
 
-    <form action="eliminar_proveedor.php" method="POST">
-
-      <input type="hidden" id="id_proveedor" name="id_proveedor" value="1">
+    <form action="../controllers/eliminar_proveedor.php" method="POST">
+  
+      <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_proveedor ?>">
 
       <fieldset>
 
         <p>
           ¿Está seguro de que desea eliminar al proveedor
-          <strong>Distribuidora Veterinaria del Norte S.A. de C.V.</strong>?
+          <strong><?= htmlspecialchars((string)$razon_social) . ' (ID: ' . htmlspecialchars((string)$id_proveedor) . ')' ?></strong>?
           Esta acción no se puede deshacer.
         </p>
 

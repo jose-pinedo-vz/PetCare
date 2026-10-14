@@ -85,7 +85,7 @@ $proveedores = listar_proveedores();
                             <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
                             <td style="padding: 15px; white-space: nowrap;">
                                 <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
-                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>" style="margin-left: 6px;">Eliminar</a>
+                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>" style="margin-left: 6px;">Eliminar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

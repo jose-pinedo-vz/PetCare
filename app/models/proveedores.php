@@ -60,7 +60,7 @@ function insertar(array $datos) {
     }
 }
 
-function eliminar(int $id): bool
+function eliminar(int $id)
 {
     try {
         $db = ConexionDB::obtenerConexion();
