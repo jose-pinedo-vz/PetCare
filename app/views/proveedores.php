@@ -48,7 +48,7 @@ $proveedores = listar_proveedores();
             <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
             <li><a href="#" class="deshabilitado">Veterinaria</a></li>
             <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+            <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
             <!-- Usuarios para administradores -->
             <?php if ($_SESSION['rol'] === 'admin'): ?>
                 <li><a href="usuarios.php">Usuarios</a></li>

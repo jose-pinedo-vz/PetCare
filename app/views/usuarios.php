@@ -41,7 +41,7 @@ $usuario=$_SESSION['usuario'];
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
       <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php" class="activo">Clientes</a></li>
+      <li><a href="clientes.php" >Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
@@ -52,10 +52,10 @@ $usuario=$_SESSION['usuario'];
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
       <li><a href="#" class="deshabilitado">Veterinaria</a></li>
       <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+      <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
       <!-- Usuarios para administradores -->
       <?php if ($_SESSION['rol'] === 'admin'): ?>
-        <li><a href="usuarios.php">Usuarios</a></li>
+        <li><a href="usuarios.php" class="activo">Usuarios</a></li>
       <?php endif; ?>
       <!-- Usuarios para administradores -->
 
