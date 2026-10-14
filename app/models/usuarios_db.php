@@ -56,6 +56,20 @@ class UsuariosDB
             $_SESSION['error']="Error al actualizar el usuario: " . $e->getMessage();
         }
     }
+
+    public static function empleados_disponibles()
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        try {
+            // Buscamos empleados que NO tengan un registro en la tabla usuarios
+            $query="SELECT id_empleado, nombre FROM empleados WHERE id_empleado NOT IN (SELECT id_empleado FROM usuarios WHERE id_empleado IS NOT NULL)";
+            $stmt = $conexion->query($query);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Manejo de errores, puedes registrar el error o devolver un arreglo vacío
+            return [];
+        }
+    }
 }
 
 ?>

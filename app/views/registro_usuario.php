@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../models/usuarios_db.php';
+$empleados_disponibles = UsuariosDB::empleados_disponibles();
 // Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
@@ -87,7 +89,12 @@ $usuario=$_SESSION['usuario'];
 
         <div style="margin-bottom: 12px;">
             <label class="label-campo">Empleado Asociado:</label>
-            <input type="text" name="empleado_asociado" class="campo">
+            <select name="empleado_asociado" class="campo">
+                <option value="">Seleccionar empleado</option>
+                <?php foreach ($empleados_disponibles as $empleado): ?>
+                    <option value="<?= htmlspecialchars($empleado['id_empleado']) ?>"><?= htmlspecialchars($empleado['nombre']) ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
 
         <div style="margin-bottom: 12px;">
@@ -108,7 +115,7 @@ $usuario=$_SESSION['usuario'];
             <select name="permisos" class="campo" multiple size="1">
                 <option value="todos">Todo</option>
                 <option value="lectura">Lectura</option>
-                <option value="modificar">Modificcar</option>
+                <option value="modificar">Modificar</option>
                 <option value="eliminar">Eliminar</option>
                 <option value="insertar">Insertar</option>
             </select>

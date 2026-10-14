@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
             {
                 $error="La cuenta se encuentra inactiva.";
             }
-            elseif (password_verify($password, $datosUsuario['contrasena']))
+            elseif ($password === $datosUsuario['contrasena'])
             {
                 session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);
