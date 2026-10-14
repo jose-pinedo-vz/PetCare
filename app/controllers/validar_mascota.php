@@ -15,7 +15,10 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         $errores[] = "El nombre de la mascota es obligatorio.";
     }else if (strlen($datos['nombre']) > 20) {
         $errores[] = "El nombre no puede tener mas de 20 letras";
+    }else if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+$/', $datos['nombre'])) {
+        $errores[] = "El nombre no puede contener caracteres especiales.";
     }
+
     // Especie obligatorio
     if (empty(trim($datos['especie']))) {
         $errores[] = "Debe especificar la especie.";
