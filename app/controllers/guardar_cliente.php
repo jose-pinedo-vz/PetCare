@@ -19,9 +19,17 @@ function resivirCodigoPostal()
     $json = file_get_contents('php://input');
     $codigoPostal = json_decode($json, true);
 
-    //$res = Cliente::actualizar($codigoPostal['codigo_postal']);
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
 
-    echo json_encode($codigoPostal['codigo_postal']);
+    if ($res === [])
+    {
+        echo json_encode(false);
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
 }
 
 
@@ -207,12 +215,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // echo "</div>";
         // echo "</div></body></html>";
     } else {
-        echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Error al guardar</title><link rel='stylesheet' href='../views/css/estilos_base.css'></head><body>";
-        echo "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ff9800; background: #fff3e0; max-width: 500px; border-radius: 8px; margin: 40px auto;'>";
-        echo "<h3 style='color: #e65100; margin-top: 0;'>Aviso al guardar en BD:</h3>";
-        echo "<p>" . htmlspecialchars($res['mensaje']) . "</p>";
-        echo "<a href='javascript:history.back()' class='btn'>Volver al formulario</a>";
-        echo "</div></body></html>";
+        errorSession($res['mensaje']);
     }
 } else {
     header("Location: ../views/clientes.php");
