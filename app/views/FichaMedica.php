@@ -39,7 +39,7 @@ session_start();
           <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
           <li><a href="#" class="deshabilitado">Veterinaria</a></li>
           <li><a href="#" class="deshabilitado">Pagos</a></li>
-          <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+          <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
         </ul>
       </nav>
     </aside>

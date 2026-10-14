@@ -13,10 +13,11 @@ class UsuariosDB
     
     public static function obtenerTodosUsuarios(PDO $conexion): array
     {
-        $base=$conexion->prepare("SELECT id_usuario, usuario, empleado_asociado, rol, permisos, fecha_creacion, ultimo_acceso, estado
-                                    FROM usuarios
-                                    WHERE estado = 'activo'
-                                    ORDER BY id_usuario DESC");
+        $base=$conexion->prepare("SELECT u.id_usuario, u.usuario, e.nombre AS empleado_asociado, u.rol, u.permisos, u.fecha_creacion, u.ultimo_acceso, u.estado
+                                    FROM usuarios u
+                                    LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
+                                    WHERE u.estado='activo'
+                                    ORDER BY u.id_usuario DESC");
         $base->execute();
         return $base->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -61,12 +62,10 @@ class UsuariosDB
     {
         $conexion=ConexionDB::obtenerConexion();
         try {
-            // Buscamos empleados que NO tengan un registro en la tabla usuarios
-            $query="SELECT id_empleado, nombre FROM empleados WHERE id_empleado NOT IN (SELECT id_empleado FROM usuarios WHERE id_empleado IS NOT NULL)";
+            $query="SELECT id_empleado,nombre FROM empleados WHERE nombre NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado IS NOT NULL) and esta_activo=1";
             $stmt = $conexion->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            // Manejo de errores, puedes registrar el error o devolver un arreglo vacío
             return [];
         }
     }

@@ -1,4 +1,4 @@
-<?php  require_once __DIR__ . '/../controllers/citas.php'; 
+<?php  require_once __DIR__ . '/../controllers/citas.php';
 if (session_status() === PHP_SESSION_NONE)
 {
   session_start();
@@ -16,13 +16,13 @@ $usuario=$_SESSION['usuario'];
 
 <!-- se encrga de mostrar todas las citas pendientes -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarProximasCitas()
   {
     $datos = estraerDatosConsultas();
     // echo $datos[0]['atendido'];
-    foreach ($datos as $d) 
+    foreach ($datos as $d)
     {
       if ($d['atendido'] === 0)
       {?>
@@ -33,13 +33,13 @@ $usuario=$_SESSION['usuario'];
           <button class="btn" id="btn_consultas">Consulta</button>
         </div>
       <?php }
-    } 
-  } 
+    }
+  }
 ?>
 
 <!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarCitasAtendidas()
   {
@@ -56,7 +56,7 @@ $usuario=$_SESSION['usuario'];
           <button class="btn" id="btn_consultas">Pagar</button>
         </div>
       <?php }
-    } 
+    }
   }
 ?>
 
@@ -100,7 +100,7 @@ $usuario=$_SESSION['usuario'];
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
       <li><a href="#" class="deshabilitado">Veterinaria</a></li>
       <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+      <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
       <!-- Usuarios para administradores -->
       <?php if ($_SESSION['rol'] === 'admin'): ?>
         <li><a href="usuarios.php">Usuarios</a></li>
@@ -114,7 +114,7 @@ $usuario=$_SESSION['usuario'];
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agendarCita.php">+ Agendar cita</a>
     </div>
-    
+
     <div class="contenedor_citas">
       <div class="boton_control">
         <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
@@ -124,7 +124,7 @@ $usuario=$_SESSION['usuario'];
       <div class="panel_contenido">
         <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3> 
+          <h3>Citas en espera</h3>
           <?php mostrarProximasCitas(); ?>
         </div>
 
@@ -133,7 +133,7 @@ $usuario=$_SESSION['usuario'];
           <h3>Nombre del dueño</h3>
           <?php mostrarCitasAtendidas(); ?>
         </div>
-         
+
       </div>
     </div>
   </main>

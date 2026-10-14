@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles = UsuariosDB::empleados_disponibles();
+$empleados_disponibles=UsuariosDB::empleados_disponibles();
+require_once __DIR__ . '/../models/Empleados.php';
+$empleados = Empleados::Listar_empleados_activos();
 // Mostrar nombre del usuario
-if (session_status() === PHP_SESSION_NONE)
+if (session_status()===PHP_SESSION_NONE)
 {
     session_start();
 }
@@ -89,11 +91,17 @@ $usuario=$_SESSION['usuario'];
 
         <div style="margin-bottom: 12px;">
             <label class="label-campo">Empleado Asociado:</label>
-            <select name="empleado_asociado" class="campo">
-                <option value="">Seleccionar empleado</option>
-                <?php foreach ($empleados_disponibles as $empleado): ?>
-                    <option value="<?= htmlspecialchars($empleado['id_empleado']) ?>"><?= htmlspecialchars($empleado['nombre']) ?></option>
-                <?php endforeach; ?>
+            <select name="empleado_asociado" class="campo" required>
+                <option value="">Seleccione un empleado</option>
+                <?php if (!empty($empleados_disponibles)): ?>
+                    <?php foreach ($empleados_disponibles as $emp): ?>
+                        <option value="<?= htmlspecialchars($emp['nombre']); ?>">
+                            <?= htmlspecialchars($emp['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <option value="" disabled>No hay empleados disponibles sin usuario</option>
+                <?php endif; ?>
             </select>
         </div>
 

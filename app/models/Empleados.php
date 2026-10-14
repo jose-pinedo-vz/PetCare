@@ -5,21 +5,14 @@ require_once __DIR__ . '/conexion_db.php';
 class Empleados {
 
     public static function generarIdEmpleados(PDO $db): int {
-        do {
-            $aleatorio = random_int(100, 9999);
-            $consulta = $db -> prepare(
-                "
-                SELECT 1
-                FROM empleados
-                WHERE id_empleado = ?
-                "
-            );
-            $consulta -> execute([$aleatorio]);
-            $exite = (bool) $consulta -> fetch();
-
-        } while ($exite);
-
-        return $aleatorio;
+        try {
+        // Consultamos el ID máximo actual y le sumamos 1
+        $stmt = $db->query("SELECT COALESCE(MAX(id_empleado), 0) + 1 FROM empleados");
+        return (int) $stmt->fetchColumn();
+             } 
+    catch (PDOException $e) {
+        return 1;
+    }
     }
 
     public static function obtenerTodos(): array {

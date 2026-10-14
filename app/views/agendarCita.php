@@ -74,7 +74,7 @@ if (session_status() === PHP_SESSION_NONE) {
           </div>
 
           <div>
-            <label class="label-campo" for="fecha">Fecha:</label>
+            <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="fecha" name="fecha" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
@@ -82,7 +82,7 @@ if (session_status() === PHP_SESSION_NONE) {
           </div>
 
           <div style="grid-column: 1 / -1;">
-            <label class="label-campo" for="motivoConsulta">Motivo de consulta:</label>
+            <label class="label-campo" for="motivoConsulta">Motivo de consulta *:</label>
             <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
