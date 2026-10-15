@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 function errorSession(string $error) : void {
     $_SESSION['error'] = $error;
 
@@ -95,10 +96,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // telefono es obligatorio (15)
-    if ($telefono === '') {
-        $errores[] = "El telefono es obligatorio";
-    } else if (!preg_match($soloTelefono, $telefono) || mb_strlen($telefono) > 15) {
-        $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+    //if ($telefono === '') {
+    //    $errores[] = "El telefono es obligatorio";
+    //} else if (mb_strlen($telefono) < 10 || mb_strlen($telefono) > 10) {
+    //    // $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+    //    $errores[] = "El telefono debe de tener 10 numeros exactos (no debe de tener letras ni espacios)";
+    //}
+
+    if (empty($telefono)) {
+        $errores[] = "El telefono es obligatoria.";
+    }else if (preg_match('/[a-zA-Z]/', $telefono)) {
+        $errores[] = "El teléfono no puede contener letras.";
+    } else {
+        // Extraer solo los números ignorando guiones, espacios y paréntesis
+        $soloNumerosTel = preg_replace('/\D/', '', $telefono);
+        if (strlen($soloNumerosTel) !== 10) {
+            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678 o 345-103-2345).";
+        }
     }
 
     // correo es obligatorio (100)
@@ -179,11 +193,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "La especialidad no debe de tener mas de 50 letras";
     }
 
-    // num medula profesional no es obligatorio
+    // num cedula profesional no es obligatorio
     if ($num_cedula_profesional === '') {
         $num_cedula_profesional = null;
     } else if (!ctype_digit($num_cedula_profesional)) {
-        $errores[] = "El numero de medula profesional solo debe de contener numeros";
+        $errores[] = "El numero de cedula profesional solo debe de contener numeros";
     } else if ((int) $num_cedula_profesional <= 0 || (int) $num_cedula_profesional > 2147483647) {
         $errores[] = "El numero debe de ser mayor a 1 pero menor a 2147483647";
     } else {

@@ -1,8 +1,18 @@
 <?php
-    require_once __DIR__ . '/../models/Empleados.php';
-    $empleados = Empleados::Listar_empleados_activos();
-    // Mostrar nombre del usuario
-    session_start();
+require_once __DIR__ . '/../models/Empleados.php';
+$empleados = Empleados::Listar_empleados_activos();
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+  session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,6 +30,10 @@
     </div>
 
     <div class="sesion">
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 
@@ -31,14 +45,19 @@
       <li><a href="empleados.php" class="activo">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
-      
+
       <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
       <li><a href="#" class="deshabilitado">Veterinaria</a></li>
       <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+      <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
+      <!-- Usuarios para administradores -->
+      <?php if ($_SESSION['rol'] === 'admin'): ?>
+        <li><a href="usuarios.php">Usuarios</a></li>
+      <?php endif; ?>
+      <!-- Usuarios para administradores -->
     </ul>
   </nav>
 

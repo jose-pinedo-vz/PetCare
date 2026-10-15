@@ -1,4 +1,13 @@
 <?php
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+    header("Location: ../views/login.php");
+    exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 require_once __DIR__ . '/../controllers/proveedor.php';
 $proveedores = listar_proveedores();
 ?>
@@ -13,12 +22,14 @@ $proveedores = listar_proveedores();
 <body>
     <header>
         <div class="marca">
-            <img src="img/logo.svg" alt="Veterinaria PetCare">
+            <img src="img/logo3.svg" alt="Veterinaria PetCare">
         </div>
 
         <div class="sesion">
-            <span>Empleado: Nombre del empleado</span>
-            <a href="#">Cerrar sesión</a>
+            <!-- Mostrar nombre del usuario -->
+            <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+            <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <!-- Mostrar nombre del usuario -->
         </div>
     </header>
 
@@ -30,21 +41,26 @@ $proveedores = listar_proveedores();
             <li><a href="empleados.php">Empleados</a></li>
             <li><a href="proveedores.php" class="activo">Proveedores</a></li>
 
-            
+
             <li><a href="inventario.php">Inventario</a></li>
             <li><a href="#" class="deshabilitado">Ventas</a></li>
             <li><a href="#" class="deshabilitado">Servicios</a></li>
             <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
             <li><a href="#" class="deshabilitado">Veterinaria</a></li>
             <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+            <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
+            <!-- Usuarios para administradores -->
+            <?php if ($_SESSION['rol'] === 'admin'): ?>
+                <li><a href="usuarios.php">Usuarios</a></li>
+            <?php endif; ?>
+            <!-- Usuarios para administradores -->
         </ul>
     </nav>
-
+                
     <main>
         <h1>Módulo de Proveedores</h1>
         <div style="margin-bottom: 20px;">
-            <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>  
+            <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>
         </div>
         <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
         <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
@@ -85,7 +101,7 @@ $proveedores = listar_proveedores();
                             <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
                             <td style="padding: 15px; white-space: nowrap;">
                                 <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
-                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>" style="margin-left: 6px;">Eliminar</a>
+                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>" style="margin-left: 6px;">Eliminar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

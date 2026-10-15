@@ -1,14 +1,6 @@
 <?php
 session_start();
-
 require_once '../models/conexion_db.php';
-
-// Control de acceso: solo administradores
-if (!isset($_SESSION['usuario']) || $_SESSION['rol'] !== 'admin') {
-    header("Location: Bienvenido.php");
-    exit();
-}
-
 $conexion = ConexionDB::obtenerConexion();
 $mensaje = '';
 $error = '';
@@ -27,16 +19,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
             $mensaje = "Usuario '$nuevo_usuario' creado con éxito.";
         } catch (PDOException $e) {
-            if ($e->getCode() === 1062) {
+            if ($e->getCode() === '23000' || $e->getCode() === 1062) { // 1062 es MySQL para duplicados, 23000 es el código estándar SQLSTATE de integridad
                 $error = "El nombre de usuario '$nuevo_usuario' ya existe.";
-            } else {
-                $error = "Error al guardar el usuario: " . $e->getMessage();
+            }
+            else
+            {
+               $error="Error al guardar el usuario: ".$e->getMessage();
             }
         }
-    } else {
-        $error = "Por favor completa los campos obligatorios.";
+    }
+    else
+    {
+        $error="Completa los campos obligatorios";
     }
 }
 
-// Carga la vista de Registro
-require_once '../views/registro.php';
+
+if (session_status()===PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!empty($mensaje))
+{
+    $_SESSION['mensaje']=$mensaje;
+}
+if (!empty($error))
+{
+    $_SESSION['error']=$error;
+}
+header("Location: ../views/registro_usuario.php");
+exit();

@@ -39,7 +39,7 @@ session_start();
           <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
           <li><a href="#" class="deshabilitado">Veterinaria</a></li>
           <li><a href="#" class="deshabilitado">Pagos</a></li>
-          <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+          <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
         </ul>
       </nav>
     </aside>
@@ -69,7 +69,6 @@ session_start();
               <div class="grid-formulario">
                 <div>
                 <label>Mascota</label>
-
                 <select name="mascota" id="mascota" required> 
                     <option value="">Selecciona una mascota</option>
                     <?php foreach ($mascotas as $m): ?>

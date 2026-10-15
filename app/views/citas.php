@@ -1,21 +1,28 @@
-<?php  require_once __DIR__ . '/../controllers/citas.php'; 
+<?php  require_once __DIR__ . '/../controllers/citas.php';
 if (session_status() === PHP_SESSION_NONE)
 {
   session_start();
 } 
-
+// Mostrar nombre del usuario
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 ?>
 
 
 <!-- se encrga de mostrar todas las citas pendientes -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarProximasCitas()
   {
     $datos = estraerDatosConsultas();
     // echo $datos[0]['atendido'];
-    foreach ($datos as $d) 
+    foreach ($datos as $d)
     {
       if ($d['atendido'] === 0)
       {?>
@@ -26,13 +33,13 @@ if (session_status() === PHP_SESSION_NONE)
           <button class="btn" id="btn_consultas">Consulta</button>
         </div>
       <?php }
-    } 
-  } 
+    }
+  }
 ?>
 
 <!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarCitasAtendidas()
   {
@@ -49,7 +56,7 @@ if (session_status() === PHP_SESSION_NONE)
           <button class="btn" id="btn_consultas">Pagar</button>
         </div>
       <?php }
-    } 
+    }
   }
 ?>
 
@@ -71,6 +78,10 @@ if (session_status() === PHP_SESSION_NONE)
       <img src="./img/logo3.svg" alt="Veterinaria PetCare">
     </div>
     <div class="sesion">
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
 
     </div>
   </header>
@@ -89,7 +100,12 @@ if (session_status() === PHP_SESSION_NONE)
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
       <li><a href="#" class="deshabilitado">Veterinaria</a></li>
       <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
+      <li><a href="pago_tarjeta.php">Pagos con tarjeta</a></li>
+      <!-- Usuarios para administradores -->
+      <?php if ($_SESSION['rol'] === 'admin'): ?>
+        <li><a href="usuarios.php">Usuarios</a></li>
+      <?php endif; ?>
+      <!-- Usuarios para administradores -->
     </ul>
   </nav>
 
@@ -98,7 +114,7 @@ if (session_status() === PHP_SESSION_NONE)
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agendarCita.php">+ Agendar cita</a>
     </div>
-    
+
     <div class="contenedor_citas">
       <div class="boton_control">
         <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
@@ -108,7 +124,7 @@ if (session_status() === PHP_SESSION_NONE)
       <div class="panel_contenido">
         <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3> 
+          <h3>Citas en espera</h3>
           <?php mostrarProximasCitas(); ?>
         </div>
 
@@ -117,7 +133,7 @@ if (session_status() === PHP_SESSION_NONE)
           <h3>Nombre del dueño</h3>
           <?php mostrarCitasAtendidas(); ?>
         </div>
-         
+
       </div>
     </div>
   </main>
