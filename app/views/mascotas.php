@@ -73,6 +73,7 @@
               <td style="padding: 15px;">
                 <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
                 <a class="btn" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+                <a class="btn" href="cartilla_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Cartilla</a>
               </td>
             </tr>
           <?php endforeach; ?>
