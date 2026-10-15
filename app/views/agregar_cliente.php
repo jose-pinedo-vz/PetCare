@@ -11,6 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Registrar cliente</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+  <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
 
@@ -138,6 +139,19 @@ if (session_status() === PHP_SESSION_NONE) {
       <fieldset>
         <legend> Dirección / Domicilio</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+          <div>
+            <label class="label-campo" for="codigo_postal">Código postal:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
+          </div>
+
+          <div>
+            <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+            <button type="button" onclick="codigoPostal(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+          </div>
+
           <div>
             <label class="label-campo" for="calle">Calle:</label>
             <input type="text" class="campo" id="calle" name="calle" maxlength="100" required
@@ -166,12 +180,7 @@ if (session_status() === PHP_SESSION_NONE) {
               value="<?php echo htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? '')); unset($_SESSION['oldColonia_clientes']); ?>">
           </div>
 
-          <div>
-            <label class="label-campo" for="codigo_postal">Código postal:</label>
-            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
-          </div>
+          
 
           <div>
             <label class="label-campo" for="ciudad">Ciudad:</label>
