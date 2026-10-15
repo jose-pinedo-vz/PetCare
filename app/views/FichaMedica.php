@@ -1,5 +1,14 @@
 <?php
-session_start();
+require_once __DIR__ . '/../controllers/FichaMedicaDatos.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$idConsulta = 2; // temporal, luego vendrá de la cita
+$ficha = new FichaMedica();
+$mascotas = escogeMascota($ficha, $idConsulta);
+$usuario = $_SESSION['usuario'] ?? 'Invitado';
 ?>
 
 <!DOCTYPE html>
@@ -75,7 +84,7 @@ session_start();
                 <select name="mascota" id="mascota" required> 
                     <option value="">Selecciona una mascota</option>
                     <?php foreach ($mascotas as $m): ?>
-                        <option value="<?= (int)$m['id'] ?>">
+                        <option value="<?= (int)$m['id_mascota'] ?>">
                             <?= htmlspecialchars($m['nombre']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -95,9 +104,9 @@ session_start();
                   <label>Peso</label>
                   <input type="number" id="peso" name="peso" min="0.5" max="100" step="0.1" placeholder="kg" required>
                   <label>Frecuencia Cardiaca</label>
-                  <input type="number" id="frecuenciaC" name="frecuenciaC" placeholder="Frecuencia Cardiaca" required>
+                  <input type="number" id="frecuenciaC" min="60" max="250" name="frecuenciaC" placeholder="Frecuencia Cardiaca" required>
                   <label>Frecuencia Respiratoria</label>
-                  <input type="number" id="frecuenciaR" name="frecuenciaR" placeholder="Frecuencia Respiratoria" required>
+                  <input type="number" id="frecuenciaR" min="10" max="30" name="frecuenciaR" placeholder="Frecuencia Respiratoria" required>
                   <div class="grid-formulario">
                     <label class="label-campo">Sintomas</label>
                     <textarea class="campo" name="sintomas" placeholder="Sintomas presentados" rows=15 required></textarea> 

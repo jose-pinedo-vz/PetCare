@@ -8,8 +8,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
-$idVeterinario=(int)$_SESSION['id_usuario'];
-$idConsulta=(int)$_SESSION['id_consulta'];
+/*$idVeterinario=(int)$_SESSION['id_usuario'];
+$idConsulta=(int)$_SESSION['id_consulta'];*/
+
+$idVeterinario=1;
+$idConsulta=2;
 
 $ficha=new FichaMedica();
 
@@ -38,28 +41,16 @@ function errorSession(string $error) : null
     exit();
 }
 
-$Datosconsulta=$ficha->datosConsulta($idConsulta);
-if ($Datosconsulta===null){
-    $_SESSION['error']="La consulta no existe o ya fue atendida";
-    header("Location: ../views/citas.php");
-    exit();
-}
-$idCliente=(int)$Datosconsulta['id_cliente'];
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $mascotas = $ficha->agarraMascotas($idCliente);
-    require __DIR__ . '/../views/FichaMedica.php';   // la vista usa $mascotas e $idConsulta
-    exit();
-    }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") 
 {
 
     //Datos
-    $consulta=trim($_POST['id_consulta'] ?? '');
+    $consulta=$idConsulta;
     $fecha=date("Y-m-d H:i");
     $mascota=trim($_POST['mascota'] ?? '');
-    $veterinario=trim($_POST['id_veterinario'] ?? '');
+    $veterinario=$idVeterinario;
 
     //Datos
     $sintomas=trim($_POST['sintomas'] ?? '');
@@ -95,10 +86,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
             errorSession("No esta ligado a un veterinario");
         }
 
-    if (!is_numeric($temperatura) || !is_numeric($peso) || !is_numeric($costo))
+    if ($sintomas==='' || $diagnostico==='' || $tratamiento==='' || $medicamento===''
+        || $indicaciones==='') {
+        errorSession("Completa todos los campos obligatorios");
+    }
+
+    if (!is_numeric($temperatura) || !is_numeric($peso) || !is_numeric($costo) || !is_numeric($FrecCar) || !is_numeric($FrecResp))
         {
             errorSession("Temperatura, peso y precio deben ser numéricos");
         }
+
+    if ($temperatura<30||$temperatura>45){
+        errorSession("La temperatura debe estar entre 30 y 45")
+    }
+
+    if (mb_strlen($sintomas)>1000 || mb_strlen($diagnostico)>1000
+        || mb_strlen($tratamiento)>1000 || mb_strlen($dosis)>1000 || mb_strlen($observacion)>1000
+        || mb_strlen($indicaciones)>1000 || mb_strlen($estudioAs)>1000) {
+        errorSession("Los textos no deben tener mas de 1000 Caracteres");
+    }
     
 
     //Datos a insertar
@@ -130,7 +136,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         header("Location: ../views/FichaMedica.php?id_consulta=" . (int)$consulta);
         exit();
     }
-
 
 
     header("Location: ../views/citas.php?exito=1");
