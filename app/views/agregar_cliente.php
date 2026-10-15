@@ -11,6 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Registrar cliente</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+  <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
 
@@ -47,9 +48,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <main>
     <h1>Registrar cliente</h1>
 
-    <form action="../controllers/guardar_cliente.php" method="POST">
-
-      <!-- mensaje de error  -->
+        <!-- mensaje de error  -->
       <?php if (isset($_SESSION['error'])): ?>
         <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
           <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
@@ -57,6 +56,7 @@ if (session_status() === PHP_SESSION_NONE) {
       <?php endif; ?>
       <!-- hata aqui -->
 
+    <form action="../controllers/guardar_cliente.php" method="POST">
       <fieldset>
         <legend> Datos personales</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -138,6 +138,19 @@ if (session_status() === PHP_SESSION_NONE) {
       <fieldset>
         <legend> Dirección / Domicilio</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+          <div>
+            <label class="label-campo" for="codigo_postal">Código postal:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+ 
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
+          </div>
+
+          <div>
+            <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+            <button type="button" onclick="codigoPostal(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+          </div>
+
           <div>
             <label class="label-campo" for="calle">Calle*:</label>
             <input type="text" class="campo" id="calle" name="calle" maxlength="100" required
@@ -161,30 +174,23 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="colonia">Colonia*:</label>
-            <input type="text" class="campo" id="colonia" name="colonia" maxlength="60" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? '')); unset($_SESSION['oldColonia_clientes']); ?>">
+            <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
+              <option value="">Valide su codigo postal...</option>
+            </select>
           </div>
 
           <div>
-            <label class="label-campo" for="codigo_postal">Código postal*:</label>
-            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="ciudad">Ciudad*:</label>
+            <label class="label-campo" for="ciudad" disabled>Ciudad*:</label>
             <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCiudad_clientes'] ?? '')); unset($_SESSION['oldCiudad_clientes']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldCiudad_clientes'] ?? '')); unset($_SESSION['oldCiudad_clientes']); ?>" readonly>
           </div>
 
           <div>
-            <label class="label-campo" for="estado">Estado*:</label>
+            <label class="label-campo" for="estado" disabled>Estado*:</label>
             <input type="text" class="campo" id="estado" name="estado" maxlength="60" required
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldEstado_clientes'] ?? '')); unset($_SESSION['oldEstado_clientes']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldEstado_clientes'] ?? '')); unset($_SESSION['oldEstado_clientes']); ?>" readonly>
           </div>
         </div>
       </fieldset>
