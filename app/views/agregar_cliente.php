@@ -47,9 +47,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <main>
     <h1>Registrar cliente</h1>
 
-    <form action="../controllers/guardar_cliente.php" method="POST">
-
-      <!-- mensaje de error  -->
+        <!-- mensaje de error  -->
       <?php if (isset($_SESSION['error'])): ?>
         <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
           <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
@@ -57,6 +55,7 @@ if (session_status() === PHP_SESSION_NONE) {
       <?php endif; ?>
       <!-- hata aqui -->
 
+    <form action="../controllers/guardar_cliente.php" method="POST">
       <fieldset>
         <legend> Datos personales</legend>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
