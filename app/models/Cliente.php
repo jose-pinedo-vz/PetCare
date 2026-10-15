@@ -147,5 +147,21 @@ class Cliente
             return false;
         }
     }
+
+    public static function obtenerCodigoPostal($codigo):array
+    {
+        try
+        {
+            $db = ConexionDB::obtenerConexion();
+            $query = ("SELECT colonia, estado, ciudad, municipio FROM codigos_postales WHERE codigo_postal = ?");
+            $stml = $db->prepare($query);
+            $stml->execute([$codigo]);
+            return $stml->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch (Exception $e)
+        {
+            return [];
+        }
+    }
 }
 ?>

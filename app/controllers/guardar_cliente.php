@@ -19,9 +19,17 @@ function resivirCodigoPostal()
     $json = file_get_contents('php://input');
     $codigoPostal = json_decode($json, true);
 
-    //$res = Cliente::actualizar($codigoPostal['codigo_postal']);
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
 
-    echo json_encode($codigoPostal['codigo_postal']);
+    if ($res === [])
+    {
+        echo json_encode(false);
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
 }
 
 

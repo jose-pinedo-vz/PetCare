@@ -175,23 +175,23 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="colonia">Colonia*:</label>
-            <input type="text" class="campo" id="colonia" name="colonia" maxlength="60" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? '')); unset($_SESSION['oldColonia_clientes']); ?>">
+            <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
+              <option value="">Valide su codigo postal...</option>
+            </select>
           </div>
 
           <div>
-            <label class="label-campo" for="ciudad">Ciudad*:</label>
+            <label class="label-campo" for="ciudad" disabled>Ciudad*:</label>
             <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCiudad_clientes'] ?? '')); unset($_SESSION['oldCiudad_clientes']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldCiudad_clientes'] ?? '')); unset($_SESSION['oldCiudad_clientes']); ?>" readonly>
           </div>
 
           <div>
-            <label class="label-campo" for="estado">Estado*:</label>
+            <label class="label-campo" for="estado" disabled>Estado*:</label>
             <input type="text" class="campo" id="estado" name="estado" maxlength="60" required
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldEstado_clientes'] ?? '')); unset($_SESSION['oldEstado_clientes']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldEstado_clientes'] ?? '')); unset($_SESSION['oldEstado_clientes']); ?>" readonly>
           </div>
         </div>
       </fieldset>
