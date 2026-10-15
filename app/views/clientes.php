@@ -73,7 +73,7 @@ $listaClientes = Cliente::obtenerTodos();
           <tbody>
             <?php foreach ($listaClientes as $c): ?>
               <tr>
-                <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
