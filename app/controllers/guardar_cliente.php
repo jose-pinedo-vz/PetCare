@@ -7,6 +7,24 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    //$res = Cliente::actualizar($codigoPostal['codigo_postal']);
+
+    echo json_encode($codigoPostal['codigo_postal']);
+}
+
+
 // function errorSession(string $error) : null
 function errorSession(string $error)
 {

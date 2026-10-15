@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 function errorSession(string $error) : void {
     $_SESSION['error'] = $error;
 
