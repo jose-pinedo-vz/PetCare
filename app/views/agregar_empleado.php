@@ -68,7 +68,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="nombre">
-              Nombre:
+              Nombre*:
             </label>
 
             <input
@@ -84,7 +84,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="apellido">
-              Apellido:
+              Apellido*:
             </label>
 
             <input
@@ -109,7 +109,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="telefono">
-              Teléfono:
+              Teléfono*:
             </label>
 
             <input
@@ -125,7 +125,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="correo">
-              Correo electrónico:
+              Correo electrónico*:
             </label>
 
             <input
@@ -150,7 +150,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="calle">
-              Calle:
+              Calle*:
             </label>
 
             <input
@@ -166,7 +166,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="numero_exterior">
-              Número exterior:
+              Número exterior*:
             </label>
 
             <input
@@ -198,7 +198,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="colonia">
-              Colonia:
+              Colonia*:
             </label>
 
             <input
@@ -214,7 +214,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="ciudad">
-              Ciudad:
+              Ciudad*:
             </label>
 
             <input
@@ -230,7 +230,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="estado">
-              Estado:
+              Estado*:
             </label>
 
             <input
@@ -246,7 +246,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="codigo_postal">
-              Código Postal:
+              Código Postal*:
             </label>
 
             <input
@@ -271,7 +271,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="puesto">
-              Puesto *:
+              Puesto*:
             </label>
 
             <?php $p = $_SESSION['oldpuesto'] ?? ''; unset($_SESSION['oldpuesto']); ?>
@@ -305,7 +305,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Cédula profesional:
+              Numero de cédula profesional*:
             </label>
 
             <input
@@ -335,7 +335,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="horario">
-              Horario:
+              Horario*:
             </label>
 
             <?php $h = $_SESSION['oldhorario'] ?? ''; unset($_SESSION['oldhorario']); ?>
