@@ -9,7 +9,6 @@ if (session_status() === PHP_SESSION_NONE) {
 $errores = $_SESSION['errores'] ?? [];
 unset($_SESSION['errores']);
 
-// El id puede venir por la URL (?id=) o, si ya se envió el form, por POST
 $idProveedor = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)
     ?: filter_input(INPUT_POST, 'id_proveedor', FILTER_VALIDATE_INT);
 
@@ -18,7 +17,6 @@ if ($idProveedor === false || $idProveedor === null) {
     exit;
 }
 
-// Si el formulario fue enviado, se procesa la actualización
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datos = [
         'razon_social'     => trim($_POST['razon_social'] ?? ''),
@@ -34,10 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
         'observaciones'    => trim($_POST['observaciones'] ?? '')
     ];
-    actualizar_proveedor($idProveedor, $datos); // redirige internamente, corta la ejecución aquí
+    actualizar_proveedor($idProveedor, $datos); 
 }
 
-// Si llegamos aquí, es un GET: buscamos los datos actuales para mostrarlos
 $proveedor = obtenerProveedorPorId($idProveedor);
 
 if (!$proveedor) {
