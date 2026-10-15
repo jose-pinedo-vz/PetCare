@@ -11,14 +11,14 @@ class Cliente
 {
     public static function generarIdCliente(PDO $db): int
     {
-        do {
-            $aleatorio = random_int(100, 9999);
-            $stmt = $db->prepare("SELECT 1 FROM clientes WHERE id_cliente = ?");
-            $stmt->execute([$aleatorio]);
-            $existe = (bool)$stmt->fetch();
-        } while ($existe);
-
-        return $aleatorio;
+         try {
+        // Consultamos el ID máximo actual y le sumamos 1
+        $stmt = $db->query("SELECT COALESCE(MAX(id_cliente), 0) + 1 FROM clientes");
+        return (int) $stmt->fetchColumn();
+            } 
+    catch (PDOException $e) {
+        return 1;
+    }
     }
 
     public static function obtenerTodos(): array
