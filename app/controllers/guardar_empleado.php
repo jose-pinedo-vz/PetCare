@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 function errorSession(string $error) : void {
     $_SESSION['error'] = $error;
 
@@ -61,27 +62,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $Fecha_de_contratacion = trim($_POST['Fecha_de_contratacion'] ?? '');
     $horario = trim($_POST['horario'] ?? '');
 
-    // validacion regex
+    // VALIDACION REGEX
+    
+    // validacion para ciudad y estado 
     $soloLetras = '/^[\p{L}\s.\'-]+$/u';
 
+    // validacion para nombre y apellido
+    $soloNombre = '/^[\p{L}\s.]+$/u';
+
     // validacion telefono
-    $soloTelefono = '/^\+?[0-9]{7,15}$/';
+    /* $soloTelefono = '/^\+?[0-9]{7,15}$/'; */
 
     // validacion codigo postal
     $soloCodigo_postal = '/^[0-9]{5}$/';
 
-    // puestos validos
+    // validacion para puestos validos
     $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista'];
 
-    // horarios validos
+    // validacion para horarios validos
     $horariosValidos = ['Matutino', 'Vespertino'];
+
+    // validacion para numeros, letras, guiones
+    $soloAlfanumerico = '/^[\p{L}0-9\s\-]+$/u';
 
     // nombre obligatorio (20)
     if ($nombre === '') {
         $errores[] = "El nombre es obligatorio";
     } else if (mb_strlen($nombre) > 20) {
         $errores[] = "El nombre no debe de tener mas de 20 letras";
-    } else if (!preg_match($soloLetras, $nombre)) {
+    } else if (!preg_match($soloNombre, $nombre)) {
         $errores[] = "El nombre no puede tener numeros";
     }
 
@@ -90,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El apellido es obligatorio";
     } else if (mb_strlen($apellido) > 40) {
         $errores[] = "El apellido no debe de tener mas de 40 letras";
-    } else if (!preg_match($soloLetras, $apellido)) {
+    } else if (!preg_match($soloNombre, $apellido)) {
         $errores[] = "El apellido no debe de tener numeros";
     }
 
@@ -134,14 +143,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($numero_exterior === '') {
         $errores[] = "El numero exterior es obligatorio";
     } else if (mb_strlen($numero_exterior) > 15) {
-        $errores[] = "El numero exterior no debe de tener mas de 15 numeros";
+        $errores[] = "El numero exterior no debe de tener mas de 15 caracteres";
+    } else if (!preg_match($soloAlfanumerico, $numero_exterior)) {
+        $errores[] = "El numero exterior solo puede tener numeros, letras y guiones";
     }
 
     // numero interior no es obligatorio (15)
     if ($numero_interior === '') {
         $numero_interior = null;
     } else if (mb_strlen($numero_interior) > 15) {
-        $errores[] = "El numero interior no debe de tener mas de 15 letras";
+        $errores[] = "El numero interior no debe de tener mas de 15 caracteres";
+    } else if (!preg_match($soloAlfanumerico, $numero_interior)) {
+        $errores[] = "El numero interior solo puede tener numeros, letras y guiones";
     }
 
     // colonia es obligatorio (60)
@@ -210,6 +223,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $f = DateTime::createFromFormat('Y-m-d', $Fecha_de_contratacion);
         if (!$f || $f -> format('Y-m-d') !== $Fecha_de_contratacion) {
             $errores[] = "La fecha no es valida";
+        } else {
+          $fecha_actual = date('Y-m-d');
+          if ($Fecha_de_contratacion > $fecha_actual) {
+              $errores[] = "La fecha de contratacion no puede ser una fecha posterior a hoy";
+          }
         }
     }
 
