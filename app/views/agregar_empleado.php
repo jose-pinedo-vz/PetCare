@@ -150,10 +150,10 @@ if (session_status() === PHP_SESSION_NONE) {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
-            <label class="label-campo" for="codigo_postal">Código postal:</label>
+            <label class="label-campo" for="codigo_postal">Código postal *:</label>
             <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
  
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
           </div>
 
           <div>
@@ -215,9 +215,12 @@ if (session_status() === PHP_SESSION_NONE) {
             <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
               
               <?php 
-              if (isset($_SESSION['oldColonia_clientes']))
-              { ?>
-                <option value=""><?php echo htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? '')); unset($_SESSION['oldColonia_clientes']); ?></option>
+              if (isset($_SESSION['oldcolonia']))
+              { 
+                $dato =  htmlspecialchars((string)($_SESSION['oldcolonia'] ?? ''));
+                unset($_SESSION['oldcolonia']); 
+                ?>
+                <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
               <?php 
               } else
               { ?>

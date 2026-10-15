@@ -59,3 +59,24 @@ async function codigoPostalEmpleados(evt)
         colonia.appendChild(option);
     }
 }
+
+async function codigoPostalProveedores(evt)
+{
+    const postal = document.getElementById("codigo_postal");
+    console.log("codigoPostal");
+
+    const respuesta = await fetch('../controllers/proveedor.php?accion=codigo_postal', {method: "POST", headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({codigo_postal: postal.value })});
+    const datos = await respuesta.json();
+
+    if (datos[0].ciudad === "" || datos[0].ciudad === null)
+    {
+        document.getElementById("ciudad").value = datos[0].municipio;
+    }
+    else
+    {
+        document.getElementById("ciudad").value = datos[0].ciudad;
+    }
+
+    document.getElementById("estado").value = datos[0].estado;
+}
