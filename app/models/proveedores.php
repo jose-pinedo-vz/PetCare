@@ -90,4 +90,54 @@ function obtenerProveedoresActivos(): array {
         return [];
     }
 }
+//editar
+function obtenerProveedorPorId(int $id): ?array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("SELECT * FROM proveedores WHERE id_proveedor = ?");
+        $stmt->execute([$id]);
+        $proveedor = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $proveedor ?: null;
+    } catch (Exception $e) {
+        error_log("Error en obtenerProveedorPorId: " . $e->getMessage());
+        return null;
+    }
+}
+
+// Actualiza los datos de un proveedor existente
+function actualizarProveedor(int $id, array $datos) {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+    } catch (Exception $e) {
+        return ["Error BD", htmlspecialchars($e->getMessage())];
+    }
+
+    $sql = "UPDATE proveedores SET
+        razon_social = :razon_social, nombre_comercial = :nombre_comercial, rfc = :rfc,
+        telefono = :telefono, correo = :correo, domicilio = :domicilio, ciudad = :ciudad,
+        estado = :estado, codigo_postal = :codigo_postal, condicion_pago = :condicion_pago,
+        tiempo_entrega = :tiempo_entrega, observaciones = :observaciones
+        WHERE id_proveedor = :id_proveedor";
+
+    try {
+        $stmt = $conexion->prepare($sql);
+        $stmt->bindParam(":razon_social",     $datos['razon_social'],     PDO::PARAM_STR);
+        $stmt->bindParam(":nombre_comercial", $datos['nombre_comercial'], PDO::PARAM_STR);
+        $stmt->bindParam(":rfc",              $datos['rfc'],              PDO::PARAM_STR);
+        $stmt->bindParam(":telefono",         $datos['telefono'],         PDO::PARAM_STR);
+        $stmt->bindParam(":correo",           $datos['correo'],           PDO::PARAM_STR);
+        $stmt->bindParam(":domicilio",        $datos['domicilio'],        PDO::PARAM_STR);
+        $stmt->bindParam(":ciudad",           $datos['ciudad'],           PDO::PARAM_STR);
+        $stmt->bindParam(":estado",           $datos['estado'],           PDO::PARAM_STR);
+        $stmt->bindParam(":codigo_postal",    $datos['codigo_postal'],    PDO::PARAM_STR);
+        $stmt->bindParam(":condicion_pago",   $datos['condicion_pago'],   PDO::PARAM_STR);
+        $stmt->bindParam(":tiempo_entrega",   $datos['tiempo_entrega'],   PDO::PARAM_INT);
+        $stmt->bindParam(":observaciones",    $datos['observaciones'],    PDO::PARAM_STR);
+        $stmt->bindParam(":id_proveedor",     $id,                        PDO::PARAM_INT);
+        $stmt->execute();
+        return true;
+    } catch (PDOException $e) {
+        return ["Error al Actualizar", htmlspecialchars($e->getMessage())];
+    }
+}
 ?>

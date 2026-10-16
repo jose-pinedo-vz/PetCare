@@ -309,7 +309,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Numero de cédula profesional*:
+              Numero de cédula profesional:
             </label>
 
             <input
@@ -324,7 +324,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="Fecha_de_contratacion">
-              Fecha de contratación:
+              Fecha de contratación*:
             </label>
 
             <input

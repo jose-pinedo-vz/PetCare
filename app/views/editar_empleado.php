@@ -96,7 +96,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="nombre">
-              Nombre:
+              Nombre*:
             </label>
 
             <input
@@ -113,7 +113,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="apellido">
-              Apellido:
+              Apellido*:
             </label>
 
             <input
@@ -139,7 +139,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="telefono">
-              Teléfono:
+              Teléfono*:
             </label>
 
             <input
@@ -156,7 +156,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="correo">
-              Correo electrónico:
+              Correo electrónico*:
             </label>
 
             <input
@@ -185,7 +185,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="calle">
-              Calle:
+              Calle*:
             </label>
 
             <input
@@ -202,7 +202,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="numero_exterior">
-              Número exterior:
+              Número exterior*:
             </label>
 
             <input
@@ -235,7 +235,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="colonia">
-              Colonia:
+              Colonia*:
             </label>
 
             <input
@@ -252,7 +252,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="ciudad">
-              Ciudad:
+              Ciudad*:
             </label>
 
             <input
@@ -269,7 +269,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="estado">
-              Estado:
+              Estado*:
             </label>
 
             <input
@@ -286,7 +286,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="codigo_postal">
-              Código Postal:
+              Código Postal*:
             </label>
 
             <input
@@ -312,7 +312,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="puesto">
-              Puesto:
+              Puesto*:
             </label>
 
             <select class="campo" id="puesto" name="puesto" required>
@@ -327,7 +327,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="especialidad">
-              Especialidad:
+              Especialidad*:
             </label>
 
             <input
@@ -343,7 +343,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Cédula profesional:
+               Número de cédula profesional*:
             </label>
 
             <input
@@ -374,7 +374,7 @@ if (!$empleado) {
 
           <div>
             <label class="label-campo" for="horario">
-              Horario:
+              Horario*:
             </label>
             <select class="campo" id="horario" name="horario" required>
                 <option value="">Selecciona un horario</option>
