@@ -142,6 +142,175 @@
   text-align: right;
 }
 
+.venta-contenedor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  align-items: start;
+  gap: 18px;
+}
+
+.venta-carrito,
+.venta-resumen {
+  min-width: 0;
+}
+
+.venta-carrito h2,
+.venta-resumen h2 {
+  margin: 0 0 18px;
+  font-size: 18px;
+}
+
+.venta-cajero {
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+.venta-captura {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(180px, 0.7fr);
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.venta-captura label,
+.venta-campo-pago label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.venta-codigo .nota-campo {
+  font-weight: normal;
+}
+
+.venta-captura .btn {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.venta-tabla-envoltura {
+  min-height: 360px;
+  overflow: auto;
+}
+
+.venta-tabla {
+  min-width: 650px;
+}
+
+.venta-tabla th,
+.venta-tabla td {
+  padding: 12px 10px;
+}
+
+.venta-tabla td:nth-child(3),
+.venta-tabla td:nth-child(5) {
+  white-space: nowrap;
+}
+
+.venta-carrito-vacio {
+  height: 300px;
+  color: var(--texto-suave);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.venta-cantidad {
+  width: 72px;
+  padding: 7px;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  color: var(--primary-dark);
+}
+
+.venta-quitar {
+  padding: 6px 9px;
+}
+
+.venta-mensaje {
+  min-height: 20px;
+  margin: 12px 0 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.venta-totales > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.venta-total {
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.venta-acciones {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.venta-acciones .btn {
+  width: 100%;
+  min-height: 44px;
+}
+
+.venta-acciones .btn:disabled,
+.venta-dialog-acciones .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 1000px) {
+  .venta-contenedor {
+    grid-template-columns: minmax(0, 1fr) 250px;
+  }
+
+  .venta-captura {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .venta-cliente {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .venta-contenedor {
+    grid-template-columns: 1fr;
+  }
+
+  .venta-resumen {
+    order: -1;
+  }
+
+  .venta-captura {
+    grid-template-columns: 1fr;
+  }
+
+  .venta-cliente {
+    grid-column: auto;
+  }
+
+  .venta-captura .btn {
+    width: 100%;
+  }
+
+  .venta-tabla-envoltura {
+    min-height: 280px;
+  }
+
+  .venta-carrito-vacio {
+    height: 220px;
+  }
+
+}
+
 .confirmacion p {
   margin: 0 0 20px;
   font-size: 16px;

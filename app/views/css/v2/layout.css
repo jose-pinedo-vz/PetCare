@@ -5,8 +5,12 @@
 }
 
 .sidebar {
+  position: sticky;
+  top: 0;
   width: 220px;
+  height: 100vh;
   flex-shrink: 0;
+  overflow-y: auto;
   background-color: var(--primary-dark);
   display: flex;
   flex-direction: column;
@@ -160,6 +164,9 @@ footer p {
 
   .sidebar {
     width: 100%;
+    height: auto;
+    position: static;
+    overflow-y: visible;
   }
 
   .sidebar .marca {
