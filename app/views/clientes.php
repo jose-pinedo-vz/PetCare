@@ -12,15 +12,6 @@ $listaClientes = Cliente::obtenerTodos();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Clientes</title>
   <link rel="stylesheet" href="css/estilos_base.css">
-  <style>
-    .btn {
-      background-color: #6F4E37;
-    }
-
-    .btn:hover {
-      background-color: #4E342E;
-    }
-  </style>
 </head>
 
 <body>
@@ -95,7 +86,7 @@ $listaClientes = Cliente::obtenerTodos();
                   <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
                   <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">+ Mascota</a>
                   <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">+ Cita</a>
-                  <a class="btn" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>&nombre=<?php echo urlencode($c['nombre']); ?>&apellido=<?php echo urlencode($c['apellido']); ?>" style="padding: 5px 10px; font-size: 13px;">- Eliminar</a>
+                  <a class="btn" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>&nombre=<?php echo urlencode($c['nombre']); ?>&apellido=<?php echo urlencode($c['apellido']); ?>" style="padding: 5px 10px; font-size: 13px;">Eliminar</a>
                 </td>
               </tr>
             <?php endforeach; ?>
