@@ -101,8 +101,8 @@ if (session_status() === PHP_SESSION_NONE)
 
     <div class="contenedor_citas">
       <div class="boton_control">
-        <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
-        <button id="btn_active" onclick="mostrarSeccion('atendidas', event)" class="btn" style="background: #757575; margin-left: 8px;">Atendidas</button>
+        <button id="btn_espera" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
+        <button id="btn_atendidas" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active" style="background: #757575; margin-left: 8px;">Atendidas</button>
       </div>
 
       <div class="panel_contenido">

@@ -153,7 +153,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <label class="label-campo" for="codigo_postal">Código postal *:</label>
             <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
  
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>">
           </div>
 
           <div>
