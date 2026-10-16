@@ -1,12 +1,42 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../models/Empleados.php';
+require_once __DIR__ . '/../models/Cliente.php';
+
 
 session_start();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
+
+    if ($res === [])
+    {
+        echo json_encode(false);
+        exit;
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
+}
+
+
 
 
 function errorSession(string $error) : void {

@@ -1,5 +1,35 @@
 <?php
 /* codigo aqui*/
+require_once __DIR__ . '/../models/Cliente.php';
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
+
+    if ($res === [])
+    {
+        echo json_encode(false);
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
+}
+
+
+
+
 
 function validar_datos($datos){
     if (session_status() === PHP_SESSION_NONE) {

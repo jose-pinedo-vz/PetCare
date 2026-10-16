@@ -175,7 +175,21 @@ if (session_status() === PHP_SESSION_NONE) {
           <div>
             <label class="label-campo" for="colonia">Colonia*:</label>
             <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
-              <option value="">Valide su codigo postal...</option>
+              
+              <?php 
+              if (isset($_SESSION['oldColonia_clientes']))
+              { 
+                $dato =  htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? ''));
+                unset($_SESSION['oldColonia_clientes']); 
+
+                ?>
+                <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
+              <?php 
+              } else
+              { ?>
+                <option value="">Valide su codigo postal...</option>
+              <?php } ?>
+
             </select>
           </div>
 
