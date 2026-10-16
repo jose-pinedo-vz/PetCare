@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veterinaria PetCare - Agregar mascota</title>
+  <title>Veterinaria PetCare - Agendar cita</title>
   <link rel="stylesheet" href="css/estilos_base.css">
 </head>
 <body>
@@ -65,7 +65,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <label class="label-campo" for="claveCliente">Clave del cliente *:</label>
             <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? '')); unset($_SESSION['oldClave']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? $_GET['claveCliente'] ?? '')); unset($_SESSION['oldClave']); ?>">
           </div>
 
           <div>

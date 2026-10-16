@@ -134,7 +134,7 @@ unset($_SESSION['old']);
             <?php $sexoActual = $old['sexo'] ?? $mascota['sexo'] ?? ''; ?>
             <select class="campo" id="sexo" name="sexo" required>
               <option value="Macho" <?= $sexoActual === 'Macho' ? 'selected' : '' ?>>Macho</option>
-              <option value="Hembra" <?= $mascota['sexo'] === 'Macho' ? 'selected' : '' ?>>Hembra</option>
+              <option value="Hembra" <?= $sexoActual === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
             </select>
           </div>
 
