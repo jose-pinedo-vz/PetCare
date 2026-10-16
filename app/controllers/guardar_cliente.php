@@ -107,8 +107,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($telefono)) {
         errorSession("El teléfono principal es obligatorio.");
         //$errores[] = "El teléfono principal es obligatorio.";
-    } elseif (mb_strlen($telefono) > 15) {
-        $errores[] = "El teléfono no puede exceder los 15 caracteres.";
+    } elseif (!preg_match('/^[0-9]+$/', $telefono)) {
+        errorSession("El teléfono solo puede contener números.");
+    } elseif (strlen($telefono) !== 10) {
+        errorSession("El teléfono debe tener exactamente 10 dígitos.");
     }
 
     if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
@@ -153,7 +155,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (empty($telefono_emergencia)) {
         errorSession("El teléfono del contacto de emergencia es obligatorio.");
-        //$errores[] = "El teléfono del contacto de emergencia es obligatorio.";
+    } elseif (!preg_match('/^[0-9]+$/', $telefono_emergencia)) {
+        errorSession("El teléfono de emergencia solo puede contener números.");
+    } elseif (strlen($telefono_emergencia) !== 10) {
+        errorSession("El teléfono de emergencia debe tener exactamente 10 dígitos.");
     }
 
     $datos = [
