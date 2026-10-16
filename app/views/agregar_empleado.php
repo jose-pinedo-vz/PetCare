@@ -4,6 +4,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['error'])) {
+    $campos_old = [
+        'oldnombre_empleado', 'oldapellido', 'oldtelefono', 'oldcorreo',
+        'oldcalle', 'oldnumero_exterior', 'oldnumero_interior', 'oldcolonia',
+        'oldciudad', 'oldestado', 'oldcodigo_postal', 'oldpuesto',
+        'oldespecialidad', 'oldnum_cedula_profesional', 'oldFecha_de_contratacion', 'oldhorario'
+    ];
+    foreach ($campos_old as $campo) {
+        unset($_SESSION[$campo]);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +48,7 @@ if (session_status() === PHP_SESSION_NONE) {
       <li><a href="empleados.php" class="activo">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
 
-      
+
       <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
@@ -152,7 +164,7 @@ if (session_status() === PHP_SESSION_NONE) {
           <div>
             <label class="label-campo" for="codigo_postal">Código postal *:</label>
             <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
- 
+
               value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
           </div>
 
@@ -213,15 +225,15 @@ if (session_status() === PHP_SESSION_NONE) {
           <div>
             <label class="label-campo" for="colonia">Colonia*:</label>
             <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
-              
-              <?php 
+
+              <?php
               if (isset($_SESSION['oldcolonia']))
-              { 
+              {
                 $dato =  htmlspecialchars((string)($_SESSION['oldcolonia'] ?? ''));
-                unset($_SESSION['oldcolonia']); 
+                unset($_SESSION['oldcolonia']);
                 ?>
                 <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
-              <?php 
+              <?php
               } else
               { ?>
                 <option value="">Valide su codigo postal...</option>
