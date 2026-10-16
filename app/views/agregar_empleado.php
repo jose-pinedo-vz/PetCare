@@ -13,6 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar empleado</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+  <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
 
@@ -149,6 +150,19 @@ if (session_status() === PHP_SESSION_NONE) {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
+            <label class="label-campo" for="codigo_postal">Código postal *:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+ 
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>">
+          </div>
+
+          <div>
+            <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+            <button type="button" onclick="codigoPostalEmpleados(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+          </div>
+
+
+          <div>
             <label class="label-campo" for="calle">
               Calle*:
             </label>
@@ -197,18 +211,23 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
           <div>
-            <label class="label-campo" for="colonia">
-              Colonia*:
-            </label>
+            <label class="label-campo" for="colonia">Colonia*:</label>
+            <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
+              
+              <?php 
+              if (isset($_SESSION['oldcolonia']))
+              { 
+                $dato =  htmlspecialchars((string)($_SESSION['oldcolonia'] ?? ''));
+                unset($_SESSION['oldcolonia']); 
+                ?>
+                <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
+              <?php 
+              } else
+              { ?>
+                <option value="">Valide su codigo postal...</option>
+              <?php } ?>
 
-            <input
-              type="text"
-              class="campo"
-              id="colonia"
-              name="colonia"
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldcolonia'] ?? '')); unset($_SESSION['oldcolonia']); ?>"
-              maxlength="60"
-              required>
+            </select>
           </div>
 
 
@@ -224,7 +243,7 @@ if (session_status() === PHP_SESSION_NONE) {
               name="ciudad"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldciudad'] ?? '')); unset($_SESSION['oldciudad']); ?>"
               maxlength="60"
-              required>
+              required readonly>
           </div>
 
 
@@ -240,24 +259,9 @@ if (session_status() === PHP_SESSION_NONE) {
               name="estado"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldestado'] ?? '')); unset($_SESSION['oldestado']); ?>"
               maxlength="60"
-              required>
+              required readonly>
           </div>
 
-
-          <div>
-            <label class="label-campo" for="codigo_postal">
-              Código Postal*:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="codigo_postal"
-              name="codigo_postal"
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>"
-              maxlength="10"
-              required>
-          </div>
 
         </div>
 
@@ -305,7 +309,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Numero de cédula profesional*:
+              Numero de cédula profesional:
             </label>
 
             <input
@@ -320,7 +324,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="Fecha_de_contratacion">
-              Fecha de contratación:
+              Fecha de contratación*:
             </label>
 
             <input

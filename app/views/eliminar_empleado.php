@@ -67,8 +67,6 @@ $apellido_empleado = $_GET['apellido'];
           Esta acción no se puede deshacer.
         </p>
 
-        </div>
-
       </fieldset>
 
       <div style="margin-top: 20px;">

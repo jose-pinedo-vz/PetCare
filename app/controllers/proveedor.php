@@ -1,5 +1,36 @@
 <?php
 /* codigo aqui*/
+require_once __DIR__ . '/../models/Cliente.php';
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
+
+    if ($res === [])
+    {
+        echo json_encode(false);
+        exit;
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
+}
+
+
+
+
 
 function validar_datos($datos){
     if (session_status() === PHP_SESSION_NONE) {
@@ -49,6 +80,8 @@ function validar_datos($datos){
     if (empty($datos['correo'])) {
         $errores[] = "El correo es obligatoria.";
         //$datos['correo'] = NULL;
+    }else if (strlen($datos['correo']) > 100) {
+        $errores[] = "El correo no puede tener mas de 100 letras";   
     }elseif (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
         $errores[] = "El formato del correo no es válido.";
     }else{
@@ -73,8 +106,8 @@ function validar_datos($datos){
     if (empty($datos['ciudad'])) {
         $errores[] = "La ciudad es obligatoria.";
         //$datos['ciudad'] = NULL;
-    }else if (strlen($datos['ciudad']) > 20) {
-        $errores[] = "La ciudad no puede tener mas de 20 letras";
+    }else if (strlen($datos['ciudad']) > 100) {
+        $errores[] = "La ciudad no puede tener mas de 100 letras";
     }else if (preg_match('/\d/', $datos['ciudad'])) {
         $errores[] = "La ciudad no puede contener números.";
     }
@@ -83,8 +116,8 @@ function validar_datos($datos){
     if (empty($datos['estado'])) {
         $errores[] = "El estado es obligatoria.";
         //$datos['estado'] = NULL;
-    }else if (strlen($datos['estado']) > 20) {
-        $errores[] = "El estado no puede tener mas de 20 letras";
+    }else if (strlen($datos['estado']) > 100) {
+        $errores[] = "El estado no puede tener mas de 100 letras";
     }else if (preg_match('/\d/', $datos['estado'])) {
         $errores[] = "El estado no puede contener números.";
     }
