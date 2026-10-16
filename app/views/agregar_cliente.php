@@ -29,7 +29,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <nav>
     <ul>
       <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php"o">Citas</a></li>
+      <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>

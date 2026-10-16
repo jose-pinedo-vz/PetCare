@@ -79,8 +79,6 @@ function validar_datos(array $datos) {
         $errores[] = "La unidad de medida es obligatoria.";
     }else if (strlen($datos['unidad_medida']) > 5) {
         $errores[] = "La unidad de medida no puede tener mas de 5 caracteres";
-    }else if(!preg_match('/[0-9]/', $datos['unidad_medida'])){
-        $errores[] = "La unidad de medida debe tener un valor numérico y la unidad de medida (Kg, Lt, etc.).";
     }
 
     //El precio de compra es obligatorio
