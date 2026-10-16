@@ -1,3 +1,23 @@
+<?php
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+require_once __DIR__ . '/../models/usuarios_db.php';
+$empleados_disponibles=UsuariosDB::empleados_disponibles();
+$mensaje=$_SESSION['mensaje']??'';
+$error=$_SESSION['error']??'';
+unset($_SESSION['mensaje'],$_SESSION['error']);
+$idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
+if ($idUsuario === false || $idUsuario === null)
+{
+    header('Location: usuarios.php');
+    exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,8 +41,10 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 

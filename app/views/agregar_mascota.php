@@ -9,6 +9,19 @@ $old     = $_SESSION['old'] ?? [];
 // Limpiar la sesión para que las alertas no reaparezcan al recargar
 unset($_SESSION['errores']);
 unset($_SESSION['old']);
+
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 ?>
 
 <!DOCTYPE html>
@@ -52,8 +65,10 @@ unset($_SESSION['old']);
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 

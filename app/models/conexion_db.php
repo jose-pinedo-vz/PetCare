@@ -67,11 +67,13 @@ class ConexionDB
         $base->execute([$id_usuario]);
     }
 
-    public static function insertarUsuario(PDO $conexion, string $usuario, string $password_hash, ?string $empleado, string $rol, string $permisos, string $estado)
+    public static function insertarUsuario(PDO $conexion, string $usuario, string $password_hash, ?int $empleado, string $rol, string $permisos, string $estado)
     {
+        $empleado=trim($_POST['empleado_asociado']??'');
+        $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
         $base=$conexion->prepare("INSERT INTO usuarios (id_usuario, usuario, contrasena, empleado_asociado, rol, permisos, estado) 
                                     VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u), ?, ?, ?, ?, ?, ?)");
-        $base->execute([$usuario, $password_hash, $empleado, $rol, $permisos, $estado]);
+        $base->execute([$usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado]);
         return $base->rowCount();
     }
 }
