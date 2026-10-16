@@ -1,3 +1,17 @@
+<?php
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,8 +28,10 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
+      <!-- Mostrar nombre del usuario -->
+      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
+      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+      <!-- Mostrar nombre del usuario -->
     </div>
   </header>
 

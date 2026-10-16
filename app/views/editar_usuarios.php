@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
 }
-
 require_once __DIR__ . '/../models/usuarios_db.php';
 $empleados_disponibles=UsuariosDB::empleados_disponibles();
 $mensaje=$_SESSION['mensaje']??'';
