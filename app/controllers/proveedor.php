@@ -19,6 +19,7 @@ function resivirCodigoPostal()
     if ($res === [])
     {
         echo json_encode(false);
+        exit;
     }
     else
     {
