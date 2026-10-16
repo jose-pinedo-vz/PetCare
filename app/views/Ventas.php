@@ -26,7 +26,7 @@
                             <input class="campo" type="text" id="barcodeInput" placeholder="Escanea o escribe un código" autocomplete="off">
                             <span class="nota-campo">El producto se agregará a la lista de venta.</span>
                         </div>
-                        <button class="btn btn-info" id="btnAgregarProducto" type="button">Agregar producto</button>
+                        
                         <div class="input-group venta-cliente">
                             <label for="clienteInput">Cliente</label>
                             <input class="campo" type="tel" id="clienteInput" placeholder="Teléfono (opcional)" inputmode="numeric" autocomplete="off">

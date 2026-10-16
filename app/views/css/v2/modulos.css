@@ -167,7 +167,7 @@
 
 .venta-captura {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto minmax(180px, 0.7fr);
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.7fr);
   align-items: end;
   gap: 14px;
   margin-bottom: 20px;
@@ -272,11 +272,7 @@
   }
 
   .venta-captura {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .venta-cliente {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, 0.7fr);
   }
 }
 
