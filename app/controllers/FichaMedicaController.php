@@ -8,8 +8,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
-$idVeterinario=(int)$_SESSION['id_usuario'];
-$idConsulta=(int)$_SESSION['id_consulta'];
+$idVeterinario = (int)($_SESSION['id_usuario'] ?? 1);
+$idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
 
 $ficha=new FichaMedica();
 

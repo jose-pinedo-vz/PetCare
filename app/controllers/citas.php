@@ -18,6 +18,7 @@ function estraerDatosConsultas():array
     {
         $resultados[] =
         [
+            'id_consulta' => (int)$cita['id_consulta'],
             'nombre' => $cita['nombre'].' '.$cita['apellido'],
             'fecha' => $cita['fecha'],
             'motivo' => $cita['motivo_de_consulta'],
