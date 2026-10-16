@@ -54,8 +54,8 @@ function validar_datos(array $datos) {
     //La descripcion es obligatorio
     if (empty($datos['descripcion'])) {
         $errores[] = "La descripcion es obligatoria.";
-    }else if((int)$datos['descripcion']){
-        $errores[] = "La descripcion debe ser un valor de texto.";
+    }else if(is_numeric($datos['descripcion'])){
+        $errores[] = "La descripción no puede ser solo números.";
     }
 
     //El contenido es obligatorio
@@ -150,7 +150,7 @@ function validar_datos(array $datos) {
         try {
             $fechaActual    = new DateTime('today');
             $fechaIngresada = new DateTime($datos['fecha_ingreso']);
-            if ($fechaIngresada === $fechaActual) {
+            if ($fechaIngresada > $fechaActual) {
                 $errores[] = "Fecha de ingreso: No puede ser una fecha posterior a hoy o  anterior.";
             }
         } catch (Exception $e) {
@@ -221,7 +221,7 @@ function validar_datos(array $datos) {
         exit;
 
     } else {
-        require_once __DIR__ . '/../models/Producto.php';
+        require_once __DIR__ . '/../models/Productos.php';
         $advert = Productos::insertarProducto($datos);
 
         if (is_array($advert) && count($advert) > 0) {
@@ -236,7 +236,7 @@ function validar_datos(array $datos) {
             exit;
         } else {
             // Éxito: redirige a la lista de productos
-            header('Location: ../views/productos.php');
+            header('Location: ../views/inventario.php');
             exit;
         }
 

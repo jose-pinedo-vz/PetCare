@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
             $mensaje = "Usuario '$nuevo_usuario' creado con éxito.";
         } catch (PDOException $e) {
-            if ($e->getCode() === 1062) {
+            if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1062) {
                 $error = "El nombre de usuario '$nuevo_usuario' ya existe.";
             } else {
                 $error = "Error al guardar el usuario: " . $e->getMessage();

@@ -44,7 +44,7 @@
             <p>¿Está seguro de que desea eliminar este cliente?</p>
 
             <button type="submit" class="btn">
-                Eliminar proveedor
+                Eliminar cliente
             </button>
             <a class="btn" href="clientes.php">Cancelar</a>
         </div>
