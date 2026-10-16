@@ -63,6 +63,8 @@ session_start();
       <!--La tarjetita de la interfaz real del modulo -->
       <div class="tarjeta">
         <form action="../controllers/FichaMedicaController.php" method="POST">
+          <input type="hidden" name="id_consulta" value="<?= (int)($idConsulta ?? $_SESSION['oldid_consulta'] ?? 0) ?>">
+          <input type="hidden" name="id_veterinario" value="<?= (int)($idVeterinario ?? $_SESSION['oldid_veterinario'] ?? 1) ?>">
           
           <fieldset>
             <legend>Datos de la consulta</legend>

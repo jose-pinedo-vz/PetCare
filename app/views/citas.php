@@ -23,7 +23,7 @@ if (session_status() === PHP_SESSION_NONE)
           <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
-          <button class="btn" id="btn_consultas">Consulta</button>
+          <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
         </div>
       <?php }
     }
