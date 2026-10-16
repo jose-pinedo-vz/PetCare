@@ -93,7 +93,7 @@
                 <td><?= htmlspecialchars($e['horario']) ?></td>
                 <td style="padding: 15px; white-space: nowrap;">
                   <a class="btn" href="editar_empleado.php?id_empleado=<?= $e['id_empleado'] ?>">Editar</a>
-                  <a class="btn" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
+                  <a class="btn" href="eliminar_empleado.php?id=<?= $e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>" style="margin-left: 6px;">Eliminar</a>
                 </td>
               </tr>
 <?php endforeach; ?>
