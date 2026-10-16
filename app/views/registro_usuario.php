@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/usuarios_db.php';
 $empleados_disponibles=UsuariosDB::empleados_disponibles();
-require_once __DIR__ . '/../models/Empleados.php';
-$empleados = Empleados::Listar_empleados_activos();
 // Mostrar nombre del usuario
 if (session_status()===PHP_SESSION_NONE)
 {
@@ -95,7 +93,7 @@ $usuario=$_SESSION['usuario'];
                 <option value="">Seleccione un empleado</option>
                 <?php if (!empty($empleados_disponibles)): ?>
                     <?php foreach ($empleados_disponibles as $emp): ?>
-                        <option value="<?= htmlspecialchars($emp['nombre']); ?>">
+                        <option value="<?= htmlspecialchars($emp['id_empleado']); ?>">
                             <?= htmlspecialchars($emp['nombre']); ?>
                         </option>
                     <?php endforeach; ?>

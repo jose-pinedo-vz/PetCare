@@ -95,7 +95,7 @@ $usuario=$_SESSION['usuario'];
                 <option value="">Seleccione un empleado</option>
                 <?php if (!empty($empleados_disponibles)): ?>
                     <?php foreach ($empleados_disponibles as $emp): ?>
-                        <option value="<?= htmlspecialchars($emp['nombre']); ?>">
+                        <option value="<?= htmlspecialchars($emp['id_empleado']); ?>">
                             <?= htmlspecialchars($emp['nombre']); ?>
                         </option>
                     <?php endforeach; ?>

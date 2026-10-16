@@ -42,11 +42,13 @@ class UsuariosDB
         }
     }
 
-    public static function insertar(int $id, string $nuevo_usuario, string $nueva_password, ?string $empleado_asociado, string $rol, string $permisos, string $estado)
+    public static function insertar(int $id, string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $permisos, string $estado)
     {
         $conexion=ConexionDB::obtenerConexion();
         try
         {
+            $empleado=trim($_POST['empleado_asociado']??'');
+            $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
             $stmt=$conexion->prepare("UPDATE usuarios SET usuario=?, contrasena=?, empleado_asociado=?, rol=?, permisos=?, estado=? WHERE id_usuario=?");
             $stmt->execute([$nuevo_usuario, $nueva_password, $empleado_asociado, $rol, $permisos, $estado, $id]);
 
@@ -62,7 +64,7 @@ class UsuariosDB
     {
         $conexion=ConexionDB::obtenerConexion();
         try {
-            $query="SELECT id_empleado,nombre FROM empleados WHERE nombre NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado IS NOT NULL) and esta_activo=1";
+            $query="SELECT id_empleado,nombre FROM empleados WHERE nombre NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado=nombre) and esta_activo=1";
             $stmt = $conexion->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

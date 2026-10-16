@@ -14,13 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $estado = $_POST['estado'] ?? 'activo';
 
     if (!empty($nuevo_usuario) && !empty($nueva_password)) {
-        $password_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
+        $password_hash = $nueva_password;
         try {
             ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
             $mensaje = "Usuario '$nuevo_usuario' creado con éxito.";
         } catch (PDOException $e) {
             if ($e->getCode() === '23000' || $e->getCode() === 1062) { // 1062 es MySQL para duplicados, 23000 es el código estándar SQLSTATE de integridad
-                $error = "El nombre de usuario '$nuevo_usuario' ya existe.";
+                $error = "$e El nombre de usuario '$nuevo_usuario' ya existe.";
             }
             else
             {
