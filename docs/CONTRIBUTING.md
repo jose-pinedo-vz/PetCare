@@ -1,4 +1,3 @@
-cat << 'EOF' > CONTRIBUTING.md
 ## Estándar de Mensajes de Commit (Conventional Commits)
 
 Para mantener un historial claro, legible y estructurado en el proyecto **PetCare**, utilizamos la convención **Conventional Commits**. Todos los commits realizados en el repositorio deben seguir este formato.
@@ -19,3 +18,25 @@ Para mantener un historial claro, legible y estructurado en el proyecto **PetCar
 | **`build`** | Cambios que afectan el sistema de compilación o dependencias externas. | `build(deps): actualizar imagen base de PHP en el Dockerfile` |
 | **`ci`** | Cambios en scripts o flujos de trabajo de automatización/despliegue. | `ci(docker): ajustar configuracion del contenedor Apache` |
 | **`chore`** | Tareas rutinarias de mantenimiento que no modifican código de la app (`.gitignore`). | `chore(git): actualizar reglas en gitignore para la base de datos` |
+
+
+
+## Enfoque Arquitectónico y Estándares de Código
+
+Para el desarrollo del proyecto **PetCare**, se ha adoptado un modelo **MVC (Modelo-Vista-Controlador) híbrido**, diseñado para mantener la robustez y seguridad en la capa de datos, permitiendo al mismo tiempo agilidad en los controladores y vistas.
+
+### Usar POO
+
+### 1. Modelos (`/app/models/`)
+* **Paradigma:** Programación Orientada a Objetos (POO) estricta a través de Clases.
+* **Responsabilidad:** Gestionar exclusivamente la conexión a la base de datos, la ejecución de consultas SQL mediante sentencias preparadas y el manejo de los datos. No deben contener lógica de interfaz ni HTML.
+
+### No usar POO
+
+### 2. Controladores (`/app/controllers/`)
+* **Paradigma:** Enfoque procedural estructurado mediante scripts independientes.
+* **Responsabilidad:** Actuar como intermediarios entre la vista y el modelo. Reciben las peticiones del usuario, procesan la lógica de control, llaman a los modelos correspondientes y gestionan las redirecciones.
+
+### 3. Vistas (`/app/views/`)
+* **Paradigma:** Scripts procedurales enfocados puramente en la interfaz de usuario (HTML, CSS, JavaScript y componentes visuales).
+* **Responsabilidad:** Mostrar la información de manera limpia y capturar datos mediante formularios. Queda prohibido realizar consultas directas a la base de datos desde los archivos de vistas.

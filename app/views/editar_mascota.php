@@ -1,24 +1,30 @@
 <?php
 require_once __DIR__ . '/../models/Mascota.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $idMascota = filter_input(INPUT_GET, 'id_mascota', FILTER_VALIDATE_INT);
 
 if ($idMascota === false || $idMascota === null) {
     header('Location: mascotas.php');
-    exit;
+    exit();
 }
 
 $mascota = obtenerMascotaPorId($idMascota);
 
 if (!$mascota) {
     header('Location: mascotas.php');
-    exit;
+    exit();
 }
 
-// Función chiquita para no repetir htmlspecialchars() en cada campo
-function v($valor) {
-    return htmlspecialchars((string)($valor ?? ''));
-}
+$errores = $_SESSION['errores'] ?? [];
+$old = $_SESSION['old'] ?? [];
+
+unset($_SESSION['errores']);
+unset($_SESSION['old']);
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -33,6 +39,25 @@ function v($valor) {
     #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
     #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
     #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
+
+    /* Estilo para el contenedor de errores */
+    .alerta-errores {
+      background-color: #f8d7da;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .alerta-errores h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    .alerta-errores ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
   </style>
 </head>
 <body>
@@ -54,9 +79,9 @@ function v($valor) {
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -69,9 +94,21 @@ function v($valor) {
   <main>
     <h1>Editar mascota</h1>
 
+    <!-- BLOQUE DE ALERTAS: Muestra los errores guardados en la sesión -->
+    <?php if (!empty($errores)): ?>
+      <div class="alerta-errores">
+        <h4>Por favor corrige los siguientes errores:</h4>
+        <ul>
+          <?php foreach ($errores as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
     <form action="../controllers/actualizar_mascota.php" method="POST" enctype="multipart/form-data">
 
-      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= v($mascota['id_mascota']) ?>">
+      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= htmlspecialchars((string)($old['id_mascota'] ?? $mascota['id_mascota'])) ?>">
 
       <fieldset>
         <legend>Datos básicos</legend>
@@ -79,61 +116,63 @@ function v($valor) {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
-            <input type="text" class="campo" id="nombre" name="nombre" value="<?= v($mascota['nombre']) ?>" required>
+            <input type="text" class="campo" id="nombre" name="nombre" value="<?= htmlspecialchars($old['nombre'] ?? $mascota['nombre'] ?? '') ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="especie">Especie *:</label>
-            <input type="text" class="campo" id="especie" name="especie" value="<?= v($mascota['especie']) ?>" required>
+            <input type="text" class="campo" id="especie" name="especie" value="<?= htmlspecialchars($old['especie'] ?? $mascota['especie'] ?? '') ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="raza">Raza:</label>
-            <input type="text" class="campo" id="raza" name="raza" value="<?= v($mascota['raza']) ?>">
+            <input type="text" class="campo" id="raza" name="raza" value="<?= htmlspecialchars($old['raza'] ?? $mascota['raza'] ?? '') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="sexo">Sexo:</label>
+            <?php $sexoActual = $old['sexo'] ?? $mascota['sexo'] ?? ''; ?>
             <select class="campo" id="sexo" name="sexo" required>
-              <option value="Macho" <?= $mascota['sexo'] === 'Macho' ? 'selected' : '' ?>>Macho</option>
-              <option value="Hembra" <?= $mascota['sexo'] === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
+              <option value="Macho" <?= $sexoActual === 'Macho' ? 'selected' : '' ?>>Macho</option>
+              <option value="Hembra" <?= $sexoActual === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
             </select>
           </div>
 
           <div>
             <label class="label-campo" for="edad">Edad / Fecha nacimiento *:</label>
-            <input type="date" class="campo" id="edad" name="edad" value="<?= v($mascota['edad']) ?>" required>
+            <input type="date" class="campo" id="edad" name="edad" value="<?= htmlspecialchars($old['edad'] ?? $mascota['edad'] ?? '') ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="color">Color:</label>
-            <input type="text" class="campo" id="color" name="color" value="<?= v($mascota['color']) ?>">
+            <input type="text" class="campo" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? $mascota['color'] ?? '') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="peso">Peso (kg):</label>
-            <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= v($mascota['peso']) ?>">
+            <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? $mascota['peso'] ?? '') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="tamanio">Tamaño:</label>
+            <?php $tam = $old['tamanio'] ?? $mascota['tamanio'] ?? ''; ?>
             <select class="campo" id="tamanio" name="tamanio">
               <option value="">Seleccionar...</option>
-              <option value="Pequeño" <?= $mascota['tamanio'] === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
-              <option value="Mediano" <?= $mascota['tamanio'] === 'Mediano' ? 'selected' : '' ?>>Mediano</option>
-              <option value="Grande" <?= $mascota['tamanio'] === 'Grande' ? 'selected' : '' ?>>Grande</option>
-              <option value="Gigante" <?= $mascota['tamanio'] === 'Gigante' ? 'selected' : '' ?>>Gigante</option>
+              <option value="Pequeño" <?= $tam === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
+              <option value="Mediano" <?= $tam === 'Mediano' ? 'selected' : '' ?>>Mediano</option>
+              <option value="Grande" <?= $tam === 'Grande' ? 'selected' : '' ?>>Grande</option>
+              <option value="Gigante" <?= $tam === 'Gigante' ? 'selected' : '' ?>>Gigante</option>
             </select>
           </div>
 
           <div>
             <label class="label-campo" for="id_cliente">Dueño (ID Cliente) *:</label>
-            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="<?= v($mascota['id_cliente']) ?>" required placeholder="ID del Cliente">
+            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="<?= htmlspecialchars($old['id_cliente'] ?? $mascota['id_cliente'] ?? '') ?>" required placeholder="ID del Cliente">
           </div>
 
           <div>
             <label class="label-campo" for="id_veterinario">Veterinario Asignado (ID):</label>
-            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="<?= v($mascota['id_veterinario']) ?>" placeholder="ID del Veterinario">
+            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="<?= htmlspecialchars($old['id_veterinario'] ?? $mascota['id_veterinario'] ?? '') ?>" placeholder="ID del Veterinario">
           </div>
         </div>
 
@@ -162,67 +201,70 @@ function v($valor) {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="alergias">Alergias:</label>
-            <textarea class="campo" id="alergias" name="alergias" rows="2"><?= v($mascota['alergias']) ?></textarea>
+            <textarea class="campo" id="alergias" name="alergias" rows="2"><?= htmlspecialchars($old['alergias'] ?? $mascota['alergias'] ?? '') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="enfermedades">Enfermedades:</label>
-            <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"><?= v($mascota['enfermedades']) ?></textarea>
+            <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"><?= htmlspecialchars($old['enfermedades'] ?? $mascota['enfermedades'] ?? '') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="medicamentos">Medicamentos:</label>
-            <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"><?= v($mascota['medicamentos']) ?></textarea>
+            <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"><?= htmlspecialchars($old['medicamentos'] ?? $mascota['medicamentos'] ?? '') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="condiciones_especiales">Condiciones Especiales:</label>
-            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= v($mascota['condiciones_especiales']) ?></textarea>
+            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= htmlspecialchars($old['condiciones_especiales'] ?? $mascota['condiciones_especiales'] ?? '') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="vacunas">Vacunas:</label>
-            <textarea class="campo" id="vacunas" name="vacunas" rows="2"><?= v($mascota['vacunas']) ?></textarea>
+            <textarea class="campo" id="vacunas" name="vacunas" rows="2"><?= htmlspecialchars($old['vacunas'] ?? $mascota['vacunas'] ?? '') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="ultima_desparasitacion">Última Desparasitación:</label>
-            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= v($mascota['ultima_desparasitacion']) ?>">
+            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= htmlspecialchars($old['ultima_desparasitacion'] ?? $mascota['ultima_desparasitacion'] ?? '') ?>">
           </div>
 
           <!-- campos que faltaron -->
-              <div>
-                <label class="label-campo" for="temperamento">Temperamento:</label>
-                <textarea class="campo" id="temperamento" name="temperamento" rows="2"><?= v($mascota['temperamento'] ?? '') ?></textarea>
-              </div>
+          <div>
+            <label class="label-campo" for="temperamento">Temperamento:</label>
+            <textarea class="campo" id="temperamento" name="temperamento" rows="2"><?= htmlspecialchars($old['temperamento'] ?? $mascota['temperamento'] ?? '') ?></textarea>
+          </div>
 
-              <div>
-                <label class="label-campo" for="restricciones_para_manejo">Restricciones para manejo:</label>
-                <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"><?= v($mascota['restricciones_para_manejo'] ?? '') ?></textarea>
-              </div>
+          <div>
+            <label class="label-campo" for="restricciones_para_manejo">Restricciones para manejo:</label>
+            <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"><?= htmlspecialchars($old['restricciones_para_manejo'] ?? $mascota['restricciones_para_manejo'] ?? '') ?></textarea>
+          </div>
 
-              <div>
-                <label class="label-campo" for="observaciones">Observaciones:</label>
-                <textarea class="campo" id="observaciones" name="observaciones" rows="2"><?= v($mascota['observaciones'] ?? '') ?></textarea>
-              </div>
+          <div>
+            <label class="label-campo" for="observaciones">Observaciones:</label>
+            <textarea class="campo" id="observaciones" name="observaciones" rows="2"><?= htmlspecialchars($old['observaciones'] ?? $mascota['observaciones'] ?? '') ?></textarea>
+          </div>
 
-              <div>
-                <label class="label-campo">Estado:</label>
-                <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                  <?php $activo = !isset($mascota['esta_activo']) || $mascota['esta_activo'] == 1; ?>
-                  <!-- Botón Switch -->
-                  <label class="switch">
-                    <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" <?= $activo ? 'checked' : '' ?>>
-                    <span class="slider round"></span>
-                  </label>
+          <div>
+            <label class="label-campo">Estado:</label>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                <?php
+                    $activoVal = $old['esta_activo'] ?? $mascota['esta_activo'] ?? 1;
+                    $activo = ($activoVal == 1);
+                ?>
+                <!-- Botón Switch -->
+                <label class="switch">
+                <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" <?= $activo ? 'checked' : '' ?>>
+                <span class="slider round"></span>
+                </label>
 
-                  <!-- Caja de texto visual NO editable -->
-                  <input type="text" id="texto_estado" class="campo" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
+                <!-- Caja de texto visual NO editable -->
+                <input type="text" id="texto_estado" class="campo" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
 
-                  <!-- Campo oculto para enviar 1 o 0 a PHP -->
-                  <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
-
-                </div>
+                <!-- Campo oculto para enviar 1 o 0 a PHP -->
+                <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
+            </div>
+          </div>
         </div>
       </fieldset>
 

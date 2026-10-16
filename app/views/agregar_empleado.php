@@ -1,3 +1,23 @@
+<?php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['error'])) {
+    $campos_old = [
+        'oldnombre_empleado', 'oldapellido', 'oldtelefono', 'oldcorreo',
+        'oldcalle', 'oldnumero_exterior', 'oldnumero_interior', 'oldcolonia',
+        'oldciudad', 'oldestado', 'oldcodigo_postal', 'oldpuesto',
+        'oldespecialidad', 'oldnum_cedula_profesional', 'oldFecha_de_contratacion', 'oldhorario'
+    ];
+    foreach ($campos_old as $campo) {
+        unset($_SESSION[$campo]);
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,6 +25,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar empleado</title>
   <link rel="stylesheet" href="css/estilos_base.css">
+  <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
 
@@ -25,9 +46,10 @@
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -41,6 +63,12 @@
 
     <h1>Agregar empleado</h1>
 
+    <?php if (isset($_SESSION['error'])): ?>
+      <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+      </div>
+    <?php endif; ?>
+
     <form action="../controllers/guardar_empleado.php" method="POST">
 
       <fieldset>
@@ -53,7 +81,7 @@
 
           <div>
             <label class="label-campo" for="nombre">
-              Nombre:
+              Nombre*:
             </label>
 
             <input
@@ -61,6 +89,7 @@
               class="campo"
               id="nombre"
               name="nombre"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnombre_empleado'] ?? '')); unset($_SESSION['oldnombre_empleado']); ?>"
               maxlength="20"
               required>
           </div>
@@ -68,7 +97,7 @@
 
           <div>
             <label class="label-campo" for="apellido">
-              Apellido:
+              Apellido*:
             </label>
 
             <input
@@ -76,6 +105,7 @@
               class="campo"
               id="apellido"
               name="apellido"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldapellido'] ?? '')); unset($_SESSION['oldapellido']); ?>"
               maxlength="40"
               required>
           </div>
@@ -92,7 +122,7 @@
 
           <div>
             <label class="label-campo" for="telefono">
-              Teléfono:
+              Teléfono*:
             </label>
 
             <input
@@ -100,6 +130,7 @@
               class="campo"
               id="telefono"
               name="telefono"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldtelefono'] ?? '')); unset($_SESSION['oldtelefono']); ?>"
               maxlength="15"
               required>
           </div>
@@ -107,7 +138,7 @@
 
           <div>
             <label class="label-campo" for="correo">
-              Correo electrónico:
+              Correo electrónico*:
             </label>
 
             <input
@@ -115,6 +146,7 @@
               class="campo"
               id="correo"
               name="correo"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcorreo'] ?? '')); unset($_SESSION['oldcorreo']); ?>"
               maxlength="100"
               required>
           </div>
@@ -130,8 +162,21 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
+            <label class="label-campo" for="codigo_postal">Código postal *:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>">
+          </div>
+
+          <div>
+            <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+            <button type="button" onclick="codigoPostalEmpleados(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+          </div>
+
+
+          <div>
             <label class="label-campo" for="calle">
-              Calle:
+              Calle*:
             </label>
 
             <input
@@ -139,6 +184,7 @@
               class="campo"
               id="calle"
               name="calle"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcalle'] ?? '')); unset($_SESSION['oldcalle']); ?>"
               maxlength="100"
               required>
           </div>
@@ -146,7 +192,7 @@
 
           <div>
             <label class="label-campo" for="numero_exterior">
-              Número exterior:
+              Número exterior*:
             </label>
 
             <input
@@ -154,6 +200,7 @@
               class="campo"
               id="numero_exterior"
               name="numero_exterior"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnumero_exterior'] ?? '')); unset($_SESSION['oldnumero_exterior']); ?>"
               maxlength="15"
               required>
           </div>
@@ -169,28 +216,36 @@
               class="campo"
               id="numero_interior"
               name="numero_interior"
+
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnumero_interior'] ?? '')); unset($_SESSION['oldnumero_interior']); ?>"
               maxlength="15">
           </div>
 
 
           <div>
-            <label class="label-campo" for="colonia">
-              Colonia:
-            </label>
+            <label class="label-campo" for="colonia">Colonia*:</label>
+            <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
 
-            <input
-              type="text"
-              class="campo"
-              id="colonia"
-              name="colonia"
-              maxlength="60"
-              required>
+              <?php
+              if (isset($_SESSION['oldcolonia']))
+              {
+                $dato =  htmlspecialchars((string)($_SESSION['oldcolonia'] ?? ''));
+                unset($_SESSION['oldcolonia']);
+                ?>
+                <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
+              <?php
+              } else
+              { ?>
+                <option value="">Valide su codigo postal...</option>
+              <?php } ?>
+
+            </select>
           </div>
 
 
           <div>
             <label class="label-campo" for="ciudad">
-              Ciudad:
+              Ciudad*:
             </label>
 
             <input
@@ -198,14 +253,15 @@
               class="campo"
               id="ciudad"
               name="ciudad"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldciudad'] ?? '')); unset($_SESSION['oldciudad']); ?>"
               maxlength="60"
-              required>
+              required readonly>
           </div>
 
 
           <div>
             <label class="label-campo" for="estado">
-              Estado:
+              Estado*:
             </label>
 
             <input
@@ -213,24 +269,11 @@
               class="campo"
               id="estado"
               name="estado"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldestado'] ?? '')); unset($_SESSION['oldestado']); ?>"
               maxlength="60"
-              required>
+              required readonly>
           </div>
 
-
-          <div>
-            <label class="label-campo" for="codigo_postal">
-              Código Postal:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="codigo_postal"
-              name="codigo_postal"
-              maxlength="10"
-              required>
-          </div>
 
         </div>
 
@@ -244,19 +287,20 @@
 
           <div>
             <label class="label-campo" for="puesto">
-              Puesto *:
+              Puesto*:
             </label>
 
+            <?php $p = $_SESSION['oldpuesto'] ?? ''; unset($_SESSION['oldpuesto']); ?>
             <select
               class="campo"
               id="puesto"
               name="puesto"
               required>
               <option value="">Selecciona un puesto</option>
-              <option value="Gerente">Gerente</option>
-              <option value="Veterinario/a">Veterinario</option>
-              <option value="Vendedor">Vendedor</option>
-              <option value="Estilista">Estilista</option>
+              <option value="Gerente" <?= $p === 'Gerente' ? 'selected' : '' ?> >Gerente</option>
+              <option value="Veterinario/a" <?= $p === 'Veterinario/a' ? 'selected' : '' ?> >Veterinario</option>
+              <option value="Vendedor" <?= $p === 'Vendedor' ? 'selected' : '' ?> >Vendedor</option>
+              <option value="Estilista" <?= $p === 'Estilista' ? 'selected' : '' ?> >Estilista</option>
             </select>
           </div>
 
@@ -269,6 +313,7 @@
               type="text"
               class="campo"
               id="especialidad"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldespecialidad'] ?? '')); unset($_SESSION['oldespecialidad']); ?>"
               name="especialidad"
               maxlength="50">
           </div>
@@ -276,7 +321,7 @@
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Cédula profesional:
+              Numero de cédula profesional:
             </label>
 
             <input
@@ -284,36 +329,40 @@
               class="campo"
               id="num_cedula_profesional"
               name="num_cedula_profesional"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldnum_cedula_profesional'] ?? '')); unset($_SESSION['oldnum_cedula_profesional']); ?>"
               maxlength="20">
           </div>
 
 
           <div>
-            <label class="label-campo" for="fecha_de_contratacion">
-              Fecha de contratación:
+            <label class="label-campo" for="Fecha_de_contratacion">
+              Fecha de contratación*:
             </label>
 
             <input
               type="date"
               class="campo"
-              id="fecha_de_contratacion"
-              name="fecha_de_contratacion">
+              id="Fecha_de_contratacion"
+              name="Fecha_de_contratacion"
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha_de_contratacion'] ?? '')); unset($_SESSION['oldFecha_de_contratacion']); ?>"
+            >
           </div>
 
 
           <div>
             <label class="label-campo" for="horario">
-              Horario:
+              Horario*:
             </label>
 
+            <?php $h = $_SESSION['oldhorario'] ?? ''; unset($_SESSION['oldhorario']); ?>
             <select
               class="campo"
               id="horario"
               name="horario"
               required>
               <option value="">Selecciona un horario</option>
-              <option value="Matutino">Matutino</option>
-              <option value="Vespertino">Vespertino</option>
+              <option value="Matutino" <?= $h === 'Matutino' ? 'selected' : '' ?> >Matutino</option>
+              <option value="Vespertino" <?= $h === 'Vespertino' ? 'selected' : '' ?> >Vespertino</option>
             </select>
           </div>
 

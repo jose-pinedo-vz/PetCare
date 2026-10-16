@@ -1,6 +1,8 @@
 <?php
     require_once __DIR__ . '/../models/Empleados.php';
     $empleados = Empleados::Listar_empleados_activos();
+    // Mostrar nombre del usuario
+    session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,8 +20,6 @@
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
     </div>
   </header>
 
@@ -29,9 +29,10 @@
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php" class="activo">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -88,11 +89,11 @@
                 <td><?= htmlspecialchars($e['puesto']) ?></td>
                 <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
                 <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
-                <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
+                <td><?= htmlspecialchars(substr((string)($e['Fecha_de_contratacion'] ?? ''), 0, 10)) ?></td>
                 <td><?= htmlspecialchars($e['horario']) ?></td>
                 <td style="padding: 15px; white-space: nowrap;">
-                  <a class="btn" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
-                  <a class="btn" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
+                  <a class="btn" href="editar_empleado.php?id_empleado=<?= $e['id_empleado'] ?>">Editar</a>
+                  <a class="btn" href="eliminar_empleado.php?id=<?= $e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>" style="margin-left: 6px;">Eliminar</a>
                 </td>
               </tr>
 <?php endforeach; ?>

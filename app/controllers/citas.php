@@ -1,4 +1,6 @@
 <?php
+// hola
+// hola 2
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/citas.php';
@@ -16,6 +18,7 @@ function estraerDatosConsultas():array
     {
         $resultados[] =
         [
+            'id_consulta' => (int)$cita['id_consulta'],
             'nombre' => $cita['nombre'].' '.$cita['apellido'],
             'fecha' => $cita['fecha'],
             'motivo' => $cita['motivo_de_consulta'],
@@ -29,7 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error) : null
+function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
 
@@ -97,11 +100,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
 
     // insercin de la cita
-    $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
-    if (!$seInserto)
-    {
-        errorSession("Hubo un error en la insercino de los datos.");
-    }
+    // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
+    // if (!$seInserto)
+    // {
+    //     errorSession("Hubo un error en la insercino de los datos.");
+    // }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");

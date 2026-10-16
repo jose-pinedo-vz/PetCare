@@ -1,3 +1,18 @@
+<?php
+require_once __DIR__ . '/../models/Mascota.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$id_mascota = (int)($_GET['id_mascota'] ?? $_GET['id'] ?? 0);
+$mascota = $id_mascota > 0 ? Mascota::obtenerPorId($id_mascota) : null;
+
+if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
+    header('Location: mascotas.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,10 +40,10 @@
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -40,27 +55,27 @@
 
   <main>
     <h1>Eliminar mascota</h1>
+        <?php if (isset($_SESSION['error'])): ?>
+      <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+      </div>
+    <?php endif; ?>
+        <form action="../controllers/procesar_eliminar_mascotas.php" method="POST">
 
-    <form action="procesar_eliminar_mascota.php" method="POST">
-
-      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= htmlspecialchars($_GET['id'] ?? '') ?>">
+      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= (int)$id_mascota ?>">
 
       <fieldset>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div>
-            <label class="label-campo" for="nombre_empleado">Nombre de empleado:</label>
-            <input type="text" class="campo" id="nombre_empleado" name="nombre_empleado" required>
-          </div>
-
-          <div>
-            <label class="label-campo" for="password_empleado">Contraseña:</label>
-            <input type="password" class="campo" id="password_empleado" name="password_empleado" required>
-          </div>
-        </div>
+        <p>
+          ¿Está seguro de que desea eliminar a la mascota
+          <strong><?= htmlspecialchars((string)$mascota['nombre']) . ' (ID: ' . $id_mascota . ')' ?></strong>?
+          Esta acción no se puede deshacer.
+        </p>
       </fieldset>
 
-      <button type="submit">Eliminar mascota</button>
-      <a class="btn" href="mascotas.php">Cancelar</a>
+      <div style="margin-top: 20px;">
+        <button type="submit" class="btn">Eliminar mascota</button>
+        <a class="btn" href="mascotas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+      </div>
     </form>
   </main>
 

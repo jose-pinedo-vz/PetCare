@@ -2,14 +2,18 @@
 require_once __DIR__ . '/../models/Cliente.php';
 $listaClientes = Cliente::obtenerTodos();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Clientes</title>
   <link rel="stylesheet" href="css/estilos_base.css">
 </head>
+
 <body>
 
   <header>
@@ -18,8 +22,6 @@ $listaClientes = Cliente::obtenerTodos();
     </div>
 
     <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
     </div>
   </header>
 
@@ -29,9 +31,10 @@ $listaClientes = Cliente::obtenerTodos();
       <li><a href="citas.php">Citas</a></li>
       <li><a href="clientes.php" class="activo">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
+      <li><a href="proveedores.php">Proveedores</a></li>
 
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
+
+      <li><a href="inventario.php">Inventario</a></li>
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>
       <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
@@ -46,8 +49,8 @@ $listaClientes = Cliente::obtenerTodos();
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
-    
-    <?php 
+
+    <?php
     $listaClientes = Cliente::obtenerTodos();
     if (empty($listaClientes)): ?>
       <div style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
@@ -55,7 +58,7 @@ $listaClientes = Cliente::obtenerTodos();
         <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
       </div>
     <?php else: ?>
-      
+
       <!-- INICIA CONTENEDOR RESPONSIVE -->
       <div class="table-responsive">
         <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
@@ -72,23 +75,24 @@ $listaClientes = Cliente::obtenerTodos();
           <tbody>
             <?php foreach ($listaClientes as $c): ?>
               <tr>
-                <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-                
+
                 <!-- Celda de acciones con white-space: nowrap; -->
                 <td style="padding: 10px; text-align: center; white-space: nowrap;">
                   <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
-                  <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #2196F3;">+ Mascota</a>
-                  <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #ff9800;">+ Cita</a>
+                  <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">+ Mascota</a>
+                  <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">+ Cita</a>
+                  <a class="btn" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>&nombre=<?php echo urlencode($c['nombre']); ?>&apellido=<?php echo urlencode($c['apellido']); ?>" style="padding: 5px 10px; font-size: 13px;">Eliminar</a>
                 </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
-      </div> 
+      </div>
       <!-- TERMINA CONTENEDOR RESPONSIVE -->
 
     <?php endif; ?>
@@ -99,4 +103,5 @@ $listaClientes = Cliente::obtenerTodos();
   </footer>
 
 </body>
+
 </html>
