@@ -13,7 +13,7 @@ $idConsulta=(int)$_SESSION['id_consulta'];
 
 $ficha=new FichaMedica();
 
-function errorSession(string $error) : void
+function errorSession(string $error) : null
 {
     $_SESSION['error']=$error;
     $_SESSION['oldid_consulta']=$_POST['id_consulta'] ?? '';
