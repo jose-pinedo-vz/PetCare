@@ -1,58 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-widht, initial-scale=1.0">
-    <title>Veterinaria PetCare - Agregar proveedor</title>
-    <link rel="stylesheet" href="css/estilos_base.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veterinaria PetCare - Agregar proveedor</title>
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
+
 <body>
-    <header>
-        <div class='marca'>
-            <img src="img/logo3.svg" alt="Verterinaria PetCare">
-        </div>
 
-        <div class="marca">
-            <span>Empleado: Nombre del empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
+  <div class="layout">
 
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
-
-
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Agregar</div>
+      <div class="encabezado-pagina">
         <h1>Agregar proveedor</h1>
+      </div>
 
+      <div class="tarjeta">
         <form action="guardar_proveedor.php" method="POST">
 
             <fieldset>
 
                 <legend>Datos generales</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
-                        <label class="label-campo" for="nombre">
-                            Razon social *:
+                        <label class="label-campo" for="razon_social">
+                            Razón social *:
                         </label>
 
                         <input
@@ -93,15 +72,14 @@
                           required>
 
                     </div>
- 
-
+                </div>
             </fieldset>
 
              <fieldset>
 
                 <legend>Datos de contacto</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="telefono">
@@ -113,7 +91,7 @@
                           class="campo"
                           id="telefono"
                           name="telefono"
-                          maxlenght="15"
+                          maxlength="15"
                           required>
                     </div>
 
@@ -132,14 +110,14 @@
                           maxlength="100"
                           required>
                     </div>
-                    
+                </div>
             </fieldset>
 
             <fieldset>
 
                 <legend>Datos de ubicación</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="domicilio">
@@ -198,13 +176,14 @@
                           maxlength="10"
                           required>
                     </div>
-                </fieldset>    
+                </div>
+            </fieldset>    
 
                 <fieldset>
 
                 <legend>Información comercial</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
@@ -232,7 +211,7 @@
                           maxlength="60">
                     </div>
 
-                    <div tyle="grid-column: 1 / -1;">
+                    <div class="campo-completo">
                         <label class="label-campo" for="observaciones">
                             Observaciones:
                         </label>
@@ -248,16 +227,23 @@
                 </div>
 
             </fieldset>
+        <div class="acciones-formulario">
+        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
         <button type="submit">Guardar</button>
-        <a class="btn" href="proveedores.php">Cancelar</a>
+      </div>
 
         </form>
 
+    
+      </div>
     </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
 </body>
+
 </html>
