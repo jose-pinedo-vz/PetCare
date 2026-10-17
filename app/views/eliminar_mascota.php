@@ -27,17 +27,7 @@
       <input type="hidden" id="id_mascota" name="id_mascota" value="<?= htmlspecialchars($_GET['id'] ?? '') ?>">
 
       <fieldset>
-        <div class="grid-formulario">
-          <div>
-            <label class="label-campo" for="nombre_empleado">Nombre de empleado:</label>
-            <input type="text" class="campo" id="nombre_empleado" name="nombre_empleado" required>
-          </div>
-
-          <div>
-            <label class="label-campo" for="password_empleado">Contraseña:</label>
-            <input type="password" class="campo" id="password_empleado" name="password_empleado" required>
-          </div>
-        </div>
+        <p>¿Está seguro de que desea eliminar a esta mascota? Esta acción no se puede deshacer.</p>
       </fieldset>
 
       <div class="acciones-formulario">
