@@ -1,3 +1,17 @@
+<?php 
+// Validar si realmente llegaron los datos por la URL (GET)
+if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: empleados.php");
+    exit();
+}
+
+// Si sí llegaron, los guardamos con seguridad
+$id_empleado = $_GET['id'];
+$nombre_empleado = $_GET['nombre'];
+$apellido_empleado = $_GET['apellido'];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,24 +55,18 @@
   <main>
     <h1>Eliminar empleado</h1>
 
-    <form action="procesar_eliminar_empleado.php" method="POST">
-
-      <input type="hidden" id="id_empleado" name="id_empleado" value="1">
+    <form action="../controllers/eliminar_empleado.php" method="POST">
+  
+      <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$id_empleado ?>">
 
       <fieldset>
-        <p>¿Está seguro de que desea eliminar a <strong>Ana López García</strong>? Esta acción no se puede deshacer.</p>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div>
-            <label class="label-campo" for="nombre_empleado">Nombre de empleado *:</label>
-            <input type="text" class="campo" id="nombre_empleado" name="nombre_empleado" required>
-          </div>
+        <p>
+          ¿Está seguro de que desea eliminar al empleado
+          <strong><?= htmlspecialchars((string)$nombre_empleado) .' ' . htmlspecialchars((string)$apellido_empleado) . ' (ID: ' . htmlspecialchars((string)$id_empleado) . ')' ?></strong>?
+          Esta acción no se puede deshacer.
+        </p>
 
-          <div>
-            <label class="label-campo" for="password_empleado">Contraseña *:</label>
-            <input type="password" class="campo" id="password_empleado" name="password_empleado" required>
-          </div>
-        </div>
       </fieldset>
 
       <div style="margin-top: 20px;">

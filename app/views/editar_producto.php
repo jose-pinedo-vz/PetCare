@@ -33,7 +33,7 @@
       <li><a href="clientes.php">Clientes</a></li>
       <li><a href="empleados.php">Empleados</a></li>
       <li><a href="proveedores.php">Proveedores</a></li>
-      <li><a href="productos.php" class="activo">Inventario</a></li>
+      <li><a href="inventario.php" class="activo">Inventario</a></li>
 
       <li><a href="#" class="deshabilitado">Ventas</a></li>
       <li><a href="#" class="deshabilitado">Servicios</a></li>

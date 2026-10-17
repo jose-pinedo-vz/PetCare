@@ -18,6 +18,7 @@ function estraerDatosConsultas():array
     {
         $resultados[] =
         [
+            'id_consulta' => (int)$cita['id_consulta'],
             'nombre' => $cita['nombre'].' '.$cita['apellido'],
             'fecha' => $cita['fecha'],
             'motivo' => $cita['motivo_de_consulta'],
@@ -99,11 +100,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
 
     // insercin de la cita
-    $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
-    if (!$seInserto)
-    {
-        errorSession("Hubo un error en la insercino de los datos.");
-    }
+    // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
+    // if (!$seInserto)
+    // {
+    //     errorSession("Hubo un error en la insercino de los datos.");
+    // }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");

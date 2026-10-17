@@ -149,7 +149,7 @@ unset($_SESSION['old']);
 
               <div>
                 <label class="label-campo" for="id_cliente" >Dueño (ID cliente):</label>
-                <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?= htmlspecialchars($old['id_cliente'] ?? '') ?>" >
+                <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?= htmlspecialchars($old['id_cliente'] ?? $_GET['id_cliente'] ?? '') ?>" >
               </div>
 
               <div>

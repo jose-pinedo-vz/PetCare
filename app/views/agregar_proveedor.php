@@ -14,11 +14,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-widht, initial-scale=1.0">
     <title>Veterinaria PetCare - Agregar proveedor</title>
     <link rel="stylesheet" href="css/estilos_base.css">
+    <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
     <header>
@@ -171,6 +171,18 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
                     <div>
+                        <label class="label-campo" for="codigo_postal">Código postal *:</label>
+                        <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+            
+                        value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
+                    </div>
+
+                    <div>
+                        <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+                        <button type="button" onclick="codigoPostalProveedores(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+                    </div>
+
+                    <div>
                         <label class="label-campo" for="domicilio">
                             Domicilio:
                         </label>
@@ -217,20 +229,6 @@
 
                     </div>
 
-                    <div>
-                        <label class="label-campo" for="codigo_postal">
-                             Código Postal:
-                        </label>
-
-                        <input
-                          type="text"
-                          class="campo"
-                          id="codigo_postal"
-                          name="codigo_postal"
-                          maxlength="10"
-                          value="<?= htmlspecialchars($old['codigo_postal'] ?? '') ?>"
-                          required>
-                    </div>
                 </fieldset>    
 
                 <fieldset>

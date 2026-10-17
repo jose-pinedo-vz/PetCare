@@ -8,12 +8,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
-$idVeterinario=(int)$_SESSION['id_usuario'];
-$idConsulta=(int)$_SESSION['id_consulta'];
+$idVeterinario = (int)($_SESSION['id_usuario'] ?? 1);
+$idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
 
 $ficha=new FichaMedica();
 
-function errorSession(string $error) : null
+function errorSession(string $error) : void
 {
     $_SESSION['error']=$error;
     $_SESSION['oldid_consulta']=$_POST['id_consulta'] ?? '';
@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         'dosis'=>$dosis,
         'indicaciones'=>$indicaciones,
         'estudios_asociados'=>$estudioAs !=='' ? $estudioAs:null, //Si la variable tiene contenido la guardas, sino pos pone null
-        'proxima_cita'=>$proximaCita !=='' ? $estudioAs:null,
+        'proxima_cita'=>$proximaCita !=='' ? $proximaCita:null,
         'observaciones'=>$observacion,
         'costo'=>$costo,
     ];

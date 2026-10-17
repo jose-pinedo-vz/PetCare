@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../controllers/MascotaController.php'; 
+<?php require_once __DIR__ . '/../controllers/MascotaController.php';
 // Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
@@ -77,7 +77,7 @@ $usuario=$_SESSION['usuario'];
           <th>Especie</th>
           <th>Raza</th>
           <th>Sexo</th>
-          <th>Edad</th>
+          <th>Fecha de nacimiento</th>
           <th>Acciones</th>
         </tr>
       </thead>

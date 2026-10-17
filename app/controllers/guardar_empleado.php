@@ -1,12 +1,43 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../models/Empleados.php';
+require_once __DIR__ . '/../models/Cliente.php';
+
 
 session_start();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
+
+    if ($res === [])
+    {
+        echo json_encode(false);
+        exit;
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
+}
+
+
+
 
 function errorSession(string $error) : void {
     $_SESSION['error'] = $error;
@@ -61,27 +92,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $Fecha_de_contratacion = trim($_POST['Fecha_de_contratacion'] ?? '');
     $horario = trim($_POST['horario'] ?? '');
 
-    // validacion regex
+    // VALIDACION REGEX
+    
+    // validacion para ciudad y estado 
     $soloLetras = '/^[\p{L}\s.\'-]+$/u';
 
+    // validacion para nombre y apellido
+    $soloNombre = '/^[\p{L}\s.]+$/u';
+
     // validacion telefono
-    $soloTelefono = '/^\+?[0-9]{7,15}$/';
+    /* $soloTelefono = '/^\+?[0-9]{7,15}$/'; */
 
     // validacion codigo postal
     $soloCodigo_postal = '/^[0-9]{5}$/';
 
-    // puestos validos
+    // validacion para puestos validos
     $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista'];
 
-    // horarios validos
+    // validacion para horarios validos
     $horariosValidos = ['Matutino', 'Vespertino'];
+
+    // validacion para numeros, letras, guiones
+    $soloAlfanumerico = '/^[\p{L}0-9\s\-]+$/u';
 
     // nombre obligatorio (20)
     if ($nombre === '') {
         $errores[] = "El nombre es obligatorio";
     } else if (mb_strlen($nombre) > 20) {
         $errores[] = "El nombre no debe de tener mas de 20 letras";
-    } else if (!preg_match($soloLetras, $nombre)) {
+    } else if (!preg_match($soloNombre, $nombre)) {
         $errores[] = "El nombre no puede tener numeros";
     }
 
@@ -90,15 +129,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El apellido es obligatorio";
     } else if (mb_strlen($apellido) > 40) {
         $errores[] = "El apellido no debe de tener mas de 40 letras";
-    } else if (!preg_match($soloLetras, $apellido)) {
+    } else if (!preg_match($soloNombre, $apellido)) {
         $errores[] = "El apellido no debe de tener numeros";
     }
 
     // telefono es obligatorio (15)
-    if ($telefono === '') {
-        $errores[] = "El telefono es obligatorio";
-    } else if (!preg_match($soloTelefono, $telefono) || mb_strlen($telefono) > 15) {
-        $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+    //if ($telefono === '') {
+    //    $errores[] = "El telefono es obligatorio";
+    //} else if (mb_strlen($telefono) < 10 || mb_strlen($telefono) > 10) {
+    //    // $errores[] = "El telefono debe de tener menos de 15 numeros (no debe de tener letras ni espacios)";
+    //    $errores[] = "El telefono debe de tener 10 numeros exactos (no debe de tener letras ni espacios)";
+    //}
+
+    if (empty($telefono)) {
+        $errores[] = "El telefono es obligatoria.";
+    }else if (preg_match('/[a-zA-Z]/', $telefono)) {
+        $errores[] = "El teléfono no puede contener letras.";
+    } else {
+        // Extraer solo los números ignorando guiones, espacios y paréntesis
+        $soloNumerosTel = preg_replace('/\D/', '', $telefono);
+        if (strlen($soloNumerosTel) !== 10) {
+            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678 o 345-103-2345).";
+        }
     }
 
     // correo es obligatorio (100)
@@ -121,14 +173,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($numero_exterior === '') {
         $errores[] = "El numero exterior es obligatorio";
     } else if (mb_strlen($numero_exterior) > 15) {
-        $errores[] = "El numero exterior no debe de tener mas de 15 numeros";
+        $errores[] = "El numero exterior no debe de tener mas de 15 caracteres";
+    } else if (!preg_match($soloAlfanumerico, $numero_exterior)) {
+        $errores[] = "El numero exterior solo puede tener numeros, letras y guiones";
     }
 
     // numero interior no es obligatorio (15)
     if ($numero_interior === '') {
         $numero_interior = null;
     } else if (mb_strlen($numero_interior) > 15) {
-        $errores[] = "El numero interior no debe de tener mas de 15 letras";
+        $errores[] = "El numero interior no debe de tener mas de 15 caracteres";
+    } else if (!preg_match($soloAlfanumerico, $numero_interior)) {
+        $errores[] = "El numero interior solo puede tener numeros, letras y guiones";
     }
 
     // colonia es obligatorio (60)
@@ -179,11 +235,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "La especialidad no debe de tener mas de 50 letras";
     }
 
-    // num medula profesional no es obligatorio
+    // num cedula profesional no es obligatorio
     if ($num_cedula_profesional === '') {
         $num_cedula_profesional = null;
     } else if (!ctype_digit($num_cedula_profesional)) {
-        $errores[] = "El numero de medula profesional solo debe de contener numeros";
+        $errores[] = "El numero de cedula profesional solo debe de contener numeros";
     } else if ((int) $num_cedula_profesional <= 0 || (int) $num_cedula_profesional > 2147483647) {
         $errores[] = "El numero debe de ser mayor a 1 pero menor a 2147483647";
     } else {
@@ -197,6 +253,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $f = DateTime::createFromFormat('Y-m-d', $Fecha_de_contratacion);
         if (!$f || $f -> format('Y-m-d') !== $Fecha_de_contratacion) {
             $errores[] = "La fecha no es valida";
+        } else {
+          $fecha_actual = date('Y-m-d');
+          if ($Fecha_de_contratacion > $fecha_actual) {
+              $errores[] = "La fecha de contratacion no puede ser una fecha posterior a hoy";
+          }
         }
     }
 

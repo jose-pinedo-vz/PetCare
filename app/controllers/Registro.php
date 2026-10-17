@@ -5,7 +5,8 @@ $conexion = ConexionDB::obtenerConexion();
 $mensaje = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
+{
     $nuevo_usuario = trim($_POST['nuevo_usuario'] ?? '');
     $nueva_password = trim($_POST['nueva_password'] ?? '');
     $empleado_asociado = !empty($_POST['empleado_asociado']) ? $_POST['empleado_asociado'] : null;
@@ -13,18 +14,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $permisos = $_POST['permisos'] ?? 'todos';
     $estado = $_POST['estado'] ?? 'activo';
 
-    if (!empty($nuevo_usuario) && !empty($nueva_password)) {
+    if (!empty($nuevo_usuario) && !empty($nueva_password))
+    {
         $password_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
-        try {
+        try
+        {
             ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
             $mensaje = "Usuario '$nuevo_usuario' creado con éxito.";
-        } catch (PDOException $e) {
-            if ($e->getCode() === '23000' || $e->getCode() === 1062) { // 1062 es MySQL para duplicados, 23000 es el código estándar SQLSTATE de integridad
-                $error = "El nombre de usuario '$nuevo_usuario' ya existe.";
-            }
-            else
+        }
+        catch (PDOException $e)
+        {
+            if ($e->getCode() === '23000' || $e->getCode() === 1062) 
             {
-               $error="Error al guardar el usuario: ".$e->getMessage();
+                if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1062) // 1062 es MySQL para duplicados, 23000 es el código estándar SQLSTATE de integridad
+                {
+                    $error = "El nombre de usuario '$nuevo_usuario' ya existe.";
+                }
+                else
+                {
+                    $error="Error al guardar el usuario: ".$e->getMessage();
+                }
             }
         }
     }

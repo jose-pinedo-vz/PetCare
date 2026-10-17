@@ -16,7 +16,7 @@ if ($action==='logout')
         setcookie(session_name(),'',time()-42000,$params["path"],$params["domain"],$params["secure"],$params["httponly"]);
     }
     session_destroy();
-    header("Location: login.php");
+    header("Location: ../views/login.php");
     exit();
 }
 
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
             {
                 $error="La cuenta se encuentra inactiva.";
             }
-            elseif (password_verify($password, $datosUsuario['contrasena']))
+            elseif ($password === $datosUsuario['contrasena'])
             {
                 session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);

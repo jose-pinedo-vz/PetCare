@@ -1,8 +1,9 @@
 <?php
+//Punto de guardado
 
 date_default_timezone_set('America/Mexico_City');
 
-function validacion(array $datos, bool $actualizacion = false){
+function validacion(array $datos, bool $actualizacion, int $idMascota, string $sets){
 
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -15,7 +16,10 @@ function validacion(array $datos, bool $actualizacion = false){
         $errores[] = "El nombre de la mascota es obligatorio.";
     }else if (strlen($datos['nombre']) > 20) {
         $errores[] = "El nombre no puede tener mas de 20 letras";
+    }else if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+$/', $datos['nombre'])) {
+        $errores[] = "El nombre no puede contener caracteres especiales.";
     }
+
     // Especie obligatorio
     if (empty(trim($datos['especie']))) {
         $errores[] = "Debe especificar la especie.";
@@ -132,7 +136,7 @@ function validacion(array $datos, bool $actualizacion = false){
      //       $errores[] = "Las vacunas deben incluir el nombre o texto, no solo números.";
      //   }
      //}
-     
+
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
         $errores[] = "Debe especificar la última desparasitación.";
@@ -195,6 +199,14 @@ function validacion(array $datos, bool $actualizacion = false){
         } else {
             $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
         }
+        // si es un actualizacion
+    } else {
+        if($actualizacion) {
+            $mascotaActual = Mascota::obtenerPorId($idMascota);
+            $datos['fotografia'] = $mascotaActual['fotografia'] ?? null;
+        } else {
+            $datos['fotografia'] = null;
+        }
     }
 
     if (count($errores) > 0) {
@@ -202,29 +214,66 @@ function validacion(array $datos, bool $actualizacion = false){
         $_SESSION['errores'] = $errores;
         $_SESSION['old']     = $datos;
 
-        header("Location: ../views/agregar_mascota.php");
-        exit;
-
-    } else {
-        require_once __DIR__ . '/../models/Mascota.php';
-        $advert = Mascota::insertar($datos);
-
-        if (is_array($advert) && count($advert) > 0) {
-            if ($advert[0] === "Error ID") {
-                $_SESSION['errores'] = ["El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario no existen en el sistema."];
-            } else if($advert[0] === "Error al aguardar") {
-                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
-            }
-            $_SESSION['old'] = $datos;
-
-            header("Location: ../views/agregar_mascota.php");
+        if ($actualizacion) {
+            header("Location: ../views/editar_mascota.php?id_mascota=" . $idMascota);
             exit;
         } else {
-            // Éxito: redirige a la lista de mascotas
-            header('Location: ../views/mascotas.php');
+            header("Location: ../views/agregar_mascota.php");
             exit;
         }
 
+    } else {
+        require_once __DIR__ . '/../models/Mascota.php';
 
+        if ($actualizacion == true) {
+            $camposEditables = [
+                'nombre', 'especie', 'raza', 'sexo', 'edad', 'color', 'peso',
+                'tamanio', 'id_cliente', 'id_veterinario',
+                'alergias', 'enfermedades', 'medicamentos', 'condiciones_especiales',
+                'temperamento', 'restricciones_para_manejo', 'vacunas',
+                'ultima_desparasitacion', 'observaciones', 'fotografia'
+            ];
+
+            $valoresFinales = [];
+            foreach ($camposEditables as $campo) {
+                $valoresFinales[] = $datos[$campo] ?? null;
+            }
+
+            if (isset($datos['esta_activo'])) {
+                /* $camposEditables[] = 'esta_activo'; */
+                $sets .= ", esta_activo = " . ((int)$datos['esta_activo'] === 1 ? 1 : 0);
+            }
+
+            $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
+
+            if (!$exito) {
+              $_SESSION['errores'] = ["No se pudo guardar la mascota. Revisa que el cliente existan e intenta de nuevo"];
+              $_SESSION['old'] = $datos;
+              header("Location: ../views/editar_mascota.php?id_mascota=" . $idMascota);
+              exit;
+            }
+
+            header('Location: ../views/mascotas.php');
+            exit;
+
+        } else {
+            $advert = Mascota::insertar($datos);
+
+            if (is_array($advert) && count($advert) > 0) {
+                if ($advert[0] === "Error ID") {
+                    $_SESSION['errores'] = ["El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario no existen en el sistema."];
+                } else if($advert[0] === "Error al aguardar") {
+                    $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+                }
+                $_SESSION['old'] = $datos;
+
+                header("Location: ../views/agregar_mascota.php");
+                exit;
+            } else {
+                // Éxito: redirige a la lista de mascotas
+                header('Location: ../views/mascotas.php');
+                exit;
+            }
+        }
     }
 }

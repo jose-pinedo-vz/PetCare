@@ -1,28 +1,21 @@
-<?php  require_once __DIR__ . '/../controllers/citas.php'; 
+<?php  require_once __DIR__ . '/../controllers/citas.php';
 if (session_status() === PHP_SESSION_NONE)
 {
   session_start();
-} 
-// Mostrar nombre del usuario
-if (!isset($_SESSION['usuario']))
-{
-  header("Location: ../views/login.php");
-  exit();
 }
-$usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
+
 ?>
 
 
 <!-- se encrga de mostrar todas las citas pendientes -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarProximasCitas()
   {
     $datos = estraerDatosConsultas();
     // echo $datos[0]['atendido'];
-    foreach ($datos as $d) 
+    foreach ($datos as $d)
     {
       if ($d['atendido'] === 0)
       {?>
@@ -30,16 +23,16 @@ $usuario=$_SESSION['usuario'];
           <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
-          <button class="btn" id="btn_consultas">Consulta</button>
+          <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
         </div>
       <?php }
-    } 
-  } 
+    }
+  }
 ?>
 
 <!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
 <?php
-  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos 
+  // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
   function mostrarCitasAtendidas()
   {
@@ -56,7 +49,7 @@ $usuario=$_SESSION['usuario'];
           <button class="btn" id="btn_consultas">Pagar</button>
         </div>
       <?php }
-    } 
+    }
   }
 ?>
 
@@ -114,17 +107,17 @@ $usuario=$_SESSION['usuario'];
     <div style="margin-bottom: 20px;">
       <a class="btn" href="agendarCita.php">+ Agendar cita</a>
     </div>
-    
+
     <div class="contenedor_citas">
       <div class="boton_control">
-        <button id="btn_active active" onclick="mostrarSeccion('espera', event)" class="btn">En espera</button>
-        <button id="btn_active" onclick="mostrarSeccion('atendidas', event)" class="btn" style="background: #757575; margin-left: 8px;">Atendidas</button>
+        <button id="btn_espera" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
+        <button id="btn_atendidas" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active" style="background: #757575; margin-left: 8px;">Atendidas</button>
       </div>
 
       <div class="panel_contenido">
         <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3> 
+          <h3>Citas en espera</h3>
           <?php mostrarProximasCitas(); ?>
         </div>
 
@@ -133,7 +126,7 @@ $usuario=$_SESSION['usuario'];
           <h3>Nombre del dueño</h3>
           <?php mostrarCitasAtendidas(); ?>
         </div>
-         
+
       </div>
     </div>
   </main>
