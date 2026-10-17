@@ -42,7 +42,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <form action="../controllers/guardar_cliente.php" method="POST">
       <fieldset>
         <legend> Datos personales</legend>
-        <div class="grid-formulario">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
             <label class="label-campo" for="nombre">Nombre*:</label>
             <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required placeholder="Ej. Juan Carlos"
@@ -57,11 +57,7 @@ if (session_status() === PHP_SESSION_NONE) {
           </div>
 
           <div>
-<<<<<<< HEAD
             <label class="label-campo" for="fecha_nacimiento">Fecha de nacimiento*:</label>
-=======
-            <label class="label-campo" for="fecha_nacimiento">Fecha de nacimiento:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="date" class="campo" id="fecha_nacimiento" name="fecha_nacimiento"
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFechaNacimiento_clientes'] ?? '')); unset($_SESSION['oldFechaNacimiento_clientes']); ?>">
@@ -88,11 +84,7 @@ if (session_status() === PHP_SESSION_NONE) {
           </div>
 
           <div>
-<<<<<<< HEAD
             <label class="label-campo" for="rfc">RFC*:</label>
-=======
-            <label class="label-campo" for="rfc">RFC:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="text" class="campo" id="rfc" name="rfc" maxlength="13" placeholder="Ej. PEGJ900101XXX"
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldRfc_clientes'] ?? '')); unset($_SESSION['oldRfc_clientes']); ?>">
@@ -102,13 +94,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
       <fieldset>
         <legend> Datos de contacto</legend>
-        <div class="grid-formulario">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-<<<<<<< HEAD
             <label class="label-campo" for="telefono">Teléfono*:</label>
-=======
-            <label class="label-campo" for="telefono">Teléfono:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required placeholder="Ej. 4921234567"
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldTelefono_clientes'] ?? '')); unset($_SESSION['oldTelefono_clientes']); ?>">
@@ -121,13 +109,8 @@ if (session_status() === PHP_SESSION_NONE) {
               value="<?php echo htmlspecialchars((string)($_SESSION['oldTelefonoAlternativo_clientes'] ?? '')); unset($_SESSION['oldTelefonoAlternativo_clientes']); ?>">
           </div>
 
-<<<<<<< HEAD
           <div style="grid-column: 1 / -1;">
             <label class="label-campo" for="correo">Correo electrónico*:</label>
-=======
-          <div class="campo-completo">
-            <label class="label-campo" for="correo">Correo electrónico:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="email" class="campo" id="correo" name="correo" maxlength="100" required placeholder="correo@ejemplo.com"
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldCorreo_clientes'] ?? '')); unset($_SESSION['oldCorreo_clientes']); ?>">
@@ -137,7 +120,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
       <fieldset>
         <legend> Dirección / Domicilio</legend>
-<<<<<<< HEAD
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
           <div>
@@ -161,18 +143,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="numero_exterior">Número exterior*:</label>
-=======
-        <div class="grid-formulario">
-          <div>
-            <label class="label-campo" for="calle">Calle:</label>
-            <input type="text" class="campo" id="calle" name="calle" maxlength="100" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCalle_clientes'] ?? '')); unset($_SESSION['oldCalle_clientes']); ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="numero_exterior">Número exterior:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="text" class="campo" id="numero_exterior" name="numero_exterior" maxlength="15" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldNumeroExterior_clientes'] ?? '')); unset($_SESSION['oldNumeroExterior_clientes']); ?>">
@@ -186,7 +156,6 @@ if (session_status() === PHP_SESSION_NONE) {
           </div>
 
           <div>
-<<<<<<< HEAD
             <label class="label-campo" for="colonia">Colonia*:</label>
             <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
               
@@ -219,63 +188,28 @@ if (session_status() === PHP_SESSION_NONE) {
             <input type="text" class="campo" id="estado" name="estado" maxlength="60" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldEstado_clientes'] ?? '')); unset($_SESSION['oldEstado_clientes']); ?>" readonly>
-=======
-            <label class="label-campo" for="colonia">Colonia:</label>
-            <input type="text" class="campo" id="colonia" name="colonia" maxlength="60" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? '')); unset($_SESSION['oldColonia_clientes']); ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="codigo_postal">Código postal:</label>
-            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="ciudad">Ciudad:</label>
-            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldCiudad_clientes'] ?? '')); unset($_SESSION['oldCiudad_clientes']); ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="estado">Estado:</label>
-            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldEstado_clientes'] ?? '')); unset($_SESSION['oldEstado_clientes']); ?>">
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
           </div>
         </div>
       </fieldset>
 
       <fieldset>
         <legend> Contactos de emergencia</legend>
-        <div class="grid-formulario">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div>
-<<<<<<< HEAD
             <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia*:</label>
-=======
-            <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="text" class="campo" id="contacto_emergencia" name="contacto_emergencia" maxlength="100" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldContactoEmergencia_clientes'] ?? '')); unset($_SESSION['oldContactoEmergencia_clientes']); ?>">
           </div>
 
           <div>
-<<<<<<< HEAD
             <label class="label-campo" for="telefono_emergencia">Teléfono de emergencia*:</label>
-=======
-            <label class="label-campo" for="telefono_emergencia">Teléfono de emergencia:</label>
->>>>>>> ade880c5a513606acbb1574b22865d2390579a97
             <input type="tel" class="campo" id="telefono_emergencia" name="telefono_emergencia" maxlength="15" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldTelefonoEmergencia_clientes'] ?? '')); unset($_SESSION['oldTelefonoEmergencia_clientes']); ?>">
           </div>
 
-          <div class="campo-completo">
+          <div style="grid-column: 1 / -1;">
             <label class="label-campo" for="observaciones">Observaciones:</label>
             <textarea class="campo" id="observaciones" name="observaciones" rows="2" placeholder="Observaciones o notas adicionales del cliente"><?php
               if (isset($_SESSION['oldObservaciones_clientes'])) {
@@ -286,9 +220,9 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
       </fieldset>
 
-      <div class="acciones-formulario">
-        <a class="btn-secundario" href="clientes.php">Cancelar</a>
+      <div style="margin-top: 20px;">
         <button type="submit" class="btn">Guardar cliente</button>
+        <a class="btn" href="clientes.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
     </form>
   
