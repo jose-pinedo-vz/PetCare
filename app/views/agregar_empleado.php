@@ -24,44 +24,23 @@ if (!isset($_SESSION['error'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar empleado</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
-  <script src="js/codigo_Postal.js"></script>
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php" class="activo">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Agregar</div>
+      <div class="encabezado-pagina">
+        <h1>Agregar empleado</h1>
+      </div>
 
-    <h1>Agregar empleado</h1>
+      <div class="tarjeta">
+    
 
     <?php if (isset($_SESSION['error'])): ?>
       <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
@@ -75,7 +54,7 @@ if (!isset($_SESSION['error'])) {
 
         <legend>Datos personales</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
 
 
@@ -118,7 +97,7 @@ if (!isset($_SESSION['error'])) {
 
         <legend>Datos de contacto</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
           <div>
             <label class="label-campo" for="telefono">
@@ -159,7 +138,7 @@ if (!isset($_SESSION['error'])) {
 
         <legend>Domicilio</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
           <div>
             <label class="label-campo" for="codigo_postal">Código postal *:</label>
@@ -283,7 +262,7 @@ if (!isset($_SESSION['error'])) {
 
         <legend>Información laboral</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
           <div>
             <label class="label-campo" for="puesto">
@@ -370,14 +349,18 @@ if (!isset($_SESSION['error'])) {
 
       </fieldset>
 
-      <div style="margin-top: 20px;">
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="empleados.php">Regresar</a>
         <button type="submit" class="btn">Guardar</button>
-        <a class="btn" href="empleados.php" style="background: #757575; margin-left: 8px;">Regresar</a>
       </div>
 
     </form>
 
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
