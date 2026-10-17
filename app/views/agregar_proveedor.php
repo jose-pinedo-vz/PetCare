@@ -54,11 +54,11 @@
 
                 <legend>Datos generales</legend>
 
-                <div class="grid-formulario">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
                     <div>
-                        <label class="label-campo" for="razon_social">
-                            Razón social *:
+                        <label class="label-campo" for="nombre">
+                            Razon social *:
                         </label>
 
                         <input
@@ -102,14 +102,15 @@
                           required>
 
                     </div>
-                </div>
+ 
+
             </fieldset>
 
              <fieldset>
 
                 <legend>Datos de contacto</legend>
 
-                <div class="grid-formulario">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
                     <div>
                         <label class="label-campo" for="telefono">
@@ -142,14 +143,14 @@
                           value="<?= htmlspecialchars($old['correo'] ?? '') ?>"
                           required>
                     </div>
-                </div>
+                    
             </fieldset>
 
             <fieldset>
 
                 <legend>Datos de ubicación</legend>
 
-                <div class="grid-formulario">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
                     <div>
                         <label class="label-campo" for="codigo_postal">Código postal *:</label>
@@ -210,27 +211,13 @@
 
                     </div>
 
-                    <div>
-                        <label class="label-campo" for="codigo_postal">
-                             Código Postal:
-                        </label>
-
-                        <input
-                          type="text"
-                          class="campo"
-                          id="codigo_postal"
-                          name="codigo_postal"
-                          maxlength="10"
-                          required>
-                    </div>
-                </div>
-            </fieldset>    
+                </fieldset>    
 
                 <fieldset>
 
                 <legend>Información comercial</legend>
 
-                <div class="grid-formulario">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
@@ -260,7 +247,7 @@
                           value="<?= htmlspecialchars($old['tiempo_entrega'] ?? '') ?>">
                     </div>
 
-                    <div class="campo-completo">
+                    <div tyle="grid-column: 1 / -1;">
                         <label class="label-campo" for="observaciones">
                             Observaciones:
                         </label>
@@ -276,10 +263,8 @@
                 </div>
 
             </fieldset>
-        <div class="acciones-formulario">
-        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
         <button type="submit">Guardar</button>
-      </div>
+        <a class="btn" href="proveedores.php">Cancelar</a>
 
         </form>
 

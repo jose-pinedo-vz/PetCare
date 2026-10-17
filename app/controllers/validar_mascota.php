@@ -3,7 +3,11 @@
 
 date_default_timezone_set('America/Mexico_City');
 
-function validacion(array $datos, bool $actualizacion = false){
+function validacion(array $datos, bool $actualizacion, int $idMascota, string $sets){
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
     $errores = [];
 
@@ -60,12 +64,6 @@ function validacion(array $datos, bool $actualizacion = false){
     }else if (preg_match('/\d/', $datos['color'])) {
         $errores[] = "El color no puede contener números.";
     }
-    // Peso obligatorio
-    if (empty(trim($datos['peso']) || !is_numeric($datos['peso']))) {
-        $errores[] = "El peso debe ser un valor numerico.";
-    }else{
-        $pesopunt = str_replace(',', '.', $datos['peso']);
-        $datos['peso'] = (float)$pesopunt;
 
     // Peso obligatorio
     $pesoLimpio = str_replace(',', '.', $datos['peso'] ?? '');
@@ -141,12 +139,16 @@ function validacion(array $datos, bool $actualizacion = false){
 
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
-        $errores[] = "Debe especificar la ultima desaparasitación.";
-    }else{
-        $fechaActual  = new DateTime('today');
-        $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
-        if ($fechaIngresada > $fechaActual) {
-            $errores[] = "Desparasitación: No puede ser una fechadespues de hoy.";
+        $errores[] = "Debe especificar la última desparasitación.";
+    } else {
+        try {
+            $fechaActual    = new DateTime('today');
+            $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
+            if ($fechaIngresada > $fechaActual) {
+                $errores[] = "Desparasitación: No puede ser una fecha posterior a hoy.";
+            }
+        } catch (Exception $e) {
+            $errores[] = "Desparasitación: Formato de fecha no válido.";
         }
     }
 
@@ -177,9 +179,11 @@ function validacion(array $datos, bool $actualizacion = false){
         }
     }
 
-    if ($actualizacion) {
-        return $errores;
-    }
+
+    //if ($actualizacion) {
+    //    return $errores;
+    //}
+
 
     // subida de la imagen usando el controlador ImagenController
     require_once __DIR__ . '/../controllers/ImagenController.php';
@@ -207,25 +211,19 @@ function validacion(array $datos, bool $actualizacion = false){
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
-        $msg = urlencode(implode(' | ', $errores));
-        header("Location: ../views/agregar_mascota.php?error={$msg}");
-        exit;
+        $_SESSION['errores'] = $errores;
+        $_SESSION['old']     = $datos;
 
-        // header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
-        // echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
-        // echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
-        // foreach ($errores as $error) {
-        //     echo "<li>$error</li>";
-        // }
-        // echo "</ul>";
-        // echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
-        // echo "</div>";
+        if ($actualizacion) {
+            header("Location: ../views/editar_mascota.php?id_mascota=" . $idMascota);
+            exit;
+        } else {
+            header("Location: ../views/agregar_mascota.php");
+            exit;
+        }
 
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
-        $advert = Mascota::insertar($datos);
-
-        //$advert = insertar($datos);
 
         if ($actualizacion == true) {
             $camposEditables = [
