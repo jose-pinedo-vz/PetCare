@@ -20,7 +20,7 @@
             </div>
             <div class="tarjeta">
                 <div class="barra-acciones">
-                    <a class="btn" href="agregar_adopción_venta.php">+Agregar adopción y venta</a>
+                    <a class="btn" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">

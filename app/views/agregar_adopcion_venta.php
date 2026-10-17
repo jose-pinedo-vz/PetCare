@@ -15,7 +15,7 @@
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de adopción y venta</a> / Agregar</div>
+      <div class="migaja"><a href="adopcion_venta.php" class="link-tenue">Gestión de adopción y venta</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar adopción y venta</h1>
       </div>
