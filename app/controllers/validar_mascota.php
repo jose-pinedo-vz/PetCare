@@ -1,12 +1,9 @@
 <?php
+//Punto de guardado
 
 date_default_timezone_set('America/Mexico_City');
 
 function validacion(array $datos, bool $actualizacion = false){
-
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
 
     $errores = [];
 
@@ -15,7 +12,10 @@ function validacion(array $datos, bool $actualizacion = false){
         $errores[] = "El nombre de la mascota es obligatorio.";
     }else if (strlen($datos['nombre']) > 20) {
         $errores[] = "El nombre no puede tener mas de 20 letras";
+    }else if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+$/', $datos['nombre'])) {
+        $errores[] = "El nombre no puede contener caracteres especiales.";
     }
+
     // Especie obligatorio
     if (empty(trim($datos['especie']))) {
         $errores[] = "Debe especificar la especie.";
@@ -60,6 +60,12 @@ function validacion(array $datos, bool $actualizacion = false){
     }else if (preg_match('/\d/', $datos['color'])) {
         $errores[] = "El color no puede contener números.";
     }
+    // Peso obligatorio
+    if (empty(trim($datos['peso']) || !is_numeric($datos['peso']))) {
+        $errores[] = "El peso debe ser un valor numerico.";
+    }else{
+        $pesopunt = str_replace(',', '.', $datos['peso']);
+        $datos['peso'] = (float)$pesopunt;
 
     // Peso obligatorio
     $pesoLimpio = str_replace(',', '.', $datos['peso'] ?? '');
@@ -132,19 +138,15 @@ function validacion(array $datos, bool $actualizacion = false){
      //       $errores[] = "Las vacunas deben incluir el nombre o texto, no solo números.";
      //   }
      //}
-     
+
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
-        $errores[] = "Debe especificar la última desparasitación.";
-    } else {
-        try {
-            $fechaActual    = new DateTime('today');
-            $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
-            if ($fechaIngresada > $fechaActual) {
-                $errores[] = "Desparasitación: No puede ser una fecha posterior a hoy.";
-            }
-        } catch (Exception $e) {
-            $errores[] = "Desparasitación: Formato de fecha no válido.";
+        $errores[] = "Debe especificar la ultima desaparasitación.";
+    }else{
+        $fechaActual  = new DateTime('today');
+        $fechaIngresada = new DateTime($datos['ultima_desparasitacion']);
+        if ($fechaIngresada > $fechaActual) {
+            $errores[] = "Desparasitación: No puede ser una fechadespues de hoy.";
         }
     }
 
@@ -175,11 +177,9 @@ function validacion(array $datos, bool $actualizacion = false){
         }
     }
 
-
-    //if ($actualizacion) {
-    //    return $errores;
-    //}
-
+    if ($actualizacion) {
+        return $errores;
+    }
 
     // subida de la imagen usando el controlador ImagenController
     require_once __DIR__ . '/../controllers/ImagenController.php';
@@ -195,36 +195,87 @@ function validacion(array $datos, bool $actualizacion = false){
         } else {
             $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
         }
+        // si es un actualizacion
+    } else {
+        if($actualizacion) {
+            $mascotaActual = Mascota::obtenerPorId($idMascota);
+            $datos['fotografia'] = $mascotaActual['fotografia'] ?? null;
+        } else {
+            $datos['fotografia'] = null;
+        }
     }
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
-        $_SESSION['errores'] = $errores;
-        $_SESSION['old']     = $datos;
-
-        header("Location: ../views/agregar_mascota.php");
+        $msg = urlencode(implode(' | ', $errores));
+        header("Location: ../views/agregar_mascota.php?error={$msg}");
         exit;
+
+        // header("Location: ../views/editar_mascota.php?id_mascota={$idMascota}&error={$msg}");
+        // echo "<div style='font-family: Arial; padding: 20px; border: 1px solid red; background: #ffe6e6; width: 400px; border-radius: 5px; margin: 20px auto;'>";
+        // echo "<h3 style='color: red;'>Fallo la validación:</h3><ul>";
+        // foreach ($errores as $error) {
+        //     echo "<li>$error</li>";
+        // }
+        // echo "</ul>";
+        // echo "<a href='agregar_mascota.php'>Volver a intentarlo</a>";
+        // echo "</div>";
 
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
         $advert = Mascota::insertar($datos);
 
-        if (is_array($advert) && count($advert) > 0) {
-            if ($advert[0] === "Error ID") {
-                $_SESSION['errores'] = ["El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario no existen en el sistema."];
-            } else if($advert[0] === "Error al aguardar") {
-                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
-            }
-            $_SESSION['old'] = $datos;
+        //$advert = insertar($datos);
 
-            header("Location: ../views/agregar_mascota.php");
-            exit;
-        } else {
-            // Éxito: redirige a la lista de mascotas
+        if ($actualizacion == true) {
+            $camposEditables = [
+                'nombre', 'especie', 'raza', 'sexo', 'edad', 'color', 'peso',
+                'tamanio', 'id_cliente', 'id_veterinario',
+                'alergias', 'enfermedades', 'medicamentos', 'condiciones_especiales',
+                'temperamento', 'restricciones_para_manejo', 'vacunas',
+                'ultima_desparasitacion', 'observaciones', 'fotografia'
+            ];
+
+            $valoresFinales = [];
+            foreach ($camposEditables as $campo) {
+                $valoresFinales[] = $datos[$campo] ?? null;
+            }
+
+            if (isset($datos['esta_activo'])) {
+                /* $camposEditables[] = 'esta_activo'; */
+                $sets .= ", esta_activo = " . ((int)$datos['esta_activo'] === 1 ? 1 : 0);
+            }
+
+            $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
+
+            if (!$exito) {
+              $_SESSION['errores'] = ["No se pudo guardar la mascota. Revisa que el cliente existan e intenta de nuevo"];
+              $_SESSION['old'] = $datos;
+              header("Location: ../views/editar_mascota.php?id_mascota=" . $idMascota);
+              exit;
+            }
+
             header('Location: ../views/mascotas.php');
             exit;
+
+        } else {
+            $advert = Mascota::insertar($datos);
+
+            if (is_array($advert) && count($advert) > 0) {
+                if ($advert[0] === "Error ID") {
+                    $_SESSION['errores'] = ["El Cliente (ID: " . htmlspecialchars((string)$datos['id_cliente']) . ") o el Veterinario no existen en el sistema."];
+                } else if($advert[0] === "Error al aguardar") {
+                    $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+                }
+                $_SESSION['old'] = $datos;
+
+                header("Location: ../views/agregar_mascota.php");
+                exit;
+            } else {
+                // Éxito: redirige a la lista de mascotas
+                header('Location: ../views/mascotas.php');
+                exit;
+            }
         }
-
-
     }
 }

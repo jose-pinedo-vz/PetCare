@@ -4,6 +4,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['error'])) {
+    $campos_old = [
+        'oldnombre_empleado', 'oldapellido', 'oldtelefono', 'oldcorreo',
+        'oldcalle', 'oldnumero_exterior', 'oldnumero_interior', 'oldcolonia',
+        'oldciudad', 'oldestado', 'oldcodigo_postal', 'oldpuesto',
+        'oldespecialidad', 'oldnum_cedula_profesional', 'oldFecha_de_contratacion', 'oldhorario'
+    ];
+    foreach ($campos_old as $campo) {
+        unset($_SESSION[$campo]);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -12,43 +24,23 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar empleado</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php" class="activo">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-      
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Agregar</div>
+      <div class="encabezado-pagina">
+        <h1>Agregar empleado</h1>
+      </div>
 
-    <h1>Agregar empleado</h1>
+      <div class="tarjeta">
+    
 
     <?php if (isset($_SESSION['error'])): ?>
       <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
@@ -62,13 +54,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <legend>Datos personales</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
 
 
           <div>
             <label class="label-campo" for="nombre">
-              Nombre:
+              Nombre*:
             </label>
 
             <input
@@ -84,7 +76,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="apellido">
-              Apellido:
+              Apellido*:
             </label>
 
             <input
@@ -105,11 +97,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <legend>Datos de contacto</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
           <div>
             <label class="label-campo" for="telefono">
-              Teléfono:
+              Teléfono*:
             </label>
 
             <input
@@ -125,7 +117,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="correo">
-              Correo electrónico:
+              Correo electrónico*:
             </label>
 
             <input
@@ -146,11 +138,24 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <legend>Domicilio</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
+
+          <div>
+            <label class="label-campo" for="codigo_postal">Código postal *:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>">
+          </div>
+
+          <div>
+            <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+            <button type="button" onclick="codigoPostalEmpleados(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+          </div>
+
 
           <div>
             <label class="label-campo" for="calle">
-              Calle:
+              Calle*:
             </label>
 
             <input
@@ -166,7 +171,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="numero_exterior">
-              Número exterior:
+              Número exterior*:
             </label>
 
             <input
@@ -197,24 +202,29 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
           <div>
-            <label class="label-campo" for="colonia">
-              Colonia:
-            </label>
+            <label class="label-campo" for="colonia">Colonia*:</label>
+            <select type="text" class="campo" id="colonia" name="colonia" maxlength="60" required>
 
-            <input
-              type="text"
-              class="campo"
-              id="colonia"
-              name="colonia"
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldcolonia'] ?? '')); unset($_SESSION['oldcolonia']); ?>"
-              maxlength="60"
-              required>
+              <?php
+              if (isset($_SESSION['oldcolonia']))
+              {
+                $dato =  htmlspecialchars((string)($_SESSION['oldcolonia'] ?? ''));
+                unset($_SESSION['oldcolonia']);
+                ?>
+                <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
+              <?php
+              } else
+              { ?>
+                <option value="">Valide su codigo postal...</option>
+              <?php } ?>
+
+            </select>
           </div>
 
 
           <div>
             <label class="label-campo" for="ciudad">
-              Ciudad:
+              Ciudad*:
             </label>
 
             <input
@@ -224,13 +234,13 @@ if (session_status() === PHP_SESSION_NONE) {
               name="ciudad"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldciudad'] ?? '')); unset($_SESSION['oldciudad']); ?>"
               maxlength="60"
-              required>
+              required readonly>
           </div>
 
 
           <div>
             <label class="label-campo" for="estado">
-              Estado:
+              Estado*:
             </label>
 
             <input
@@ -240,24 +250,9 @@ if (session_status() === PHP_SESSION_NONE) {
               name="estado"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldestado'] ?? '')); unset($_SESSION['oldestado']); ?>"
               maxlength="60"
-              required>
+              required readonly>
           </div>
 
-
-          <div>
-            <label class="label-campo" for="codigo_postal">
-              Código Postal:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="codigo_postal"
-              name="codigo_postal"
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldcodigo_postal']); ?>"
-              maxlength="10"
-              required>
-          </div>
 
         </div>
 
@@ -267,11 +262,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <legend>Información laboral</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
 
           <div>
             <label class="label-campo" for="puesto">
-              Puesto *:
+              Puesto*:
             </label>
 
             <?php $p = $_SESSION['oldpuesto'] ?? ''; unset($_SESSION['oldpuesto']); ?>
@@ -305,7 +300,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">
-              Cédula profesional:
+              Numero de cédula profesional:
             </label>
 
             <input
@@ -320,7 +315,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="Fecha_de_contratacion">
-              Fecha de contratación:
+              Fecha de contratación*:
             </label>
 
             <input
@@ -335,7 +330,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
           <div>
             <label class="label-campo" for="horario">
-              Horario:
+              Horario*:
             </label>
 
             <?php $h = $_SESSION['oldhorario'] ?? ''; unset($_SESSION['oldhorario']); ?>
@@ -354,14 +349,18 @@ if (session_status() === PHP_SESSION_NONE) {
 
       </fieldset>
 
-      <div style="margin-top: 20px;">
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="empleados.php">Regresar</a>
         <button type="submit" class="btn">Guardar</button>
-        <a class="btn" href="empleados.php" style="background: #757575; margin-left: 8px;">Regresar</a>
       </div>
 
     </form>
 
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

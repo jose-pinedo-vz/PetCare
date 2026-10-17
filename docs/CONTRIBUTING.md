@@ -1,3 +1,4 @@
+cat << 'EOF' > CONTRIBUTING.md
 ## Estándar de Mensajes de Commit (Conventional Commits)
 
 Para mantener un historial claro, legible y estructurado en el proyecto **PetCare**, utilizamos la convención **Conventional Commits**. Todos los commits realizados en el repositorio deben seguir este formato.

@@ -67,7 +67,7 @@ class FichaMedica
     public function agarraMascotas(int $idCliente): ?array
     {
         $db=ConexionDB::obtenerConexion();
-        $stmt=$db->prepare("SELECT id,nombre From mascotas where id_cliente= :clientesito order by nombre");
+        $stmt=$db->prepare("SELECT id_mascota AS id, nombre From mascotas where id_cliente= :clientesito order by nombre");
         $stmt->execute([':clientesito'=>$idCliente]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
