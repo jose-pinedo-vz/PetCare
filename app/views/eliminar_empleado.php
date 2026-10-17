@@ -27,19 +27,7 @@
       <input type="hidden" id="id_empleado" name="id_empleado" value="1">
 
       <fieldset>
-        <p>¿Está seguro de que desea eliminar a <strong>Ana López García</strong>? Esta acción no se puede deshacer.</p>
-
-        <div class="grid-formulario">
-          <div>
-            <label class="label-campo" for="nombre_empleado">Nombre de empleado *:</label>
-            <input type="text" class="campo" id="nombre_empleado" name="nombre_empleado" required>
-          </div>
-
-          <div>
-            <label class="label-campo" for="password_empleado">Contraseña *:</label>
-            <input type="password" class="campo" id="password_empleado" name="password_empleado" required>
-          </div>
-        </div>
+        <p>¿Está seguro de que desea eliminar a este empleado? Esta acción no se puede deshacer.</p>
       </fieldset>
 
       <div class="acciones-formulario">
