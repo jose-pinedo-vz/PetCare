@@ -58,17 +58,18 @@ $listaClientes = Cliente::obtenerTodos();
           <tbody>
             <?php foreach ($listaClientes as $c): ?>
               <tr>
-                <td><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
-                <td><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
-                <td><?php echo htmlspecialchars($c['telefono']); ?></td>
-                <td><?php echo htmlspecialchars($c['correo']); ?></td>
-                <td><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-                
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
+
                 <!-- Celda de acciones con white-space: nowrap; -->
-                <td class="acciones">
-                  <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
-                  <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
-                  <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
+                <td style="padding: 10px; text-align: center; white-space: nowrap;">
+                  <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
+                  <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">+ Mascota</a>
+                  <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">+ Cita</a>
+                  <a class="btn" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>&nombre=<?php echo urlencode($c['nombre']); ?>&apellido=<?php echo urlencode($c['apellido']); ?>" style="padding: 5px 10px; font-size: 13px;">Eliminar</a>
                 </td>
               </tr>
             <?php endforeach; ?>
