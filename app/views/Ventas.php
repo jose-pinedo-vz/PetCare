@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Punto de venta - La Trinidad POS</title>
+    <title>Veterinaria PetCare - Ventas</title>
     <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
         <?php $paginaActiva = 'ventas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
         <main>
-            <div class="migaja">Punto de Venta /</div>
+            <div class="migaja">Punto de venta /</div>
             <header class="encabezado-pagina">
                 <h1>Punto de venta</h1>
                 <div class="venta-cajero">Cajero: <strong>Nombre de empleado</strong> | Turno: Matutino</div>
@@ -23,7 +23,10 @@
                     <div class="venta-captura">
                         <div class="input-group venta-codigo">
                             <label for="barcodeInput">Código de barras</label>
-                            <input class="campo" type="text" id="barcodeInput" placeholder="Escanea o escribe un código" autocomplete="off">
+                            <div class="venta-busqueda">
+                                <input class="campo" type="text" id="barcodeInput" placeholder="Escanea o escribe un código" autocomplete="off">
+                                <button class="btn btn-info" id="btnBuscarProducto" type="button">Buscar producto</button>
+                            </div>
                             <span class="nota-campo">El producto se agregará a la lista de venta.</span>
                         </div>
                         
@@ -37,38 +40,85 @@
                         <table class="venta-tabla">
                             <thead>
                                 <tr>
+                                    <th>Producto</th>
                                     <th>Código</th>
                                     <th>Precio U.</th>
-                                    <th>Cant.</th>
+                                    <th>Cant.</th><!--este campo se puede hacer de ingremento(+,-) si asi se quiere -->
+                                    <th>Descuento</th><!--este campo se puede hacer de entrada si se desea agregar algun descuento, o igual de incremento (+,-) -->
                                     <th>Subtotal</th>
-                                    <th>Quitar</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
+
                             <tbody id="cartTableBody">
-                                <tr id="carritoVacio">
-                                    <td colspan="6" class="venta-carrito-vacio">Los productos agregados aparecerán aquí.</td>
+                                <tr>
+                                    <td>Pelota</td>
+                                    <td>12345</td>
+                                    <td>$10.00</td>
+                                    <td>2</td>
+                                    <td>$0.00</td>
+                                    <td>$20.00</td>
+                                    <td class="acciones">
+                                        <a class="btn btn-peligro" href="enespera.php?id=1">Eliminar</a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                    <div class="venta-carrito-acciones">
+                        <button class="btn btn-info" id="btnAgregarServicio" type="button">Agregar servicio</button>
+                        <button class="btn btn-peligro" id="btnNuevaVenta" type="button">Nueva venta</button> <!-- este boton deberia limpiar la venta actual y reiniciar todo, tambien se deberia preguntar si se desea cancelar la venta actual, o eso interprete -->
+                    </div>
                     <p class="venta-mensaje" id="ventaMensaje" role="status" aria-live="polite"></p>
                 </section>
 
-                <aside class="tarjeta venta-resumen" aria-label="Resumen de venta">
-                    <h2>Resumen</h2>
-                    <div class="venta-totales">
-                        <div><span>Artículos</span><strong id="lblItems">0</strong></div>
-                        <div><span>Subtotal</span><strong id="lblSubtotal">$0.00</strong></div>
-                        <div><span>IVA (16%)</span><strong id="lblIva">$0.00</strong></div>
-                        <div class="venta-total"><span>Total</span><strong id="lblTotal">$0.00</strong></div>
-                    </div>
-                    <div class="venta-acciones">
-                        <button class="btn btn-info" id="btnCobrar" type="button">Cobrar</button>
-                        <button class="btn btn-peligro" id="btnCancelarVenta" type="button">Cancelar venta</button>
-                    </div>
-                </aside>
+                <div class="venta-lateral">
+                    <aside class="tarjeta venta-resumen" aria-label="Resumen de venta">
+                        <h2>Resumen</h2>
+                        <div class="venta-totales">
+                            <div><span>Artículos</span><strong id="lblItems">2</strong></div>
+                            <div><span>Subtotal</span><strong id="lblSubtotal">$20.00</strong></div>
+                            <div><span>IVA (16%)</span><strong id="lblIva">$3.20</strong></div>
+                            <div class="venta-total"><span>Total</span><strong id="lblTotal">$23.20 MXN</strong></div>
+                        </div>
+                        <div class="venta-acciones">
+                            <button class="btn btn-info" id="btnCobrar" type="button">Cobrar</button>
+                            <button class="btn btn-peligro" id="btnCancelarVenta" type="button">Cancelar venta</button> <!-- este boton deberia cancelar la venta actual, y se deberia preguntar si se desea cancelar la venta actual y limpiar la ventana actual, o eso entnedi -->
+                        </div>
+                    </aside>
+                    <section class="tarjeta venta-herramientas" aria-labelledby="tituloHerramientasVenta">
+                        <h2 id="tituloHerramientasVenta">Accesos</h2>
+                        <div class="venta-reportes">
+                            <button class="btn-secundario" type="button">Corte de caja</button>
+                            <a class="btn-secundario" href="historial_ventas.php">Historial de ventas</a>
+                        </div>
+                    </section>
+                </div>
             </div>
         </main>
     </div>
+    <?php include __DIR__ . '/buscar_productos.php'; ?>
+    <?php include __DIR__ . '/buscar_servicios.php'; ?>
+    <?php include __DIR__ . '/pagar_vents.php'; ?>
+    <script>
+        const botonBuscarProducto = document.getElementById('btnBuscarProducto');
+        const modalBuscarProducto = document.getElementById('modalBuscarProducto');
+        const botonAgregarServicio = document.getElementById('btnAgregarServicio');
+        const modalBuscarServicio = document.getElementById('modalBuscarServicio');
+        const botonCobrar = document.getElementById('btnCobrar');
+        const modalPagarVenta = document.getElementById('modalPagarVenta');
+
+        botonBuscarProducto.addEventListener('click', () => {
+            modalBuscarProducto.showModal();
+        });
+
+        botonAgregarServicio.addEventListener('click', () => {
+            modalBuscarServicio.showModal();
+        });
+
+        botonCobrar.addEventListener('click', () => {
+            modalPagarVenta.showModal();
+        });
+    </script>
 </body>
 </html>
