@@ -39,18 +39,23 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
 
       <input type="hidden" id="id_mascota" name="id_mascota" value="<?= (int)$id_mascota ?>">
 
-      <fieldset>
-        <p>
-          ¿Está seguro de que desea eliminar a la mascota
-          <strong><?= htmlspecialchars((string)$mascota['nombre']) . ' (ID: ' . $id_mascota . ')' ?></strong>?
-          Esta acción no se puede deshacer.
-        </p>
-      </fieldset>
+      <div class="tarjeta">
 
-      <div style="margin-top: 20px;">
-        <button type="submit" class="btn">Eliminar mascota</button>
-        <a class="btn" href="mascotas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+        <fieldset>
+          <p>
+            ¿Está seguro de que desea eliminar a la mascota
+            <strong><?= htmlspecialchars((string)$mascota['nombre']) . ' (ID: ' . $id_mascota . ')' ?></strong>?
+            Esta acción no se puede deshacer.
+          </p>
+        </fieldset>
+
+        <div style="margin-top: 20px;">
+          <button type="submit" class="btn">Eliminar mascota</button>
+          <a class="btn" href="mascotas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+        </div>
+
       </div>
+
     </form>
   
       </div>

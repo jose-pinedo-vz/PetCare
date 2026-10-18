@@ -37,19 +37,22 @@ $razon_social = $_GET['razon_social'];
   
       <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_proveedor ?>">
 
-      <fieldset>
+      <div class="tarjeta"> 
 
-        <p>
-          ¿Está seguro de que desea eliminar al proveedor
-          <strong><?= htmlspecialchars((string)$razon_social) . ' (ID: ' . htmlspecialchars((string)$id_proveedor) . ')' ?></strong>?
-          Esta acción no se puede deshacer.
-        </p>
+        <fieldset>
+          <p>
+            ¿Está seguro de que desea eliminar al proveedor
+            <strong><?= htmlspecialchars((string)$razon_social) . ' (ID: ' . htmlspecialchars((string)$id_proveedor) . ')' ?></strong>?
+            Esta acción no se puede deshacer.
+          </p>
 
-      </fieldset>
+        </fieldset>
 
-      <div class="acciones-formulario">
-        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-        <button type="submit">Eliminar proveedor</button>
+        <div class="acciones-formulario">
+          <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+          <button type="submit">Eliminar proveedor</button>
+        </div>
+
       </div>
 
     </form>
