@@ -22,7 +22,7 @@ $proveedores = listar_proveedores();
 
         <main>
 
-          <div class="migaja">Gestión de Empleados /</div>
+          <div class="migaja">Gestión de Proveedores /</div>
           <div class="encabezado-pagina">
             <h1>Proveedores</h1>
           </div>
