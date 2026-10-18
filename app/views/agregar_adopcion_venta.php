@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+$errores = $_SESSION['errores'] ?? [];
+$old     = $_SESSION['old'] ?? [];
+
+unset($_SESSION['errores']);
+unset($_SESSION['old']);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,6 +31,16 @@
 
       <div class="tarjeta">
     
+    <?php if (!empty($errores)): ?>
+      <div class="msg-error">
+        <h4>Por favor corrige los siguientes errores:</h4>
+        <ul>
+          <?php foreach ($errores as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
 
     <form action="guardar_adopcion_venta.php" method="POST" enctype="multipart/form-data">
 
@@ -31,70 +50,70 @@
   <div class="grid-formulario">
     <div>
       <label class="label-campo" for="especie">Especie:</label>
-      <input type="text" class="campo" id="especie" name="especie" maxlength="30" placeholder="Ej. Perro, Gato">
+      <input type="text" class="campo" id="especie" name="especie" maxlength="30" placeholder="Ej. Perro, Gato" value="<?= htmlspecialchars($old['especie'] ?? '') ?>">
     </div>
 
     <div>
       <label class="label-campo" for="raza">Raza:</label>
-      <input type="text" class="campo" id="raza" name="raza" maxlength="30">
+      <input type="text" class="campo" id="raza" name="raza" maxlength="30" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
     </div>
 
     <div>
       <label class="label-campo" for="sexo">Sexo:</label>
       <select class="campo" id="sexo" name="sexo">
-        <option value="Macho">Macho</option>
-        <option value="Hembra">Hembra</option>
+        <option value="Macho" <?= (($old['sexo'] ?? '') === 'Macho') ? 'selected' : '' ?>>Macho</option>
+        <option value="Hembra" <?= (($old['sexo'] ?? '') === 'Hembra') ? 'selected' : '' ?>>Hembra</option>
       </select>
     </div>
 
     <div>
       <label class="label-campo" for="fecha_de_nacimiento">Fecha de nacimiento *:</label>
-      <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento" required>
+      <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="color">Color *:</label>
-      <input type="text" class="campo" id="color" name="color" maxlength="20" required>
+      <input type="text" class="campo" id="color" name="color" maxlength="20" value="<?= htmlspecialchars($old['color'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="peso">Peso (kg) *:</label>
-      <input type="number" step="0.01" class="campo" id="peso" name="peso" required>
+      <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="fecha_de_ingreso">Fecha de ingreso *:</label>
-      <input type="datetime-local" class="campo" id="fecha_de_ingreso" name="fecha_de_ingreso" required>
+      <input type="datetime-local" class="campo" id="fecha_de_ingreso" name="fecha_de_ingreso" value="<?= htmlspecialchars($old['fecha_de_ingreso'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="costo_de_adquisicion">Costo de adquisición:</label>
-      <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion">
+      <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? '') ?>">
     </div>
 
     <div>
       <label class="label-campo" for="precio_de_venta">Precio de venta *:</label>
-      <input type="number" step="0.01" min="0" class="campo" id="precio_de_venta" name="precio_de_venta" required>
+      <input type="number" step="0.01" min="0" class="campo" id="precio_de_venta" name="precio_de_venta" value="<?= htmlspecialchars($old['precio_de_venta'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="estado">Estado:</label>
       <select class="campo" id="estado" name="estado">
         <option value="">Seleccionar...</option>
-        <option value="Disponible">Disponible</option>
-        <option value="Reservado">Reservado</option>
-        <option value="Vendido">Vendido</option>
+        <option value="Disponible" <?= (($old['estado'] ?? '') === 'Disponible') ? 'selected' : '' ?>>Disponible</option>
+        <option value="Reservado" <?= (($old['estado'] ?? '') === 'Reservado') ? 'selected' : '' ?>>Reservado</option>
+        <option value="Vendido" <?= (($old['estado'] ?? '') === 'Vendido') ? 'selected' : '' ?>>Vendido</option>
       </select>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="caracteristicas">Características *:</label>
-      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" required></textarea>
+      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" required><?= htmlspecialchars($old['caracteristicas'] ?? '') ?></textarea>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="procedencia">Procedencia *:</label>
-      <textarea class="campo" id="procedencia" name="procedencia" rows="2" required></textarea>
+      <textarea class="campo" id="procedencia" name="procedencia" rows="2" required><?= htmlspecialchars($old['procedencia'] ?? '') ?></textarea>
     </div>
   </div>
 
@@ -123,17 +142,17 @@
   <div class="grid-formulario">
     <div>
       <label class="label-campo" for="vacunas">Vacunas *:</label>
-      <textarea class="campo" id="vacunas" name="vacunas" rows="2" required></textarea>
+      <textarea class="campo" id="vacunas" name="vacunas" rows="2" required><?= htmlspecialchars($old['vacunas'] ?? '') ?></textarea>
     </div>
 
     <div>
       <label class="label-campo" for="desparasitacion">Desparasitación *:</label>
-      <input type="date" class="campo" id="desparasitacion" name="desparasitacion" required>
+      <input type="date" class="campo" id="desparasitacion" name="desparasitacion" value="<?= htmlspecialchars($old['desparasitacion'] ?? '') ?>" required>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="observaciones">Observaciones *:</label>
-      <textarea class="campo" id="observaciones" name="observaciones" rows="2" required placeholder="Observaciones generales"></textarea>
+      <textarea class="campo" id="observaciones" name="observaciones" rows="2" required placeholder="Observaciones generales"><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
     </div>
   </div>
 </fieldset>

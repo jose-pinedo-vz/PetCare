@@ -87,7 +87,7 @@ $usuario=$_SESSION['usuario'];
 
       <div class="acciones-formulario">
         <a class="btn-secundario" href="citas.php">Cancelar</a>
-        <button type="submit" class="btn">Guardar cita</button>
+        <button type="submit" class="btn">Guardar</button>
       </div>
     </form>
   

@@ -61,7 +61,18 @@ unset($_SESSION['old']);
 
               <div>
                 <label class="label-campo" for="especie" >Especie *:</label>
-                <input type="text" class="campo" id="especie" name="especie" placeholder="Ej. Perro, Gato" value="<?= htmlspecialchars($old['especie'] ?? '') ?>" required >
+                <!-- <input type="text" class="campo" id="especie" name="especie" placeholder="Ej. Perro, Gato" value="" required >-->
+                <select class="campo" id="especie" name="especie" required >
+                  <option value="">Seleccionar...</option>
+                  <option value="Perro" <?= ($old['especie'] ?? '') === 'Perro' ? 'selected' : '' ?>>Perro</option>
+                  <option value="Gato" <?= ($old['especie'] ?? '') === 'Gato' ? 'selected' : '' ?>>Gato</option>
+                  <option value="Conejo" <?= ($old['especie'] ?? '') === 'Conejo' ? 'selected' : '' ?>>Conejo</option>
+                  <option value="Hamster" <?= ($old['especie'] ?? '') === 'Hamster' ? 'selected' : '' ?>>Hamster</option>
+                  <option value="Hurón" <?= ($old['especie'] ?? '') === 'Hurón' ? 'selected' : '' ?>>Hurón</option>
+                  <option value="Erizo" <?= ($old['especie'] ?? '') === 'Erizo' ? 'selected' : '' ?>>Erizo</option>
+                  <option value="Tortuga" <?= ($old['especie'] ?? '') === 'Tortuga' ? 'selected' : '' ?>>Tortuga</option>
+                  <option value="Ave" <?= ($old['especie'] ?? '') === 'Ave' ? 'selected' : '' ?>>Ave</option>
+                </select>
               </div>
 
               <div>
@@ -72,6 +83,7 @@ unset($_SESSION['old']);
               <div>
                 <label class="label-campo" for="sexo" >Sexo *:</label>
                 <select class="campo" id="sexo" name="sexo" required >
+                  <option value="">Seleccionar...</option>
                   <option value="Macho" <?= ($old['sexo'] ?? '') === 'Macho' ? 'selected' : '' ?>>Macho</option>
                   <option value="Hembra" <?= ($old['sexo'] ?? '') === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
                 </select>
@@ -84,7 +96,24 @@ unset($_SESSION['old']);
 
               <div>
                 <label class="label-campo" for="color" >Color:</label>
-                <input type="text" class="campo" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? '') ?>">
+                <!-- <input type="text" class="campo" id="color" name="color" value=""> -->
+                 <select class="campo" id="color" name="color" required>
+                  <option value="">Seleccionar...</option>
+                  <option value="Blanco" <?= ($old['color'] ?? '') === 'Blanco' ? 'selected' : '' ?>>Blanco</option>
+                  <option value="Negro" <?= ($old['color'] ?? '') === 'Negro' ? 'selected' : '' ?>>Negro</option>
+                  <option value="Gris" <?= ($old['color'] ?? '') === 'Gris' ? 'selected' : '' ?>>Gris</option>
+                  <option value="Café" <?= ($old['color'] ?? '') === 'Café' ? 'selected' : '' ?>>Café</option>
+                  <option value="Amarillo" <?= ($old['color'] ?? '') === 'Amarillo' ? 'selected' : '' ?>>Amarillo</option>
+                  <option value="Verde" <?= ($old['color'] ?? '') === 'Verde' ? 'selected' : '' ?>>Verde</option>
+                  <option value="Rojo" <?= ($old['color'] ?? '') === 'Rojo' ? 'selected' : '' ?>>Rojo</option>
+                  <option value="Blanco y negro" <?= ($old['color'] ?? '') === 'Blanco y negro' ? 'selected' : '' ?>>Blanco y negro</option>
+                  <option value="Café y blanco" <?= ($old['color'] ?? '') === 'Café y blanco' ? 'selected' : '' ?>>Café y blanco</option>
+                  <option value="Café y amarillo" <?= ($old['color'] ?? '') === 'Café y amarillo' ? 'selected' : '' ?>>Café y amarillo</option>
+                  <option value="Blanco y gris" <?= ($old['color'] ?? '') === 'Blanco y gris' ? 'selected' : '' ?>>Blanco y gris</option>
+                  <option value="Verde y amarillo" <?= ($old['color'] ?? '') === 'Verde y amarillo' ? 'selected' : '' ?>>Verde y amarillo</option>
+                  <option value="Blanco, amarillo y negro" <?= ($old['color'] ?? '') === 'Blanco, amarillo y negro' ? 'selected' : '' ?>>Blanco, amarillo y negro</option>
+                  <option value="Otro" <?= ($old['color'] ?? '') === 'Otro' ? 'selected' : '' ?>>Otro (Especificar)</option>
+                </select>
               </div>
 
               <div>

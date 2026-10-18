@@ -30,9 +30,14 @@ $proveedores = listar_proveedores();
 
 
         <main>
-            <h1>Módulo de Proveedores</h1>
+
+          <div class="migaja">Gestión de Proveedores /</div>
+          <div class="encabezado-pagina">
+            <h1>Proveedores</h1>
+          </div>
+
             <div style="margin-bottom: 20px;">
-                <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>
+                <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
             </div>
             <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
             <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
@@ -73,7 +78,7 @@ $proveedores = listar_proveedores();
                                 <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
                                 <td style="padding: 15px; white-space: nowrap;">
                                     <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
-                                    <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>" style="margin-left: 6px;">Eliminar</a>
+                                    <a class="btn btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>" style="margin-left: 6px;">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

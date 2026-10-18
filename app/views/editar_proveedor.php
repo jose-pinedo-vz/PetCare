@@ -294,7 +294,7 @@ if (!$proveedor) {
 
             <div class="acciones-formulario">
         <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-        <button type="submit">Guardar</button>
+        <button type="submit">Guardar cambios</button>
       </div>
 
         </form>

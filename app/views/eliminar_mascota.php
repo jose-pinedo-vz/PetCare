@@ -29,6 +29,9 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
 
 
   <main>
+
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Eliminar</div>
+
     <h1>Eliminar mascota</h1>
         <?php if (isset($_SESSION['error'])): ?>
       <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
@@ -49,9 +52,10 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
           </p>
         </fieldset>
 
-        <div style="margin-top: 20px;">
-          <button type="submit" class="btn">Eliminar mascota</button>
-          <a class="btn" href="mascotas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+
+        <div class="acciones-formulario">
+          <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+          <button type="submit" class="btn">Eliminar</button>
         </div>
 
       </div>
