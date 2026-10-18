@@ -14,7 +14,7 @@
             <div class="migaja">Punto de venta </div>
             <div class="encabezado-pagina">
                 <h1>Historial de ventas</h1>
-                <a class="btn-secundario" href="Ventas.php">&larr; Regresar a ventas</a>
+                <a class="btn-secundario" href="../views/Venta.php">&larr; Regresar a ventas</a>
             </div>
 
             <section class="historial-filtros" aria-label="Filtros del historial de ventas">
