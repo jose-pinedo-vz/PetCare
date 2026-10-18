@@ -21,9 +21,14 @@ $proveedores = listar_proveedores();
 
 
         <main>
-            <h1>Módulo de Proveedores</h1>
+
+          <div class="migaja">Gestión de Empleados /</div>
+          <div class="encabezado-pagina">
+            <h1>Proveedores</h1>
+          </div>
+
             <div style="margin-bottom: 20px;">
-                <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>
+                <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
             </div>
             <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
             <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">

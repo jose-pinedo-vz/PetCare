@@ -2,7 +2,9 @@
 // Validar si realmente llegaron los datos por la URL (GET)
 if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
     // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
-    header("Location: empleados.php");
+
+    /* header("Location: empleados.php"); */
+    header("Location: clientes.php");
     exit();
 }
 
@@ -28,29 +30,41 @@ $apellido_cliente = $_GET['apellido'];
 
   <?php $paginaActiva = 'clientes'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-    <main>
+  <main>
+
       <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Eliminar</div>
-      <div class="encabezado-pagina">
-        <h1>Eliminar cliente</h1>
-        <form action="../controllers/eliminar_cliente.php" method="POST">
-  
-      <input type="hidden" id="id_cliente" name="id_cliente" value="<?= (int)$id_cliente ?>">
+
+    <h1>Eliminar cliente</h1>
+
+    <?php if (isset($_SESSION['error'])): ?>
+      <div class="msg-error">
+        <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+      </div>
+    <?php endif; ?>
+
+    <form action="../controllers/eliminar_cliente.php" method="POST">
+
+      <input type="hidden" id="id_cliente" name="id_cliente" value="<?= $id_cliente ?>">
 
       <div class="tarjeta">
-        <div class="confirmacion">
-            <p>
-          ¿Está seguro de que desea eliminar al cliente
-          <strong><?= htmlspecialchars((string)$nombre_cliente) .' ' . htmlspecialchars((string)$apellido_cliente) . ' (ID: ' . htmlspecialchars((string)$id_cliente) . ')' ?></strong>?
-          Esta acción no se puede deshacer.
-        </p>
 
-            <button type="submit" class="btn">
-                Eliminar cliente
-            </button>
-            <a class="btn" href="clientes.php">Cancelar</a>
+        <fieldset>
+          <p>
+            ¿Está seguro de que desea eliminar al cliente
+            <strong><?= htmlspecialchars((string)$nombre_cliente) . ' ' . htmlspecialchars((string)$apellido_cliente) . ' (ID: ' . $id_cliente . ')' ?></strong>?
+            Esta acción no se puede deshacer.
+          </p>
+        </fieldset>
+
+        <div style="margin-top: 20px;">
+          <button type="submit" class="btn">Eliminar cliente</button>
+          <a class="btn" href="clientes.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
         </div>
+
       </div>
-    </main>
+
+    </form>
+  </main>
 
   </div>
 

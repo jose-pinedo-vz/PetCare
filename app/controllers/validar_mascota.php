@@ -60,7 +60,7 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     if (empty(trim($datos['color']))) {
         $datos['color'] = NULL;
     }else if (strlen($datos['color']) > 50) {
-        $errores[] = "Elcolor no puede tener mas de 50 letras";
+        $errores[] = "El color no puede tener mas de 50 letras";
     }else if (preg_match('/\d/', $datos['color'])) {
         $errores[] = "El color no puede contener números.";
     }
