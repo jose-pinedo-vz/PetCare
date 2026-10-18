@@ -263,8 +263,11 @@
                 </div>
 
             </fieldset>
-        <button type="submit">Guardar</button>
-        <a class="btn" href="proveedores.php">Cancelar</a>
+
+          <div class="acciones-formulario">
+            <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+            <button type="submit">Guardar</button>
+          </div>
 
         </form>
 

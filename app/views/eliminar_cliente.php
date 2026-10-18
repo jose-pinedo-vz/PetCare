@@ -58,7 +58,7 @@ $apellido_cliente = $_GET['apellido'];
 
           <div class="acciones-formulario">
             <a class="btn-secundario" href="clientes.php">Cancelar</a>
-            <button type="submit" class="btn">Eliminar cliente</button>
+            <button type="submit" class="btn">Eliminar</button>
           </div>
 
         </div>

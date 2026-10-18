@@ -26,7 +26,7 @@
 
           <div class="acciones-formulario">
             <a class="btn-secundario" href="inventario.php">Cancelar</a>
-            <button type="button" class="btn">Eliminar producto</button>
+            <button type="button" class="btn">Eliminar</button>
           </div>
         </div>
       </div>
