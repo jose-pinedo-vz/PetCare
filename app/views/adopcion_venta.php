@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../controllers/adopcion_venta.php';
+$animales = listar_adopciones_ventas();
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -47,75 +51,37 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Perro</td>
-                                <td>Labrador</td>
-                                <td>Hembra</td>
-                                <td>2025-03-12</td>
-                                <td>Dorado</td>
-                                <td>18 kg</td>
-                                <td>Dócil, juguetona, sociable con niños</td>
-                                <td>luna.jpg</td>
-                                <td>Rescate</td>
-                                <td>2026-08-02</td>
-                                <td>$0</td>
-                                <td>No aplica (adopción)</td>
-                                <td>Disponible</td>
-                                <td>Rabia, Parvovirus, Moquillo</td>
-                                <td>2026-09-15</td>
-                                <td>Esterilizada</td>
-                                <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Gato</td>
-                                <td>Siamés</td>
-                                <td>Macho</td>
-                                <td>2026-01-20</td>
-                                <td>Crema y café</td>
-                                <td>3.2 kg</td>
-                                <td>Tranquilo, ojos azules</td>
-                                <td>michi.jpg</td>
-                                <td>Criadero autorizado</td>
-                                <td>2026-08-10</td>
-                                <td>$1,200</td>
-                                <td>$2,500</td>
-                                <td>Disponible</td>
-                                <td>Triple felina</td>
-                                <td>2026-09-01</td>
-                                <td>Pelaje en buen estado</td>
-                                <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Perro</td>
-                                <td>Mestizo</td>
-                                <td>Macho</td>
-                                <td>2024-11-05</td>
-                                <td>Café con blanco</td>
-                                <td>14 kg</td>
-                                <td>Activo, aprende rápido</td>
-                                <td>rocky.jpg</td>
-                                <td>Donación</td>
-                                <td>2026-07-28</td>
-                                <td>$0</td>
-                                <td>No aplica (adopción)</td>
-                                <td>En proceso</td>
-                                <td>Rabia, Quíntuple</td>
-                                <td>2026-08-20</td>
-                                <td>Adopción pendiente de firma</td>
-                                <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
+                            <?php if (!empty($animales)): ?>
+                                <?php foreach ($animales as $animal): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars((string)$animal['id_animal']) ?></td>
+                                        <td><?= htmlspecialchars((string)($animal['especie'] ?? '-')) ?></td>
+                                        <td><?= htmlspecialchars((string)($animal['raza'] ?? '-')) ?></td>
+                                        <td><?= htmlspecialchars((string)($animal['sexo'] ?? '-')) ?></td>
+                                        <td><?= htmlspecialchars(substr((string)$animal['fecha_de_nacimiento'], 0, 10)) ?></td>
+                                        <td><?= htmlspecialchars((string)$animal['color']) ?></td>
+                                        <td><?= htmlspecialchars((string)$animal['peso']) ?> kg</td>
+                                        <td><?= htmlspecialchars((string)$animal['caracteristicas']) ?></td>
+                                        <td><?= htmlspecialchars((string)($animal['fotografia'] ?? 'Sin foto')) ?></td>
+                                        <td><?= htmlspecialchars((string)$animal['procedencia']) ?></td>
+                                        <td><?= htmlspecialchars((string)$animal['fecha_de_ingreso']) ?></td>
+                                        <td><?= ($animal['costo_de_adquisicion'] !== null && $animal['costo_de_adquisicion'] !== '') ? '$' . number_format((float)$animal['costo_de_adquisicion'], 2) : '-' ?></td>
+                                        <td><?= ($animal['precio_de_venta'] > 0) ? '$' . number_format((float)$animal['precio_de_venta'], 2) : 'No aplica (adopción)' ?></td>
+                                        <td><?= htmlspecialchars((string)($animal['estado'] ?? 'Disponible')) ?></td>
+                                        <td><?= htmlspecialchars((string)$animal['vacunas']) ?></td>
+                                        <td><?= htmlspecialchars(substr((string)$animal['desparasitacion'], 0, 10)) ?></td>
+                                        <td><?= htmlspecialchars((string)$animal['observaciones']) ?></td>
+                                        <td>
+                                            <a class="btn" href="editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
+                                            <a class="btn" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="18" style="text-align: center;">No hay registros de adopción y venta.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
