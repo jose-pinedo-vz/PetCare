@@ -95,7 +95,7 @@ $usuario=$_SESSION['usuario'];
           <tbody>
             <?php foreach ($listaUsuarios as $u): ?>
               <tr>
-                <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$u['id_usuario']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars((string)$u['id_usuario']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($u['usuario']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($u['empleado_asociado']); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($u['rol']); ?></td>
