@@ -67,7 +67,7 @@
                                 <td>Esterilizada</td>
                                 <td>
                                     <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                    <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -90,7 +90,7 @@
                                 <td>Pelaje en buen estado</td>
                                 <td>
                                     <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                    <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -113,7 +113,7 @@
                                 <td>Adopción pendiente de firma</td>
                                 <td>
                                     <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                    <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                         </tbody>
