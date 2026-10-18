@@ -269,7 +269,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (count($errores) > 0) {
-        $msg = implode(" | ", $errores);
+        $msg = implode("\n\n", $errores);
         errorSession($msg);
     }
 

@@ -117,12 +117,12 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
 
           <div>
-            <label class="label-campo" for="raza">Raza:</label>
+            <label class="label-campo" for="raza">Raza *:</label>
             <input type="text" class="campo" id="raza" name="raza" value="<?= dato($old, $mascota, 'raza') ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="sexo">Sexo:</label>
+            <label class="label-campo" for="sexo">Sexo *:</label>
             <select class="campo" id="sexo" name="sexo" required>
               <option value="Macho"  <?= $sexoActual === 'Macho'  ? 'selected' : '' ?>>Macho</option>
               <option value="Hembra" <?= $sexoActual === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
@@ -140,7 +140,7 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
 
           <div>
-            <label class="label-campo" for="peso">Peso (kg):</label>
+            <label class="label-campo" for="peso">Peso (kg) *:</label>
             <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= dato($old, $mascota, 'peso') ?>">
           </div>
 

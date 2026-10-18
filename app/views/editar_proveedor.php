@@ -247,7 +247,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
-                            Condición de pago:
+                            Condición de pago *:
                         </label>
 
                         <input

@@ -55,22 +55,22 @@ unset($_SESSION['old']);
 
             <div class="grid-formulario">
               <div>
-                <label class="label-campo" class="label-campo" for="nombre" >Nombre:</label>
+                <label class="label-campo" class="label-campo" for="nombre" >Nombre *:</label>
                 <input type="text" class="campo" id="nombre" name="nombre" value="<?= htmlspecialchars($old['nombre'] ?? '') ?>" required >
               </div>
 
               <div>
-                <label class="label-campo" for="especie" >Especie:</label>
+                <label class="label-campo" for="especie" >Especie *:</label>
                 <input type="text" class="campo" id="especie" name="especie" placeholder="Ej. Perro, Gato" value="<?= htmlspecialchars($old['especie'] ?? '') ?>" required >
               </div>
 
               <div>
-                <label class="label-campo" for="raza" >Raza:</label>
+                <label class="label-campo" for="raza" >Raza *:</label>
                 <input type="text" class="campo" id="raza" name="raza" value="<?= htmlspecialchars($old['raza'] ?? '') ?>" >
               </div>
 
               <div>
-                <label class="label-campo" for="sexo" >Sexo:</label>
+                <label class="label-campo" for="sexo" >Sexo *:</label>
                 <select class="campo" id="sexo" name="sexo" required >
                   <option value="Macho" <?= ($old['sexo'] ?? '') === 'Macho' ? 'selected' : '' ?>>Macho</option>
                   <option value="Hembra" <?= ($old['sexo'] ?? '') === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
@@ -78,7 +78,7 @@ unset($_SESSION['old']);
               </div>
 
               <div>
-                <label class="label-campo" for="edad" >Edad / Fecha nacimiento:</label>
+                <label class="label-campo" for="edad" >Edad / Fecha nacimiento *:</label>
                 <input type="date" class="campo" id="edad" name="edad" value="<?= htmlspecialchars($old['edad'] ?? '') ?>" required >
               </div>
 
@@ -88,7 +88,7 @@ unset($_SESSION['old']);
               </div>
 
               <div>
-                <label class="label-campo" for="peso" >Peso (kg):</label>
+                <label class="label-campo" for="peso" >Peso (kg) *:</label>
                 <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
               </div>
 
@@ -105,7 +105,7 @@ unset($_SESSION['old']);
               </div>
 
               <div>
-                <label class="label-campo" for="id_cliente" >Dueño (ID cliente):</label>
+                <label class="label-campo" for="id_cliente" >Dueño (ID cliente) *:</label>
                 <input type="number" class="campo" id="id_cliente" name="id_cliente" required placeholder="ID del Cliente" value="<?= htmlspecialchars($old['id_cliente'] ?? $_GET['id_cliente'] ?? '') ?>" >
               </div>
 
