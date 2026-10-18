@@ -89,7 +89,7 @@
                     <section class="tarjeta venta-herramientas" aria-labelledby="tituloHerramientasVenta">
                         <h2 id="tituloHerramientasVenta">Accesos</h2>
                         <div class="venta-reportes">
-                            <button class="btn-secundario" type="button">Corte de caja</button>
+                            <a class="btn-secundario" href="corte_caja.php">Corte de caja</a>
                             <a class="btn-secundario" href="historial_ventas.php">Historial de ventas</a>
                         </div>
                     </section>
