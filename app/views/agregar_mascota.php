@@ -38,7 +38,7 @@ unset($_SESSION['old']);
 
     <!-- BLOQUE DE ALERTAS: Muestra los errores guardados en la sesión -->
     <?php if (!empty($errores)): ?>
-      <div class="alerta-errores">
+      <div class="msg-error">
         <h4>Por favor corrige los siguientes errores:</h4>
         <ul>
           <?php foreach ($errores as $error): ?>

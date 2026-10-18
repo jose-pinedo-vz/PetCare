@@ -126,8 +126,8 @@ function validar_datos($datos){
     if (empty($datos['codigo_postal'])) {
         $errores[] = "El codigo postal es obligatoria.";
         //$datos['codigo_postal'] = NULL;
-    }else if (strlen($datos['codigo_postal']) > 10) {
-        $errores[] = "El codigo postal no puede tener mas de 10 letras";
+    }else if (strlen($datos['codigo_postal']) != 5) {
+        $errores[] = "El codigo postal debe tener exactamente 5 caracteres";
     }else if(!is_numeric($datos['codigo_postal'])){
         $errores[] = "El codigo postal debe de ser puros numeros";
     }
