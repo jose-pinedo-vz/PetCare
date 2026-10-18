@@ -25,10 +25,7 @@ function validarRfc(string $palabra)
     if ($largo==13)
     {
         if(!ctype_alpha($palabra[0])||!ctype_alpha($palabra[1])||!ctype_alpha($palabra[2])||!ctype_alpha($palabra[3]))
-            {
-                $errores[]="Los 4 primeros caracteres deben ser letras en persona fisica";
-                
-            }
+            {$errores[]="Los 4 primeros caracteres deben ser letras en persona fisica";}
         $inicioNum=4;
     }
     
@@ -36,45 +33,24 @@ function validarRfc(string $palabra)
         {
             //Si de los siguientes alguno no es numero falla
             if(!ctype_digit($palabra[$i+$inicioNum]))
-                {
-                    $errores[]="Los caracteres despues de las letras deben ser numeros en formato AAMMDD";
-                    
-                }
+                {$errores[]="Los caracteres despues de las letras deben ser numeros en formato AAMMDD";}
         }
 
     //Se extrae la fecha
     $fecha=substr($palabra,$inicioNum,6);
     //echo $fecha;
-
     $año=(int) substr($fecha,0,2);
     $mes=(int) substr($fecha,2,2);
     $dia=(int) substr($fecha,4,2);
 
     //Comprueba mes 
     if ($mes>13||$mes<1)
-        {
-            $errores[]="Los caracteres de mes del rfc debe ser menor que 13";
-            
-        }
+        {$errores[]="Los caracteres de mes del rfc debe ser menor que 13";  }
     if ($dia>31)
-        {
-            $errores[]="Los caracteres de dia del rfc debe ser menor que 31";
-            
-        }
+        {$errores[]="Los caracteres de dia del rfc debe ser menor que 31";   }
 
     $ultimo=substr($palabra,-3);
-    if (!ctype_alnum($ultimo)) {
-        $errores[]= "Los ultimos 3 digitos no deben tener caracteres especiales";
-        
-    }
-
+    if (!ctype_alnum($ultimo)) 
+        {$errores[]= "Los ultimos 3 digitos no deben tener caracteres especiales";  }
     return $errores;
 }
-
-$rfc="GDOA341130GR8";
-if(validarRfc($rfc)){
-    echo "<br>Valido";
-}else{
-    echo "<br>No valido";
-}
-?> 

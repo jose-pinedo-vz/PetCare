@@ -24,6 +24,11 @@ function viejo(string $clave): string
     return htmlspecialchars($valor);
 }
 
+function e($texto): string
+{
+    return htmlspecialchars((string)$texto);
+}
+
 $puestoViejo  = viejo('oldpuesto');
 $horarioViejo = viejo('oldhorario');
 $coloniaVieja = viejo('oldcolonia');
@@ -55,7 +60,11 @@ unset($_SESSION['error']);
       <div class="tarjeta">
 
     <?php if ($mensajeError): ?>
-      <div class="msg-error"><?= htmlspecialchars($mensajeError) ?></div>
+      <div class="msg-error">
+        <?php foreach (explode("\n\n", $mensajeError) as $error): ?>
+          <div>• <?= e($error) ?></div>
+        <?php endforeach; ?>
+      </div>
     <?php endif; ?>
 
     <form action="../controllers/guardar_empleado.php" method="POST">

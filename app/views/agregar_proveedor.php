@@ -38,7 +38,7 @@
       </div>
 
         <?php if (!empty($errores)): ?>
-            <div class="alerta-errores">
+            <div class="msg-error">
               <h4>Por favor corrige los siguientes errores:</h4>
               <ul>
                 <?php foreach ($errores as $error): ?>
@@ -156,7 +156,7 @@
                         <label class="label-campo" for="codigo_postal">Código postal *:</label>
                         <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
             
-                        value="<?php echo htmlspecialchars((string)($_SESSION['oldcodigo_postal'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
+                        value="<?php echo htmlspecialchars((string)($old['codigo_postal'] ?? '')); unset($old['CodigoPostal_clientes']); ?>">
                     </div>
 
                     <div>
