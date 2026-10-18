@@ -52,9 +52,10 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
           </p>
         </fieldset>
 
-        <div style="margin-top: 20px;">
+
+        <div class="acciones-formulario">
+          <a class="btn-secundario" href="mascotas.php">Cancelar</a>
           <button type="submit" class="btn">Eliminar mascota</button>
-          <a class="btn" href="mascotas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
         </div>
 
       </div>
