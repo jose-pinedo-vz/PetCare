@@ -4,6 +4,8 @@ date_default_timezone_set('America/Mexico_City');
 //requiere_once hace que se cargue el archivo que se le pone en este
 require_once __DIR__ . '/../models/fichaMedicaModelo.php';
 
+require_once __DIR__ . '/../models/citas.php';
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
@@ -100,6 +102,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
             errorSession("Temperatura, peso y precio deben ser numéricos");
         }
     
+    actualzarCita($idConsulta);
+    
 
     //Datos a insertar
     $datos=[
@@ -133,8 +137,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
 
 
+
+
     header("Location: ../views/citas.php?exito=1");
     exit();
+}
+
+
+function actualzarCita(int $idCita)
+{
+    $idConsulta = $idCita;
+    $contulta = new ConexionesClientes();
+    $res = $contulta->pendinteDepago($idConsulta);
 }
 ?>
 

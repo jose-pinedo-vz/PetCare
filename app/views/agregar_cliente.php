@@ -10,47 +10,30 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Registrar cliente</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
   <script src="js/codigo_Postal.js"></script>
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'clientes'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php" class="activo">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-      
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Registrar cliente</h1>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Agregar</div>
+      <div class="encabezado-pagina">
+        <h1>Registrar cliente</h1>
+      </div>
 
-        <!-- mensaje de error  -->
+      <div class="tarjeta">
+    
+
+    <form action="../controllers/guardar_cliente.php" method="POST">
+
+      <!-- mensaje de error  -->
       <?php if (isset($_SESSION['error'])): ?>
-        <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+        <div class="msg-error">
           <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
         </div>
       <?php endif; ?>
@@ -242,7 +225,11 @@ if (session_status() === PHP_SESSION_NONE) {
         <a class="btn" href="clientes.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

@@ -13,47 +13,29 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-widht, initial-scale=1.0">
     <title>Veterinaria PetCare - Agregar proveedor</title>
-    <link rel="stylesheet" href="css/estilos_base.css">
     <script src="js/codigo_Postal.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
+
 <body>
-    <header>
-        <div class='marca'>
-            <img src="img/logo3.svg" alt="Verterinaria PetCare">
-        </div>
 
-        <div class="marca">
-            <span>Empleado: Nombre del empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
+  <div class="layout">
 
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
-
-
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Agregar</div>
+      <div class="encabezado-pagina">
         <h1>Agregar proveedor</h1>
+      </div>
 
         <?php if (!empty($errores)): ?>
             <div class="alerta-errores">
@@ -286,11 +268,16 @@
 
         </form>
 
+    
+      </div>
     </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
 </body>
+
 </html>

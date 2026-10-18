@@ -425,6 +425,7 @@ td .btn:last-child {
 /* me permite ocultar los divs en citas */
 .oculto {
   display: none !important;
+<<<<<<< HEAD
 }
 
 /* Estilo para el contenedor de errores */
@@ -444,3 +445,6 @@ td .btn:last-child {
       margin: 0;
       padding-left: 20px;
     }
+=======
+}
+>>>>>>> ade880c5a513606acbb1574b22865d2390579a97
