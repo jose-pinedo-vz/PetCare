@@ -13,26 +13,24 @@ $proveedores = listar_proveedores();
 </head>
 
 <body>
-    <div class="layout">
-        <?php $paginaActiva = 'proveedores';
-        include __DIR__ . '/layout/sidebar.php'; ?>
 
-        <div class="tabla-envoltura">
+  <div class="layout">
 
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-        <main>
+  <main>
+    <div class="migaja">Gestión de Proveedores /</div>
+    <div class="encabezado-pagina">
+      <h1>Proveedores</h1>
+    </div>
 
-          <div class="migaja">Gestión de Proveedores /</div>
-          <div class="encabezado-pagina">
-            <h1>Proveedores</h1>
-          </div>
-
-            <div style="margin-bottom: 20px;">
-                <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
-            </div>
-            <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
-            <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
-                <thead>
+    <div class="tarjeta">
+      <div class="barra-acciones">
+        <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
+      </div>
+      <div class="tabla-envoltura">
+        <table class="tabla-ancha">
+<thead>
                     <tr>
                         <th>ID</th>
                         <th>Razón social</th>
@@ -50,7 +48,7 @@ $proveedores = listar_proveedores();
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                            <tbody>
+<tbody>
                     <?php if (!empty($proveedores)): ?>
                         <?php foreach ($proveedores as $proveedor): ?>
                             <tr>
@@ -67,9 +65,9 @@ $proveedores = listar_proveedores();
                                 <td><?= htmlspecialchars((string)($proveedor['condicion_pago'] ?? '')) ?></td>
                                 <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
                                 <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
-                                <td style="padding: 15px; white-space: nowrap;">
+                                <td class="acciones">
                                     <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
-                                    <a class="btn btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>" style="margin-left: 6px;">Eliminar</a>
+                                    <a class="btn btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -77,19 +75,15 @@ $proveedores = listar_proveedores();
                         <tr><td colspan="14">No hay proveedores registrados.</td></tr>
                     <?php endif; ?>
             </tbody>
-            </table>
-            </div>
-        </main>
-
-        </div>
-
+        </table>
+      </div>
     </div>
-    </nav>
+  </main>
 
-    
+  </div>
 
-    <footer>
-        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
 </body>
 </html>
