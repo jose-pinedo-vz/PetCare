@@ -1,104 +1,98 @@
 <?php
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+    header("Location: ../views/login.php");
+    exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 require_once __DIR__ . '/../controllers/proveedor.php';
 $proveedores = listar_proveedores();
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria PetCare - Proveedores</title>
-    <link rel="stylesheet" href="css/estilos_base.css">
+    <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
+
 <body>
-    <header>
-        <div class="marca">
-            <img src="img/logo.svg" alt="Veterinaria PetCare">
-        </div>
 
-        <div class="sesion">
-            <span>Empleado: Nombre del empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
+  <div class="layout">
 
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-            
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+  <main>
+    <div class="migaja">Gestión de Proveedores /</div>
+    <div class="encabezado-pagina">
+      <h1>Proveedores</h1>
+    </div>
 
-    <main>
-        <h1>Módulo de Proveedores</h1>
-        <div style="margin-bottom: 20px;">
-            <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>  
-        </div>
-        <div style="overflow-x: auto; border: 1px solid var(--border-light); border-radius: 6px;">
-        <table border="1" style="width: 100%; min-width: 1400px; border-collapse: collapse; text-align: left;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Razón social</th>
-                    <th>Nombre comercial</th>
-                    <th>RFC</th>
-                    <th>Teléfono</th>
-                    <th>Correo</th>
-                    <th>Domicilio</th>
-                    <th>Ciudad</th>
-                    <th>Estado</th>
-                    <th>Código postal</th>
-                    <th>Condición de pago</th>
-                    <th>Tiempo de entrega</th>
-                    <th>Observaciones</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-                        <tbody>
-                <?php if (!empty($proveedores)): ?>
-                    <?php foreach ($proveedores as $proveedor): ?>
-                        <tr>
-                            <td><?= htmlspecialchars((string)$proveedor['id_proveedor']) ?></td>
-                            <td><?= htmlspecialchars((string)$proveedor['razon_social']) ?></td>
-                            <td><?= htmlspecialchars((string)$proveedor['nombre_comercial']) ?></td>
-                            <td><?= htmlspecialchars((string)$proveedor['rfc']) ?></td>
-                            <td><?= htmlspecialchars((string)$proveedor['telefono']) ?></td>
-                            <td><?= htmlspecialchars((string)($proveedor['correo'] ?? '')) ?></td>
-                            <td><?= htmlspecialchars((string)($proveedor['domicilio'] ?? '')) ?></td>
-                            <td><?= htmlspecialchars((string)($proveedor['ciudad'] ?? '')) ?></td>
-                            <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
-                            <td><?= htmlspecialchars((string)($proveedor['codigo_postal'] ?? '')) ?></td>
-                            <td><?= htmlspecialchars((string)($proveedor['condicion_pago'] ?? '')) ?></td>
-                            <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
-                            <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
-                            <td style="padding: 15px; white-space: nowrap;">
-                                <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
-                                <a class="btn" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>" style="margin-left: 6px;">Eliminar</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr><td colspan="14">No hay proveedores registrados.</td></tr>
-                <?php endif; ?>
+    <div class="tarjeta">
+      <div class="barra-acciones">
+        <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
+      </div>
+      <div class="tabla-envoltura">
+        <table class="tabla-ancha">
+<thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Razón social</th>
+                        <th>Nombre comercial</th>
+                        <th>RFC</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Domicilio</th>
+                        <th>Ciudad</th>
+                        <th>Estado</th>
+                        <th>Código postal</th>
+                        <th>Condición de pago</th>
+                        <th>Tiempo de entrega</th>
+                        <th>Observaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+<tbody>
+                    <?php if (!empty($proveedores)): ?>
+                        <?php foreach ($proveedores as $proveedor): ?>
+                            <tr>
+                                <td><?= htmlspecialchars((string)$proveedor['id_proveedor']) ?></td>
+                                <td><?= htmlspecialchars((string)$proveedor['razon_social']) ?></td>
+                                <td><?= htmlspecialchars((string)$proveedor['nombre_comercial']) ?></td>
+                                <td><?= htmlspecialchars((string)$proveedor['rfc']) ?></td>
+                                <td><?= htmlspecialchars((string)$proveedor['telefono']) ?></td>
+                                <td><?= htmlspecialchars((string)($proveedor['correo'] ?? '')) ?></td>
+                                <td><?= htmlspecialchars((string)($proveedor['domicilio'] ?? '')) ?></td>
+                                <td><?= htmlspecialchars((string)($proveedor['ciudad'] ?? '')) ?></td>
+                                <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
+                                <td><?= htmlspecialchars((string)($proveedor['codigo_postal'] ?? '')) ?></td>
+                                <td><?= htmlspecialchars((string)($proveedor['condicion_pago'] ?? '')) ?></td>
+                                <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
+                                <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
+                                <td class="acciones">
+                                    <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
+                                    <a class="btn btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>">Eliminar</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr><td colspan="14">No hay proveedores registrados.</td></tr>
+                    <?php endif; ?>
             </tbody>
         </table>
-        </div>
-    </main>
+      </div>
+    </div>
+  </main>
 
-    <footer>
-        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
 </body>
 </html>
