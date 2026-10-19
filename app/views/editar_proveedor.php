@@ -64,6 +64,8 @@ if (!$proveedor) {
         <h1>Editar proveedor</h1>
       </div>
 
+      <div class="tarjeta">
+
         <?php if (!empty($errores)): ?>
             <div class="alerta-errores">
               <h4>Por favor corrige los siguientes errores:</h4>

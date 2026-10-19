@@ -235,16 +235,11 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
 
           <div>
-            <span class="label-campo">Estado:</span>
-            <div class="switch-fila">
-              <label class="switch" aria-label="Mascota activa">
-                <input type="checkbox" id="esta_activo" <?= $activo ? 'checked' : '' ?>>
-                <span class="slider"></span>
-              </label>
-              <span id="texto_estado" class="estado-chip <?= $activo ? 'estado-atendida' : 'estado-espera' ?>"><?= $activo ? 'Activo' : 'Inactivo' ?></span>
-              <!-- Este es el campo que se envia a PHP (1 o 0) -->
-              <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
-            </div>
+            <label class="label-campo" for="activo">Estado:</label>
+            <select class="campo" id="activo" name="activo">
+              <option value="1" <?= $activo ? 'selected' : '' ?>>Activo</option>
+              <option value="0" <?= $activo ? '' : 'selected' ?>>Inactivo</option>
+            </select>
           </div>
         </div>
       </fieldset>
@@ -266,23 +261,6 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-mascota.js"></script>
-  <script>
-    // Switch Activo / Inactivo: actualiza el texto y el valor que se envia
-    (function () {
-      var interruptor = document.getElementById('esta_activo');
-      var texto = document.getElementById('texto_estado');
-      var oculto = document.getElementById('activo');
-      if (!interruptor || !texto || !oculto) return;
-
-      interruptor.addEventListener('change', function () {
-        var activo = interruptor.checked;
-        oculto.value = activo ? '1' : '0';
-        texto.textContent = activo ? 'Activo' : 'Inactivo';
-        texto.classList.toggle('estado-atendida', activo);
-        texto.classList.toggle('estado-espera', !activo);
-      });
-    })();
-  </script>
 
 </body>
 </html>
