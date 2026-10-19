@@ -65,6 +65,8 @@ if (!$proveedor) {
         <h1>Editar proveedor</h1>
       </div>
 
+      <div class="tarjeta">
+
         <?php if (!empty($errores)): ?>
             <div class="alerta-errores">
               <h4>Por favor corrige los siguientes errores:</h4>
@@ -310,4 +312,8 @@ if (!$proveedor) {
   </footer>
 
 </body>
+<<<<<<< HEAD
+=======
+
+>>>>>>> d7a9e6bcd315c9e8ca8e2d8788e907503afa5f55
 </html>

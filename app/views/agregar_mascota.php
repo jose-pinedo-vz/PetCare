@@ -97,7 +97,7 @@ unset($_SESSION['old']);
               <div>
                 <label class="label-campo" for="color" >Color:</label>
                 <!-- <input type="text" class="campo" id="color" name="color" value=""> -->
-                 <select class="campo" id="color" name="color" required>
+                 <select class="campo" id="color" name="color" required onchange="this.form.submit()">
                   <option value="">Seleccionar...</option>
                   <option value="Blanco" <?= ($old['color'] ?? '') === 'Blanco' ? 'selected' : '' ?>>Blanco</option>
                   <option value="Negro" <?= ($old['color'] ?? '') === 'Negro' ? 'selected' : '' ?>>Negro</option>
@@ -115,6 +115,17 @@ unset($_SESSION['old']);
                   <option value="Otro" <?= ($old['color'] ?? '') === 'Otro' ? 'selected' : '' ?>>Otro (Especificar)</option>
                 </select>
               </div>
+
+              <!-- PHP decide si imprime este bloque HTML en la pantalla -->
+              <?php if (($old['color'] ?? '') === 'Otro'): ?>
+                  <div>
+                      <label class="label-campo" for="color_espec" >
+                          Especifique el color *:</label>
+                      <input type="text" class="campo" id="color_espec" name="color_espec" style="border: 1px solid #3b82f6; background-color: #f9f9f9;" 
+                             value="<?= htmlspecialchars($old['color_espec'] ?? '') ?>" 
+                             placeholder="Ej. Marrón rojizo" required>
+                  </div>
+              <?php endif; ?>
 
               <div>
                 <label class="label-campo" for="peso" >Peso (kg) *:</label>
@@ -217,7 +228,7 @@ unset($_SESSION['old']);
 
       <div class="acciones-formulario">
         <a class="btn-secundario" href="mascotas.php">Cancelar</a>
-        <button type="submit">Guardar</button>
+        <button type="submit" name="Guardar">Guardar</button>
       </div>
     </form>
   

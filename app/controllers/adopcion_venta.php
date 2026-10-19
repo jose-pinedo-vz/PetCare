@@ -10,7 +10,7 @@ function validar_datos($datos) {
     $errores = [];
 
     if (empty(trim($datos['especie'] ?? ''))) {
-        $datos['especie'] = null;
+        $errores[] = "Debe especificar la especie.";
     } else {
         $datos['especie'] = trim($datos['especie']);
         if (strlen($datos['especie']) > 30) {

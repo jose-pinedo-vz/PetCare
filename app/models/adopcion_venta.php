@@ -140,11 +140,21 @@ function obtenerTodos(): array {
 function obtenerPorId(int $id): ?array {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $stmt = $conexion->prepare("SELECT * FROM animal_venta WHERE id_animal = :id");
-        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $stmt = $conexion->prepare("SELECT * FROM animal_venta WHERE id_animal = ?");
+        $stmt->execute([$id]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $res ?: null;
     } catch (Exception $e) {
         return null;
+    }
+}
+
+function eliminar(int $id): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("DELETE FROM animal_venta WHERE id_animal = ?");
+        return $stmt->execute([$id]);
+    } catch (Exception $e) {
+        return false;
     }
 }

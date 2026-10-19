@@ -75,7 +75,7 @@ $usuario=$_SESSION['usuario'];
 
           </div>
 
-          <div style="grid-column: 1 / -1;">
+          <div class="campo-completo">
             <label class="label-campo" for="motivoConsulta">Motivo de consulta *:</label>
             <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
 
