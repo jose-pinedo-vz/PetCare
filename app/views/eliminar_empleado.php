@@ -52,7 +52,7 @@ $apellido_empleado = $_GET['apellido'];
 
       <div class="acciones-formulario">
         <a class="btn-secundario" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn">Eliminar empleado</button>
+        <button type="submit" class="btn">Eliminar</button>
       </div>
     </form>
   
