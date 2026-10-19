@@ -207,6 +207,7 @@ function validar_datos($datos) {
             exit;
         }
     }
+    
 }
 
 function listar_adopciones_ventas(): array {
