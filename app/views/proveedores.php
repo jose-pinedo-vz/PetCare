@@ -34,17 +34,11 @@ $proveedores = listar_proveedores();
                     <tr>
                         <th>ID</th>
                         <th>Razón social</th>
-                        <th>Nombre comercial</th>
-                        <th>RFC</th>
                         <th>Teléfono</th>
                         <th>Correo</th>
-                        <th>Domicilio</th>
                         <th>Ciudad</th>
                         <th>Estado</th>
-                        <th>Código postal</th>
-                        <th>Condición de pago</th>
                         <th>Tiempo de entrega</th>
-                        <th>Observaciones</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -54,17 +48,11 @@ $proveedores = listar_proveedores();
                             <tr>
                                 <td><?= htmlspecialchars((string)$proveedor['id_proveedor']) ?></td>
                                 <td><?= htmlspecialchars((string)$proveedor['razon_social']) ?></td>
-                                <td><?= htmlspecialchars((string)$proveedor['nombre_comercial']) ?></td>
-                                <td><?= htmlspecialchars((string)$proveedor['rfc']) ?></td>
                                 <td><?= htmlspecialchars((string)$proveedor['telefono']) ?></td>
                                 <td><?= htmlspecialchars((string)($proveedor['correo'] ?? '')) ?></td>
-                                <td><?= htmlspecialchars((string)($proveedor['domicilio'] ?? '')) ?></td>
                                 <td><?= htmlspecialchars((string)($proveedor['ciudad'] ?? '')) ?></td>
                                 <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
-                                <td><?= htmlspecialchars((string)($proveedor['codigo_postal'] ?? '')) ?></td>
-                                <td><?= htmlspecialchars((string)($proveedor['condicion_pago'] ?? '')) ?></td>
                                 <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
-                                <td><?= htmlspecialchars((string)($proveedor['observaciones'] ?? '')) ?></td>
                                 <td class="acciones">
                                     <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
                                     <a class="btn btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>">Eliminar</a>
