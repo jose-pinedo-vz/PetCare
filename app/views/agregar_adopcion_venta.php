@@ -49,8 +49,18 @@ unset($_SESSION['old']);
 
   <div class="grid-formulario">
     <div>
-      <label class="label-campo" for="especie">Especie:</label>
-      <input type="text" class="campo" id="especie" name="especie" maxlength="30" placeholder="Ej. Perro, Gato" value="<?= htmlspecialchars($old['especie'] ?? '') ?>">
+      <label class="label-campo" for="especie">Especie *:</label>
+      <select class="campo" id="especie" name="especie" required>
+        <option value="">Seleccionar...</option>
+        <option value="Perro" <?= (($old['especie'] ?? '') === 'Perro') ? 'selected' : '' ?>>Perro</option>
+        <option value="Gato" <?= (($old['especie'] ?? '') === 'Gato') ? 'selected' : '' ?>>Gato</option>
+        <option value="Conejo" <?= (($old['especie'] ?? '') === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
+        <option value="Hamster" <?= (($old['especie'] ?? '') === 'Hamster') ? 'selected' : '' ?>>Hamster</option>
+        <option value="Hurón" <?= (($old['especie'] ?? '') === 'Hurón') ? 'selected' : '' ?>>Hurón</option>
+        <option value="Erizo" <?= (($old['especie'] ?? '') === 'Erizo') ? 'selected' : '' ?>>Erizo</option>
+        <option value="Tortuga" <?= (($old['especie'] ?? '') === 'Tortuga') ? 'selected' : '' ?>>Tortuga</option>
+        <option value="Ave" <?= (($old['especie'] ?? '') === 'Ave') ? 'selected' : '' ?>>Ave</option>
+      </select>
     </div>
 
     <div>
