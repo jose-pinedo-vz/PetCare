@@ -1,3 +1,18 @@
+<?php
+require_once __DIR__ . '/../models/adopcion_venta.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$id = (int)($_GET['id'] ?? $_GET['id_adopcion_venta'] ?? 0);
+$animal = $id > 0 ? obtenerPorId($id) : null;
+
+if ($animal === null) {
+    header("Location: adopcion_venta.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,7 +29,7 @@
 
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de adopción y venta</a> / Eliminar</div>
+      <div class="migaja"><a href="adopcion_venta.php" class="link-tenue">Gestión de adopción y venta</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar adopcion y venta</h1>
       </div>
@@ -22,17 +37,21 @@
       <div class="tarjeta">
     
 
-    <form action="procesar_eliminar_adopcion_venta.php" method="POST">
+    <form action="../controllers/eliminar_adopcion_venta.php" method="POST">
 
-      <input type="hidden" id="id_adopcion_venta" name="id_adopcion_venta" value="1">
+      <input type="hidden" id="id_adopcion_venta" name="id_adopcion_venta" value="<?= (int)$id ?>">
 
       <fieldset>
-        <p>¿Está seguro de que desea eliminarla? Esta acción no se puede deshacer.</p>
+        <p>
+          ¿Está seguro de que desea eliminar el registro de adopción y venta de
+          <strong><?= htmlspecialchars(($animal['especie'] ?? 'Animal') . (!empty($animal['raza']) ? ' - ' . $animal['raza'] : '') . ' (ID: ' . $id . ')') ?></strong>?
+          Esta acción no se puede deshacer.
+        </p>
       </fieldset>
 
       <div class="acciones-formulario">
         <a class="btn-secundario" href="adopcion_venta.php">Cancelar</a>
-        <button type="submit" class="btn">Eliminar </button>
+        <button type="submit" class="btn btn-peligro">Eliminar</button>
       </div>
     </form>
   
