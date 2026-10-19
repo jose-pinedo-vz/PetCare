@@ -73,6 +73,7 @@ function editar(array $datos)
         return ["Error BD", htmlspecialchars($e->getMessage())];
     }
     $id=$datos['id_animal'] ?? null;
+    
     if (!$id)
     {
         return ["Error", "ID de animal no especificado para la actualización."];
@@ -132,7 +133,9 @@ function obtenerTodos(): array {
         $conexion = ConexionDB::obtenerConexion();
         $stmt = $conexion->query("SELECT * FROM animal_venta ORDER BY id_animal DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    } catch (Exception $e) {
+    }
+    catch (Exception $e)
+    {
         return [];
     }
 }
