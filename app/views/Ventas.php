@@ -120,5 +120,6 @@
             modalPagarVenta.showModal();
         });
     </script>
+    <script src="js/ventas.js"></script>
 </body>
 </html>
