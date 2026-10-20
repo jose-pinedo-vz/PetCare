@@ -1,3 +1,11 @@
+<?php  require_once __DIR__ . '/../models/proveedores.php';
+$proveedor = obtenerProveedoresActivos();
+
+require_once __DIR__ . '/../models/categ_prod.php';
+$categorias = Categoria::obtenerCategoriasActivas();
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -51,24 +59,45 @@
             required placeholder="Ej. Croquetas Adulto Raza Mediana 15kg">
           </div>
 
-          <div>
-            <label class="label-campo" for="id_categoria">Categoría (ID):</label>
-            <input 
-            type="number" 
-            class="campo" 
-            id="id_categoria" 
-            name="id_categoria" 
-            placeholder="ID Categoría" required>
-          </div>
+          <div class="contenedor-buscador">
+                <label class="label-campo" for="id_categoria">Categoría (ID):</label>
+                <input 
+                    type="text" 
+                    class="campo" 
+                    id="id_categoria" 
+                    placeholder="Seleccionar categoría..." 
+                    autocomplete="off"
+                    required>
 
-          <div>
+                <ul id="lista_categorias" class="lista-resultados">
+                    <?php foreach ($categorias as $cat): ?>
+                      <li data-id="<?php echo $cat['id_categoria']; ?>" data-nombre="<?php echo htmlspecialchars($cat['nombre']); ?>"><?php echo htmlspecialchars("Id: " . $cat['id_categoria'] . " - " . $cat['nombre']); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+                    
+            <input class="label-campo" type="hidden" id="categoria_id_oculto" name="id_categoria">
+                    
+            <script src="js/busc_cat.js"></script>
+
+          <div class="contenedor-buscador">
             <label class="label-campo" for="id_proveedor">Proveedor (ID):</label>
             <input 
-            type="number" 
+            type="text" 
             class="campo" 
             id="id_proveedor" 
-            name="id_proveedor" required>
+            placeholder="Seleccionar..."
+            autocomplete="off"
+            required>
+
+            <ul id="lista_proveedores" class="lista-resultados">
+              <?php foreach ($proveedor as $prov): ?>
+                <li data-id="<?php echo $prov['id_proveedor']; ?>" data-razon="<?php echo htmlspecialchars($prov['razon_social']); ?>"><?php echo htmlspecialchars("Id: " . $prov['id_proveedor'] . " - " . $prov['razon_social']); ?>
+                </li>
+              <?php endforeach; ?>
           </div>
+          <input class="label-campo" type="hidden" id="proveedor_id_oculto" name="id_proveedor">
+          <script src="js/busc_proveed.js"></script>
 
           <div>
             <label class="label-campo" for="contenido">Contenido:</label>
