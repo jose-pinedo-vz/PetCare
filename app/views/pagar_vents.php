@@ -83,7 +83,7 @@
                 <form method="dialog">
                     <button class="btn-secundario" type="submit">Volver a la venta</button>
                 </form>
-                <button class="btn pago-confirmar" type="button">Confirmar pago</button><!-- este boton deberia estar desactivado hasta que el monto recibido sea mayor o igual al total de la venta, tambien se deberia abrir una ventana o algo para decidir si se desea generar ticket o lo que se requiera, factura fisica o digital-->
+                <button class="btn pago-confirmar" id="btnConfirmarPago" type="button">Confirmar pago</button>
             </div>
         </section>
     </div>
