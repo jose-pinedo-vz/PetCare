@@ -242,6 +242,83 @@
   text-align: right;
 }
 
+/* ORDEN DE COMPRA: interfaz de sugerencias, catálogo y selección. */
+.orden-compra-seccion {
+  margin-top: 26px;
+}
+
+.orden-compra-ayuda {
+  margin: -4px 0 14px;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.orden-compra-sugerencias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+}
+
+.orden-compra-sugerencia {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--white);
+}
+
+.orden-compra-sugerencia h3 {
+  margin: 8px 0 5px;
+  font-size: 15px;
+}
+
+.orden-compra-sugerencia p {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.orden-compra-etiqueta {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #f8e2dc;
+  color: #873d2f;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.orden-compra-etiqueta-solicitado {
+  background: #e5eee0;
+  color: #3b6335;
+}
+
+.orden-compra-tabla-catalogo,
+.orden-compra-tabla-seleccionados {
+  min-width: 1050px;
+}
+
+.orden-compra-tabla-catalogo input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-bg);
+}
+
+.orden-compra-input {
+  min-width: 92px;
+  padding: 8px;
+}
+
+@media (max-width: 600px) {
+  .orden-compra-sugerencia {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 /* BUSQUEDA: compartido por buscar_productos.php y buscar_servicios.php. */
 .busqueda-productos {
   padding: 18px 20px;
