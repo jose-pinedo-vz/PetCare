@@ -19,8 +19,17 @@
                 <h1>Proveedores</h1>
             </div>
             <div class="tarjeta">
-                <div class="barra-acciones">
+                <div class="barra-acciones-busqueda">
                     <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>
+
+                    <form class="busqueda-barra" method="get" action="proveedores.php" role="search">
+                        <label class="visualmente-oculto" for="buscarProveedor">Buscar proveedor</label>
+                        <input class="campo" id="buscarProveedor" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+                        <button class="btn btn-info" type="submit">Buscar</button>
+                        <?php if (!empty($_GET['buscar'])): ?>
+                            <a class="btn-secundario" href="proveedores.php">Limpiar</a>
+                        <?php endif; ?>
+                    </form>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">
@@ -108,9 +117,9 @@
 
     </div>
 
-        <footer>
-            <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-        </footer>
+    <footer>
+        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+    </footer>
 </body>
 
 </html>
