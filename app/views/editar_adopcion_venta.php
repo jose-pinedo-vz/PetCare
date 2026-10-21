@@ -12,6 +12,7 @@ if (!$id)
     exit;
 }
 $registro=obtenerPorId($id);
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -49,6 +50,7 @@ $registro=obtenerPorId($id);
     <?php endif; ?>
     <form action="../controllers/actualizar_adopcion_venta.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= htmlspecialchars($registro['id_animal']) ?>">
+        <input type="hidden" name="fotografia_actual" value="<?= htmlspecialchars($registro['fotografia'] ?? '') ?>">
 
 <fieldset>
   <legend> Datos generales</legend>
@@ -56,7 +58,17 @@ $registro=obtenerPorId($id);
   <div class="grid-formulario">
     <div>
         <label class="label-campo" for="especie">Especie:</label>
-        <input type="text" class="campo" id="especie" name="especie" maxlength="30" value="<?= htmlspecialchars($old['especie'] ?? $registro['especie'] ?? '') ?>">
+        <select class="campo" id="especie" name="especie" required>
+          <?php $especieActual = $old['sexo'] ?? $registro['sexo'] ?? ''; ?>
+          <option value="Perro" <?= ($especieActual === 'Perro') ? 'selected' : '' ?>>Perro</option>
+          <option value="Gato" <?= ($especieActual === 'Gato') ? 'selected' : '' ?>>Gato</option>
+          <option value="Conejo" <?= ($especieActual === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
+          <option value="Hamster" <?= ($especieActual === 'Hamster') ? 'selected' : '' ?>>Hamster</option>
+          <option value="Hurón" <?= ($especieActual === 'Hurón') ? 'selected' : '' ?>>Hurón</option>
+          <option value="Erizo" <?= ($especieActual === 'Erizo') ? 'selected' : '' ?>>Erizo</option>
+          <option value="Tortuga" <?= ($especieActual === 'Tortuga') ? 'selected' : '' ?>>Tortuga</option>
+          <option value="Ave" <?= ($especieActual === 'Ave') ? 'selected' : '' ?>>Ave</option>
+        </select>
     </div>
 
     <div>
@@ -107,9 +119,8 @@ $registro=obtenerPorId($id);
         <label class="label-campo" for="estado">Estado:</label>
         <select class="campo" id="estado" name="estado">
             <?php $estadoActual = $old['estado'] ?? $registro['estado'] ?? ''; ?>
-            <option value="Disponible" <?= ($estadoActual === 'Disponible') ? 'selected' : '' ?>>Disponible</option>
-            <option value="Reservado" <?= ($estadoActual === 'Reservado') ? 'selected' : '' ?>>Reservado</option>
-            <option value="Vendido" <?= ($estadoActual === 'Vendido') ? 'selected' : '' ?>>Vendido</option>
+            <option value="Disponible" <?= ($estadoActual === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
+            <option value="Reservado" <?= ($estadoActual === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
         </select>
     </div>
 
@@ -128,10 +139,10 @@ $registro=obtenerPorId($id);
     <label class="label-campo" for="fotografia">Fotografía:</label>
     <?php if (!empty($registro['fotografia'])): ?>
         <div style="margin-bottom: 10px;">
-        <p class="nota-campo">Imagen actual:</p>
-        <img src="uploads/<?= htmlspecialchars($registro['fotografia']) ?>" alt="Foto actual" style="max-width: 120px; border-radius: 4px;">
+          <p class="nota-campo">Imagen actual:</p>
+          <img src="../../uploads/mascotas/<?= htmlspecialchars($registro['fotografia']) ?>" alt="Foto actual" style="max-width: 120px; border-radius: 4px;">
         </div>
-    <?php endif; ?>
+    <?php endif;?>
     <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*">
     <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
     <p class="nota-campo">Al elegir una foto nueva se abrirá el cuadrado de recorte.</p>

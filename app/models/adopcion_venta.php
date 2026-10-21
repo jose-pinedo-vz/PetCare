@@ -73,6 +73,7 @@ function editar(array $datos)
         return ["Error BD", htmlspecialchars($e->getMessage())];
     }
     $id=$datos['id_animal'] ?? null;
+    
     if (!$id)
     {
         return ["Error", "ID de animal no especificado para la actualización."];
@@ -130,9 +131,11 @@ function editar(array $datos)
 function obtenerTodos(): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $stmt = $conexion->query("SELECT * FROM animal_venta ORDER BY id_animal DESC");
+        $stmt = $conexion->query("SELECT * FROM animal_venta WHERE estado='Venta Legal' or estado='Adopcion' ORDER BY id_animal DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    } catch (Exception $e) {
+    }
+    catch (Exception $e)
+    {
         return [];
     }
 }
@@ -155,6 +158,21 @@ function eliminar(int $id): bool {
         $stmt = $conexion->prepare("DELETE FROM animal_venta WHERE id_animal = ?");
         return $stmt->execute([$id]);
     } catch (Exception $e) {
+        return false;
+    }
+}
+function vendido(int $id, bool $esAdopcion)
+{
+    try
+    {
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("UPDATE animal_venta SET estado = ? WHERE id_animal = ?");
+        $nuevoEstado = $esAdopcion ? 'Adoptado' : 'Vendido';
+        $stmt->execute([$nuevoEstado, $id]);
+        return true;    
+    }
+    catch (Exception $e)
+    {
         return false;
     }
 }

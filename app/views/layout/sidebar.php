@@ -15,6 +15,7 @@ $sbModulos = [
     'veterinaria'   => ['Veterinaria',       null],
     'pagos'         => ['Pagos',             null],
     'pagos_tarjeta' => ['Pagos con tarjeta', null],
+    'usuarios'      => ['Usuarios',          'usuarios.php'],
     'configuracion' => ['Configuración',     null],
 ];
 ?>

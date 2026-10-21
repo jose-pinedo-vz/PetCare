@@ -33,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
     if (isset($_FILES['fotografia']) && $_FILES['fotografia']['error'] === UPLOAD_ERR_OK)
     {
+        echo "<pre>"; print_r($_FILES['fotografia']); echo "</pre>";
         $datos['fotografia'] = $_FILES['fotografia'];
     }
     validar_datos($datos);

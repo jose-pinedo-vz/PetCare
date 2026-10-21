@@ -73,7 +73,13 @@ $animales = listar_adopciones_ventas();
                                         <td><?= htmlspecialchars((string)$animal['observaciones']) ?></td>
                                         <td>
                                             <a class="btn" href="../views/editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
-                                            <a class="btn" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
+                                            <form action="../controllers/procesar_venta_adopcion.php" method="POST" style="display:inline;" onsubmit="return confirm('¿Deseas confirmar la transacción de este animal?');">
+                                                <input type="hidden" name="id_animal" value="<?= $animal['id_animal'] ?>">
+                                                <input type="hidden" name="precio_de_venta" value="<?= $animal['precio_de_venta'] ?>">
+                                                <input type="hidden" name="especie" value="<?= htmlspecialchars((string)($animal['especie'] ?? '-')) ?>">
+                                                <input type="hidden" name="raza" value="<?= htmlspecialchars((string)($animal['raza'] ?? '-')) ?>">
+                                                <button type="submit" class="btn-secundario">Vender</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

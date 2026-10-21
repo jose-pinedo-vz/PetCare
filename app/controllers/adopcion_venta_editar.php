@@ -182,12 +182,17 @@ function validar_datos($datos)
     }
 
     $foto = $_FILES['fotografia'] ?? null;
-    $datos['fotografia'] = null;
-    if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+    $datos['fotografia'] = trim($_POST['fotografia_actual'] ?? '');
+
+    if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE)
+    {
         $resultadoImagen = ImagenController::subir($foto);
-        if ($resultadoImagen['exito']) {
+        if ($resultadoImagen['exito'])
+        {
             $datos['fotografia'] = $resultadoImagen['ruta'];
-        } else {
+        }
+        else
+        {
             $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
         }
     }
