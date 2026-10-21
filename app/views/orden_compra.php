@@ -161,7 +161,7 @@
 
                 <div class="orden-compra-acciones">
                     <button class="btn btn-success" type="button">Confirmar orden</button>
-                    <button class="btn btn-peligro" type="button">Cancelar orden</button>
+                    <a class= "btn btn-peligro" href="inventario.php">Cancelar orden</a>
                 </div>
 
             </div>
