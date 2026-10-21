@@ -19,41 +19,19 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Eliminar mascota</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
+
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Eliminar</div>
+
     <h1>Eliminar mascota</h1>
         <?php if (isset($_SESSION['error'])): ?>
       <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
@@ -64,20 +42,30 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
 
       <input type="hidden" id="id_mascota" name="id_mascota" value="<?= (int)$id_mascota ?>">
 
-      <fieldset>
-        <p>
-          ¿Está seguro de que desea eliminar a la mascota
-          <strong><?= htmlspecialchars((string)$mascota['nombre']) . ' (ID: ' . $id_mascota . ')' ?></strong>?
-          Esta acción no se puede deshacer.
-        </p>
-      </fieldset>
+      <div class="tarjeta">
 
-      <div style="margin-top: 20px;">
-        <button type="submit" class="btn">Eliminar mascota</button>
-        <a class="btn" href="mascotas.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+        <fieldset>
+          <p>
+            ¿Está seguro de que desea eliminar a la mascota
+            <strong><?= htmlspecialchars((string)$mascota['nombre']) . ' (ID: ' . $id_mascota . ')' ?></strong>?
+            Esta acción no se puede deshacer.
+          </p>
+        </fieldset>
+
+
+        <div class="acciones-formulario">
+          <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+          <button type="submit" class="btn">Eliminar</button>
+        </div>
+
       </div>
+
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

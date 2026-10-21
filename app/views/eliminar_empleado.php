@@ -18,42 +18,23 @@ $apellido_empleado = $_GET['apellido'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Eliminar empleado</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del Empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php" class="activo">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-      
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Eliminar empleado</h1>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Eliminar</div>
+      <div class="encabezado-pagina">
+        <h1>Eliminar empleado</h1>
+      </div>
+
+      <div class="tarjeta">
+    
 
     <form action="../controllers/eliminar_empleado.php" method="POST">
   
@@ -69,16 +50,19 @@ $apellido_empleado = $_GET['apellido'];
 
       </fieldset>
 
-      <div style="margin-top: 20px;">
-        <button type="submit" class="btn">Eliminar empleado</button>
-        <a class="btn" href="empleados.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn">Eliminar</button>
       </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
-
 </body>
 </html>

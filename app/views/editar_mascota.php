@@ -20,11 +20,28 @@ if (!$mascota) {
 }
 
 $errores = $_SESSION['errores'] ?? [];
-$old = $_SESSION['old'] ?? [];
+$old     = $_SESSION['old'] ?? [];
 
 unset($_SESSION['errores']);
 unset($_SESSION['old']);
 
+// actualizar_mascota.php tambien puede mandar los errores por ?error=a | b | c
+if (!empty($_GET['error'])) {
+    foreach (explode(' | ', (string)$_GET['error']) as $msg) {
+        $errores[] = $msg;
+    }
+}
+
+// Valor del formulario: lo que se escribio antes del error o, si no hay, lo de la BD
+function dato(array $old, array $mascota, string $campo): string
+{
+    $valor = array_key_exists($campo, $old) ? $old[$campo] : ($mascota[$campo] ?? '');
+    return htmlspecialchars((string)($valor ?? ''));
+}
+
+$sexoActual = $old['sexo'] ?? $mascota['sexo'] ?? '';
+$tamActual  = $old['tamanio'] ?? $mascota['tamanio'] ?? '';
+$activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -32,163 +49,136 @@ unset($_SESSION['old']);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar mascota</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
   <style>
-    #preview-crop { max-width: 200px; border-radius: 8px; display: none; margin-top: 8px; }
-    #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
-    #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
-    #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
-
-    /* Estilo para el contenedor de errores */
-    .alerta-errores {
-      background-color: #f8d7da;
-      color: #842029;
-      border: 1px solid #f5c2c7;
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    /* Switch Activo / Inactivo (si otra vista lo necesita, moverlo a css/v2/base.css) */
+    .switch-fila { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+    .switch { position: relative; display: inline-block; width: 46px; height: 26px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0; cursor: pointer;
+      background-color: var(--gray-light);
+      border: 1px solid var(--border-light);
+      border-radius: 26px;
+      transition: background-color 0.2s;
     }
-    .alerta-errores h4 {
-      margin: 0 0 8px 0;
-      font-size: 16px;
+    .slider::before {
+      content: ""; position: absolute; left: 2px; top: 2px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background-color: var(--white);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s;
     }
-    .alerta-errores ul {
-      margin: 0;
-      padding-left: 20px;
-    }
-
+    .switch input:checked + .slider { background-color: var(--accent-teal); }
+    .switch input:checked + .slider::before { transform: translateX(20px); }
+    .switch input:focus-visible + .slider { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="./img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
-
-  <nav>
-    <ul>
-      <li><a href="mascotas.php" class="activo">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-    <h1>Editar mascota</h1>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Editar</div>
+      <div class="encabezado-pagina">
+        <h1>Editar mascota</h1>
+      </div>
 
-    <!-- BLOQUE DE ALERTAS: Muestra los errores guardados en la sesión -->
+      <div class="tarjeta">
+
     <?php if (!empty($errores)): ?>
-      <div class="alerta-errores">
-        <h4>Por favor corrige los siguientes errores:</h4>
-        <ul>
-          <?php foreach ($errores as $error): ?>
-            <li><?= htmlspecialchars($error) ?></li>
-          <?php endforeach; ?>
-        </ul>
+      <div class="msg-error">
+        <div>Por favor corrige los siguientes errores:</div>
+        <?php foreach ($errores as $error): ?>
+          <div>• <?= htmlspecialchars($error) ?></div>
+        <?php endforeach; ?>
       </div>
     <?php endif; ?>
 
     <form action="../controllers/actualizar_mascota.php" method="POST" enctype="multipart/form-data">
 
-      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= htmlspecialchars((string)($old['id_mascota'] ?? $mascota['id_mascota'])) ?>">
+      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= (int)$mascota['id_mascota'] ?>">
 
       <fieldset>
         <legend>Datos básicos</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
-            <input type="text" class="campo" id="nombre" name="nombre" value="<?= htmlspecialchars($old['nombre'] ?? $mascota['nombre'] ?? '') ?>" required>
+            <input type="text" class="campo" id="nombre" name="nombre" value="<?= dato($old, $mascota, 'nombre') ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="especie">Especie *:</label>
-            <input type="text" class="campo" id="especie" name="especie" value="<?= htmlspecialchars($old['especie'] ?? $mascota['especie'] ?? '') ?>" required>
+            <input type="text" class="campo" id="especie" name="especie" value="<?= dato($old, $mascota, 'especie') ?>" required>
           </div>
 
           <div>
-            <label class="label-campo" for="raza">Raza:</label>
-            <input type="text" class="campo" id="raza" name="raza" value="<?= htmlspecialchars($old['raza'] ?? $mascota['raza'] ?? '') ?>">
+            <label class="label-campo" for="raza">Raza *:</label>
+            <input type="text" class="campo" id="raza" name="raza" value="<?= dato($old, $mascota, 'raza') ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="sexo">Sexo:</label>
-            <?php $sexoActual = $old['sexo'] ?? $mascota['sexo'] ?? ''; ?>
+            <label class="label-campo" for="sexo">Sexo *:</label>
             <select class="campo" id="sexo" name="sexo" required>
-              <option value="Macho" <?= $sexoActual === 'Macho' ? 'selected' : '' ?>>Macho</option>
+              <option value="Macho"  <?= $sexoActual === 'Macho'  ? 'selected' : '' ?>>Macho</option>
               <option value="Hembra" <?= $sexoActual === 'Hembra' ? 'selected' : '' ?>>Hembra</option>
             </select>
           </div>
 
           <div>
             <label class="label-campo" for="edad">Edad / Fecha nacimiento *:</label>
-            <input type="date" class="campo" id="edad" name="edad" value="<?= htmlspecialchars($old['edad'] ?? $mascota['edad'] ?? '') ?>" required>
+            <input type="date" class="campo" id="edad" name="edad" value="<?= dato($old, $mascota, 'edad') ?>" required>
           </div>
 
           <div>
             <label class="label-campo" for="color">Color:</label>
-            <input type="text" class="campo" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? $mascota['color'] ?? '') ?>">
+            <input type="text" class="campo" id="color" name="color" value="<?= dato($old, $mascota, 'color') ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="peso">Peso (kg):</label>
-            <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? $mascota['peso'] ?? '') ?>">
+            <label class="label-campo" for="peso">Peso (kg) *:</label>
+            <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= dato($old, $mascota, 'peso') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="tamanio">Tamaño:</label>
-            <?php $tam = $old['tamanio'] ?? $mascota['tamanio'] ?? ''; ?>
             <select class="campo" id="tamanio" name="tamanio">
               <option value="">Seleccionar...</option>
-              <option value="Pequeño" <?= $tam === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
-              <option value="Mediano" <?= $tam === 'Mediano' ? 'selected' : '' ?>>Mediano</option>
-              <option value="Grande" <?= $tam === 'Grande' ? 'selected' : '' ?>>Grande</option>
-              <option value="Gigante" <?= $tam === 'Gigante' ? 'selected' : '' ?>>Gigante</option>
+              <option value="Pequeño" <?= $tamActual === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
+              <option value="Mediano" <?= $tamActual === 'Mediano' ? 'selected' : '' ?>>Mediano</option>
+              <option value="Grande"  <?= $tamActual === 'Grande'  ? 'selected' : '' ?>>Grande</option>
+              <option value="Gigante" <?= $tamActual === 'Gigante' ? 'selected' : '' ?>>Gigante</option>
             </select>
           </div>
 
           <div>
-            <label class="label-campo" for="id_cliente">Dueño (ID Cliente) *:</label>
-            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="<?= htmlspecialchars($old['id_cliente'] ?? $mascota['id_cliente'] ?? '') ?>" required placeholder="ID del Cliente">
+            <label class="label-campo" for="id_cliente">Dueño (ID cliente) *:</label>
+            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="<?= dato($old, $mascota, 'id_cliente') ?>" required placeholder="ID del Cliente">
           </div>
 
           <div>
-            <label class="label-campo" for="id_veterinario">Veterinario Asignado (ID):</label>
-            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="<?= htmlspecialchars($old['id_veterinario'] ?? $mascota['id_veterinario'] ?? '') ?>" placeholder="ID del Veterinario">
+            <label class="label-campo" for="id_veterinario">Veterinario asignado (ID):</label>
+            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="<?= dato($old, $mascota, 'id_veterinario') ?>" placeholder="ID del Veterinario">
           </div>
         </div>
 
-        <div style="margin-top: 12px;">
+        <div class="campo-completo-sep">
           <label class="label-campo" for="fotografia">Fotografía:</label>
           <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*">
           <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
-          <p style="font-size: 13px; color: var(--texto-suave); margin: 6px 0 0;">Deja este campo vacío si no quieres cambiar la foto actual.</p>
+          <p class="nota-campo">Deja este campo vacío si no quieres cambiar la foto actual.</p>
         </div>
 
         <div id="modal-crop">
           <div class="caja">
-            <h3 style="margin-top:0;">Recortar foto (cuadrado)</h3>
+            <h3>Recortar foto (cuadrado)</h3>
             <img id="imagen-a-recortar" alt="Imagen a recortar">
-            <div style="margin-top:10px; text-align:right; display:flex; gap:8px; justify-content:flex-end;">
-              <button type="button" id="btn-cancelar-crop">Cancelar</button>
+            <div class="crop-acciones">
+              <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
               <button type="button" id="btn-recortar">Recortar y usar</button>
             </div>
           </div>
@@ -198,80 +188,72 @@ unset($_SESSION['old']);
       <fieldset>
         <legend>Datos clínicos</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="alergias">Alergias:</label>
-            <textarea class="campo" id="alergias" name="alergias" rows="2"><?= htmlspecialchars($old['alergias'] ?? $mascota['alergias'] ?? '') ?></textarea>
+            <textarea class="campo" id="alergias" name="alergias" rows="2"><?= dato($old, $mascota, 'alergias') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="enfermedades">Enfermedades:</label>
-            <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"><?= htmlspecialchars($old['enfermedades'] ?? $mascota['enfermedades'] ?? '') ?></textarea>
+            <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"><?= dato($old, $mascota, 'enfermedades') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="medicamentos">Medicamentos:</label>
-            <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"><?= htmlspecialchars($old['medicamentos'] ?? $mascota['medicamentos'] ?? '') ?></textarea>
+            <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"><?= dato($old, $mascota, 'medicamentos') ?></textarea>
           </div>
 
           <div>
-            <label class="label-campo" for="condiciones_especiales">Condiciones Especiales:</label>
-            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= htmlspecialchars($old['condiciones_especiales'] ?? $mascota['condiciones_especiales'] ?? '') ?></textarea>
+            <label class="label-campo" for="condiciones_especiales">Condiciones especiales:</label>
+            <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= dato($old, $mascota, 'condiciones_especiales') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="vacunas">Vacunas:</label>
-            <textarea class="campo" id="vacunas" name="vacunas" rows="2"><?= htmlspecialchars($old['vacunas'] ?? $mascota['vacunas'] ?? '') ?></textarea>
+            <textarea class="campo" id="vacunas" name="vacunas" rows="2"><?= dato($old, $mascota, 'vacunas') ?></textarea>
           </div>
 
           <div>
-            <label class="label-campo" for="ultima_desparasitacion">Última Desparasitación:</label>
-            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= htmlspecialchars($old['ultima_desparasitacion'] ?? $mascota['ultima_desparasitacion'] ?? '') ?>">
+            <label class="label-campo" for="ultima_desparasitacion">Última desparasitación:</label>
+            <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= dato($old, $mascota, 'ultima_desparasitacion') ?>">
           </div>
 
-          <!-- campos que faltaron -->
           <div>
             <label class="label-campo" for="temperamento">Temperamento:</label>
-            <textarea class="campo" id="temperamento" name="temperamento" rows="2"><?= htmlspecialchars($old['temperamento'] ?? $mascota['temperamento'] ?? '') ?></textarea>
+            <textarea class="campo" id="temperamento" name="temperamento" rows="2"><?= dato($old, $mascota, 'temperamento') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="restricciones_para_manejo">Restricciones para manejo:</label>
-            <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"><?= htmlspecialchars($old['restricciones_para_manejo'] ?? $mascota['restricciones_para_manejo'] ?? '') ?></textarea>
+            <textarea class="campo" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="2"><?= dato($old, $mascota, 'restricciones_para_manejo') ?></textarea>
           </div>
 
           <div>
             <label class="label-campo" for="observaciones">Observaciones:</label>
-            <textarea class="campo" id="observaciones" name="observaciones" rows="2"><?= htmlspecialchars($old['observaciones'] ?? $mascota['observaciones'] ?? '') ?></textarea>
+            <textarea class="campo" id="observaciones" name="observaciones" rows="2"><?= dato($old, $mascota, 'observaciones') ?></textarea>
           </div>
 
           <div>
-            <label class="label-campo">Estado:</label>
-            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                <?php
-                    $activoVal = $old['esta_activo'] ?? $mascota['esta_activo'] ?? 1;
-                    $activo = ($activoVal == 1);
-                ?>
-                <!-- Botón Switch -->
-                <label class="switch">
-                <input type="checkbox" id="esta_activo" onchange="cambiarEstado(this)" <?= $activo ? 'checked' : '' ?>>
-                <span class="slider round"></span>
-                </label>
-
-                <!-- Caja de texto visual NO editable -->
-                <input type="text" id="texto_estado" class="campo" value="<?= $activo ? 'Activo' : 'Inactivo' ?>" readonly disabled style="width: 100px; text-align: center; font-weight: bold; background-color: #e9ecef; cursor: not-allowed;">
-
-                <!-- Campo oculto para enviar 1 o 0 a PHP -->
-                <input type="hidden" id="activo" name="activo" value="<?= $activo ? '1' : '0' ?>">
-            </div>
+            <label class="label-campo" for="activo">Estado:</label>
+            <select class="campo" id="activo" name="activo">
+              <option value="1" <?= $activo ? 'selected' : '' ?>>Activo</option>
+              <option value="0" <?= $activo ? '' : 'selected' ?>>Inactivo</option>
+            </select>
           </div>
         </div>
       </fieldset>
 
-      <button type="submit">Guardar cambios</button>
-      <a class="btn" href="mascotas.php">Cancelar</a>
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+        <button type="submit" class="btn">Guardar cambios</button>
+      </div>
     </form>
-  </main>
+
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

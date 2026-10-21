@@ -81,5 +81,22 @@
 
             return $datos;
         }
+
+        // pasar la consulta de pendiente a realizapa pero pendiente de pago
+        public function pendinteDepago($id) : bool
+        {
+            try
+            {
+                $query = "UPDATE consulta_veterinaria SET atendido = 1 WHERE id_consulta = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id]);
+                return true; 
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
     }
 ?>

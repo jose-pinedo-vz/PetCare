@@ -89,20 +89,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $telefono_emergencia   = htmlspecialchars(trim($_POST['telefono_emergencia'] ?? ''));
     $observaciones         = htmlspecialchars(trim($_POST['observaciones'] ?? ''));
 
+
+    $fechaObj = DateTime::createFromFormat('Y-m-d', $fecha_nacimiento);
+
+    if (!$fechaObj || $fechaObj->format('Y-m-d') !== $fecha_nacimiento) 
+    {
+        errorSession("La fecha tiene que ser valida.");
+    }
+
+    $hoy = new DateTime();
+    $edad = $hoy->diff($fechaObj)->y;
+
+    if ($edad < 18) {
+        errorSession("El cliente tiene que ser mayor de edad.");
+    }
+
     // Validaciones
     if (empty($nombre)) {
         errorSession("El nombre del cliente es obligatorio.");
         //$errores[] = "El nombre del cliente es obligatorio.";
     } elseif (mb_strlen($nombre) > 50) {
         errorSession("El nombre no puede exceder los 50 caracteres");
-        $errores[] = "El nombre no puede exceder los 50 caracteres.";
+        //$errores[] = "El nombre no puede exceder los 50 caracteres.";
     }
 
     if (empty($apellido)) {
         errorSession("El apellido del cliente es obligatorio.");
         //$errores[] = "El apellido del cliente es obligatorio.";
     } elseif (mb_strlen($apellido) > 100) {
-        $errores[] = "El apellido no puede exceder los 100 caracteres.";
+        errorSession("El apellido no puede exceder los 100 caracteres..");
+        //$errores[] = "El apellido no puede exceder los 100 caracteres.";
     }
 
     if (empty($telefono)) {

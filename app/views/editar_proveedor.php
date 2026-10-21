@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 require_once __DIR__ . '/../controllers/proveedor.php';
 require_once __DIR__ . '/../models/proveedores.php';
@@ -44,47 +45,27 @@ if (!$proveedor) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar proveedores</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
 <body>
 
-    <header>
-        <div class="marca">
-            <img src="./img/logo3.svg" alt="Veterinaria PetCare">
-        </div>
+  <div class="layout">
 
-        <div>
-            <span>Empleado: Nombre de empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
-
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Editar</div>
+      <div class="encabezado-pagina">
         <h1>Editar proveedor</h1>
+      </div>
+
+      <div class="tarjeta">
 
         <?php if (!empty($errores)): ?>
             <div class="alerta-errores">
@@ -105,7 +86,7 @@ if (!$proveedor) {
 
                 <legend>Datos generales</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="razon_social">
@@ -160,7 +141,7 @@ if (!$proveedor) {
 
                 <legend>Datos de contacto</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="telefono">
@@ -199,7 +180,7 @@ if (!$proveedor) {
 
                 <legend>Datos de ubicación</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="domicilio">
@@ -265,11 +246,11 @@ if (!$proveedor) {
 
                 <legend>Información comercial</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
-                            Condición de pago:
+                            Condición de pago *:
                         </label>
 
                         <input
@@ -296,7 +277,7 @@ if (!$proveedor) {
                             required>
                     </div>
 
-                    <div style="grid-column: 1 / -1;">
+                    <div class="campo-completo">
                         <label class="label-campo" for="observaciones">
                             Observaciones:
                         </label>
@@ -313,16 +294,26 @@ if (!$proveedor) {
 
             </fieldset>
 
-            <button type="submit">Guardar cambios</button>
-            <a class="btn" href="proveedores.php">Cancelar</a>
+            <div class="acciones-formulario">
+        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+        <button type="submit">Guardar cambios</button>
+      </div>
 
         </form>
 
+    
+      </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
 
 </body>
+<<<<<<< HEAD
+=======
+
+>>>>>>> d7a9e6bcd315c9e8ca8e2d8788e907503afa5f55
 </html>
