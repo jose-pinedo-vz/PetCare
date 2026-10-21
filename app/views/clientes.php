@@ -1,6 +1,18 @@
 <?php
 require_once __DIR__ . '/../models/Cliente.php';
 $listaClientes = Cliente::obtenerTodos();
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 ?>
 
 
