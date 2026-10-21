@@ -16,6 +16,7 @@ inputBusqueda.addEventListener('focus', () => {
 
 // Filtrar en tiempo real mientras el usuario escribe
 inputBusqueda.addEventListener('input', () => {
+    valorOcultoServidor.value = '';
     const textoFiltro = inputBusqueda.value.toLowerCase();
     listaResultados.style.display = 'block';
 

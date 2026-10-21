@@ -16,6 +16,7 @@ inputCategoria.addEventListener('focus', () => {
 
 // Filtrar en tiempo real mientras el usuario escribe
 inputCategoria.addEventListener('input', () => {
+    categoriaIdOculto.value = '';
     const textoFiltro = inputCategoria.value.toLowerCase();
     listaCategorias.style.display = 'block';
 

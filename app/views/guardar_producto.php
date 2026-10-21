@@ -5,7 +5,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $datos = [
         'codigo'                => trim($_POST['codigo'] ?? ''),
-        'codigo_barra'          => trim($_POST['codigo_barra'] ?? ''),
         'nombre'                => trim($_POST['nombre'] ?? ''),
         'id_categoria'          => trim($_POST['id_categoria'] ?? ''),
         'id_proveedor'          => trim($_POST['id_proveedor'] ?? ''),
@@ -21,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'fecha_caducidad'       => trim($_POST['fecha_caducidad'] ?? ''),
         'lote'                  => trim($_POST['lote'] ?? ''),
         'ubicacion'             => trim($_POST['ubicacion'] ?? ''),
-        'imagen'                => trim($_POST['imagen'] ?? ''),
+        'imagen'                => $_FILES['imagen'] ?? null,
         'estado'                => trim($_POST['estado'] ?? '')
     ];
 
