@@ -1,6 +1,8 @@
 <?php
 if (session_status() === PHP_SESSION_NONE)
 {
+    header("Location: ../views/clientes.php");
+    exit();
     session_start();
 }
 require_once '../models/conexion_db.php';
