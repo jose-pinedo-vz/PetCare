@@ -124,11 +124,14 @@ if ($accion === 'orario')
 
 function horarios()
 {
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+
     $Horarios = [];
 
     $entradaMatutino = 9;
     $salidaMatutino = 15;
-    $entradaVespertino = 15;
     $salidaVespertino = 20;
     $horasPorConsulta = 1;
 
@@ -147,7 +150,7 @@ function horarios()
         }
     }
 
-    if ($Veterinarios[1] == "Matutino")
+    if ($Veterinarios[1] == "Vespertinos")
     {
         foreach($Veterinarios as $veterinario)
         {
@@ -160,10 +163,7 @@ function horarios()
         }
     }
 
-    
-
-    
-    $Veterinarios = citas::rescatarVeterinarios();
+    return $Horarios;
     
 }
 
