@@ -1,10 +1,10 @@
 <?php
-header("Location: ../views/clientes.php");
-exit();
+
 if (session_status() === PHP_SESSION_NONE)
 {
     
     session_start();
+    
 }
 require_once '../models/conexion_db.php';
 $conexion=ConexionDB::obtenerConexion();
