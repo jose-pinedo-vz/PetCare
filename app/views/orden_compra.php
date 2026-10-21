@@ -56,55 +56,30 @@
                             <thead>
                                 <tr>
                                     <th>Seleccionar</th>
+                                    <th>Imagen</th>
                                     <th>Código</th>
-                                    <th>Código de barra</th>
-                                    <th>Producto</th>
-                                    <th>Categoría</th>
-                                    <th>Contenido / unidad</th>
-                                    <th>Precio de compra</th>
+                                    <th>Nombre</th>
                                     <th>Existencia</th>
-                                    <th>Lote / caducidad</th>
-                                    <th>Ubicación</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Catálogo ilustrativo: reemplazar por los productos relacionados con el proveedor seleccionado. -->
                                 <tr>
                                     <td><input type="checkbox" aria-label="Seleccionar alimento para perro adulto"></td>
+                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
                                     <td>ALI-001</td>
-                                    <td>7501234567890</td>
-                                    <td>Alimento para perro adulto</td>
-                                    <td>Alimento</td>
-                                    <td>20 kg / saco</td>
-                                    <td>$680.00</td>
-                                    <td>3 kg</td>
-                                    <td>LT-2408 / 2026-12-15</td>
-                                    <td>A-01</td>
+                                    <td>Pelotas</td>
+                                    <td>3</td>
                                 </tr>
                                 <tr>
-                                    <td><input type="checkbox" aria-label="Seleccionar guantes de exploración"></td>
-                                    <td>MED-014</td>
-                                    <td>7501234567891</td>
-                                    <td>Guantes de exploración</td>
-                                    <td>Material médico</td>
-                                    <td>100 / caja</td>
-                                    <td>$95.50</td>
-                                    <td>24 cajas</td>
-                                    <td>LT-2510 / 2027-05-30</td>
-                                    <td>B-03</td>
+                                    <td><input type="checkbox" aria-label="Seleccionar alimento para perro adulto"></td>
+                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
+                                    <td>839301</td>
+                                    <td>Camas para gato</td>
+                                    <td>5</td>
                                 </tr>
-                                <tr>
-                                    <td><input type="checkbox" aria-label="Seleccionar shampoo dermatológico"></td>
-                                    <td>HIG-008</td>
-                                    <td>7501234567892</td>
-                                    <td>Shampoo dermatológico</td>
-                                    <td>Higiene</td>
-                                    <td>500 ml / botella</td>
-                                    <td>$82.00</td>
-                                    <td>16 botellas</td>
-                                    <td>LT-2504 / 2027-01-20</td>
-                                    <td>C-02</td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                     </div>
