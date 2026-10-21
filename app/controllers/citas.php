@@ -114,4 +114,57 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     exit();
 
 }
+
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === 'orario')
+{
+    horarios();
+}
+
+function horarios()
+{
+    $Horarios = [];
+
+    $entradaMatutino = 9;
+    $salidaMatutino = 15;
+    $entradaVespertino = 15;
+    $salidaVespertino = 20;
+    $horasPorConsulta = 1;
+
+    $Veterinarios = citas::rescatarVeterinarios();
+
+    if ($Veterinarios[1] == "Matutino")
+    {
+        foreach($Veterinarios as $veterinario)
+        {
+            for($i = $entradaMatutino; i<= $salidaMatutino; $i++)
+            {
+                $entrada = $i . ":00:00";
+                $dateTime = DateTime::createFromFormat('H:i:s', $entradaMatutino);
+                $Horarios = $dateTime->format('g:i A'); 
+            }
+        }
+    }
+
+    if ($Veterinarios[1] == "Matutino")
+    {
+        foreach($Veterinarios as $veterinario)
+        {
+            for($i = $entradaVespertino; i<= $salidaVespertino; $i++)
+            {
+                $entrada = $i . ":00:00";
+                $dateTime = DateTime::createFromFormat('H:i:s', $entradaMatutino);
+                $Horarios = $dateTime->format('g:i A'); 
+            }
+        }
+    }
+
+    
+
+    
+    $Veterinarios = citas::rescatarVeterinarios();
+    
+}
+
 ?>

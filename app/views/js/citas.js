@@ -1,6 +1,7 @@
 
 // funcion encarfada de mostrar y ocultar los elemtos con el nombre espesificado
 // resice 2 datos, nombre a buscar y mostrar y las tarjetas o divs de los nombres
+
 function mostrarNombre(nombre,tarjetas)
 {
     if(nombre)
@@ -25,10 +26,6 @@ function mostrarNombre(nombre,tarjetas)
                 }
             );
         });
-    }
-    else
-    {
-        console.log("No se enconctro el elemento");
     }
 }
 
@@ -66,6 +63,8 @@ function mostrarSeccion(tipo, evt)
 }
 
 
+
+// busqueda por dias 
 document.addEventListener('DOMContentLoaded', function() 
 {
     const fecha = document.getElementById('fecha');
@@ -83,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function()
             switch (option) 
             {
                 case 'hoy':
-                    console.log('hoy');
                     tarjetas.forEach(tarjeta =>
                         {
                             const nombreDuenio = tarjeta.getAttribute('data-fecha');
@@ -107,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function()
 
 
                 case 'semana':
-                    console.log('semana');
                     const curr = new Date();
                     const primerDia = new Date(curr.setDate(curr.getDate() - curr.getDay() + (curr.getDay() === 0 ? -6 : 1)));
                     const ultimoDia = new Date(primerDia);
@@ -141,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function()
 
 
                 case 'mes':
-                    console.log('mes');
                     const fechaActual = new Date();
                     const anio = fechaActual.getFullYear();
                     const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
@@ -175,5 +171,6 @@ document.addEventListener('DOMContentLoaded', function()
         }); 
     }
 });
+
 
 
