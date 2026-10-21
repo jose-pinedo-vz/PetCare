@@ -6,7 +6,6 @@ if (session_status() === PHP_SESSION_NONE)
 
 ?>
 
-
 <!-- se encrga de mostrar todas las citas pendientes -->
 <?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
@@ -19,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE)
     {
       if ($d['atendido'] === 0)
       {?>
-        <div class="Card_cita">
+        <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
           <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
@@ -42,7 +41,7 @@ if (session_status() === PHP_SESSION_NONE)
     {
       if ($d['atendido'] === 1)
       {?>
-        <div class="Card_cita">
+        <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>">
           <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
@@ -91,6 +90,16 @@ if (session_status() === PHP_SESSION_NONE)
         <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
         <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
       </div>
+
+      <h3>Buscar</h3>
+      <input type="text" class="campo" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez" required></input>
+
+      <select class="select" id="fecha">
+        <option value="todos">Todas</option>
+        <option value="hoy">Hoy</option>
+        <option value="semana">Esta semana</option>
+        <option value="mes">Este mes</option>
+      </select>
 
       <div class="panel_contenido">
         <!-- Sección de espera  -->
