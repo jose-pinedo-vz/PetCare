@@ -124,45 +124,48 @@ if ($accion === 'orario')
 
 function horarios()
 {
-    $json = file_get_contents('php://input');
-    $codigoPostal = json_decode($json, true);
-
+    $fechaSeleccionada = $_GET['fecha'] ?? '';
 
     $Horarios = [];
 
     $entradaMatutino = 9;
     $salidaMatutino = 15;
+    $entradaVespertino = 15;
     $salidaVespertino = 20;
     $horasPorConsulta = 1;
 
-    $Veterinarios = citas::rescatarVeterinarios();
+    $Veterinarios = ConexionesClientes::rescatarVeterinarios();
+    $Veterinarios = ConexionesClientes::rescatarVeterinarios();
 
-    if ($Veterinarios[1] == "Matutino")
+    foreach ($Veterinarios as $veterinario)
     {
-        foreach($Veterinarios as $veterinario)
+        $turno = $veterinario['horario'] ?? '';
+
+        if ($turno == "Matutino")
         {
+            
             for($i = $entradaMatutino; i<= $salidaMatutino; $i++)
             {
                 $entrada = $i . ":00:00";
-                $dateTime = DateTime::createFromFormat('H:i:s', $entradaMatutino);
-                $Horarios = $dateTime->format('g:i A'); 
+                $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
+                $Horarios[] = $dateTime->format('g:i A') . $veterinario['nombre'] ?? ''; 
             }
+            
         }
-    }
 
-    if ($Veterinarios[1] == "Vespertinos")
-    {
-        foreach($Veterinarios as $veterinario)
+        if ($turno == "Vespertino")
         {
-            for($i = $entradaVespertino; i<= $salidaVespertino; $i++)
+            
+            for($i = $entradaVespertino; $i<= $salidaVespertino; $i++)
             {
                 $entrada = $i . ":00:00";
-                $dateTime = DateTime::createFromFormat('H:i:s', $entradaMatutino);
-                $Horarios = $dateTime->format('g:i A'); 
+                $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
+                $Horarios[] = $dateTime->format('g:i A') . $veterinario['nombre'] ?? ''; 
             }
         }
     }
 
     echo json_encode($Horarios);   
+    exit();
 }
 ?>

@@ -99,11 +99,11 @@
             }
         }
 
-        public function rescatarVeterinarios()
+        public static function rescatarVeterinarios()
         {
             try
             {
-                $query = "SELECT nombre, horario FROM `empleados` WHERE puesto = 'Veterinario'";
+                $query = "SELECT nombre, horario FROM `empleados` WHERE puesto LIKE 'Veterinario%'";
                 $db = ConexionDB::obtenerConexion();
                 $stml =$db->prepare($query);$stml->execute();
                 return $stml->fetchAll(PDO::FETCH_ASSOC);
