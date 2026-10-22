@@ -59,7 +59,7 @@ $registro=obtenerPorId($id);
     <div>
         <label class="label-campo" for="especie">Especie:</label>
         <select class="campo" id="especie" name="especie" required>
-          <?php $especieActual = $old['sexo'] ?? $registro['sexo'] ?? ''; ?>
+          <?php $especieActual = $old['especie'] ?? $registro['especie'] ?? ''; ?>
           <option value="Perro" <?= ($especieActual === 'Perro') ? 'selected' : '' ?>>Perro</option>
           <option value="Gato" <?= ($especieActual === 'Gato') ? 'selected' : '' ?>>Gato</option>
           <option value="Conejo" <?= ($especieActual === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
@@ -92,7 +92,33 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="color">Color *:</label>
-        <input type="text" class="campo" id="color" name="color" maxlength="20" value="<?= htmlspecialchars($old['color'] ?? $registro['color'] ?? '') ?>" required>
+        <?php 
+          $coloresDisponibles = [
+            'Blanco', 'Negro', 'Gris', 'Café', 'Amarillo', 'Verde', 'Rojo',
+            'Blanco y negro', 'Café y blanco', 'Café y amarillo', 'Blanco y gris',
+            'Verde y amarillo', 'Blanco, amarillo y negro'
+          ];
+          $colorActual = $old['color'] ?? $registro['color'] ?? '';
+          $colorEspecActual = $old['color_espec'] ?? '';
+          $esOtroColor = ($colorActual === 'Otro') || (!empty($colorActual) && !in_array(mb_strtolower($colorActual), array_map('mb_strtolower', $coloresDisponibles)));
+          if ($esOtroColor && empty($colorEspecActual) && $colorActual !== 'Otro') {
+            $colorEspecActual = $colorActual;
+          }
+        ?>
+        <select class="campo" id="color" name="color" required>
+          <option value="">Seleccionar...</option>
+          <?php foreach ($coloresDisponibles as $opcionColor): ?>
+            <option value="<?= htmlspecialchars($opcionColor) ?>" <?= (!$esOtroColor && strcasecmp($colorActual, $opcionColor) === 0) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($opcionColor) ?>
+            </option>
+          <?php endforeach; ?>
+          <option value="Otro" <?= $esOtroColor ? 'selected' : '' ?>>Otro (Especificar)</option>
+        </select>
+    </div>
+
+    <div id="contenedor-color-espec" style="<?= $esOtroColor ? '' : 'display: none;' ?>">
+        <label class="label-campo" for="color_espec">Especifique el color *:</label>
+        <input type="text" class="campo" id="color_espec" name="color_espec" maxlength="50" placeholder="Ej. Marrón rojizo" value="<?= htmlspecialchars($colorEspecActual) ?>">
     </div>
 
     <div>
@@ -119,8 +145,8 @@ $registro=obtenerPorId($id);
         <label class="label-campo" for="estado">Estado:</label>
         <select class="campo" id="estado" name="estado">
             <?php $estadoActual = $old['estado'] ?? $registro['estado'] ?? ''; ?>
-            <option value="Disponible" <?= ($estadoActual === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
-            <option value="Reservado" <?= ($estadoActual === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
+            <option value="Disponible" <?= in_array($estadoActual, ['Disponible', 'Venta legal', 'Venta Legal']) ? 'selected' : '' ?>>Venta legal</option>
+            <option value="Reservado" <?= in_array($estadoActual, ['Reservado', 'Adopcion', 'Adopción']) ? 'selected' : '' ?>>Adopcion</option>
         </select>
     </div>
 
@@ -198,6 +224,29 @@ $registro=obtenerPorId($id);
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-adopcion_venta.js"></script>
+  <script>
+    (function() {
+      const selectColor = document.getElementById('color');
+      const contenedorColorEspec = document.getElementById('contenedor-color-espec');
+      const inputColorEspec = document.getElementById('color_espec');
+
+      if (selectColor && contenedorColorEspec) {
+        function toggleColorEspec() {
+          if (selectColor.value === 'Otro') {
+            contenedorColorEspec.style.display = 'block';
+            if (inputColorEspec) inputColorEspec.required = true;
+          } else {
+            contenedorColorEspec.style.display = 'none';
+            if (inputColorEspec) {
+              inputColorEspec.required = false;
+            }
+          }
+        }
+        selectColor.addEventListener('change', toggleColorEspec);
+        toggleColorEspec();
+      }
+    })();
+  </script>
 
 </body>
 </html>
