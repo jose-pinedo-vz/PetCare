@@ -39,10 +39,14 @@
           </div>
         </div>
 
-        <h2 class="subtitulo">Productos</h2>
+        <div class="inventario-seccion-encabezado">
+          <h2 class="subtitulo">Productos</h2>
+          <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden de compra</a>
+        </div>
+        <!-- Aquí esta el boto de nuevo orde de compra que no se vincula a ningun producto -->
 
         <div class="inventario-toolbar">
-          <input type="text" class="campo inventario-buscador" placeholder="Buscar por código de barra...">
+          <input type="text" class="campo inventario-buscador" placeholder="Buscar por nombre o código de barras...">
           <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 
