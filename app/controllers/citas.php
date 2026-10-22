@@ -163,8 +163,6 @@ function horarios()
         }
     }
 
-    return $Horarios;
-    
+    echo json_encode($Horarios);   
 }
-
 ?>

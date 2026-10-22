@@ -35,12 +35,10 @@ function mostrarDivs(datos)
 
 document.addEventListener("DOMContentLoaded", async function() 
 {
-    console.log("Si se llama");
     const respuesta = await fetch('../controllers/inicio.php?inicio=inicio', {method: "POST", headers: {'Content-Type': 'application/json'},
        body: JSON.stringify()});
     const datos = await respuesta.json();
 
-    console.log(datos);
 
     document.getElementById('citas-hoy').textContent = datos.citas[0][0] ?? datos.citas[0].citas;
     document.getElementById('citasPorCobrar').textContent = datos.numCitasPagos[0][0] ?? datos.numCitasPagos[0].numCitasPagos;
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function()
 
     const tbody = document.querySelector('#tablaCitas');
     tbody.innerHTML = '';
-
+1
     // tabla de citas 
     let i = 0;
     for (const item of datos.citasHoy)
