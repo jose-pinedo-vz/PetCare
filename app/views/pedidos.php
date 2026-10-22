@@ -13,6 +13,7 @@
 		<?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
 		<main>
+			<div class="tarjeta">
 			<div class="migaja">Gestión de inventario</div>
 			<div class="encabezado-pagina">
 				<h1>Control de inventario</h1>
@@ -118,6 +119,7 @@
 					<button class="btn-secundario" type="button" aria-label="Página siguiente">›</button>
 				</div>
 			</section>
+			</div>
 		</main>
 	</div>
 
