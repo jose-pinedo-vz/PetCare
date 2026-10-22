@@ -10,6 +10,131 @@ $animales = listar_adopciones_ventas();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria PetCare - Adopción y venta</title>
     <link rel="stylesheet" href="css/estilos_base_v2.css">
+    <style>
+        .foto-miniatura-celda {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .foto-miniatura {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid rgba(107, 79, 47, 0.25);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            background-color: #fff;
+        }
+
+        .foto-miniatura:hover {
+            transform: scale(1.15);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary, #6b4f2f);
+        }
+
+        .sin-foto {
+            color: #8c7b6c;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* Modal visor de pantalla completa */
+        .modal-visor {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-sizing: border-box;
+            padding: 24px;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .modal-visor.activo {
+            display: flex;
+            opacity: 1;
+        }
+
+        .visor-contenido {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 95vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .visor-contenido img {
+            max-width: 92vw;
+            max-height: 84vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+            cursor: zoom-out;
+            animation: zoomVisor 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes zoomVisor {
+            from {
+                transform: scale(0.75);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .pie-visor {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 14px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+        }
+
+        .btn-cerrar-visor {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #ffffff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            transition: background 0.2s, transform 0.2s;
+            user-select: none;
+            z-index: 100000;
+        }
+
+        .btn-cerrar-visor:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 
 <body>
@@ -62,7 +187,38 @@ $animales = listar_adopciones_ventas();
                                         <td><?= htmlspecialchars((string)$animal['color']) ?></td>
                                         <td><?= htmlspecialchars((string)$animal['peso']) ?> kg</td>
                                         <td><?= htmlspecialchars((string)$animal['caracteristicas']) ?></td>
-                                        <td><?= htmlspecialchars((string)($animal['fotografia'] ?? 'Sin foto')) ?></td>
+                                        <td>
+                                            <?php
+                                            $foto = trim((string)($animal['fotografia'] ?? ''));
+                                            if ($foto !== '' && $foto !== 'Sin foto'):
+                                                if (str_starts_with($foto, 'http://') || str_starts_with($foto, 'https://') || str_starts_with($foto, '/')) {
+                                                    $rutaFoto = $foto;
+                                                } elseif (str_starts_with($foto, '../../')) {
+                                                    $rutaFoto = $foto;
+                                                } elseif (str_starts_with($foto, '../')) {
+                                                    $rutaFoto = '../' . $foto;
+                                                } else {
+                                                    $rutaFoto = '../../' . ltrim($foto, '/');
+                                                }
+                                                $nombreAnimal = trim(($animal['especie'] ?? '') . ' ' . ($animal['raza'] ?? ''));
+                                                if ($nombreAnimal === '') {
+                                                    $nombreAnimal = 'Mascota #' . $animal['id_animal'];
+                                                }
+                                            ?>
+                                                <div class="foto-miniatura-celda">
+                                                    <img src="<?= htmlspecialchars($rutaFoto) ?>"
+                                                         alt="<?= htmlspecialchars($nombreAnimal) ?>"
+                                                         class="foto-miniatura"
+                                                         title="Click para ampliar imagen"
+                                                         data-full="<?= htmlspecialchars($rutaFoto) ?>"
+                                                         data-title="<?= htmlspecialchars($nombreAnimal) ?>"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                                    <span class="sin-foto" style="display:none;">Imagen no disponible</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="sin-foto">Sin foto</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?= htmlspecialchars((string)$animal['procedencia']) ?></td>
                                         <td><?= htmlspecialchars((string)$animal['fecha_de_ingreso']) ?></td>
                                         <td><?= ($animal['costo_de_adquisicion'] !== null && $animal['costo_de_adquisicion'] !== '') ? '$' . number_format((float)$animal['costo_de_adquisicion'], 2) : '-' ?></td>
@@ -93,6 +249,67 @@ $animales = listar_adopciones_ventas();
         <footer>
             <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
         </footer>
+
+    <!-- Modal para ver imagen ampliada / pantalla completa -->
+    <div id="modal-visor-imagen" class="modal-visor" role="dialog" aria-modal="true" aria-label="Visor de imagen">
+        <span class="btn-cerrar-visor" title="Cerrar (Esc)">&times;</span>
+        <div class="visor-contenido">
+            <img id="imagen-ampliada" src="" alt="Imagen ampliada" title="Haz clic para cerrar">
+            <div id="pie-imagen-ampliada" class="pie-visor"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('modal-visor-imagen');
+            var imgAmpliada = document.getElementById('imagen-ampliada');
+            var pie = document.getElementById('pie-imagen-ampliada');
+            var btnCerrar = modal.querySelector('.btn-cerrar-visor');
+
+            function abrirModal(src, titulo) {
+                imgAmpliada.src = src;
+                pie.textContent = titulo || '';
+                modal.classList.add('activo');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function cerrarModal() {
+                modal.classList.remove('activo');
+                document.body.style.overflow = '';
+                imgAmpliada.src = '';
+            }
+
+            // Click en cualquier miniatura con la clase .foto-miniatura
+            document.addEventListener('click', function (e) {
+                var target = e.target;
+                if (target && target.classList.contains('foto-miniatura')) {
+                    var src = target.getAttribute('data-full') || target.src;
+                    var titulo = target.getAttribute('data-title') || '';
+                    abrirModal(src, titulo);
+                }
+            });
+
+            // Botón cerrar (X)
+            btnCerrar.addEventListener('click', function (e) {
+                e.stopPropagation();
+                cerrarModal();
+            });
+
+            // Cerrar al hacer clic en el fondo oscuro o en la imagen grande
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal || e.target === imgAmpliada || e.target.classList.contains('visor-contenido')) {
+                    cerrarModal();
+                }
+            });
+
+            // Cerrar con la tecla Escape
+            document.addEventListener('keydown', function (e) {
+                if ((e.key === 'Escape' || e.key === 'Esc') && modal.classList.contains('activo')) {
+                    cerrarModal();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>                             
