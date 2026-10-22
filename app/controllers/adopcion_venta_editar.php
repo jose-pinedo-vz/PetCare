@@ -66,8 +66,8 @@ function validar_datos($datos)
         $errores[] = "El color es obligatorio.";
     } else {
         $datos['color'] = trim($datos['color']);
-        if (strlen($datos['color']) > 20) {
-            $errores[] = "El color no puede tener más de 20 caracteres.";
+        if (strlen($datos['color']) > 50) {
+            $errores[] = "El color no puede tener más de 50 caracteres.";
         } else if (preg_match('/\d/', $datos['color'])) {
             $errores[] = "El color no puede contener números.";
         }
