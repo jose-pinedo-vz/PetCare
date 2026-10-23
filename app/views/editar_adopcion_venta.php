@@ -92,24 +92,6 @@ $registro=obtenerPorId($id);
     </div>
 
     <div>
-<<<<<<< HEAD
-      <label class="label-campo" for="color">Color *:</label>
-      <select class="campo" id="color" name="color" required>
-        <option value="Blanco" <?= (($old['color'] ?? $registro['color']) === 'Blanco') ? 'selected' : '' ?>>Blanco</option>
-        <option value="Negro" <?= (($old['color'] ?? $registro['color']) === 'Negro') ? 'selected' : '' ?>>Negro</option>
-        <option value="Café / Marrón" <?= (($old['color'] ?? $registro['color']) === 'Café / Marrón') ? 'selected' : '' ?>>Café / Marrón</option>
-        <option value="Gris" <?= (($old['color'] ?? $registro['color']) === 'Gris') ? 'selected' : '' ?>>Gris</option>
-        <option value="Beige / Crema" <?= (($old['color'] ?? $registro['color']) === 'Beige / Crema') ? 'selected' : '' ?>>Beige / Crema</option>
-        <option value="Dorado / Leonado" <?= (($old['color'] ?? $registro['color']) === 'Dorado / Leonado') ? 'selected' : '' ?>>Dorado / Leonado</option>
-        <option value="Canela / Rojo" <?= (($old['color'] ?? $registro['color']) === 'Canela / Rojo') ? 'selected' : '' ?>>Canela / Rojo</option>
-        <option value="Verde" <?= (($old['color'] ?? $registro['color']) === 'Verde') ? 'selected' : '' ?>>Verde</option>
-        <option value="Manchado / Overo" <?= (($old['color'] ?? $registro['color']) === 'Manchado / Overo') ? 'selected' : '' ?>>Manchado / Overo</option>
-        <option value="Atigrado" <?= (($old['color'] ?? $registro['color']) === 'Atigrado') ? 'selected' : '' ?>>Atigrado</option>
-        <option value="Bicolor" <?= (($old['color'] ?? $registro['color']) === 'Bicolor') ? 'selected' : '' ?>>Bicolor</option>
-        <option value="Tricolor" <?= (($old['color'] ?? $registro['color']) === 'Tricolor') ? 'selected' : '' ?>>Tricolor</option>
-        <option value="Moteado / Jaspeado" <?= (($old['color'] ?? $registro['color']) === 'Moteado / Jaspeado') ? 'selected' : '' ?>>Moteado / Jaspeado</option>
-      </select>
-=======
         <label class="label-campo" for="color">Color *:</label>
         <?php 
           $coloresDisponibles = [
@@ -138,7 +120,6 @@ $registro=obtenerPorId($id);
     <div id="contenedor-color-espec" style="<?= $esOtroColor ? '' : 'display: none;' ?>">
         <label class="label-campo" for="color_espec">Especifique el color *:</label>
         <input type="text" class="campo" id="color_espec" name="color_espec" maxlength="50" placeholder="Ej. Marrón rojizo" value="<?= htmlspecialchars($colorEspecActual) ?>">
->>>>>>> 10fbd84bf8af6c84a1078d66b2b88570e3530377
     </div>
 
     <div>
@@ -167,6 +148,9 @@ $registro=obtenerPorId($id);
             <?php $estadoActual = $old['estado'] ?? $registro['estado'] ?? ''; ?>
             <option value="Venta legal" <?= ($estadoActual === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
             <option value="Adopcion" <?= ($estadoActual === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
+            <option value="Disponible" <?= in_array($estadoActual, ['Disponible', 'Venta legal', 'Venta Legal']) ? 'selected' : '' ?>>Venta legal</option>
+            <option value="Reservado" <?= in_array($estadoActual, ['Reservado', 'Adopcion', 'Adopción']) ? 'selected' : '' ?>>Adopcion</option>
+            <option value="Adopcion" <?= in_array($estadoActual, ['Adopcion', 'Adopción', 'Reservado']) ? 'selected' : '' ?>>Adopción</option>
         </select>
     </div>
 

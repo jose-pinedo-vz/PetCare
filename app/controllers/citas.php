@@ -112,6 +112,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("Hubo un error al registrar la cita en la base de datos.");
     }
 
+<<<<<<< HEAD
+=======
+
+
+    // insercin de la cita
+    // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
+    // if (!$seInserto)
+    // {
+    //     errorSession("Hubo un error en la insercino de los datos.");
+    // }
+
+>>>>>>> 17d11f978ee9f6ab6d1d88ab75af5f0fc0f320c5
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");
     exit();
