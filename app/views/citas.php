@@ -76,9 +76,13 @@ function mostrarCitasAtendidas()
           <a class="btn" href="agendarCita.php">+ Agendar cita</a>
 
           <form class="busqueda-barra" method="get" action="citas.php" role="search">
+
             <label class="visualmente-oculto" for="buscarCita">Buscar cita</label>
             <input class="campo" id="buscarCita" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+
             <button class="btn btn-info" type="submit">Buscar</button>
+
+            
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn-secundario" href="citas.php">Limpiar</a>
             <?php endif; ?>
