@@ -165,7 +165,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El número exterior es obligatorio.";
     } else if (mb_strlen($numero_exterior) > 15) {
         $errores[] = "El número exterior no debe tener más de 15 caracteres.";
-    } else if (!preg_match($patronNumero, $numero_exterior)) {
+    } else if (substr($numero_exterior, 0, 1) === '-'){
+        $errores[] = "El número exterior no puede ser negativo";
+    }else if (!preg_match($patronNumero, $numero_exterior)) {
         $errores[] = "El número exterior solo puede contener números, letras y guiones (sin espacios ni símbolos raros).";
     }
 
@@ -174,6 +176,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $numero_interior = null;
     } else if (mb_strlen($numero_interior) > 15) {
         $errores[] = "El número interior no debe tener más de 15 caracteres.";
+    } else if (substr($numero_interior, 0, 1) === '-'){
+        $errores[] = "El número interior no puede ser negativo";
     } else if (!preg_match('/^[a-zA-Z0-9\s.\-\/]{1,15}$/', $numero_interior)) {
         $errores[] = "El número interior contiene caracteres no permitidos.";
     } else if (!preg_match('/\d/', $numero_interior) && !in_array(strtoupper(trim($numero_interior)), ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','PB','PH','SN','S/N'], true)) {
