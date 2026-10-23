@@ -44,7 +44,7 @@ $usuario=$_SESSION['usuario'];
           <div class="barra-acciones">
               <a class="btn" href="registro_usuario.php">+ Agregar usuario</a>
           </div>
-          <div class="table-envoltura">
+          <div class="tabla-envoltura">
             <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
               <thead>
                 <tr style="background: #f5f5f5;">

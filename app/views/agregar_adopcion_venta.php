@@ -51,7 +51,6 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="especie">Especie *:</label>
       <select class="campo" id="especie" name="especie" required>
-        <option value="">Seleccionar...</option>
         <option value="Perro" <?= (($old['especie'] ?? '') === 'Perro') ? 'selected' : '' ?>>Perro</option>
         <option value="Gato" <?= (($old['especie'] ?? '') === 'Gato') ? 'selected' : '' ?>>Gato</option>
         <option value="Conejo" <?= (($old['especie'] ?? '') === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
@@ -65,7 +64,8 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="raza">Raza:</label>
-      <input type="text" class="campo" id="raza" name="raza" maxlength="30" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
+      <select class="campo" id="raza" name="raza">
+      </select>
     </div>
 
     <div>
@@ -83,12 +83,26 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="color">Color *:</label>
-      <input type="text" class="campo" id="color" name="color" maxlength="20" value="<?= htmlspecialchars($old['color'] ?? '') ?>" required>
+      <select class="campo" id="color" name="color" required>
+        <option value="Blanco" <?= (($old['color'] ?? '') === 'Blanco') ? 'selected' : '' ?>>Blanco</option>
+        <option value="Negro" <?= (($old['color'] ?? '') === 'Negro') ? 'selected' : '' ?>>Negro</option>
+        <option value="Café / Marrón" <?= (($old['color'] ?? '') === 'Café / Marrón') ? 'selected' : '' ?>>Café / Marrón</option>
+        <option value="Gris" <?= (($old['color'] ?? '') === 'Gris') ? 'selected' : '' ?>>Gris</option>
+        <option value="Beige / Crema" <?= (($old['color'] ?? '') === 'Beige / Crema') ? 'selected' : '' ?>>Beige / Crema</option>
+        <option value="Dorado / Leonado" <?= (($old['color'] ?? '') === 'Dorado / Leonado') ? 'selected' : '' ?>>Dorado / Leonado</option>
+        <option value="Canela / Rojo" <?= (($old['color'] ?? '') === 'Canela / Rojo') ? 'selected' : '' ?>>Canela / Rojo</option>
+        <option value="Verde" <?= (($old['color'] ?? '') === 'Verde') ? 'selected' : '' ?>>Verde</option>
+        <option value="Manchado / Overo" <?= (($old['color'] ?? '') === 'Manchado / Overo') ? 'selected' : '' ?>>Manchado / Overo</option>
+        <option value="Atigrado" <?= (($old['color'] ?? '') === 'Atigrado') ? 'selected' : '' ?>>Atigrado</option>
+        <option value="Bicolor" <?= (($old['color'] ?? '') === 'Bicolor') ? 'selected' : '' ?>>Bicolor</option>
+        <option value="Tricolor" <?= (($old['color'] ?? '') === 'Tricolor') ? 'selected' : '' ?>>Tricolor</option>
+        <option value="Moteado / Jaspeado" <?= (($old['color'] ?? '') === 'Moteado / Jaspeado') ? 'selected' : '' ?>>Moteado / Jaspeado</option>
+      </select>
     </div>
 
     <div>
       <label class="label-campo" for="peso">Peso (kg) *:</label>
-      <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? '') ?>" required>
+      <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? '') ?>" min="0.1" required>
     </div>
 
     <div>
@@ -98,7 +112,7 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="costo_de_adquisicion">Costo de adquisición:</label>
-      <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? '') ?>">
+      <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? '') ?>" min="0.1" required>
     </div>
 
     <div>
@@ -109,8 +123,8 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="estado">Estado:</label>
       <select class="campo" id="estado" name="estado">
-        <option value="Disponible" <?= (($old['estado'] ?? '') === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
-        <option value="Reservado" <?= (($old['estado'] ?? '') === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
+        <option value="Venta legal" <?= (($old['estado'] ?? '') === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
+        <option value="Adopcion" <?= (($old['estado'] ?? '') === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
       </select>
     </div>
 
@@ -182,6 +196,42 @@ unset($_SESSION['old']);
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-adopcion_venta.js"></script>
+  <script>
+    const razasPorEspecie={
+      "Perro": ["Mestizo / Criollo", "Labrador Retriever", "Golden Retriever", "Pastor Alemán", "Chihuahua", "Husky Siberiano", "Poodle / Caniche", "Bulldog", "Pitbull", "Pug","Otro"],
+      "Gato": ["Mestizo / Doméstico", "Siamés", "Persa", "Maine Coon", "Bengalí", "Ragdoll", "Sphynx", "Angora", "Azul Ruso","Otro"],
+      "Conejo": ["Belier", "Enano Holandés / Toy", "Cabeza de León", "Rex", "Gigante de Flandes", "Angora", "California","Otro"],
+      "Hamster": ["Sirio (Dorado)", "Ruso", "Roborovski", "Chino", "Campbell","Otro"],
+      "Hurón": ["Sable / Antifaz", "Albino", "Plata / Silver", "Champagne", "Panda", "Canela","Otro"],
+      "Erizo": ["Erizo de vientre blanco (Africano)", "Erizo Egipcio", "Erizo de orejas largas","Otro"],
+      "Tortuga": ["Terrestre", "Tortuga Rusa", "Tortuga Sulcata", "Tortuga de Caja", "Tortuga Leopardo", "Tortuga de Espalda de Diamante","Otro"],
+      "Ave": ["Ninfa / Carolina", "Perico Australiano", "Agapornis", "Canario", "Cacatúa", "Guacamayo", "Diamante Mandarín","Otro"]
+    };
+
+    const selectEspecie = document.getElementById('especie');
+    const selectRaza = document.getElementById('raza');
+    const razaOld = "<?= htmlspecialchars($old['raza'] ?? '') ?>";
+
+    function actualizarRazas()
+    {
+      const especieSeleccionada = selectEspecie.value;
+      const razas = razasPorEspecie[especieSeleccionada] || [];
+      
+      selectRaza.innerHTML = '';
+      
+      razas.forEach(raza => {
+        const option = document.createElement('option');
+        option.value = raza;
+        option.textContent = raza;
+        if (raza === razaOld)
+        {
+          option.selected = true;
+        }
+        selectRaza.appendChild(option);});
+    }
+    selectEspecie.addEventListener('change', actualizarRazas);
+    actualizarRazas();
+  </script>
 
 </body>
 </html>
