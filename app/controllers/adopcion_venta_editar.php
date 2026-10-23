@@ -87,9 +87,10 @@ function validar_datos($datos)
     if ($color === '') {
         $errores[] = "El color es obligatorio.";
     } else {
-        if (mb_strlen($color) < 3 || mb_strlen($color) > 20) {
-            $errores[] = "El color debe tener entre 3 y 20 caracteres.";
-        } else if (preg_match('/\d/', $color)) {
+        $datos['color'] = trim($datos['color']);
+        if (strlen($datos['color']) > 50) {
+            $errores[] = "El color no puede tener más de 50 caracteres.";
+        } else if (preg_match('/\d/', $datos['color'])) {
             $errores[] = "El color no puede contener números.";
         } else if (!preg_match('/^[\p{L}]{2,}(?:[\s\-][\p{L}]{2,})*$/u', $color)) {
             $errores[] = "El color solo puede contener letras y espacios válidos (sin símbolos ni caracteres especiales).";

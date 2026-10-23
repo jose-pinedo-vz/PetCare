@@ -12,13 +12,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         exit();
     }
 
+    $color = trim($_POST['color'] ?? '');
+    if ($color === 'Otro' && !empty(trim($_POST['color_espec'] ?? ''))) {
+        $color = trim($_POST['color_espec']);
+    }
+
     $datos = [
-        'id_animal'                    => $id,
+        'id_animal'             => $id,
         'especie'               => trim($_POST['especie'] ?? ''),
         'raza'                  => trim($_POST['raza'] ?? ''),
         'sexo'                  => trim($_POST['sexo'] ?? ''),
         'fecha_de_nacimiento'   => trim($_POST['fecha_de_nacimiento'] ?? ''),
-        'color'                 => trim($_POST['color'] ?? ''),
+        'color'                 => $color,
         'peso'                  => trim($_POST['peso'] ?? ''),
         'fecha_de_ingreso'      => trim($_POST['fecha_de_ingreso'] ?? ''),
         'costo_de_adquisicion'  => trim($_POST['costo_de_adquisicion'] ?? ''),
