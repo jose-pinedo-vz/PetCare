@@ -74,9 +74,11 @@ if (session_status() === PHP_SESSION_NONE) {
             
           <div>
             <label class="label-campo" for="orarioconsulta">Orario de consulta *:</label>
-            <select name="" id="orararioConsulta">
+
+            <select name="orararioConsulta" id="orararioConsulta">
               <option value="">Seleccione una fecha</option>
             </select>
+
           </div>
         </div>
       </fieldset>

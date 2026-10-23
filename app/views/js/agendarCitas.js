@@ -15,8 +15,18 @@ document.addEventListener("DOMContentLoaded", async function()
             });
             const datos = await respuesta.json();
 
-            console.log(datos);
-            console.log("Si es citas agendar")
+            // insercino de datos
+
+            const selectHorarios = document.getElementById("orararioConsulta");
+            selectHorarios.innerHTML = ""; 
+
+            for (const horarioTexto of datos)
+            {
+                const option = document.createElement("option");
+                option.value = horarioTexto;      
+                option.textContent = horarioTexto; 
+                selectHorarios.appendChild(option);
+            }
 
         });
     }

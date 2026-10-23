@@ -28,9 +28,13 @@ function estraerDatosConsultas():array
     return $resultados;
 }
 
+
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+
 
 function errorSession(string $error)
 {
@@ -50,8 +54,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $fecha = trim($_POST['fecha'] ?? '');
     $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
 
+    $orararioConsulta = trim($_POST['orararioConsulta'] ?? ''); 
+
     // validar campos obligatorios
-    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "")
+    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "" || $orararioConsulta === "")
     {
         errorSession("Todos los campos marcados con asterisco son obligatorios.");
     }
@@ -91,8 +97,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");
     }
 
+
+    // validacion de fecha
+    $objetoHora = DateTime::createFromFormat('g:i A', $orararioConsulta);
+    $horaLimpia = $objetoHora->format('H:i:s');
+    $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+
+    // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
+
     // insertar la cita
-    $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fecha, $motivoConsulta);
+    $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fechaHoraFinal, $motivoConsulta);
     if (!$seInserto)
     {
         errorSession("Hubo un error al registrar la cita en la base de datos.");
@@ -110,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     // }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
-    header("Location: ../views/citas.php?exito=1");
+    header("Location: ../views/citas.php?");
     exit();
 
 }
@@ -134,33 +148,43 @@ function horarios()
     $salidaVespertino = 20;
     $horasPorConsulta = 1;
 
-    $Veterinarios = ConexionesClientes::rescatarVeterinarios();
-    $Veterinarios = ConexionesClientes::rescatarVeterinarios();
+    // echo "la fecha es" . $fechaSeleccionada;
 
-    foreach ($Veterinarios as $veterinario)
+    $Veterinarios = ConexionesClientes::rescatarVeterinarios();
+    //$Veterinarios = ConexionesClientes::rescatarVeterinarios();
+
+    if ($Veterinarios)
     {
-        $turno = $veterinario['horario'] ?? '';
+        // cantidad de veterinarios por turno
+        $cantMatutino = ConexionesClientes::cantidadHorarios("Matutino");
+        $cantVespertino = ConexionesClientes::cantidadHorarios("Vespertino");
 
-        if ($turno == "Matutino")
+        if ($cantMatutino > 0)
         {
-            
-            for($i = $entradaMatutino; i<= $salidaMatutino; $i++)
+            for($i = $entradaMatutino; $i<= $salidaMatutino; $i++)
             {
-                $entrada = $i . ":00:00";
-                $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
-                $Horarios[] = $dateTime->format('g:i A') . $veterinario['nombre'] ?? ''; 
+                    $entrada = $i . ":00:00";
+                    $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
+
+                    //distincion por fehca
+                    $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'));
+
+                    //echo $cantidadCitasPorFecha . "<br>";
+
+                    if ($cantidadCitasPorFecha < $cantMatutino) $Horarios[] = $dateTime->format('g:i A');
             }
-            
         }
 
-        if ($turno == "Vespertino")
+        if ($cantVespertino > 0)
         {
-            
             for($i = $entradaVespertino; $i<= $salidaVespertino; $i++)
             {
                 $entrada = $i . ":00:00";
                 $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
-                $Horarios[] = $dateTime->format('g:i A') . $veterinario['nombre'] ?? ''; 
+                
+
+                $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'));
+                if ($cantidadCitasPorFecha < $cantVespertino) $Horarios[] = $dateTime->format('g:i A');
             }
         }
     }
