@@ -109,10 +109,8 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="estado">Estado:</label>
       <select class="campo" id="estado" name="estado">
-        <option value="">Seleccionar...</option>
-        <option value="Disponible" <?= (($old['estado'] ?? '') === 'Disponible') ? 'selected' : '' ?>>Disponible</option>
-        <option value="Reservado" <?= (($old['estado'] ?? '') === 'Reservado') ? 'selected' : '' ?>>Reservado</option>
-        <option value="Vendido" <?= (($old['estado'] ?? '') === 'Vendido') ? 'selected' : '' ?>>Vendido</option>
+        <option value="Disponible" <?= (($old['estado'] ?? '') === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
+        <option value="Reservado" <?= (($old['estado'] ?? '') === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
       </select>
     </div>
 
