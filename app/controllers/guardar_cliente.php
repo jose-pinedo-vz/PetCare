@@ -61,6 +61,12 @@ function errorSession(string $error)
     $_SESSION['oldTelefonoEmergencia_clientes'] = $_POST['telefono_emergencia'] ?? '';
     $_SESSION['oldObservaciones_clientes'] = $_POST['observaciones'] ?? '';
 
+    $idCliente = !empty($_POST['id_cliente']) ? (int)$_POST['id_cliente'] : 0;
+
+    if ($idCliente > 0) {
+        header("Location: ../views/editar_cliente.php?id=" . $idCliente);
+        exit();
+    }
     header("Location: ../views/agregar_cliente.php");
     exit();
 }
