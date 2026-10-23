@@ -25,14 +25,7 @@ $animales = listar_adopciones_ventas();
             border: 2px solid rgba(107, 79, 47, 0.25);
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             background-color: #fff;
-        }
-
-        .foto-miniatura:hover {
-            transform: scale(1.15);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-            border-color: var(--primary, #6b4f2f);
         }
 
         .sin-foto {
@@ -85,18 +78,6 @@ $animales = listar_adopciones_ventas();
             border-radius: 8px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
             cursor: zoom-out;
-            animation: zoomVisor 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes zoomVisor {
-            from {
-                transform: scale(0.75);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
         }
 
         .pie-visor {
