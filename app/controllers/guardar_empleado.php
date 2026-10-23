@@ -93,8 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $horario = trim($_POST['horario'] ?? '');
 
     // VALIDACION REGEX
-    
-    // validacion para ciudad y estado 
+
+    // validacion para ciudad y estado
     $soloLetras = '/^[\p{L}\s.\'-]+$/u';
 
     // validacion para nombre y apellido
@@ -266,6 +266,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El horario es obligatorio";
     } else if (!in_array($horario, $horariosValidos, true)) {
         $errores[] = "El horario no es valido";
+    }
+
+    // validar que no este en la base de datos
+    $estaReg = Empleados::estaRegistrado($correo, $telefono, $id_empleado);
+    if ($estaReg) {
+        $errores[] = "Ya existe un empleado registrado con el mismo correo electronico o numero de telefono";
     }
 
     if (count($errores) > 0) {
