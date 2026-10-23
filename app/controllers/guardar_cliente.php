@@ -7,7 +7,35 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession(string $error) : null
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
+
+    if ($res === [])
+    {
+        echo json_encode(false);
+        exit;
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
+}
+
+
+// function errorSession(string $error) : null
+function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
     // $_SESSION['oldClave'] = $_POST['claveCliente'];
@@ -33,6 +61,12 @@ function errorSession(string $error) : null
     $_SESSION['oldTelefonoEmergencia_clientes'] = $_POST['telefono_emergencia'] ?? '';
     $_SESSION['oldObservaciones_clientes'] = $_POST['observaciones'] ?? '';
 
+    $idCliente = !empty($_POST['id_cliente']) ? (int)$_POST['id_cliente'] : 0;
+
+    if ($idCliente > 0) {
+        header("Location: ../views/editar_cliente.php?id=" . $idCliente);
+        exit();
+    }
     header("Location: ../views/agregar_cliente.php");
     exit();
 }
@@ -61,27 +95,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $telefono_emergencia   = htmlspecialchars(trim($_POST['telefono_emergencia'] ?? ''));
     $observaciones         = htmlspecialchars(trim($_POST['observaciones'] ?? ''));
 
+
+    $fechaObj = DateTime::createFromFormat('Y-m-d', $fecha_nacimiento);
+
+    if (!$fechaObj || $fechaObj->format('Y-m-d') !== $fecha_nacimiento) 
+    {
+        errorSession("La fecha tiene que ser valida.");
+    }
+
+    $hoy = new DateTime();
+    $edad = $hoy->diff($fechaObj)->y;
+
+    if ($edad < 18) {
+        errorSession("El cliente tiene que ser mayor de edad.");
+    }
+
     // Validaciones
     if (empty($nombre)) {
         errorSession("El nombre del cliente es obligatorio.");
         //$errores[] = "El nombre del cliente es obligatorio.";
     } elseif (mb_strlen($nombre) > 50) {
         errorSession("El nombre no puede exceder los 50 caracteres");
-        $errores[] = "El nombre no puede exceder los 50 caracteres.";
+        //$errores[] = "El nombre no puede exceder los 50 caracteres.";
     }
 
     if (empty($apellido)) {
         errorSession("El apellido del cliente es obligatorio.");
         //$errores[] = "El apellido del cliente es obligatorio.";
     } elseif (mb_strlen($apellido) > 100) {
-        $errores[] = "El apellido no puede exceder los 100 caracteres.";
+        errorSession("El apellido no puede exceder los 100 caracteres..");
+        //$errores[] = "El apellido no puede exceder los 100 caracteres.";
     }
 
     if (empty($telefono)) {
         errorSession("El teléfono principal es obligatorio.");
         //$errores[] = "El teléfono principal es obligatorio.";
-    } elseif (mb_strlen($telefono) > 15) {
-        $errores[] = "El teléfono no puede exceder los 15 caracteres.";
+    } elseif (!preg_match('/^[0-9]+$/', $telefono)) {
+        errorSession("El teléfono solo puede contener números.");
+    } elseif (strlen($telefono) !== 10) {
+        errorSession("El teléfono debe tener exactamente 10 dígitos.");
     }
 
     if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
@@ -126,7 +178,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (empty($telefono_emergencia)) {
         errorSession("El teléfono del contacto de emergencia es obligatorio.");
-        //$errores[] = "El teléfono del contacto de emergencia es obligatorio.";
+    } elseif (!preg_match('/^[0-9]+$/', $telefono_emergencia)) {
+        errorSession("El teléfono de emergencia solo puede contener números.");
+    } elseif (strlen($telefono_emergencia) !== 10) {
+        errorSession("El teléfono de emergencia debe tener exactamente 10 dígitos.");
     }
 
     $datos = [
@@ -188,12 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // echo "</div>";
         // echo "</div></body></html>";
     } else {
-        echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Error al guardar</title><link rel='stylesheet' href='../views/css/estilos_base.css'></head><body>";
-        echo "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ff9800; background: #fff3e0; max-width: 500px; border-radius: 8px; margin: 40px auto;'>";
-        echo "<h3 style='color: #e65100; margin-top: 0;'>Aviso al guardar en BD:</h3>";
-        echo "<p>" . htmlspecialchars($res['mensaje']) . "</p>";
-        echo "<a href='javascript:history.back()' class='btn'>Volver al formulario</a>";
-        echo "</div></body></html>";
+        errorSession($res['mensaje']);
     }
 } else {
     header("Location: ../views/clientes.php");
