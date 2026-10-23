@@ -146,7 +146,11 @@ $registro=obtenerPorId($id);
         <select class="campo" id="estado" name="estado">
             <?php $estadoActual = $old['estado'] ?? $registro['estado'] ?? ''; ?>
             <option value="Disponible" <?= in_array($estadoActual, ['Disponible', 'Venta legal', 'Venta Legal']) ? 'selected' : '' ?>>Venta legal</option>
+<<<<<<< HEAD
             <option value="Reservado" <?= in_array($estadoActual, ['Reservado', 'Adopcion', 'Adopción']) ? 'selected' : '' ?>>Adopcion</option>
+=======
+            <option value="Adopcion" <?= in_array($estadoActual, ['Adopcion', 'Adopción', 'Reservado']) ? 'selected' : '' ?>>Adopción</option>
+>>>>>>> 5759c365b75c361a5a79632b04dca4eba830bd88
         </select>
     </div>
 
