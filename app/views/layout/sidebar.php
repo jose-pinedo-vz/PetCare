@@ -9,12 +9,13 @@ $sbModulos = [
     'empleados'     => ['Empleados',         'empleados.php'],
     'proveedores'   => ['Proveedores',       'proveedores.php'],
     'inventario'    => ['Inventario',        'inventario.php'],
-    'ventas'        => ['Ventas',            'Ventas.php'],
+    'ventas'        => ['Ventas',            'Venta.php'],
     'servicios'     => ['Servicios',         null],
     'adopcion'      => ['Adopción y venta',  'adopcion_venta.php'],
     'veterinaria'   => ['Veterinaria',       null],
     'pagos'         => ['Pagos',             null],
     'pagos_tarjeta' => ['Pagos con tarjeta', null],
+    'usuarios'      => ['Usuarios',          'usuarios.php'],
     'configuracion' => ['Configuración',     null],
 ];
 ?>

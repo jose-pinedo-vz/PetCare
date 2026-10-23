@@ -1,3 +1,16 @@
+<?php
+require_once __DIR__ . '/../models/Cliente.php';
+$listaClientes = Cliente::obtenerTodos();
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -15,7 +28,7 @@
   <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja">Gestión de Inventario /</div>
+      <div class="migaja">Gestión de inventario /</div>
       <div class="encabezado-pagina">
         <h1>Control de inventario</h1>
       </div>
@@ -66,7 +79,7 @@
                 <td>2 (bajo)</td>
                 <td>30.50</td>
                 <td class="acciones">
-                  <a class="btn btn-chico btn-info" href="enespera.php?id=1">Pedir</a>
+                  <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden de compra</a>
                   <a class="btn btn-chico" href="editar_producto.php?id=1">Editar</a>
                   <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=1">Eliminar</a>
                 </td>
@@ -99,7 +112,7 @@
                         <td>Pelota</td>
                         <td>2 (bajo)</td>
                         <td class="acciones">
-                            <a class="btn btn-chico btn-info" href="enespera.php?id=1">Pedir</a>
+                            <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden de compra</a>
                         </td>
                     </tr>
                 </tbody>

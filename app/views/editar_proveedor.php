@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 require_once __DIR__ . '/../controllers/proveedor.php';
 require_once __DIR__ . '/../models/proveedores.php';
@@ -311,5 +312,8 @@ if (!$proveedor) {
   </footer>
 
 </body>
+<<<<<<< HEAD
+=======
 
+>>>>>>> d7a9e6bcd315c9e8ca8e2d8788e907503afa5f55
 </html>
