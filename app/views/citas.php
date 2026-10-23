@@ -85,21 +85,39 @@ if (session_status() === PHP_SESSION_NONE)
       <a class="btn" href="agendarCita.php">+ Agendar cita</a>
     </div>
 
+    
+
     <div class="contenedor_citas">
       <div class="boton_control">
         <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
         <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
       </div>
 
-      <h3>Buscar</h3>
-      <input type="text" class="campo" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez" required></input>
+      <style>
+        .contenedor-busqueda {
+          display: flex;
+          align-items: center;
+          gap: 15px; /* Espacio de separación entre cada elemento */
+          width: 100%;
+      }
 
-      <select class="select" id="fecha">
-        <option value="todos">Todas</option>
-        <option value="hoy">Hoy</option>
-        <option value="semana">Esta semana</option>
-        <option value="mes">Este mes</option>
-      </select>
+      .contenedor-busqueda input.campo {
+          flex: 1; /* Hace que el campo de texto crezca y ocupe el espacio del centro */
+      }
+      </style>
+
+
+      <div class="contenedor-busqueda">
+        <h3>Buscar</h3>
+        <input type="text" class="campo" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez">
+        <select class="select" id="fecha">
+          <option value="todos">Todas</option>
+          <option value="hoy">Hoy</option>
+          <option value="semana">Esta semana</option>
+          <option value="mes">Este mes</option>
+        </select>
+    </div>
+      
 
       <div class="panel_contenido">
         <!-- Sección de espera  -->

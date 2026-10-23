@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $clienteExiste = $consultasCitas->consultarIdCliente((int)$claveCliente);
     if (!$clienteExiste)
     {
-        errorSession("El cliente con clave #$claveCliente no se encuentra registrado en el sistema. Registre al cliente primero.");
+        errorSession("El cliente con clave #$claveCliente no se encuentra registrado en el sistema.");
     }
 
     // Longitud minima y maxima
