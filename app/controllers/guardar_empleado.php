@@ -63,9 +63,9 @@ function errorSession(string $error) : void {
 
     if ($id > 0) {
         header("Location: ../views/editar_empleado.php?id_empleado=" . $id);
-    } else {
-        header("Location: ../views/agregar_empleado.php");
+        exit();
     }
+    header("Location: ../views/agregar_empleado.php");
     exit();
 }
 
@@ -93,8 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $horario = trim($_POST['horario'] ?? '');
 
     // VALIDACION REGEX
-    
-    // validacion para ciudad y estado 
+
+    // validacion para ciudad y estado
     $soloLetras = '/^[\p{L}\s.\'-]+$/u';
 
     // validacion para nombre y apellido
