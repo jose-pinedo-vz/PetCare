@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $fecha = trim($_POST['fecha'] ?? '');
     $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
 
-    $orararioConsulta = trim($_POST['orararioConsulta'] ?? ''); 
+    $orararioConsulta = trim($_POST['horarioConsulta'] ?? $_POST['orararioConsulta'] ?? ''); 
 
     // validar campos obligatorios
     if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "" || $orararioConsulta === "")
@@ -129,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
 $accion = $_GET['accion'] ?? '';
 
-if ($accion === 'orario')
+if ($accion === 'horario' || $accion === 'orario')
 {
     horarios();
 }
