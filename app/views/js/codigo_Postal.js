@@ -29,7 +29,7 @@ async function codigoPostal(evt)
             colonia.appendChild(option);
         }
     }
-    catch
+    catch (error)
     {
         alert("Ingrese un código postal válido");
     }
@@ -67,7 +67,7 @@ async function codigoPostalEmpleados(evt)
             colonia.appendChild(option);
         }
     }
-    catch
+    catch (error)
     {
         alert("Ingrese un código postal válido");
     }
