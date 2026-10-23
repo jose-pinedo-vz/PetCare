@@ -9,7 +9,7 @@ function validar_datos($datos) {
 
     $errores = [];
 
-    // Validar especie
+    /* Validar especie
     $especie = preg_replace('/\s+/u', ' ', trim($datos['especie'] ?? ''));
     if ($especie === '') {
         $errores[] = "Debe especificar la especie.";
@@ -39,7 +39,7 @@ function validar_datos($datos) {
         } else {
             $datos['raza'] = $raza;
         }
-    }
+    }*/
 
     // Validar sexo
     $sexo = trim($datos['sexo'] ?? '');
@@ -76,7 +76,7 @@ function validar_datos($datos) {
         }
     }
 
-    // Validar color
+    /* Validar color
     $color = preg_replace('/\s+/u', ' ', trim($datos['color'] ?? ''));
     if ($color === '' || $color === 'Otro') {
         $errores[] = ($color === 'Otro') ? "Debe especificar el color si selecciona 'Otro'." : "El color es obligatorio.";
@@ -90,7 +90,7 @@ function validar_datos($datos) {
         } else {
             $datos['color'] = $color;
         }
-    }
+    }*/
 
     // Validar peso
     $pesoLimpio = str_replace(',', '.', trim($datos['peso'] ?? ''));

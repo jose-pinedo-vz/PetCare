@@ -51,7 +51,6 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="especie">Especie *:</label>
       <select class="campo" id="especie" name="especie" required>
-        <option value="">Seleccionar...</option>
         <option value="Perro" <?= (($old['especie'] ?? '') === 'Perro') ? 'selected' : '' ?>>Perro</option>
         <option value="Gato" <?= (($old['especie'] ?? '') === 'Gato') ? 'selected' : '' ?>>Gato</option>
         <option value="Conejo" <?= (($old['especie'] ?? '') === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
@@ -65,10 +64,12 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="raza">Raza:</label>
-      <input type="text" class="campo" id="raza" name="raza" minlength="2" maxlength="30"
-        pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,})*$"
-        title="Solo letras, números y guiones (sin símbolos especiales)"
-        value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
+      <select class="campo" id="raza" name="raza">
+        <input type="text" class="campo" id="raza" name="raza" minlength="2" maxlength="30"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,})*$"
+              title="Solo letras, números y guiones (sin símbolos especiales)"
+              value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
+      </select>
     </div>
 
     <div>

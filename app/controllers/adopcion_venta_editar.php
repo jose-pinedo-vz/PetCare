@@ -2,20 +2,14 @@
 require_once __DIR__ . '/../models/adopcion_venta.php';
 require_once __DIR__ . '/ImagenController.php';
 
-function validar_datos($datos)
-{
-    /*
-    echo "<pre>";
-    print_r($datos);
-    echo "</pre>";
-    exit();*/
+function validar_datos($datos) {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
 
     $errores = [];
 
-    // Validar especie
+    /* Validar especie
     $especie = preg_replace('/\s+/u', ' ', trim($datos['especie'] ?? ''));
     if ($especie === '') {
         $errores[] = "Debe especificar la especie.";
@@ -45,7 +39,7 @@ function validar_datos($datos)
         } else {
             $datos['raza'] = $raza;
         }
-    }
+    }*/
 
     // Validar sexo
     $sexo = trim($datos['sexo'] ?? '');
@@ -82,7 +76,7 @@ function validar_datos($datos)
         }
     }
 
-    // Validar color
+    /* Validar color
     $color = preg_replace('/\s+/u', ' ', trim($datos['color'] ?? ''));
     if ($color === '' || $color === 'Otro') {
         $errores[] = ($color === 'Otro') ? "Debe especificar el color si selecciona 'Otro'." : "El color es obligatorio.";
@@ -96,7 +90,7 @@ function validar_datos($datos)
         } else {
             $datos['color'] = $color;
         }
-    }
+    }*/
 
     // Validar peso
     $pesoLimpio = str_replace(',', '.', trim($datos['peso'] ?? ''));
@@ -219,46 +213,33 @@ function validar_datos($datos)
     if ($obs !== null) $datos['observaciones'] = $obs;
 
     $foto = $_FILES['fotografia'] ?? null;
-    $datos['fotografia'] = trim($_POST['fotografia_actual'] ?? '');
-
-    if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE)
-    {
+    $datos['fotografia'] = null;
+    if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
         $resultadoImagen = ImagenController::subir($foto);
-        if ($resultadoImagen['exito'])
-        {
+        if ($resultadoImagen['exito']) {
             $datos['fotografia'] = $resultadoImagen['ruta'];
-        }
-        else
-        {
+        } else {
             $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
         }
     }
 
-    if (count($errores) > 0){
+    if (count($errores) > 0) {
         $_SESSION['errores'] = $errores;
         $_SESSION['old']     = $_POST;
-        header("Location: ../views/editar_adopcion_venta.php?id=" . $datos['id']);
+        header("Location: ../views/ediaar_adopcion_venta.php");
         exit;
-    }
-    else
-    {
+    } else {
         $advert = editar($datos);
-        if (is_array($advert) && count($advert) > 0)
-        {
-            if ($advert[0] === "Error BD")
-            {
+        if (is_array($advert) && count($advert) > 0) {
+            if ($advert[0] === "Error BD") {
                 $_SESSION['errores'] = ["No se pudo conectar a la base de datos: " . $advert[1]];
-            }
-            else if ($advert[0] === "Error al editar")
-            {
+            } else if ($advert[0] === "Error al Insertar") {
                 $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
             }
             $_SESSION['old'] = $_POST;
-            header("Location: ../views/editar_adopcion_venta.php?id=" . $datos['id']);
+            header("Location: ../views/editar_adopcion_venta.php");
             exit;
-        }
-        else
-        {
+        } else {
             header('Location: ../views/adopcion_venta.php');
             exit;
         }
