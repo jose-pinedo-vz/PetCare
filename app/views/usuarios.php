@@ -44,7 +44,7 @@ $usuario=$_SESSION['usuario'];
           <div class="barra-acciones">
               <a class="btn" href="registro_usuario.php">+ Agregar usuario</a>
           </div>
-          <div class="table-envoltura">
+          <div class="tabla-envoltura">
             <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
               <thead>
                 <tr style="background: #f5f5f5;">
@@ -62,14 +62,14 @@ $usuario=$_SESSION['usuario'];
               <tbody>
                 <?php foreach ($listaUsuarios as $u): ?>
                   <tr>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars((string)$u['id_usuario']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['usuario']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['empleado_asociado']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['rol']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['permisos']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['fecha_creacion']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['ultimo_acceso']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['estado']); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars((string)$u['id_usuario'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['usuario'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['empleado_asociado'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['rol'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['permisos'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['fecha_creacion'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['ultimo_acceso'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['estado'] ?? ''); ?></td>
 
                     <!-- Celda de acciones con white-space: nowrap; -->
                     <td style="padding: 10px; text-align: center; white-space: nowrap;">

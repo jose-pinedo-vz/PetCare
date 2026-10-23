@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $fecha = trim($_POST['fecha'] ?? '');
     $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
 
-    $orararioConsulta = trim($_POST['orararioConsulta'] ?? ''); 
+    $orararioConsulta = trim($_POST['horarioConsulta'] ?? $_POST['orararioConsulta'] ?? ''); 
 
     // validar campos obligatorios
     if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "" || $orararioConsulta === "")
@@ -113,11 +113,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     }
 
 
-<<<<<<< HEAD
-    // insercin de la cit
-
-=======
->>>>>>> 6bc9b3ac6685542ba801c7525fdbe692d19ea54c
 
     // insercin de la cita
     // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
@@ -127,14 +122,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     // }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
-    header("Location: ../views/citas.php?");
+    header("Location: ../views/citas.php?exito=1");
     exit();
 
 }
 
 $accion = $_GET['accion'] ?? '';
 
-if ($accion === 'orario')
+if ($accion === 'horario' || $accion === 'orario')
 {
     horarios();
 }

@@ -87,7 +87,9 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="fecha_de_nacimiento">Fecha de nacimiento *:</label>
-        <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? $registro['fecha_de_nacimiento'] ?? '') ?>" required>
+        <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
+          min="<?= date('Y-m-d', strtotime('-35 years')) ?>" max="<?= date('Y-m-d') ?>"
+          value="<?= htmlspecialchars(!empty($old['fecha_de_nacimiento']) ? $old['fecha_de_nacimiento'] : substr((string)($registro['fecha_de_nacimiento'] ?? ''), 0, 10)) ?>" required>
     </div>
 
     <div>
@@ -133,31 +135,34 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="costo_de_adquisicion">Costo de adquisición *:</label>
-        <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? $registro['costo_de_adquisicion'] ?? '') ?>" required>
+        <input type="number" step="0.01" min="0" max="500000" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? $registro['costo_de_adquisicion'] ?? '') ?>" required>
     </div>
 
     <div>
         <label class="label-campo" for="precio_de_venta">Precio de venta *:</label>
-        <input type="number" step="0.01" min="0" class="campo" id="precio_de_venta" name="precio_de_venta" value="<?= htmlspecialchars($old['precio_de_venta'] ?? $registro['precio_de_venta'] ?? '') ?>" required>
+        <input type="number" step="0.01" min="0" max="500000" class="campo" id="precio_de_venta" name="precio_de_venta" placeholder="Ej. 1500.00" value="<?= htmlspecialchars($old['precio_de_venta'] ?? $registro['precio_de_venta'] ?? '') ?>" required>
     </div>
 
     <div>
         <label class="label-campo" for="estado">Estado:</label>
         <select class="campo" id="estado" name="estado">
             <?php $estadoActual = $old['estado'] ?? $registro['estado'] ?? ''; ?>
+            <option value="Venta legal" <?= ($estadoActual === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
+            <option value="Adopcion" <?= ($estadoActual === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
             <option value="Disponible" <?= in_array($estadoActual, ['Disponible', 'Venta legal', 'Venta Legal']) ? 'selected' : '' ?>>Venta legal</option>
             <option value="Reservado" <?= in_array($estadoActual, ['Reservado', 'Adopcion', 'Adopción']) ? 'selected' : '' ?>>Adopcion</option>
+            <option value="Adopcion" <?= in_array($estadoActual, ['Adopcion', 'Adopción', 'Reservado']) ? 'selected' : '' ?>>Adopción</option>
         </select>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="caracteristicas">Características *:</label>
-      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" required><?= htmlspecialchars($old['caracteristicas'] ?? $registro['caracteristicas'] ?? '') ?></textarea>
+      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" minlength="5" maxlength="500" required placeholder="Describe temperamento, aspecto y detalles de la mascota"><?= htmlspecialchars($old['caracteristicas'] ?? $registro['caracteristicas'] ?? '') ?></textarea>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="procedencia">Procedencia *:</label>
-      <textarea class="campo" id="procedencia" name="procedencia" rows="2" required><?= htmlspecialchars($old['procedencia'] ?? $registro['procedencia'] ?? '') ?></textarea>
+      <textarea class="campo" id="procedencia" name="procedencia" rows="2" minlength="5" maxlength="500" required placeholder="Origen o criadero"><?= htmlspecialchars($old['procedencia'] ?? $registro['procedencia'] ?? '') ?></textarea>
     </div>
   </div>
 
@@ -192,17 +197,19 @@ $registro=obtenerPorId($id);
   <div class="grid-formulario">
     <div>
       <label class="label-campo" for="vacunas">Vacunas *:</label>
-      <textarea class="campo" id="vacunas" name="vacunas" rows="2" required><?= htmlspecialchars($old['vacunas'] ?? $registro['vacunas'] ?? '') ?></textarea>
+      <textarea class="campo" id="vacunas" name="vacunas" rows="2" minlength="3" maxlength="500" required placeholder="Esquema de vacunas recibidas"> <?= htmlspecialchars($old['vacunas'] ?? $registro['vacunas'] ?? '') ?></textarea>
     </div>
 
     <div>
         <label class="label-campo" for="desparasitacion">Desparasitación *:</label>
-        <input type="date" class="campo" id="desparasitacion" name="desparasitacion" value="<?= htmlspecialchars($old['desparasitacion'] ?? $registro['desparasitacion'] ?? '') ?>" required>
+        <input type="date" class="campo" id="desparasitacion" name="desparasitacion"
+          min="<?= date('Y-m-d', strtotime('-35 years')) ?>" max="<?= date('Y-m-d') ?>"
+          value="<?= htmlspecialchars(!empty($old['desparasitacion']) ? $old['desparasitacion'] : substr((string)($registro['desparasitacion'] ?? ''), 0, 10)) ?>" required>
     </div>
 
     <div class="campo-completo">
         <label class="label-campo" for="observaciones">Observaciones *:</label>
-        <textarea class="campo" id="observaciones" name="observaciones" rows="2" required><?= htmlspecialchars($old['observaciones'] ?? $registro['observaciones'] ?? '') ?></textarea>
+        <textarea class="campo" id="observaciones" name="observaciones" rows="2" minlength="5" maxlength="500" required placeholder="Observaciones generales"><?= htmlspecialchars($old['observaciones'] ?? $registro['observaciones'] ?? '') ?></textarea>
     </div>
   </div>
 </fieldset>
@@ -244,6 +251,20 @@ $registro=obtenerPorId($id);
         }
         selectColor.addEventListener('change', toggleColorEspec);
         toggleColorEspec();
+      }
+
+      const fechaNacInput = document.getElementById('fecha_de_nacimiento');
+      const fechaDespInput = document.getElementById('desparasitacion');
+      if (fechaNacInput && fechaDespInput) {
+        function sincronizarFechasDesp() {
+          if (fechaNacInput.value) {
+            fechaDespInput.min = fechaNacInput.value;
+          } else {
+            fechaDespInput.min = '<?= date('Y-m-d', strtotime('-35 years')) ?>';
+          }
+        }
+        fechaNacInput.addEventListener('change', sincronizarFechasDesp);
+        sincronizarFechasDesp();
       }
     })();
   </script>

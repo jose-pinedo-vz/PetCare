@@ -28,9 +28,9 @@ function insertar(array $datos) {
 
     $id = IDmascota($conexion);
 
-    $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado';
+    /* $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado'; */
     $restricciones = !empty($datos['restricciones_para_manejo']) ? $datos['restricciones_para_manejo'] : null;
-    $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales';
+    /* $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales'; */
     $fotografia    = !empty($datos['fotografia']) ? $datos['fotografia'] : null;
     $id_veterinario = !empty($datos['id_veterinario']) ? (int)$datos['id_veterinario'] : null;
 

@@ -71,6 +71,25 @@ class UsuariosDB
             return [];
         }
     }
+
+    public static function insertar_clientes(string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $permisos, string $estado)
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        try
+        {
+            $empleado=trim($_POST['empleado_asociado']??'');
+            $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
+            $base=$conexion->prepare("INSERT INTO usuarios (id_usuario, usuario, contrasena, empleado_asociado, rol, permisos, estado) 
+                                    VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u), ?, ?, ?, ?, ?, ?)");
+            $base->execute([$nuevo_usuario, $nueva_password, $empleado_asociado, $rol, $permisos, $estado]);
+
+            $_SESSION['mensaje']="Usuario actualizado con éxito.";
+        }
+        catch (PDOException $e)
+        {
+            $_SESSION['error']="Error al actualizar el usuario: " . $e->getMessage();
+        }
+    }
 }
 
 ?>

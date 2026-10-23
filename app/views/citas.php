@@ -74,7 +74,7 @@ if (session_status() === PHP_SESSION_NONE)
 
 
   <main>
-      <div class="migaja">Gestión de Citas /</div>
+      <div class="migaja">Gestión de citas /</div>
       <div class="encabezado-pagina">
         <h1>Citas</h1>
       </div>

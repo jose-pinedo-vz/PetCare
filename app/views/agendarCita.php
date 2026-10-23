@@ -85,10 +85,10 @@ $usuario=$_SESSION['usuario'];
           </div>
             
           <div>
-            <label class="label-campo" for="orarioconsulta">Orario de consulta *:</label>
+            <label class="label-campo" for="horarioConsulta">Horario de consulta *:</label>
 
-            <select name="orararioConsulta" id="orararioConsulta">
-              <option value="">Seleccione una fecha</option>
+            <select class="campo" name="horarioConsulta" id="horarioConsulta" required>
+              <option value="">Seleccione una fecha primero</option>
             </select>
 
           </div>

@@ -9,46 +9,66 @@ function validar_datos($datos) {
 
     $errores = [];
 
-    if (empty(trim($datos['especie'] ?? ''))) {
+    /* Validar especie
+    $especie = preg_replace('/\s+/u', ' ', trim($datos['especie'] ?? ''));
+    if ($especie === '') {
         $errores[] = "Debe especificar la especie.";
     } else {
-        $datos['especie'] = trim($datos['especie']);
-        if (strlen($datos['especie']) > 30) {
-            $errores[] = "La especie no puede tener más de 30 caracteres.";
-        } else if (preg_match('/\d/', $datos['especie'])) {
+        if (mb_strlen($especie) < 2 || mb_strlen($especie) > 30) {
+            $errores[] = "La especie debe tener entre 2 y 30 caracteres.";
+        } else if (preg_match('/\d/', $especie)) {
             $errores[] = "La especie no puede contener números.";
+        } else if (!preg_match('/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u', $especie)) {
+            $errores[] = "La especie solo puede contener letras y espacios válidos (sin símbolos ni caracteres especiales).";
+        } else {
+            $datos['especie'] = $especie;
         }
     }
 
-    if (empty(trim($datos['raza'] ?? ''))) {
+    // Validar raza
+    $raza = preg_replace('/\s+/u', ' ', trim($datos['raza'] ?? ''));
+    if ($raza === '') {
         $datos['raza'] = null;
     } else {
-        $datos['raza'] = trim($datos['raza']);
-        if (strlen($datos['raza']) > 30) {
-            $errores[] = "La raza no puede tener más de 30 caracteres.";
-        } else if (preg_match('/\d/', $datos['raza'])) {
+        if (mb_strlen($raza) < 2 || mb_strlen($raza) > 30) {
+            $errores[] = "La raza debe tener entre 2 y 30 caracteres.";
+        } else if (preg_match('/\d/', $raza)) {
             $errores[] = "La raza no puede contener números.";
+        } else if (!preg_match('/^[\p{L}]{2,}(?:[\s\-][\p{L}]{2,})*$/u', $raza)) {
+            $errores[] = "La raza solo puede contener letras, guiones y espacios válidos (sin símbolos ni espacios repetidos).";
+        } else {
+            $datos['raza'] = $raza;
         }
-    }
+    }*/
 
-    if (empty(trim($datos['sexo'] ?? ''))) {
+    // Validar sexo
+    $sexo = trim($datos['sexo'] ?? '');
+    if ($sexo === '') {
         $datos['sexo'] = null;
     } else {
-        $datos['sexo'] = trim($datos['sexo']);
-        if (!in_array($datos['sexo'], ['Macho', 'Hembra'])) {
+        if (!in_array($sexo, ['Macho', 'Hembra'], true)) {
             $errores[] = "El sexo seleccionado no es válido.";
+        } else {
+            $datos['sexo'] = $sexo;
         }
     }
 
-    if (empty(trim($datos['fecha_de_nacimiento'] ?? ''))) {
+    // Validar fecha de nacimiento
+    $fechaNacRaw = trim($datos['fecha_de_nacimiento'] ?? '');
+    $fechaNacObj = null;
+    if ($fechaNacRaw === '') {
         $errores[] = "Debe especificar la fecha de nacimiento.";
     } else {
         try {
             $fechaActual = new DateTime('today');
-            $fechaNac = new DateTime($datos['fecha_de_nacimiento']);
+            $fechaNac = new DateTime($fechaNacRaw);
+            $limitePasado = new DateTime('-35 years');
             if ($fechaNac > $fechaActual) {
                 $errores[] = "Fecha de nacimiento: No puede ser una fecha posterior a hoy.";
+            } else if ($fechaNac < $limitePasado) {
+                $errores[] = "Fecha de nacimiento: La fecha no puede tener más de 35 años de antigüedad.";
             } else {
+                $fechaNacObj = $fechaNac;
                 $datos['fecha_de_nacimiento'] = $fechaNac->format('Y-m-d H:i:s');
             }
         } catch (Exception $e) {
@@ -56,124 +76,151 @@ function validar_datos($datos) {
         }
     }
 
-    if (empty(trim($datos['color'] ?? ''))) {
-        $errores[] = "El color es obligatorio.";
+    /* Validar color
+    $color = preg_replace('/\s+/u', ' ', trim($datos['color'] ?? ''));
+    if ($color === '' || $color === 'Otro') {
+        $errores[] = ($color === 'Otro') ? "Debe especificar el color si selecciona 'Otro'." : "El color es obligatorio.";
     } else {
-        $datos['color'] = trim($datos['color']);
-        if (strlen($datos['color']) > 50) {
+        if (mb_strlen($color) > 50) {
             $errores[] = "El color no puede tener más de 50 caracteres.";
-        } else if (preg_match('/\d/', $datos['color'])) {
+        } else if (preg_match('/\d/', $color)) {
             $errores[] = "El color no puede contener números.";
+        } else if (!preg_match('/^[\p{L}]+(?:(?:,\s*|\s*-\s*|\s+)[\p{L}]+)*$/u', $color)) {
+            $errores[] = "El color solo puede contener letras y espacios válidos (sin símbolos ni caracteres especiales).";
+        } else {
+            $datos['color'] = $color;
         }
-    }
+    }*/
 
+    // Validar peso
     $pesoLimpio = str_replace(',', '.', trim($datos['peso'] ?? ''));
     if ($pesoLimpio === '' || !is_numeric($pesoLimpio)) {
         $errores[] = "El peso debe ser un valor numérico.";
     } else {
         $peso = (float)$pesoLimpio;
-        if ($peso <= 0) {
-            $errores[] = "El peso debe ser un número mayor a 0.";
-        } else if ($peso > 99999999.99) {
-            $errores[] = "El peso excede el límite permitido.";
+        if ($peso < 0.01) {
+            $errores[] = "El peso debe ser de al menos 0.01 kg.";
+        } else if ($peso > 150.00) {
+            $errores[] = "El peso no puede exceder los 150 kg para animales domésticos.";
         } else {
             $datos['peso'] = $peso;
         }
     }
 
-    if (empty(trim($datos['fecha_de_ingreso'] ?? ''))) {
+    // Validar fecha de ingreso
+    $fechaIngRaw = trim($datos['fecha_de_ingreso'] ?? '');
+    if ($fechaIngRaw === '') {
         $errores[] = "Debe especificar la fecha de ingreso.";
     } else {
         try {
-            $fechaIng = new DateTime($datos['fecha_de_ingreso']);
-            $datos['fecha_de_ingreso'] = $fechaIng->format('Y-m-d H:i:s');
+            $fechaIng = new DateTime($fechaIngRaw);
+            $ahoraMasMargen = (new DateTime())->modify('+10 minutes');
+            if ($fechaIng > $ahoraMasMargen) {
+                $errores[] = "Fecha de ingreso: No puede ser una fecha futura.";
+            } else if ($fechaNacObj && $fechaIng < $fechaNacObj) {
+                $errores[] = "Fecha de ingreso: No puede ser anterior a la fecha de nacimiento del animal.";
+            } else {
+                $datos['fecha_de_ingreso'] = $fechaIng->format('Y-m-d H:i:s');
+            }
         } catch (Exception $e) {
             $errores[] = "Fecha de ingreso: Formato de fecha no válido.";
         }
     }
 
+    // Validar costo de adquisición
     $costoLimpio = str_replace(',', '.', trim($datos['costo_de_adquisicion'] ?? ''));
     if ($costoLimpio === '') {
         $datos['costo_de_adquisicion'] = null;
     } else if (!is_numeric($costoLimpio)) {
-        $errores[] = "El costo de adquisición debe ser numérico.";
+        $errores[] = "El costo de adquisición debe ser un valor numérico.";
     } else {
         $costo = (float)$costoLimpio;
         if ($costo < 0) {
             $errores[] = "El costo de adquisición no puede ser negativo.";
-        } else if ($costo > 99999999.99) {
-            $errores[] = "El costo de adquisición excede el límite permitido.";
+        } else if ($costo > 500000.00) {
+            $errores[] = "El costo de adquisición excede el límite permitido ($500,000.00).";
         } else {
             $datos['costo_de_adquisicion'] = $costo;
         }
     }
 
+    // Validar precio de venta
     $precioLimpio = str_replace(',', '.', trim($datos['precio_de_venta'] ?? ''));
     if ($precioLimpio === '' || !is_numeric($precioLimpio)) {
-        $errores[] = "El precio de venta debe ser numérico.";
+        $errores[] = "El precio de venta debe ser un valor numérico.";
     } else {
         $precio = (float)$precioLimpio;
         if ($precio < 0) {
             $errores[] = "El precio de venta no puede ser negativo.";
-        } else if ($precio > 99999999.99) {
-            $errores[] = "El precio de venta excede el límite permitido.";
+        } else if ($precio > 500000.00) {
+            $errores[] = "El precio de venta excede el límite permitido ($500,000.00).";
         } else {
             $datos['precio_de_venta'] = $precio;
         }
     }
 
-    if (empty(trim($datos['estado'] ?? ''))) {
+    // Validar estado
+    $estadosValidos = ['Disponible', 'Venta legal', 'Adopcion', 'Vendido', 'Adoptado', 'Reservado'];
+    $estado = trim($datos['estado'] ?? '');
+    if ($estado === '') {
         $datos['estado'] = 'Disponible';
+    } else if (!in_array($estado, $estadosValidos, true)) {
+        $errores[] = "El estado seleccionado no es válido.";
     } else {
-        $datos['estado'] = trim($datos['estado']);
+        $datos['estado'] = $estado;
     }
 
-    if (empty(trim($datos['caracteristicas'] ?? ''))) {
-        $errores[] = "Las características son obligatorias.";
-    } else {
-        $datos['caracteristicas'] = trim($datos['caracteristicas']);
-        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['caracteristicas'])) {
-            $errores[] = "Las características deben incluir texto explicativo, no solo números o espacios.";
+    $validarTextoLibre = function(string $campo, string $nombreCampo, int $min, int $max) use (&$errores): ?string {
+        $limpio = preg_replace('/\s+/u', ' ', trim($campo));
+        if ($limpio === '') {
+            $errores[] = "El campo {$nombreCampo} es obligatorio.";
+            return null;
         }
-    }
-
-    if (empty(trim($datos['procedencia'] ?? ''))) {
-        $errores[] = "La procedencia es obligatoria.";
-    } else {
-        $datos['procedencia'] = trim($datos['procedencia']);
-        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['procedencia'])) {
-            $errores[] = "La procedencia debe incluir texto explicativo, no solo números o espacios.";
+        if (mb_strlen($limpio) < $min || mb_strlen($limpio) > $max) {
+            $errores[] = "El campo {$nombreCampo} debe tener entre {$min} y {$max} caracteres.";
+            return null;
         }
-    }
-
-    if (empty(trim($datos['vacunas'] ?? ''))) {
-        $errores[] = "Debe especificar las vacunas.";
-    } else {
-        $datos['vacunas'] = trim($datos['vacunas']);
-        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['vacunas'])) {
-            $errores[] = "Las vacunas deben incluir texto explicativo, no solo números o espacios.";
+        if (!preg_match('/[\p{L}]{2,}/u', $limpio)) {
+            $errores[] = "El campo {$nombreCampo} debe incluir texto explicativo con palabras reales.";
+            return null;
         }
-    }
+        return $limpio;
+    };
 
-    if (empty(trim($datos['desparasitacion'] ?? ''))) {
-        $errores[] = "Debe especificar la desparasitación.";
+    $caract = $validarTextoLibre($datos['caracteristicas'] ?? '', 'Características', 5, 500);
+    if ($caract !== null) $datos['caracteristicas'] = $caract;
+
+    $proc = $validarTextoLibre($datos['procedencia'] ?? '', 'Procedencia', 5, 500);
+    if ($proc !== null) $datos['procedencia'] = $proc;
+
+    $vac = $validarTextoLibre($datos['vacunas'] ?? '', 'Vacunas', 3, 500);
+    if ($vac !== null) $datos['vacunas'] = $vac;
+
+    // Desparasitación (fecha)
+    $despRaw = trim($datos['desparasitacion'] ?? '');
+    if ($despRaw === '') {
+        $errores[] = "Debe especificar la fecha de desparasitación.";
     } else {
         try {
-            $fechaDesp = new DateTime($datos['desparasitacion']);
-            $datos['desparasitacion'] = $fechaDesp->format('Y-m-d 00:00:00');
+            $fechaDesp = new DateTime($despRaw);
+            $fechaActual = new DateTime('today');
+            $limitePasado = new DateTime('-35 years');
+            if ($fechaDesp > $fechaActual) {
+                $errores[] = "Desparasitación: No puede ser una fecha posterior a hoy.";
+            } else if ($fechaNacObj && $fechaDesp < $fechaNacObj) {
+                $errores[] = "Desparasitación: No puede ser anterior a la fecha de nacimiento del animal.";
+            } else if ($fechaDesp < $limitePasado) {
+                $errores[] = "Desparasitación: La fecha no puede tener más de 35 años de antigüedad.";
+            } else {
+                $datos['desparasitacion'] = $fechaDesp->format('Y-m-d 00:00:00');
+            }
         } catch (Exception $e) {
             $errores[] = "Desparasitación: Formato de fecha no válido.";
         }
     }
 
-    if (empty(trim($datos['observaciones'] ?? ''))) {
-        $errores[] = "Las observaciones son obligatorias.";
-    } else {
-        $datos['observaciones'] = trim($datos['observaciones']);
-        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['observaciones'])) {
-            $errores[] = "Las observaciones deben incluir texto explicativo, no solo números o espacios.";
-        }
-    }
+    $obs = $validarTextoLibre($datos['observaciones'] ?? '', 'Observaciones', 5, 500);
+    if ($obs !== null) $datos['observaciones'] = $obs;
 
     $foto = $_FILES['fotografia'] ?? null;
     $datos['fotografia'] = null;

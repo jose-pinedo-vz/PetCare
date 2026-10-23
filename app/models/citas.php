@@ -103,7 +103,7 @@
         {
             try
             {
-                $query = "SELECT nombre, horario FROM `empleados` WHERE puesto LIKE 'Veterinario%'";
+                $query = "SELECT nombre, horario FROM `empleados` WHERE puesto LIKE 'Veterinario%' AND esta_activo = 1";
                 $db = ConexionDB::obtenerConexion();
                 $stml =$db->prepare($query);$stml->execute();
                 return $stml->fetchAll(PDO::FETCH_ASSOC);
@@ -118,11 +118,11 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_empleado) AS numEmpleado FROM empleados WHERE puesto = "Veterinario/a" AND horario = ? AND esta_activo = 1;';
+                $query = 'SELECT COUNT(id_empleado) AS numEmpleado FROM empleados WHERE puesto LIKE "Veterinario%" AND horario = ? AND esta_activo = 1;';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$valor]);
-                return $stml->fetchColumn();
+                return (int)$stml->fetchColumn();
             }
             catch (Exception $e)
             {
