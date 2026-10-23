@@ -21,7 +21,7 @@ $listaClientes = Cliente::obtenerTodos();
 
 
     <main>
-      <div class="migaja">Gestión de Clientes /</div>
+      <div class="migaja">Gestión de clientes /</div>
       <div class="encabezado-pagina">
         <h1>Clientes</h1>
       </div>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Veterinaria PetCare - Mascotas</title>
+  <title>Veterinaria PetCare - mascotas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 
 </head>
@@ -19,7 +19,7 @@
 
 
     <main>
-      <div class="migaja">Gestión de Mascotas /</div>
+      <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>
       </div>

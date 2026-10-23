@@ -14,7 +14,7 @@
         include __DIR__ . '/layout/sidebar.php'; ?>
 
         <main>
-            <div class="migaja">Gestión de Proveedores /</div>
+            <div class="migaja">Gestión de proveedores /</div>
             <div class="encabezado-pagina">
                 <h1>Proveedores</h1>
             </div>
