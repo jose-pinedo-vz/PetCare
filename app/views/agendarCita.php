@@ -23,6 +23,7 @@ $usuario=$_SESSION['usuario'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agendar cita</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/agendarCitas.js"></script>
 </head>
 <body>
 
@@ -69,7 +70,7 @@ $usuario=$_SESSION['usuario'];
 
           <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
-            <input type="date" class="campo" id="fecha" name="fecha" required
+            <input type="date" class="campo" id="fecha" name="fecha" data-fecha="fecha" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
 
@@ -80,6 +81,15 @@ $usuario=$_SESSION['usuario'];
             <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
+
+          </div>
+            
+          <div>
+            <label class="label-campo" for="orarioconsulta">Orario de consulta *:</label>
+
+            <select name="orararioConsulta" id="orararioConsulta">
+              <option value="">Seleccione una fecha</option>
+            </select>
 
           </div>
         </div>

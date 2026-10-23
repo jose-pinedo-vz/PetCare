@@ -87,10 +87,33 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="color">Color *:</label>
-      <input type="text" class="campo" id="color" name="color" minlength="3" maxlength="20"
-        pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
-        title="Solo letras y espacios (sin números ni símbolos)"
-        value="<?= htmlspecialchars($old['color'] ?? '') ?>" required>
+      <?php 
+        $coloresDisponibles = [
+          'Blanco', 'Negro', 'Gris', 'Café', 'Amarillo', 'Verde', 'Rojo',
+          'Blanco y negro', 'Café y blanco', 'Café y amarillo', 'Blanco y gris',
+          'Verde y amarillo', 'Blanco, amarillo y negro'
+        ];
+        $colorOld = $old['color'] ?? '';
+        $colorEspecOld = $old['color_espec'] ?? '';
+        $esOtroColor = ($colorOld === 'Otro') || (!empty($colorOld) && !in_array(mb_strtolower($colorOld), array_map('mb_strtolower', $coloresDisponibles)));
+        if ($esOtroColor && empty($colorEspecOld) && $colorOld !== 'Otro') {
+          $colorEspecOld = $colorOld;
+        }
+      ?>
+      <select class="campo" id="color" name="color" required>
+        <option value="">Seleccionar...</option>
+        <?php foreach ($coloresDisponibles as $opcionColor): ?>
+          <option value="<?= htmlspecialchars($opcionColor) ?>" <?= (!$esOtroColor && strcasecmp($colorOld, $opcionColor) === 0) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($opcionColor) ?>
+          </option>
+        <?php endforeach; ?>
+        <option value="Otro" <?= $esOtroColor ? 'selected' : '' ?>>Otro (Especificar)</option>
+      </select>
+    </div>
+
+    <div id="contenedor-color-espec" style="<?= $esOtroColor ? '' : 'display: none;' ?>">
+      <label class="label-campo" for="color_espec">Especifique el color *:</label>
+      <input type="text" class="campo" id="color_espec" name="color_espec" maxlength="50" placeholder="Ej. Marrón rojizo" value="<?= htmlspecialchars($colorEspecOld) ?>">
     </div>
 
     <div>
@@ -198,6 +221,29 @@ unset($_SESSION['old']);
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-adopcion_venta.js"></script>
+  <script>
+    (function() {
+      const selectColor = document.getElementById('color');
+      const contenedorColorEspec = document.getElementById('contenedor-color-espec');
+      const inputColorEspec = document.getElementById('color_espec');
+
+      if (selectColor && contenedorColorEspec) {
+        function toggleColorEspec() {
+          if (selectColor.value === 'Otro') {
+            contenedorColorEspec.style.display = 'block';
+            if (inputColorEspec) inputColorEspec.required = true;
+          } else {
+            contenedorColorEspec.style.display = 'none';
+            if (inputColorEspec) {
+              inputColorEspec.required = false;
+            }
+          }
+        }
+        selectColor.addEventListener('change', toggleColorEspec);
+        toggleColorEspec();
+      }
+    })();
+  </script>
 
 </body>
 </html>
