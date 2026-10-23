@@ -65,6 +65,10 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="raza">Raza:</label>
       <select class="campo" id="raza" name="raza">
+        <input type="text" class="campo" id="raza" name="raza" minlength="2" maxlength="30"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,})*$"
+              title="Solo letras, números y guiones (sin símbolos especiales)"
+              value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
       </select>
     </div>
 

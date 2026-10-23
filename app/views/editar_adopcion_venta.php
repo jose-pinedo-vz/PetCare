@@ -73,8 +73,7 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="raza">Raza:</label>
-        <select class="campo" id="raza" name="raza">
-        </select>
+        <input type="text" class="campo" id="raza" name="raza" maxlength="30" value="<?= htmlspecialchars($old['raza'] ?? $registro['raza'] ?? '') ?>">
     </div>
 
     <div>
