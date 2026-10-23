@@ -265,6 +265,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El horario no es válido.";
     }
 
+    // validar que no este en la base de datos
+    $estaReg = Empleados::estaRegistrado($correo, $telefono, $id_empleado);
+    if ($estaReg) {
+        $errores[] = "Ya existe un empleado registrado con el mismo correo electronico o numero de telefono";
+    }
+
     if (count($errores) > 0) {
         $msg = implode("\n\n", $errores);
         errorSession($msg);
