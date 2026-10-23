@@ -84,15 +84,14 @@ function validar_datos($datos)
 
     // Validar color
     $color = preg_replace('/\s+/u', ' ', trim($datos['color'] ?? ''));
-    if ($color === '') {
-        $errores[] = "El color es obligatorio.";
+    if ($color === '' || $color === 'Otro') {
+        $errores[] = ($color === 'Otro') ? "Debe especificar el color si selecciona 'Otro'." : "El color es obligatorio.";
     } else {
-        $datos['color'] = trim($datos['color']);
-        if (strlen($datos['color']) > 50) {
+        if (mb_strlen($color) > 50) {
             $errores[] = "El color no puede tener más de 50 caracteres.";
-        } else if (preg_match('/\d/', $datos['color'])) {
+        } else if (preg_match('/\d/', $color)) {
             $errores[] = "El color no puede contener números.";
-        } else if (!preg_match('/^[\p{L}]{2,}(?:[\s\-][\p{L}]{2,})*$/u', $color)) {
+        } else if (!preg_match('/^[\p{L}]+(?:(?:,\s*|\s*-\s*|\s+)[\p{L}]+)*$/u', $color)) {
             $errores[] = "El color solo puede contener letras y espacios válidos (sin símbolos ni caracteres especiales).";
         } else {
             $datos['color'] = $color;
