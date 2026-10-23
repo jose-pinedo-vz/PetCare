@@ -174,54 +174,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $numero_interior = null;
     } else if (mb_strlen($numero_interior) > 15) {
         $errores[] = "El número interior no debe tener más de 15 caracteres.";
-    } else if (!preg_match($patronNumero, $numero_interior)) {
-        $errores[] = "El número interior solo puede contener números, letras y guiones.";
+    } else if (!preg_match('/^[a-zA-Z0-9\s.\-\/]{1,15}$/', $numero_interior)) {
+        $errores[] = "El número interior contiene caracteres no permitidos.";
+    } else if (!preg_match('/\d/', $numero_interior) && !in_array(strtoupper(trim($numero_interior)), ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','PB','PH','SN','S/N'], true)) {
+        $errores[] = "El número interior debe contener al menos un dígito o ser una designación válida (ej: 4, 10-A, S/N).";
     }
 
-    
-    if ($colonia === '') {
-        $errores[] = "La colonia es obligatoria.";
-    } else if (mb_strlen($colonia) < 2 || mb_strlen($colonia) > 60) {
-        $errores[] = "La colonia debe tener entre 2 y 60 caracteres.";
-    } else if (!preg_match('/[\p{L}]/u', $colonia)) {
-        $errores[] = "La colonia debe contener letras.";
-    } else if (!preg_match('/^[\p{L}0-9\s.,\-\/]+$/u', $colonia)) {
-        $errores[] = "La colonia contiene caracteres no permitidos.";
-    }
-
-   
-    if ($ciudad === '') {
-        $errores[] = "La ciudad es obligatoria.";
-    } else if (mb_strlen($ciudad) < 2 || mb_strlen($ciudad) > 60) {
-        $errores[] = "La ciudad debe tener entre 2 y 60 letras.";
-    } else if (!preg_match($patronCiudadEstado, $ciudad)) {
-        $errores[] = "La ciudad solo puede contener letras y espacios válidos.";
-    }
-
-    
-    if ($estado === '') {
-        $errores[] = "El estado es obligatorio.";
-    } else if (mb_strlen($estado) < 2 || mb_strlen($estado) > 60) {
-        $errores[] = "El estado debe tener entre 2 y 60 letras.";
-    } else if (!preg_match($patronCiudadEstado, $estado)) {
-        $errores[] = "El estado solo puede contener letras y espacios válidos.";
-    }
-
-    
+    $datosCP = [];
     if ($codigo_postal === '') {
         $errores[] = "El código postal es obligatorio.";
     } else if (!preg_match($soloCodigo_postal, $codigo_postal)) {
         $errores[] = "El código postal debe contener exactamente 5 dígitos numéricos.";
+    } else {
+        $datosCP = Cliente::obtenerCodigoPostal($codigo_postal);
+        if (empty($datosCP)) {
+            $errores[] = "El código postal ingresado no existe en el catálogo postal.";
+        }
     }
 
-    
+    if ($colonia === '') {
+        $errores[] = "La colonia es obligatoria.";
+    } else if (mb_strlen($colonia) < 2 || mb_strlen($colonia) > 60) {
+        $errores[] = "La colonia debe tener entre 2 y 60 caracteres.";
+    } else if (!empty($datosCP)) {
+        $coloniasCatalogo = array_map(function($c) { return mb_strtolower(trim($c['colonia'])); }, $datosCP);
+        if (!in_array(mb_strtolower($colonia), $coloniasCatalogo, true)) {
+            $errores[] = "La colonia seleccionada no corresponde al código postal $codigo_postal.";
+        }
+    } else if (!preg_match('/[\p{L}]/u', $colonia) || !preg_match('/^[\p{L}0-9\s.,\-\/]+$/u', $colonia)) {
+        $errores[] = "La colonia contiene caracteres no permitidos.";
+    }
+
+    if ($ciudad === '') {
+        $errores[] = "La ciudad es obligatoria.";
+    } else if (mb_strlen($ciudad) < 2 || mb_strlen($ciudad) > 60) {
+        $errores[] = "La ciudad debe tener entre 2 y 60 letras.";
+    } else if (!empty($datosCP)) {
+        $ciudadesValidas = [];
+        foreach ($datosCP as $c) {
+            if (!empty($c['ciudad'])) $ciudadesValidas[] = mb_strtolower(trim($c['ciudad']));
+            if (!empty($c['municipio'])) $ciudadesValidas[] = mb_strtolower(trim($c['municipio']));
+        }
+        if (!empty($ciudadesValidas) && !in_array(mb_strtolower($ciudad), $ciudadesValidas, true)) {
+            $errores[] = "La ciudad o municipio no coincide con el código postal ingresado.";
+        }
+    } else if (!preg_match($patronCiudadEstado, $ciudad)) {
+        $errores[] = "La ciudad solo puede contener letras y espacios válidos.";
+    }
+
+    if ($estado === '') {
+        $errores[] = "El estado es obligatorio.";
+    } else if (mb_strlen($estado) < 2 || mb_strlen($estado) > 60) {
+        $errores[] = "El estado debe tener entre 2 y 60 letras.";
+    } else if (!empty($datosCP)) {
+        $estadosValidos = array_unique(array_map(function($c) { return mb_strtolower(trim($c['estado'])); }, $datosCP));
+        if (!empty($estadosValidos) && !in_array(mb_strtolower($estado), $estadosValidos, true)) {
+            $errores[] = "El estado no coincide con el código postal ingresado.";
+        }
+    } else if (!preg_match($patronCiudadEstado, $estado)) {
+        $errores[] = "El estado solo puede contener letras y espacios válidos.";
+    }
+
     if ($puesto === '') {
         $errores[] = "El puesto es obligatorio.";
     } else if (!in_array($puesto, $puestosValidos, true)) {
         $errores[] = "El puesto seleccionado no es válido.";
     }
 
-    
+    $esVeterinario = in_array($puesto, ['Veterinario', 'Veterinario/a'], true);
+
+    if ($esVeterinario) {
+        if ($num_cedula_profesional === '') {
+            $errores[] = "El número de cédula profesional es obligatorio para el puesto de Veterinario/a.";
+        }
+    } else {
+        if ($num_cedula_profesional !== '') {
+            $errores[] = "El número de cédula profesional solo aplica para el puesto de Veterinario/a.";
+            $num_cedula_profesional = '';
+        }
+        if ($especialidad !== '') {
+            $errores[] = "La especialidad solo aplica para el puesto de Veterinario/a.";
+            $especialidad = '';
+        }
+    }
+
     if ($especialidad === '') {
         $especialidad = null;
     } else if (mb_strlen($especialidad) < 3 || mb_strlen($especialidad) > 50) {
@@ -230,15 +266,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "La especialidad solo puede contener letras, guiones y espacios válidos (sin números ni símbolos).";
     }
 
-    
-    if ($num_cedula_profesional === '') {
+    if ($num_cedula_profesional === '' || $num_cedula_profesional === null) {
         $num_cedula_profesional = null;
     } else if (!ctype_digit($num_cedula_profesional)) {
         $errores[] = "El número de cédula profesional solo debe contener dígitos numéricos.";
-    } else if ((int)$num_cedula_profesional <= 0 || (int)$num_cedula_profesional > 2147483647 || strlen($num_cedula_profesional) < 6 || strlen($num_cedula_profesional) > 10) {
-        $errores[] = "La cédula profesional debe tener entre 6 y 10 dígitos numéricos.";
+    } else if (strlen($num_cedula_profesional) < 6 || strlen($num_cedula_profesional) > 8) {
+        $errores[] = "La cédula profesional debe tener entre 6 y 8 dígitos numéricos.";
+    } else if (preg_match('/^(\d)\1+$/', $num_cedula_profesional)) {
+        $errores[] = "El número de cédula profesional no puede tener todos los dígitos repetidos.";
+    } else if (in_array($num_cedula_profesional, ['123456', '1234567', '12345678', '87654321', '7654321'], true)) {
+        $errores[] = "El número de cédula profesional no puede ser una secuencia numérica consecutiva.";
     } else {
         $num_cedula_profesional = (int)$num_cedula_profesional;
+        if (Empleados::cedulaRegistrada($num_cedula_profesional, $id_empleado)) {
+            $errores[] = "Ya existe un empleado registrado con el mismo número de cédula profesional.";
+        }
     }
 
     
