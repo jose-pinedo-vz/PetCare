@@ -1,3 +1,9 @@
+<?php
+  if (!isset($_SESSION)) {
+    session_start();
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -6,6 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Inicio</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/inicio.js"></script>
 </head>
 
 <body>
@@ -23,19 +30,19 @@
       <div class="resumen">
         <div class="resumen-item">
           <span class="resumen-titulo">Citas de hoy</span>
-          <span class="resumen-cifra">8</span>
+          <span class="resumen-cifra" id="citas-hoy"></span>
         </div>
         <div class="resumen-item">
           <span class="resumen-titulo">Citas por cobrar</span>
-          <span class="resumen-cifra">3</span>
+          <span class="resumen-cifra" id="citasPorCobrar"></span>
         </div>
         <div class="resumen-item">
           <span class="resumen-titulo">Mascotas registradas</span>
-          <span class="resumen-cifra">124</span>
+          <span class="resumen-cifra" id='numMascotas'></span>
         </div>
         <div class="resumen-item">
           <span class="resumen-titulo">Productos con stock bajo</span>
-          <span class="resumen-cifra">5</span>
+          <span class="resumen-cifra" id='StockBajo'></span>
         </div>
       </div>
 
@@ -53,31 +60,22 @@
                   <th>Estado</th>
                 </tr>
               </thead>
-              <tbody>
-              <tr>
-                <td>2026-10-11 09:00</td>
-                <td>Nombre del dueño</td>
-                <td>Vacuna</td>
-                <td><span class="estado-chip estado-espera">En espera</span></td>
-              </tr>
-              <tr>
+              <tbody id="tablaCitas">
+
+
+              <!-- <tr>
                 <td>2026-10-11 10:30</td>
                 <td>Nombre del dueño</td>
                 <td>Revisión general</td>
                 <td><span class="estado-chip estado-atendida">Atendida</span></td>
               </tr>
-              <tr>
-                <td>2026-10-11 12:00</td>
-                <td>Nombre del dueño</td>
-                <td>Desparasitación</td>
-                <td><span class="estado-chip estado-espera">En espera</span></td>
-              </tr>
-              <tr>
                 <td>2026-10-11 13:30</td>
                 <td>Nombre del dueño</td>
                 <td>Control de peso</td>
                 <td><span class="estado-chip estado-atendida">Atendida</span></td>
               </tr>
+         -->
+
               </tbody>
             </table>
           </div>
@@ -96,10 +94,10 @@
             </div>
           </div>
 
-          <div class="tarjeta">
+          <div class="tarjeta" id="targeta">
             <h2>Alertas</h2>
-            <div class="alerta-item">5 productos por debajo del stock mínimo</div>
-            <div class="alerta-item">3 citas atendidas pendientes de pago</div>
+            <!-- <div class="alerta-item">5 productos por debajo del stock mínimo</div>
+            <div class="alerta-item">3 citas atendidas pendientes de pago</div> -->
           </div>
 
         </div>
