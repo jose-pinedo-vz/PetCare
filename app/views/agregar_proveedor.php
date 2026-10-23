@@ -18,7 +18,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria PetCare - Agregar proveedor</title>
-    <script src="js/codigo_Postal.js"></script>
+    <script src="js/codigo_Postal.js?v=2"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   

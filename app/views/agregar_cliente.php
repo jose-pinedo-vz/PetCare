@@ -22,7 +22,7 @@ $usuario=$_SESSION['usuario'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Registrar cliente</title>
-  <script src="js/codigo_Postal.js"></script>
+  <script src="js/codigo_Postal.js?v=2"></script>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
