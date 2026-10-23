@@ -140,4 +140,60 @@ function actualizarProveedor(int $id, array $datos) {
         return ["Error al Actualizar", htmlspecialchars($e->getMessage())];
     }
 }
+
+function existeRazonSocial($razon_social){
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE razon_social = :razon_social";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bindParam(":razon_social", $razon_social, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    } catch (Exception $e) {
+        error_log("Error en existeRazonSocial: " . $e->getMessage());
+        return false;
+    }
+}
+
+function existeRfc($rfc){
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE rfc = :rfc";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bindParam(":rfc", $rfc, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    } catch (Exception $e) {
+        error_log("Error en existeRfc: " . $e->getMessage());
+        return false;
+    }
+}
+
+function existeTelefono($telefono){
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE telefono = :telefono";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bindParam(":telefono", $telefono, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    } catch (Exception $e) {
+        error_log("Error en existeTelefono: " . $e->getMessage());
+        return false;
+    }
+}
+
+function existeCorreo($correo){
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE correo = :correo";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bindParam(":correo", $correo, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    } catch (Exception $e) {
+        error_log("Error en existeCorreo: " . $e->getMessage());
+        return false;
+    }
+}
 ?>
