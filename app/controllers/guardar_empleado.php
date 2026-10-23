@@ -201,7 +201,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!in_array(mb_strtolower($colonia), $coloniasCatalogo, true)) {
             $errores[] = "La colonia seleccionada no corresponde al código postal $codigo_postal.";
         }
-    } else if (!preg_match('/[\p{L}]/u', $colonia) || !preg_match('/^[\p{L}0-9\s.,\-\/]+$/u', $colonia)) {
+    } else if (!preg_match('/[\p{L}]/u', $colonia) || !preg_match('/^[\p{L}0-9\s.,\-\/\(\)]+$/u', $colonia)) {
         $errores[] = "La colonia contiene caracteres no permitidos.";
     }
 
