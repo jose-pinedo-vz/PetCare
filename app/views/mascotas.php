@@ -55,7 +55,7 @@
             <tbody>
               <?php if (!empty($mascotas)): ?>
                 <?php foreach ($mascotas as $mascota): ?>
-                  <tr>
+                  <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($mascota), ENT_QUOTES) ?>">
                     <td><?= htmlspecialchars($mascota['nombre']) ?></td>
                     <td><?= htmlspecialchars($mascota['especie']) ?></td>
                     <td><?= htmlspecialchars($mascota['raza']) ?></td>
@@ -85,6 +85,45 @@
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <!--ventana modal-->
+  <dialog class="producto-dialog" id="modalDetalle">
+    <div class="producto-dialog-encabezado">
+      <h1>Detalle de la mascota</h1>
+      <form method="dialog"><button class="producto-dialog-cerrar" aria-label="cerrar">&times;</button></form>
+    </div>
+
+    <div class="detalle-cuerpo grid-formulario">
+      <div><span class="label-campo">Nombre</span><span data-campo="nombre"></span></div>
+      <div><span class="label-campo">Especie</span><span data-campo="especie"></span></div>
+      <div><span class="label-campo">Raza</span><span data-campo="raza"></span></div>
+      <div><span class="label-campo">Sexo</span><span data-campo="sexo"></span></div>
+      <div><span class="label-campo">Color</span><span data-campo="color"></span></div>
+      <div><span class="label-campo">Peso (kg)</span><span data-campo="peso"></span></div>
+      <div><span class="label-campo">Tamaño</span><span data-campo="tamanio"></span></div>
+      <div><span class="label-campo">Última desparasitación</span><span data-campo="ultima_desparasitacion"></span></div>
+      <div class="campo-completo"><span class="label-campo">Alergias</span><span data-campo="alergias"></span></div>
+      <div class="campo-completo"><span class="label-campo">Enfermedades</span><span data-campo="enfermedades"></span></div>
+      <div class="campo-completo"><span class="label-campo">Vacunas</span><span data-campo="vacunas"></span></div>
+      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="alergias"></span></div>
+    </div>
+  </dialog>
+
+
+  <script>
+    document.querySelector('tbody').addEventListener('click', (e) => {
+      if(e.target.closest('a, button')) return;
+      const fila = e.target.closest('tr[data-registro]');
+      if(!fila) return;
+
+      const datos = JSON.parse(fila.dataset.registro);
+      document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
+        el.textContent = datos[el.dataset.campo] || '-';
+      });
+      document.getElementById('modalDetalle').showModal();
+    })
+
+  </script>
 
 </body>
 

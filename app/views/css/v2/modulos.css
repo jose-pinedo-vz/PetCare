@@ -1992,3 +1992,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/*modal en mascotas y clientes*/
+
+.fila-clic {
+  cursor: pointer;
+}
+
+.detalle-cuerpo {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
