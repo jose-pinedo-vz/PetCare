@@ -28,7 +28,7 @@ $usuario=$_SESSION['usuario'];
 
 
   <main>
-      <div class="migaja">Gestión de Mascotas /</div>
+      <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>
       </div>

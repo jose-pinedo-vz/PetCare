@@ -51,7 +51,6 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="especie">Especie *:</label>
       <select class="campo" id="especie" name="especie" required>
-        <option value="">Seleccionar...</option>
         <option value="Perro" <?= (($old['especie'] ?? '') === 'Perro') ? 'selected' : '' ?>>Perro</option>
         <option value="Gato" <?= (($old['especie'] ?? '') === 'Gato') ? 'selected' : '' ?>>Gato</option>
         <option value="Conejo" <?= (($old['especie'] ?? '') === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
@@ -82,7 +81,7 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="fecha_de_nacimiento">Fecha de nacimiento *:</label>
       <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
-        max="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? '') ?>" required>
+        min="<?= date('Y-m-d', strtotime('-35 years')) ?>" max="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? '') ?>" required>
     </div>
 
     <div>
@@ -193,7 +192,8 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="desparasitacion">Desparasitación *:</label>
       <input type="date" class="campo" id="desparasitacion" name="desparasitacion"
-        max="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($old['desparasitacion'] ?? '') ?>" required>
+        min="<?= date('Y-m-d', strtotime('-35 years')) ?>" max="<?= date('Y-m-d') ?>"
+        value="<?= htmlspecialchars($old['desparasitacion'] ?? '') ?>" required>
     </div>
 
     <div class="campo-completo">
@@ -241,6 +241,20 @@ unset($_SESSION['old']);
         }
         selectColor.addEventListener('change', toggleColorEspec);
         toggleColorEspec();
+      }
+
+      const fechaNacInput = document.getElementById('fecha_de_nacimiento');
+      const fechaDespInput = document.getElementById('desparasitacion');
+      if (fechaNacInput && fechaDespInput) {
+        function sincronizarFechasDesp() {
+          if (fechaNacInput.value) {
+            fechaDespInput.min = fechaNacInput.value;
+          } else {
+            fechaDespInput.min = '<?= date('Y-m-d', strtotime('-35 years')) ?>';
+          }
+        }
+        fechaNacInput.addEventListener('change', sincronizarFechasDesp);
+        sincronizarFechasDesp();
       }
     })();
   </script>

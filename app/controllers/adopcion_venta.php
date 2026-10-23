@@ -9,7 +9,7 @@ function validar_datos($datos) {
 
     $errores = [];
 
-    // Validar especie
+    /* Validar especie
     $especie = preg_replace('/\s+/u', ' ', trim($datos['especie'] ?? ''));
     if ($especie === '') {
         $errores[] = "Debe especificar la especie.";
@@ -39,7 +39,7 @@ function validar_datos($datos) {
         } else {
             $datos['raza'] = $raza;
         }
-    }
+    }*/
 
     // Validar sexo
     $sexo = trim($datos['sexo'] ?? '');
@@ -76,22 +76,21 @@ function validar_datos($datos) {
         }
     }
 
-    // Validar color
+    /* Validar color
     $color = preg_replace('/\s+/u', ' ', trim($datos['color'] ?? ''));
-    if ($color === '') {
-        $errores[] = "El color es obligatorio.";
+    if ($color === '' || $color === 'Otro') {
+        $errores[] = ($color === 'Otro') ? "Debe especificar el color si selecciona 'Otro'." : "El color es obligatorio.";
     } else {
-        $datos['color'] = trim($datos['color']);
-        if (strlen($datos['color']) > 50) {
+        if (mb_strlen($color) > 50) {
             $errores[] = "El color no puede tener más de 50 caracteres.";
-        } else if (preg_match('/\d/', $datos['color'])) {
+        } else if (preg_match('/\d/', $color)) {
             $errores[] = "El color no puede contener números.";
-        } else if (!preg_match('/^[\p{L}]{2,}(?:[\s\-][\p{L}]{2,})*$/u', $color)) {
+        } else if (!preg_match('/^[\p{L}]+(?:(?:,\s*|\s*-\s*|\s+)[\p{L}]+)*$/u', $color)) {
             $errores[] = "El color solo puede contener letras y espacios válidos (sin símbolos ni caracteres especiales).";
         } else {
             $datos['color'] = $color;
         }
-    }
+    }*/
 
     // Validar peso
     $pesoLimpio = str_replace(',', '.', trim($datos['peso'] ?? ''));
@@ -204,7 +203,17 @@ function validar_datos($datos) {
     } else {
         try {
             $fechaDesp = new DateTime($despRaw);
-            $datos['desparasitacion'] = $fechaDesp->format('Y-m-d 00:00:00');
+            $fechaActual = new DateTime('today');
+            $limitePasado = new DateTime('-35 years');
+            if ($fechaDesp > $fechaActual) {
+                $errores[] = "Desparasitación: No puede ser una fecha posterior a hoy.";
+            } else if ($fechaNacObj && $fechaDesp < $fechaNacObj) {
+                $errores[] = "Desparasitación: No puede ser anterior a la fecha de nacimiento del animal.";
+            } else if ($fechaDesp < $limitePasado) {
+                $errores[] = "Desparasitación: La fecha no puede tener más de 35 años de antigüedad.";
+            } else {
+                $datos['desparasitacion'] = $fechaDesp->format('Y-m-d 00:00:00');
+            }
         } catch (Exception $e) {
             $errores[] = "Desparasitación: Formato de fecha no válido.";
         }
