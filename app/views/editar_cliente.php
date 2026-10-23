@@ -1,4 +1,19 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+
 require_once __DIR__ . '/../models/Cliente.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -35,6 +50,12 @@ if (!$cliente) {
 
     <form action="../controllers/guardar_cliente.php" method="POST">
       <input type="hidden" name="id_cliente" value="<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>">
+
+      <?php if (isset($_SESSION['error'])): ?>
+        <div class="msg-error">
+          <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+        </div>
+      <?php endif; ?>
 
       <fieldset>
         <legend> Datos personales</legend>

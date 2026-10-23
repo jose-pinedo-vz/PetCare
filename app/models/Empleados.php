@@ -47,6 +47,26 @@ class Empleados {
 
     }
 
+    public static function cedulaRegistrada(int $cedula, ?int $id_empleado = null): bool {
+      try {
+        $conexion = ConexionDB::obtenerConexion();
+        if ($id_empleado === null) {
+          $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM empleados WHERE num_cedula_profesional = ?"
+          );
+          $consulta->execute([$cedula]);
+        } else {
+          $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM empleados WHERE num_cedula_profesional = ? AND id_empleado != ?"
+          );
+          $consulta->execute([$cedula, $id_empleado]);
+        }
+        return (int)$consulta->fetchColumn() > 0;
+      } catch (Exception $error) {
+        return false;
+      }
+    }
+
     public static function generarIdEmpleados(PDO $db): int {
         try {
         // Consultamos el ID máximo actual y le sumamos 1

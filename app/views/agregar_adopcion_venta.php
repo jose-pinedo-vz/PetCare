@@ -84,21 +84,33 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="color">Color *:</label>
+      <?php 
+        $coloresDisponibles = [
+          'Blanco', 'Negro', 'Gris', 'Café', 'Amarillo', 'Verde', 'Rojo',
+          'Blanco y negro', 'Café y blanco', 'Café y amarillo', 'Blanco y gris',
+          'Verde y amarillo', 'Blanco, amarillo y negro'
+        ];
+        $colorOld = $old['color'] ?? '';
+        $colorEspecOld = $old['color_espec'] ?? '';
+        $esOtroColor = ($colorOld === 'Otro') || (!empty($colorOld) && !in_array(mb_strtolower($colorOld), array_map('mb_strtolower', $coloresDisponibles)));
+        if ($esOtroColor && empty($colorEspecOld) && $colorOld !== 'Otro') {
+          $colorEspecOld = $colorOld;
+        }
+      ?>
       <select class="campo" id="color" name="color" required>
-        <option value="Blanco" <?= (($old['color'] ?? '') === 'Blanco') ? 'selected' : '' ?>>Blanco</option>
-        <option value="Negro" <?= (($old['color'] ?? '') === 'Negro') ? 'selected' : '' ?>>Negro</option>
-        <option value="Café / Marrón" <?= (($old['color'] ?? '') === 'Café / Marrón') ? 'selected' : '' ?>>Café / Marrón</option>
-        <option value="Gris" <?= (($old['color'] ?? '') === 'Gris') ? 'selected' : '' ?>>Gris</option>
-        <option value="Beige / Crema" <?= (($old['color'] ?? '') === 'Beige / Crema') ? 'selected' : '' ?>>Beige / Crema</option>
-        <option value="Dorado / Leonado" <?= (($old['color'] ?? '') === 'Dorado / Leonado') ? 'selected' : '' ?>>Dorado / Leonado</option>
-        <option value="Canela / Rojo" <?= (($old['color'] ?? '') === 'Canela / Rojo') ? 'selected' : '' ?>>Canela / Rojo</option>
-        <option value="Verde" <?= (($old['color'] ?? '') === 'Verde') ? 'selected' : '' ?>>Verde</option>
-        <option value="Manchado / Overo" <?= (($old['color'] ?? '') === 'Manchado / Overo') ? 'selected' : '' ?>>Manchado / Overo</option>
-        <option value="Atigrado" <?= (($old['color'] ?? '') === 'Atigrado') ? 'selected' : '' ?>>Atigrado</option>
-        <option value="Bicolor" <?= (($old['color'] ?? '') === 'Bicolor') ? 'selected' : '' ?>>Bicolor</option>
-        <option value="Tricolor" <?= (($old['color'] ?? '') === 'Tricolor') ? 'selected' : '' ?>>Tricolor</option>
-        <option value="Moteado / Jaspeado" <?= (($old['color'] ?? '') === 'Moteado / Jaspeado') ? 'selected' : '' ?>>Moteado / Jaspeado</option>
+        <option value="">Seleccionar...</option>
+        <?php foreach ($coloresDisponibles as $opcionColor): ?>
+          <option value="<?= htmlspecialchars($opcionColor) ?>" <?= (!$esOtroColor && strcasecmp($colorOld, $opcionColor) === 0) ? 'selected' : '' ?>>
+            <?= htmlspecialchars($opcionColor) ?>
+          </option>
+        <?php endforeach; ?>
+        <option value="Otro" <?= $esOtroColor ? 'selected' : '' ?>>Otro (Especificar)</option>
       </select>
+    </div>
+
+    <div id="contenedor-color-espec" style="<?= $esOtroColor ? '' : 'display: none;' ?>">
+      <label class="label-campo" for="color_espec">Especifique el color *:</label>
+      <input type="text" class="campo" id="color_espec" name="color_espec" maxlength="50" placeholder="Ej. Marrón rojizo" value="<?= htmlspecialchars($colorEspecOld) ?>">
     </div>
 
     <div>
@@ -207,40 +219,27 @@ unset($_SESSION['old']);
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-adopcion_venta.js"></script>
   <script>
-    const razasPorEspecie={
-      "Perro": ["Mestizo / Criollo", "Labrador Retriever", "Golden Retriever", "Pastor Alemán", "Chihuahua", "Husky Siberiano", "Poodle / Caniche", "Bulldog", "Pitbull", "Pug","Otro"],
-      "Gato": ["Mestizo / Doméstico", "Siamés", "Persa", "Maine Coon", "Bengalí", "Ragdoll", "Sphynx", "Angora", "Azul Ruso","Otro"],
-      "Conejo": ["Belier", "Enano Holandés / Toy", "Cabeza de León", "Rex", "Gigante de Flandes", "Angora", "California","Otro"],
-      "Hamster": ["Sirio (Dorado)", "Ruso", "Roborovski", "Chino", "Campbell","Otro"],
-      "Hurón": ["Sable / Antifaz", "Albino", "Plata / Silver", "Champagne", "Panda", "Canela","Otro"],
-      "Erizo": ["Erizo de vientre blanco (Africano)", "Erizo Egipcio", "Erizo de orejas largas","Otro"],
-      "Tortuga": ["Terrestre", "Tortuga Rusa", "Tortuga Sulcata", "Tortuga de Caja", "Tortuga Leopardo", "Tortuga de Espalda de Diamante","Otro"],
-      "Ave": ["Ninfa / Carolina", "Perico Australiano", "Agapornis", "Canario", "Cacatúa", "Guacamayo", "Diamante Mandarín","Otro"]
-    };
+    (function() {
+      const selectColor = document.getElementById('color');
+      const contenedorColorEspec = document.getElementById('contenedor-color-espec');
+      const inputColorEspec = document.getElementById('color_espec');
 
-    const selectEspecie = document.getElementById('especie');
-    const selectRaza = document.getElementById('raza');
-    const razaOld = "<?= htmlspecialchars($old['raza'] ?? '') ?>";
-
-    function actualizarRazas()
-    {
-      const especieSeleccionada = selectEspecie.value;
-      const razas = razasPorEspecie[especieSeleccionada] || [];
-      
-      selectRaza.innerHTML = '';
-      
-      razas.forEach(raza => {
-        const option = document.createElement('option');
-        option.value = raza;
-        option.textContent = raza;
-        if (raza === razaOld)
-        {
-          option.selected = true;
+      if (selectColor && contenedorColorEspec) {
+        function toggleColorEspec() {
+          if (selectColor.value === 'Otro') {
+            contenedorColorEspec.style.display = 'block';
+            if (inputColorEspec) inputColorEspec.required = true;
+          } else {
+            contenedorColorEspec.style.display = 'none';
+            if (inputColorEspec) {
+              inputColorEspec.required = false;
+            }
+          }
         }
-        selectRaza.appendChild(option);});
-    }
-    selectEspecie.addEventListener('change', actualizarRazas);
-    actualizarRazas();
+        selectColor.addEventListener('change', toggleColorEspec);
+        toggleColorEspec();
+      }
+    })();
   </script>
 
 </body>

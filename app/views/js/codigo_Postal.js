@@ -1,8 +1,7 @@
 async function codigoPostal(evt)
 {
     const postal = document.getElementById("codigo_postal");
-    console.log("codigoPostal");
-
+    // console.log("codigoPostal");
     const respuesta = await fetch('../controllers/guardar_cliente.php?accion=codigo_postal', {method: "POST", headers: {'Content-Type': 'application/json'}, 
         body: JSON.stringify({codigo_postal: postal.value })});
     const datos = await respuesta.json();

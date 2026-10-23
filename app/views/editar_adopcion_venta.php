@@ -59,7 +59,7 @@ $registro=obtenerPorId($id);
     <div>
         <label class="label-campo" for="especie">Especie:</label>
         <select class="campo" id="especie" name="especie" required>
-          <?php $especieActual = $old['sexo'] ?? $registro['sexo'] ?? ''; ?>
+          <?php $especieActual = $old['especie'] ?? $registro['especie'] ?? ''; ?>
           <option value="Perro" <?= ($especieActual === 'Perro') ? 'selected' : '' ?>>Perro</option>
           <option value="Gato" <?= ($especieActual === 'Gato') ? 'selected' : '' ?>>Gato</option>
           <option value="Conejo" <?= ($especieActual === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
@@ -92,6 +92,7 @@ $registro=obtenerPorId($id);
     </div>
 
     <div>
+<<<<<<< HEAD
       <label class="label-campo" for="color">Color *:</label>
       <select class="campo" id="color" name="color" required>
         <option value="Blanco" <?= (($old['color'] ?? $registro['color']) === 'Blanco') ? 'selected' : '' ?>>Blanco</option>
@@ -108,6 +109,36 @@ $registro=obtenerPorId($id);
         <option value="Tricolor" <?= (($old['color'] ?? $registro['color']) === 'Tricolor') ? 'selected' : '' ?>>Tricolor</option>
         <option value="Moteado / Jaspeado" <?= (($old['color'] ?? $registro['color']) === 'Moteado / Jaspeado') ? 'selected' : '' ?>>Moteado / Jaspeado</option>
       </select>
+=======
+        <label class="label-campo" for="color">Color *:</label>
+        <?php 
+          $coloresDisponibles = [
+            'Blanco', 'Negro', 'Gris', 'Café', 'Amarillo', 'Verde', 'Rojo',
+            'Blanco y negro', 'Café y blanco', 'Café y amarillo', 'Blanco y gris',
+            'Verde y amarillo', 'Blanco, amarillo y negro'
+          ];
+          $colorActual = $old['color'] ?? $registro['color'] ?? '';
+          $colorEspecActual = $old['color_espec'] ?? '';
+          $esOtroColor = ($colorActual === 'Otro') || (!empty($colorActual) && !in_array(mb_strtolower($colorActual), array_map('mb_strtolower', $coloresDisponibles)));
+          if ($esOtroColor && empty($colorEspecActual) && $colorActual !== 'Otro') {
+            $colorEspecActual = $colorActual;
+          }
+        ?>
+        <select class="campo" id="color" name="color" required>
+          <option value="">Seleccionar...</option>
+          <?php foreach ($coloresDisponibles as $opcionColor): ?>
+            <option value="<?= htmlspecialchars($opcionColor) ?>" <?= (!$esOtroColor && strcasecmp($colorActual, $opcionColor) === 0) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($opcionColor) ?>
+            </option>
+          <?php endforeach; ?>
+          <option value="Otro" <?= $esOtroColor ? 'selected' : '' ?>>Otro (Especificar)</option>
+        </select>
+    </div>
+
+    <div id="contenedor-color-espec" style="<?= $esOtroColor ? '' : 'display: none;' ?>">
+        <label class="label-campo" for="color_espec">Especifique el color *:</label>
+        <input type="text" class="campo" id="color_espec" name="color_espec" maxlength="50" placeholder="Ej. Marrón rojizo" value="<?= htmlspecialchars($colorEspecActual) ?>">
+>>>>>>> 10fbd84bf8af6c84a1078d66b2b88570e3530377
     </div>
 
     <div>
@@ -214,40 +245,27 @@ $registro=obtenerPorId($id);
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-adopcion_venta.js"></script>
   <script>
-    const razasPorEspecie={
-      "Perro": ["Mestizo / Criollo", "Labrador Retriever", "Golden Retriever", "Pastor Alemán", "Chihuahua", "Husky Siberiano", "Poodle / Caniche", "Bulldog", "Pitbull", "Pug","Otro"],
-      "Gato": ["Mestizo / Doméstico", "Siamés", "Persa", "Maine Coon", "Bengalí", "Ragdoll", "Sphynx", "Angora", "Azul Ruso","Otro"],
-      "Conejo": ["Belier", "Enano Holandés / Toy", "Cabeza de León", "Rex", "Gigante de Flandes", "Angora", "California","Otro"],
-      "Hamster": ["Sirio (Dorado)", "Ruso", "Roborovski", "Chino", "Campbell","Otro"],
-      "Hurón": ["Sable / Antifaz", "Albino", "Plata / Silver", "Champagne", "Panda", "Canela","Otro"],
-      "Erizo": ["Erizo de vientre blanco (Africano)", "Erizo Egipcio", "Erizo de orejas largas","Otro"],
-      "Tortuga": ["Terrestre", "Tortuga Rusa", "Tortuga Sulcata", "Tortuga de Caja", "Tortuga Leopardo", "Tortuga de Espalda de Diamante","Otro"],
-      "Ave": ["Ninfa / Carolina", "Perico Australiano", "Agapornis", "Canario", "Cacatúa", "Guacamayo", "Diamante Mandarín","Otro"]
-    };
+    (function() {
+      const selectColor = document.getElementById('color');
+      const contenedorColorEspec = document.getElementById('contenedor-color-espec');
+      const inputColorEspec = document.getElementById('color_espec');
 
-    const selectEspecie = document.getElementById('especie');
-    const selectRaza = document.getElementById('raza');
-    const razaOld = "<?= htmlspecialchars($old['raza'] ?? $registro['raza'] ?? '') ?>";
-
-    function actualizarRazas()
-    {
-      const especieSeleccionada = selectEspecie.value;
-      const razas = razasPorEspecie[especieSeleccionada] || [];
-      
-      selectRaza.innerHTML = '';
-      
-      razas.forEach(raza => {
-        const option = document.createElement('option');
-        option.value = raza;
-        option.textContent = raza;
-        if (raza === razaOld)
-        {
-          option.selected = true;
+      if (selectColor && contenedorColorEspec) {
+        function toggleColorEspec() {
+          if (selectColor.value === 'Otro') {
+            contenedorColorEspec.style.display = 'block';
+            if (inputColorEspec) inputColorEspec.required = true;
+          } else {
+            contenedorColorEspec.style.display = 'none';
+            if (inputColorEspec) {
+              inputColorEspec.required = false;
+            }
+          }
         }
-        selectRaza.appendChild(option);});
-    }
-    selectEspecie.addEventListener('change', actualizarRazas);
-    actualizarRazas();
+        selectColor.addEventListener('change', toggleColorEspec);
+        toggleColorEspec();
+      }
+    })();
   </script>
 
 </body>

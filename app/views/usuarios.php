@@ -62,14 +62,14 @@ $usuario=$_SESSION['usuario'];
               <tbody>
                 <?php foreach ($listaUsuarios as $u): ?>
                   <tr>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars((string)$u['id_usuario']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['usuario']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['empleado_asociado']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['rol']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['permisos']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['fecha_creacion']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['ultimo_acceso']); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['estado']); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars((string)$u['id_usuario'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['usuario'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['empleado_asociado'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['rol'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['permisos'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['fecha_creacion'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['ultimo_acceso'] ?? ''); ?></td>
+                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['estado'] ?? ''); ?></td>
 
                     <!-- Celda de acciones con white-space: nowrap; -->
                     <td style="padding: 10px; text-align: center; white-space: nowrap;">
