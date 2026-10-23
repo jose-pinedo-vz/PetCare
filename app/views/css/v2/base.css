@@ -320,3 +320,8 @@ legend {
     background-color: #007BFF;
     color: white;
 }
+
+.existencia-baja {
+  color: #d32f2f;
+  font-weight: bold;
+}

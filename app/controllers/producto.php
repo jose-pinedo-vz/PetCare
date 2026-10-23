@@ -234,11 +234,11 @@ function validar_datos(array $datos) {
 
     } else {
         require_once __DIR__ . '/../models/Productos.php';
-        if ($datos['estado'] === 'inactivo') {
-            $activo = 0;
-        } else {
-            $activo = 1;
-        }
+        //if ($datos['estado'] === 'inactivo') {
+        //    $activo = 0;
+        //} else {
+        //    $activo = 1;
+        //}
         $advert = Productos::insertarProducto($datos);
 
         if (is_array($advert) && count($advert) > 0) {

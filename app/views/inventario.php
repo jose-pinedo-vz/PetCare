@@ -1,3 +1,7 @@
+<?php require_once __DIR__ . '/../Models/Productos.php';
+ $productos = Productos::obtenerDatosProductosActivos();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -42,7 +46,7 @@
         <h2 class="subtitulo">Productos</h2>
 
         <div class="inventario-toolbar">
-          <input type="text" class="campo inventario-buscador" placeholder="Buscar por código de barra...">
+          <input type="text" class="campo inventario-buscador" placeholder="Buscar por código o nombre...">
           <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 
@@ -51,7 +55,7 @@
             <thead>
               <tr>
                 <th>Imagen</th>
-                <th>Codigo de barra</th>
+                <th>Codigo</th>
                 <th>Nombre</th>
                 <th>Existencia</th>
                 <th>Precio venta</th>
@@ -59,18 +63,39 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><img class="producto-imagen" src="ruta/a/imagen1.jpg" alt="Producto 1"></td>
-                <td>1234567890</td>
-                <td>Pelota</td>
-                <td>2 (bajo)</td>
-                <td>30.50</td>
-                <td class="acciones">
-                  <a class="btn btn-chico btn-info" href="enespera.php?id=1">Pedir</a>
-                  <a class="btn btn-chico" href="editar_producto.php?id=1">Editar</a>
-                  <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=1">Eliminar</a>
-                </td>
-              </tr>
+              <?php if (!empty($productos)): ?>
+                  <?php foreach ($productos as $producto): ?>
+                      <?php if ($producto['existencia'] <= $producto['existencia_minima']): ?>
+                        <tr>
+                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td><?= $producto['codigo'] ?></td>
+                          <td><?= $producto['nombre'] ?></td>
+                          <td class="existencia-baja"><?= $producto['existencia'] ?> (bajo)</td>
+                          <td>$<?= $producto['precio_venta'] ?></td>
+                          <td class="acciones">
+                            <a class="btn btn-chico btn-info" href="enespera.php?id=<?= $producto['id_producto'] ?>">Pedir</a>
+                            <a class="btn btn-chico" href="editar_producto.php?id=<?= $producto['id_producto'] ?>">Editar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= $producto['id_producto'] ?>">Eliminar</a>
+                          </td>
+                        </tr>
+                      <?php else: ?>
+                        <tr>
+                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td><?= $producto['codigo'] ?></td>
+                          <td><?= $producto['nombre'] ?></td>
+                          <td><?= $producto['existencia'] ?></td>
+                          <td>$<?= $producto['precio_venta'] ?></td>
+                          <td class="acciones">
+                            <a class="btn btn-chico btn-info" href="enespera.php?id=<?= $producto['id_producto'] ?>">Pedir</a>
+                            <a class="btn btn-chico" href="editar_producto.php?id=<?= $producto['id_producto'] ?>">Editar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= $producto['id_producto'] ?>">Eliminar</a>
+                          </td>
+                        </tr>
+                      <?php endif; ?>
+                  <?php endforeach; ?>
+              <?php else: ?>
+                  <tr><td colspan="6">No hay productos registrados.</td></tr>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
