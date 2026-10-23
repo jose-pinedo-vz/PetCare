@@ -203,7 +203,17 @@ function validar_datos($datos) {
     } else {
         try {
             $fechaDesp = new DateTime($despRaw);
-            $datos['desparasitacion'] = $fechaDesp->format('Y-m-d 00:00:00');
+            $fechaActual = new DateTime('today');
+            $limitePasado = new DateTime('-35 years');
+            if ($fechaDesp > $fechaActual) {
+                $errores[] = "Desparasitación: No puede ser una fecha posterior a hoy.";
+            } else if ($fechaNacObj && $fechaDesp < $fechaNacObj) {
+                $errores[] = "Desparasitación: No puede ser anterior a la fecha de nacimiento del animal.";
+            } else if ($fechaDesp < $limitePasado) {
+                $errores[] = "Desparasitación: La fecha no puede tener más de 35 años de antigüedad.";
+            } else {
+                $datos['desparasitacion'] = $fechaDesp->format('Y-m-d 00:00:00');
+            }
         } catch (Exception $e) {
             $errores[] = "Desparasitación: Formato de fecha no válido.";
         }

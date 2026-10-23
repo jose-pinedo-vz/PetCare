@@ -87,7 +87,9 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="fecha_de_nacimiento">Fecha de nacimiento *:</label>
-        <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? $registro['fecha_de_nacimiento'] ?? '') ?>" required>
+        <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
+          min="<?= date('Y-m-d', strtotime('-35 years')) ?>" max="<?= date('Y-m-d') ?>"
+          value="<?= htmlspecialchars(!empty($old['fecha_de_nacimiento']) ? $old['fecha_de_nacimiento'] : substr((string)($registro['fecha_de_nacimiento'] ?? ''), 0, 10)) ?>" required>
     </div>
 
     <div>
@@ -200,7 +202,9 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="desparasitacion">Desparasitación *:</label>
-        <input type="date" class="campo" id="desparasitacion" name="desparasitacion" max="<?= date('Y-m-d') ?>"  value="<?= htmlspecialchars($old['desparasitacion'] ?? $registro['desparasitacion'] ?? '') ?>" required>
+        <input type="date" class="campo" id="desparasitacion" name="desparasitacion"
+          min="<?= date('Y-m-d', strtotime('-35 years')) ?>" max="<?= date('Y-m-d') ?>"
+          value="<?= htmlspecialchars(!empty($old['desparasitacion']) ? $old['desparasitacion'] : substr((string)($registro['desparasitacion'] ?? ''), 0, 10)) ?>" required>
     </div>
 
     <div class="campo-completo">
@@ -247,6 +251,20 @@ $registro=obtenerPorId($id);
         }
         selectColor.addEventListener('change', toggleColorEspec);
         toggleColorEspec();
+      }
+
+      const fechaNacInput = document.getElementById('fecha_de_nacimiento');
+      const fechaDespInput = document.getElementById('desparasitacion');
+      if (fechaNacInput && fechaDespInput) {
+        function sincronizarFechasDesp() {
+          if (fechaNacInput.value) {
+            fechaDespInput.min = fechaNacInput.value;
+          } else {
+            fechaDespInput.min = '<?= date('Y-m-d', strtotime('-35 years')) ?>';
+          }
+        }
+        fechaNacInput.addEventListener('change', sincronizarFechasDesp);
+        sincronizarFechasDesp();
       }
     })();
   </script>
