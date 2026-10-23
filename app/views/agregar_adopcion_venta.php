@@ -78,7 +78,8 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="fecha_de_nacimiento">Fecha de nacimiento *:</label>
-      <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? '') ?>" required>
+      <input type="date" class="campo" id="fecha_de_nacimiento" name="fecha_de_nacimiento"
+        max="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($old['fecha_de_nacimiento'] ?? '') ?>" required>
     </div>
 
     <div>
@@ -102,22 +103,26 @@ unset($_SESSION['old']);
 
     <div>
       <label class="label-campo" for="peso">Peso (kg) *:</label>
-      <input type="number" step="0.01" class="campo" id="peso" name="peso" value="<?= htmlspecialchars($old['peso'] ?? '') ?>" min="0.1" required>
+      <input type="number" step="0.01" min="0.01" max="150" class="campo" id="peso" name="peso"
+        placeholder="Ej. 8.5" value="<?= htmlspecialchars($old['peso'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="fecha_de_ingreso">Fecha de ingreso *:</label>
-      <input type="datetime-local" class="campo" id="fecha_de_ingreso" name="fecha_de_ingreso" value="<?= htmlspecialchars($old['fecha_de_ingreso'] ?? '') ?>" required>
+      <input type="datetime-local" class="campo" id="fecha_de_ingreso" name="fecha_de_ingreso"
+        max="<?= date('Y-m-d\TH:i') ?>" value="<?= htmlspecialchars($old['fecha_de_ingreso'] ?? '') ?>" required>
     </div>
 
     <div>
       <label class="label-campo" for="costo_de_adquisicion">Costo de adquisición:</label>
-      <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? '') ?>" min="0.1" required>
+      <input type="number" step="0.01" min="0" max="500000" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion"
+        placeholder="Ej. 1500.00" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? '') ?>">
     </div>
 
     <div>
       <label class="label-campo" for="precio_de_venta">Precio de venta *:</label>
-      <input type="number" step="0.01" min="0" class="campo" id="precio_de_venta" name="precio_de_venta" value="<?= htmlspecialchars($old['precio_de_venta'] ?? '') ?>" required>
+      <input type="number" step="0.01" min="0" max="500000" class="campo" id="precio_de_venta" name="precio_de_venta"
+        placeholder="Ej. 2500.00" value="<?= htmlspecialchars($old['precio_de_venta'] ?? '') ?>" required>
     </div>
 
     <div>
@@ -130,12 +135,14 @@ unset($_SESSION['old']);
 
     <div class="campo-completo">
       <label class="label-campo" for="caracteristicas">Características *:</label>
-      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" required><?= htmlspecialchars($old['caracteristicas'] ?? '') ?></textarea>
+      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" minlength="5" maxlength="500" required
+        placeholder="Describe temperamento, aspecto y detalles de la mascota"><?= htmlspecialchars($old['caracteristicas'] ?? '') ?></textarea>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="procedencia">Procedencia *:</label>
-      <textarea class="campo" id="procedencia" name="procedencia" rows="2" required><?= htmlspecialchars($old['procedencia'] ?? '') ?></textarea>
+      <textarea class="campo" id="procedencia" name="procedencia" rows="2" minlength="5" maxlength="500" required
+        placeholder="Origen o criadero"><?= htmlspecialchars($old['procedencia'] ?? '') ?></textarea>
     </div>
   </div>
 
@@ -164,17 +171,20 @@ unset($_SESSION['old']);
   <div class="grid-formulario">
     <div>
       <label class="label-campo" for="vacunas">Vacunas *:</label>
-      <textarea class="campo" id="vacunas" name="vacunas" rows="2" required><?= htmlspecialchars($old['vacunas'] ?? '') ?></textarea>
+      <textarea class="campo" id="vacunas" name="vacunas" rows="2" minlength="3" maxlength="500" required
+        placeholder="Esquema de vacunas recibidas"><?= htmlspecialchars($old['vacunas'] ?? '') ?></textarea>
     </div>
 
     <div>
       <label class="label-campo" for="desparasitacion">Desparasitación *:</label>
-      <input type="date" class="campo" id="desparasitacion" name="desparasitacion" value="<?= htmlspecialchars($old['desparasitacion'] ?? '') ?>" required>
+      <input type="date" class="campo" id="desparasitacion" name="desparasitacion"
+        max="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($old['desparasitacion'] ?? '') ?>" required>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="observaciones">Observaciones *:</label>
-      <textarea class="campo" id="observaciones" name="observaciones" rows="2" required placeholder="Observaciones generales"><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
+      <textarea class="campo" id="observaciones" name="observaciones" rows="2" minlength="5" maxlength="500" required
+        placeholder="Observaciones generales"><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
     </div>
   </div>
 </fieldset>

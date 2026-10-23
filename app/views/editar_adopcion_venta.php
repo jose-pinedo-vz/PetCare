@@ -122,12 +122,12 @@ $registro=obtenerPorId($id);
 
     <div>
         <label class="label-campo" for="costo_de_adquisicion">Costo de adquisición *:</label>
-        <input type="number" step="0.01" min="0" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? $registro['costo_de_adquisicion'] ?? '') ?>" required>
+        <input type="number" step="0.01" min="0" max="500000" class="campo" id="costo_de_adquisicion" name="costo_de_adquisicion" value="<?= htmlspecialchars($old['costo_de_adquisicion'] ?? $registro['costo_de_adquisicion'] ?? '') ?>" required>
     </div>
 
     <div>
         <label class="label-campo" for="precio_de_venta">Precio de venta *:</label>
-        <input type="number" step="0.01" min="0" class="campo" id="precio_de_venta" name="precio_de_venta" value="<?= htmlspecialchars($old['precio_de_venta'] ?? $registro['precio_de_venta'] ?? '') ?>" required>
+        <input type="number" step="0.01" min="0" max="500000" class="campo" id="precio_de_venta" name="precio_de_venta" placeholder="Ej. 1500.00" value="<?= htmlspecialchars($old['precio_de_venta'] ?? $registro['precio_de_venta'] ?? '') ?>" required>
     </div>
 
     <div>
@@ -141,12 +141,12 @@ $registro=obtenerPorId($id);
 
     <div class="campo-completo">
       <label class="label-campo" for="caracteristicas">Características *:</label>
-      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" required><?= htmlspecialchars($old['caracteristicas'] ?? $registro['caracteristicas'] ?? '') ?></textarea>
+      <textarea class="campo" id="caracteristicas" name="caracteristicas" rows="2" minlength="5" maxlength="500" required placeholder="Describe temperamento, aspecto y detalles de la mascota"><?= htmlspecialchars($old['caracteristicas'] ?? $registro['caracteristicas'] ?? '') ?></textarea>
     </div>
 
     <div class="campo-completo">
       <label class="label-campo" for="procedencia">Procedencia *:</label>
-      <textarea class="campo" id="procedencia" name="procedencia" rows="2" required><?= htmlspecialchars($old['procedencia'] ?? $registro['procedencia'] ?? '') ?></textarea>
+      <textarea class="campo" id="procedencia" name="procedencia" rows="2" minlength="5" maxlength="500" required placeholder="Origen o criadero"><?= htmlspecialchars($old['procedencia'] ?? $registro['procedencia'] ?? '') ?></textarea>
     </div>
   </div>
 
@@ -181,17 +181,17 @@ $registro=obtenerPorId($id);
   <div class="grid-formulario">
     <div>
       <label class="label-campo" for="vacunas">Vacunas *:</label>
-      <textarea class="campo" id="vacunas" name="vacunas" rows="2" required><?= htmlspecialchars($old['vacunas'] ?? $registro['vacunas'] ?? '') ?></textarea>
+      <textarea class="campo" id="vacunas" name="vacunas" rows="2" minlength="3" maxlength="500" required placeholder="Esquema de vacunas recibidas"> <?= htmlspecialchars($old['vacunas'] ?? $registro['vacunas'] ?? '') ?></textarea>
     </div>
 
     <div>
         <label class="label-campo" for="desparasitacion">Desparasitación *:</label>
-        <input type="date" class="campo" id="desparasitacion" name="desparasitacion" value="<?= htmlspecialchars($old['desparasitacion'] ?? $registro['desparasitacion'] ?? '') ?>" required>
+        <input type="date" class="campo" id="desparasitacion" name="desparasitacion" max="<?= date('Y-m-d') ?>"  value="<?= htmlspecialchars($old['desparasitacion'] ?? $registro['desparasitacion'] ?? '') ?>" required>
     </div>
 
     <div class="campo-completo">
         <label class="label-campo" for="observaciones">Observaciones *:</label>
-        <textarea class="campo" id="observaciones" name="observaciones" rows="2" required><?= htmlspecialchars($old['observaciones'] ?? $registro['observaciones'] ?? '') ?></textarea>
+        <textarea class="campo" id="observaciones" name="observaciones" rows="2" minlength="5" maxlength="500" required placeholder="Observaciones generales"><?= htmlspecialchars($old['observaciones'] ?? $registro['observaciones'] ?? '') ?></textarea>
     </div>
   </div>
 </fieldset>
