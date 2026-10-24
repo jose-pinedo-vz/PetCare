@@ -134,6 +134,27 @@ function obtenerDatosProductosActivos(): array {
     }
 }
 
+//Obtenemos la imagen
+function obtenerImagen($id) {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT  imagen
+                FROM productos
+                WHERE id_producto = ?";
+
+        $resultado = $conexion->prepare($sql);
+        $resultado->execute([$id]);
+        
+        $imagen = $resultado->fetchColumn();
+        
+        return $imagen !== false ? $imagen : null;
+        
+    } catch (Exception $e) {
+        error_log("Error en obtenerImagen: " . $e->getMessage());
+        return null;
+    }
+}
+
 
 // Funcion para obtener todos los productos inactivos
 function obtenerDatosProductosInactivos(): array {
@@ -258,6 +279,10 @@ class Productos {
 
     public static function ActualizarProducto(array $datos, $id){
         return ActualizarProducto($datos, $id);
+    }
+
+    public static function obtenerimagen(int $id){
+        return obtenerImagen($id);
     }
 }
 

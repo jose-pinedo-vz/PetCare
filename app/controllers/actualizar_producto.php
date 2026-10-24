@@ -4,7 +4,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $id_producto = $_POST['id_producto'];
 
+    $archivo = $_FILES['imagen'] ?? null;
+
+    if ($archivo && $archivo['error'] === UPLOAD_ERR_OK) {
+        // Se recibió una imagen nueva
+        $imagen = $_FILES['imagen'] ?? null;
+    } elseif ($archivo && $archivo['error'] === UPLOAD_ERR_NO_FILE) {
+        // No eligió una imagen nueva
+        require_once __DIR__ . '/../models/Productos.php';
+        $imagen = Productos::obtenerimagen((int)($id_producto));
+
+    }
+
     $datos = [
+        'id'                    => $id_producto,
         'codigo'                => trim($_POST['codigo'] ?? ''),
         'nombre'                => trim($_POST['nombre'] ?? ''),
         'id_categoria'          => trim($_POST['id_categoria'] ?? ''),
@@ -17,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'existencia_minima'     => trim($_POST['existencia_minima'] ?? ''),
         'existencia_maxima'     => trim($_POST['existencia_maxima'] ?? ''),
         'fecha_ingreso'         => trim($_POST['fecha_ingreso'] ?? ''),
-        'imagen'                => $_FILES['imagen'] ?? null,
+        'imagen'                => $imagen,
         'estado'                => trim($_POST['estado'] ?? '')
     ];
 
@@ -170,25 +183,41 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 
     //La imagen es obligatorio
-    if (empty($datos['imagen'])) {
-        $errores[] = "La imagen es obligatoria.";
-    }else{
-        require_once __DIR__ . '/../controllers/ImagenController.php';
+    $foto = $datos['imagen'] ?? null;
 
-        $resultadoImagen = null;
-        $foto = $datos['imagen'];
+    if (is_string($foto)) {
+        if (trim($foto) === '') {
+            $errores[] = "La imagen es obligatoria.";
+        } elseif (strlen($foto) > 50) {
+            $errores[] = "La imagen no puede tener más de 50 caracteres.";
+        }
+    } elseif (is_array($foto)) {
+        $errorArchivo = $foto['error'] ?? null;
 
-        if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+        if ($errorArchivo !== UPLOAD_ERR_OK) {
+            $errores[] = "No se pudo subir la imagen. Código de error: ". htmlspecialchars((string)$errorArchivo);
+        } else {
+            require_once __DIR__ . '/../controllers/ImagenController.php';
             $resultadoImagen = ImagenController::subir($foto);
+
             if ($resultadoImagen['exito']) {
-                $datos['imagen'] = $resultadoImagen['ruta'];
+                $rutaImagen = $resultadoImagen['ruta'];
+
+                if (is_string($rutaImagen) && $rutaImagen !== '') {
+                    $datos['imagen'] = $rutaImagen;
+
+                    if (strlen($rutaImagen) > 50) {
+                        $errores[] = "La imagen no puede tener más de 50 caracteres.";
+                    }
+                } else {
+                    $errores[] = "No se obtuvo una ruta válida para la imagen.";
+                }
             } else {
                 $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
             }
         }
-        if (strlen($datos['imagen']) > 50) {
-        $errores[] = "La imagen no puede tener mas de 50 caracteres.";
-        }
+    } else {
+        $errores[] = "La imagen es obligatoria.";
     }
 
     //El estado es obligatorio

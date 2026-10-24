@@ -1,15 +1,4 @@
 <?php  
-require_once __DIR__ . '/../models/proveedores.php';
-$proveedor = obtenerProveedoresActivos();
-
-require_once __DIR__ . '/../models/categ_prod.php';
-$categorias = Categoria::obtenerCategoriasActivas();
-
-require_once __DIR__ . '/../models/Productos.php';
-$id_producto = (int)($_GET['id_producto'] ?? 0);
-$producto = Productos::obtenerProductoPorId((int)($id_producto));
-
-
 session_start();
 
     // Obtener errores y datos enviados previamente (si existen)
@@ -19,6 +8,22 @@ session_start();
     // Limpiar la sesión para que las alertas no reaparezcan al recargar
     unset($_SESSION['errores']);
     unset($_SESSION['old']);
+
+if (!isset($_GET['id']) && !$old['id']) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: inventario.php");
+    exit();
+}
+require_once __DIR__ . '/../models/proveedores.php';
+$proveedor = obtenerProveedoresActivos();
+
+require_once __DIR__ . '/../models/categ_prod.php';
+$categorias = Categoria::obtenerCategoriasActivas();
+
+require_once __DIR__ . '/../models/Productos.php';
+$id_producto = (int)($_GET['id'] ?? $old['id'] ?? 0);
+$producto = Productos::obtenerProductoPorId((int)($id_producto));
+
 
 ?>
 
@@ -46,6 +51,18 @@ session_start();
       </div>
 
       <div class="tarjeta">
+
+      <?php if (!empty($errores)): ?>
+            <div class="msg-error">
+              <h4>Por favor corrige los siguientes errores:</h4>
+              <ul>
+                <?php foreach ($errores as $error): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+        <?php endif; ?>
+
     <form action="../controllers/actualizar_producto.php" method="POST" enctype="multipart/form-data">
 
       <input type="hidden" id="id_producto" name="id_producto" value="<?= (int)$id_producto?>">

@@ -86,9 +86,9 @@
                           <td><?= $producto['existencia'] ?></td>
                           <td>$<?= $producto['precio_venta'] ?></td>
                           <td class="acciones">
-                            <a class="btn btn-chico btn-info" href="enespera.php?id=<?= $producto['id_producto'] ?>">Pedir</a>
-                            <a class="btn btn-chico" href="editar_producto.php?id=<?= $producto['id_producto'] ?>">Editar</a>
-                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= $producto['id_producto'] ?>">Eliminar</a>
+                            <a class="btn btn-chico btn-info" href="enespera.php?id=<?= (int)$producto['id_producto'] ?>">Pedir</a>
+                            <a class="btn btn-chico" href="editar_producto.php?id=<?= (int)$producto['id_producto'] ?>">Editar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= (int)$producto['id_producto'] ?>">Eliminar</a>
                           </td>
                         </tr>
                       <?php endif; ?>
