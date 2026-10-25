@@ -160,7 +160,7 @@
                 </div>
 
                 <div class="orden-compra-acciones">
-                    <button class="btn btn-success" type="button">Confirmar orden</button>
+                    <a class="btn btn-success" href="../controllers/pdf_ordencompra.php" target="_blank" rel="noopener">Confirmar orden</a>
                     <a class= "btn btn-peligro" href="inventario.php">Cancelar orden</a>
                 </div>
 
