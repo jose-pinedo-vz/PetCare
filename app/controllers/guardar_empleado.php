@@ -65,7 +65,6 @@ function errorSession(string $error) : void {
         header("Location: ../views/editar_empleado.php?id_empleado=" . $id);
         exit();
     }
-
     header("Location: ../views/agregar_empleado.php");
     exit();
 }
@@ -76,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $id_empleado = !empty($_POST['id_empleado']) ? (int)$_POST['id_empleado'] : null;
 
-    
+
     $nombre = preg_replace('/\s+/u', ' ', trim($_POST['nombre'] ?? ''));
     $apellido = preg_replace('/\s+/u', ' ', trim($_POST['apellido'] ?? ''));
     $telefono = trim($_POST['telefono'] ?? '');
@@ -95,9 +94,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $horario = trim($_POST['horario'] ?? '');
 
     // VALIDACION REGEX
+<<<<<<< HEAD
     /* $patronNombre = '/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u'; */
     $patronNombre = '/^(?:[\p{L}]{2,}\.?|[\p{L}]\.)(?: (?:[\p{L}]{2,}\.?|[\p{L}]\.))*$/u';
     
+=======
+    $patronNombre = '/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u';
+
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
     $patronCiudadEstado = '/^[\p{L}]{2,}(?:[\s.\'-][\p{L}]{2,})*$/u';
 
     $soloCodigo_postal = '/^[0-9]{5}$/';
@@ -128,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El apellido solo puede contener letras y un espacio simple entre palabras (mínimo 2 letras por palabra, sin caracteres especiales ni espacios repetidos).";
     }
 
-    
+
     if ($telefono === '') {
         $errores[] = "El teléfono es obligatorio.";
     } else if (preg_match('/[^0-9\s\-()]/', $telefono)) {
@@ -142,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    
+
     if ($correo === '') {
         $errores[] = "El correo es obligatorio.";
     } else if (mb_strlen($correo) > 100) {
@@ -151,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "Debe proporcionar un correo electrónico válido (ej: usuario@dominio.com).";
     }
 
-    
+
     if ($calle === '') {
         $errores[] = "La calle es obligatoria.";
     } else if (mb_strlen($calle) < 3 || mb_strlen($calle) > 100) {
@@ -162,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "La calle contiene caracteres no permitidos.";
     }
 
-    
+
     if ($numero_exterior === '') {
         $errores[] = "El número exterior es obligatorio.";
     } else if (mb_strlen($numero_exterior) > 15) {
@@ -173,7 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El número exterior solo puede contener números, letras y guiones (sin espacios ni símbolos raros).";
     }
 
-    
+
     if ($numero_interior === '') {
         $numero_interior = null;
     } else if (mb_strlen($numero_interior) > 15) {
@@ -289,7 +293,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    
+
     if ($Fecha_de_contratacion === '') {
         $Fecha_de_contratacion = null;
     } else {
@@ -306,7 +310,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    
+
     if ($horario === '') {
         $errores[] = "El horario es obligatorio.";
     } else if (!in_array($horario, $horariosValidos, true)) {
