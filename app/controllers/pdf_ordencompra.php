@@ -4,6 +4,11 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+// DATOS DE PRUEBA: aquí se cargarán la orden, el proveedor activo y sus productos
+// desde la base de datos después de validar que el usuario sea administrador.
+// Antes de generar el PDF se validará un proveedor, al menos un producto activo
+// perteneciente a ese proveedor y cantidades válidas sin productos repetidos.
+// La cantidad debe ser mayor que cero, con máximo 8 enteros y 2 decimales.
 $productos = [
     [
         'codigo' => 'ALI-001',
@@ -21,6 +26,8 @@ $productos = [
     ],
 ];
 
+// En la orden real, cada precio unitario se tomará del precio de compra vigente
+// al crearla y no podrá modificarse en la orden; subtotales y total se calcularán.
 $total = array_reduce(
     $productos,
     static fn (float $acumulado, array $producto): float =>
@@ -33,6 +40,7 @@ $formatearDinero = static fn (float $cantidad): string =>
 
 $filasProductos = '';
 foreach ($productos as $producto) {
+    // Estas filas se llenarán con el detalle de la orden guardado en la base de datos.
     $subtotal = $producto['cantidad'] * $producto['precio'];
     $filasProductos .= sprintf(
         '<tr><td>%s</td><td>%s</td><td>%s</td><td class="numero">%d</td><td class="numero">%s</td><td class="numero">%s</td></tr>',
@@ -81,8 +89,11 @@ $htmlPdf = <<<HTML
             </td>
             <td class="orden">
                 <h1>ORDEN DE COMPRA</h1>
+                <!-- El folio será automático, único y de máximo 20 caracteres.
+                     La fecha de emisión será la fecha/hora de creación. -->
                 <p><strong>Folio:</strong> OC-2026-001</p>
                 <p><strong>Fecha:</strong> 24/10/2026</p>
+                <!-- La fecha estimada se calculará con el tiempo de entrega configurado para el proveedor. -->
                 <p><strong>Entrega solicitada:</strong> 31/10/2026</p>
             </td>
         </tr>
@@ -90,7 +101,7 @@ $htmlPdf = <<<HTML
 
     <div class="bloque">
         <h2>Proveedor</h2>
-        <!-- Aquí irían el proveedor seleccionado y sus datos fiscales/de contacto. -->
+        <!-- Aquí se mostrarán los datos del único proveedor activo seleccionado en la orden. -->
         <p><strong>Comercializadora Patitas, S.A. de C.V.</strong></p>
         <p>RFC: CPA010203AB1</p>
         <p>Av. Ejemplo 123, Col. Centro, Guadalajara, Jalisco, C.P. 44100</p>
@@ -118,14 +129,18 @@ $htmlPdf = <<<HTML
     <div class="bloque">
         <h2>Observaciones</h2>
         <p>Datos de muestra para visualizar el formato de la orden de compra.</p>
-        <!-- Aquí irían las condiciones de pago y notas reales de la orden. -->
+        <!-- Aquí se mostrarán las observaciones opcionales capturadas para la orden. -->
     </div>
-    <p class="nota">Documento de demostración con información estática. No representa una orden confirmada.</p>
+    <!-- Al crear la orden, su estado inicial será Pendiente y se guardará la ruta del PDF. -->
 </body>
 </html>
 HTML;
 
-if (isset($_GET['pdf'])) {
+// La vista previa se muestra en el boton; Descargar PDF responderá como archivo adjunto.
+// En el flujo completo, se guardarán ordenes_compra y detalle_orden_compra
+// con sus identificadores automáticos y estado inicial Pendiente. Tras generar
+// el PDF se guardará su ubicación en ruta_pdf, que corresponderá a este archivo.
+if (isset($_GET['pdf']) || isset($_GET['download'])) {
     $opciones = new Options();
     $opciones->set('defaultFont', 'DejaVu Sans');
 
@@ -133,7 +148,7 @@ if (isset($_GET['pdf'])) {
     $dompdf->loadHtml($htmlPdf, 'UTF-8');
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
-    $dompdf->stream('orden-compra-demo.pdf', ['Attachment' => false]);
+    $dompdf->stream('orden-compra-demo.pdf', ['Attachment' => isset($_GET['download'])]);
     exit;
 }
 ?>
@@ -166,7 +181,9 @@ if (isset($_GET['pdf'])) {
     <header class="barra">
         <div class="titulo">Vista previa de la orden de compra</div>
         <div class="acciones">
-            <button class="boton descargar" type="button">Descargar PDF</button>
+            <a href="?download=1" style="text-decoration: none;">
+                <button class="boton descargar" type="button">Descargar PDF</button>
+            </a>
             <button class="boton enviar" type="button">Enviar orden de compra</button>
         </div>
     </header>
