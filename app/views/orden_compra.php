@@ -159,9 +159,9 @@
                     <p><strong>Total:</strong> $150.00</p>
                 </div>
 
-                <div class="orden-compra-acciones">
+                <div class="acciones-formulario">
+                    <a class="btn btn-peligro" href="inventario.php">Cancelar orden</a>
                     <button class="btn btn-success" type="button">Confirmar orden</button>
-                    <button class="btn btn-peligro" type="button">Cancelar orden</button>
                 </div>
 
             </div>
