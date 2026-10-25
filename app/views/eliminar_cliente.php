@@ -32,7 +32,7 @@ $apellido_cliente = $_GET['apellido'];
 
   <main>
 
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Eliminar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Eliminar</div>
 
     <h1>Eliminar cliente</h1>
 

@@ -105,7 +105,7 @@ if ($especieActual !== '' && !in_array($especieActual, $especiesLista, true)) {
   <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Editar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar mascota</h1>
       </div>
@@ -169,7 +169,7 @@ if ($especieActual !== '' && !in_array($especieActual, $especiesLista, true)) {
               <?php foreach ($coloresLista as $opcionColor): ?>
                 <option value="<?= htmlspecialchars($opcionColor) ?>" <?= $colorActual === $opcionColor ? 'selected' : '' ?>><?= htmlspecialchars($opcionColor) ?></option>
               <?php endforeach; ?>
-              <option value="Otro" <?= $colorActual === 'Otro' ? 'selected' : '' ?>>Otro (Especificar)</option>
+              <option value="Otro" <?= $colorActual === 'Otro' ? 'selected' : '' ?>>Otro (especificar)</option>
             </select>
           </div>
           

@@ -16,7 +16,7 @@
   <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de Inventario</a> / Editar</div>
+      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar producto</h1>
       </div>
@@ -123,7 +123,7 @@
       </fieldset>
       
       <fieldset>
-        <legend>Precios e Inventario</legend>
+        <legend>Precios e inventario</legend>
 
         <div class="grid-formulario">
           <div>
@@ -149,7 +149,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="existencia">Existencia (Stock):</label>
+            <label class="label-campo" for="existencia">Existencia (stock):</label>
             <input 
             type="number" 
             step="0.01" 
@@ -196,10 +196,10 @@
       </fieldset>
 
       <fieldset>
-        <legend>Logística y Almacén</legend>
+        <legend>Logística y almacén</legend>
 
           <div>
-            <label class="label-campo" for="ubicacion">Ubicación / Estante:</label>
+            <label class="label-campo" for="ubicacion">Ubicación / estante:</label>
             <input 
              type="text" 
              class="campo" 

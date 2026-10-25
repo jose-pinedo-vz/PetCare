@@ -32,7 +32,7 @@
   <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Agregar</div>
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de proveedores</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Agregar proveedor</h1>
       </div>
@@ -75,7 +75,7 @@
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -132,7 +132,7 @@
  
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -236,7 +236,7 @@
 
                     <div>
                         <label class="label-campo" for="tiempo_entrega">
-                            Tiempo de entrega (Días) *:
+                            Tiempo de entrega (días) *:
                         </label>
 
                         <input

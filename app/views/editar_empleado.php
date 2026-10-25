@@ -91,7 +91,7 @@ unset($_SESSION['error']);
   <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Editar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar empleado</h1>
       </div>
@@ -116,8 +116,8 @@ unset($_SESSION['error']);
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
             <input type="text" class="campo" id="nombre" name="nombre" minlength="2" maxlength="20" required
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}( [A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
-              title="Solo letras y un espacio simple entre palabras (mínimo 2 letras por palabra)"
+              pattern="^(?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.)(?: (?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.))*$"
+              title="Solo letras y un espacio simple entre palabras. Se permite punto en abreviaturas (ej: Ma. Luisa, J. Carlos). Mínimo 2 letras por palabra."
               value="<?= e($nombre) ?>">
           </div>
 

@@ -33,7 +33,7 @@ $usuario=$_SESSION['usuario'];
 
 
   <main>
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Agregar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar cliente</h1>
       </div>
@@ -130,7 +130,7 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <fieldset>
-        <legend> Dirección / Domicilio</legend>
+        <legend> Dirección / domicilio</legend>
         <div class="grid-formulario">
 
           <div>

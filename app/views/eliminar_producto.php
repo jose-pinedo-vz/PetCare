@@ -15,7 +15,7 @@
   <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de Inventario</a> / Eliminar</div>
+      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar producto</h1>
       </div>

@@ -33,7 +33,7 @@ $usuario=$_SESSION['usuario'];
 
 
   <main>
-      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de Citas</a> / Agendar</div>
+      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de citas</a> / Agendar</div>
       <div class="encabezado-pagina">
         <h1>Agendar cita</h1>
       </div>

@@ -57,7 +57,7 @@ $usuario = $_SESSION['usuario'];
                     </div>
 
                     <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Empleado Asociado:</label>
+                        <label class="label-campo">Empleado asociado:</label>
                         <select name="empleado_asociado" class="campo" required>
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
