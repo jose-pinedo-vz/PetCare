@@ -73,7 +73,7 @@ $animales = listar_adopciones_ventas();
                                         <td><?= htmlspecialchars((string)$animal['observaciones']) ?></td>
                                         <td>
                                             <a class="btn" href="editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
-                                            <a class="btn" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
+                                            <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

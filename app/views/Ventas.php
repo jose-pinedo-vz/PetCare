@@ -89,7 +89,7 @@
                     <section class="tarjeta venta-herramientas" aria-labelledby="tituloHerramientasVenta">
                         <h2 id="tituloHerramientasVenta">Accesos</h2>
                         <div class="venta-reportes">
-                            <button class="btn-secundario" type="button">Corte de caja</button>
+                            <a class="btn-secundario" href="corte_caja.php">Corte de caja</a>
                             <a class="btn-secundario" href="historial_ventas.php">Historial de ventas</a>
                         </div>
                     </section>
@@ -100,6 +100,47 @@
     <?php include __DIR__ . '/buscar_productos.php'; ?>
     <?php include __DIR__ . '/buscar_servicios.php'; ?>
     <?php include __DIR__ . '/pagar_vents.php'; ?>
+    <!-- Backend: tras validar y registrar el pago, abrir este dialgo para que se elija imprimir ticket, generar factura o iniciar una nueva venta. -->
+    <dialog class="inventario-dialog producto-dialog resultado-dialog" id="modalPagoConfirmado" aria-labelledby="tituloPagoConfirmado">
+        <div class="producto-dialog-encabezado">
+            <h1 id="tituloPagoConfirmado">Pago confirmado</h1>
+            <form method="dialog">
+                <button class="producto-dialog-cerrar" type="submit" aria-label="Cerrar">&times;</button>
+            </form>
+        </div>
+        <div class="resultado-contenido">
+            <p class="resultado-mensaje">La venta se marcó como pagada.</p>
+            <div class="venta-total">Total cobrado: <strong>$23.20 MXN</strong></div>
+            <p class="resultado-factura" id="mensajeFactura" role="status" hidden></p>
+            <div class="venta-carrito-acciones">
+                <button class="btn-secundario" id="btnImprimirTicket" type="button">Imprimir ticket</button>
+                <button class="btn" id="btnGenerarFactura" type="button">Generar factura</button>
+                <button class="btn-secundario" id="btnNuevaVentaConfirmada" type="button">Nueva venta</button>
+            </div>
+        </div>
+    </dialog>
+    <dialog class="inventario-dialog producto-dialog factura-dialog" id="modalDatosFactura" aria-labelledby="tituloDatosFactura">
+        <div class="producto-dialog-encabezado">
+            <h1 id="tituloDatosFactura">Datos para facturación</h1>
+            <form method="dialog">
+                <button class="producto-dialog-cerrar" type="submit" aria-label="Cerrar">&times;</button>
+            </form>
+        </div>
+        <form class="factura-formulario" id="formDatosFactura">
+            <label class="label-campo" for="facturaRfc">RFC</label>
+            <input class="campo" id="facturaRfc" name="rfc" type="text" autocomplete="off" required>
+            <label class="label-campo" for="facturaRazonSocial">Razón social</label>
+            <input class="campo" id="facturaRazonSocial" name="razonSocial" type="text" autocomplete="organization" required>
+            <label class="label-campo" for="facturaCodigoPostal">Código postal fiscal</label>
+            <input class="campo" id="facturaCodigoPostal" name="codigoPostal" type="text" inputmode="numeric" autocomplete="postal-code" required>
+            <label class="label-campo" for="facturaCorreo">Correo electrónico</label>
+            <input class="campo" id="facturaCorreo" name="correo" type="email" autocomplete="email" required>
+            <div class="pago-acciones">
+                <button class="btn-secundario" id="btnVolverPagoConfirmado" type="button">Cancelar</button>
+                <button class="btn" type="submit">Continuar</button>
+            </div>
+        </form>
+    </dialog>
     <script>
         const botonBuscarProducto = document.getElementById('btnBuscarProducto');
         const modalBuscarProducto = document.getElementById('modalBuscarProducto');
@@ -107,6 +148,8 @@
         const modalBuscarServicio = document.getElementById('modalBuscarServicio');
         const botonCobrar = document.getElementById('btnCobrar');
         const modalPagarVenta = document.getElementById('modalPagarVenta');
+        const modalPagoConfirmado = document.getElementById('modalPagoConfirmado');
+        const modalDatosFactura = document.getElementById('modalDatosFactura');
 
         botonBuscarProducto.addEventListener('click', () => {
             modalBuscarProducto.showModal();
@@ -118,6 +161,29 @@
 
         botonCobrar.addEventListener('click', () => {
             modalPagarVenta.showModal();
+        });
+
+        document.getElementById('btnGenerarFactura').addEventListener('click', () => {
+            modalPagoConfirmado.close();
+            modalDatosFactura.showModal();
+        });
+
+        document.getElementById('btnVolverPagoConfirmado').addEventListener('click', () => {
+            modalDatosFactura.close();
+            modalPagoConfirmado.showModal();
+        });
+
+        document.getElementById('formDatosFactura').addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            modalDatosFactura.close();
+            const mensajeFactura = document.getElementById('mensajeFactura');
+            mensajeFactura.textContent = 'Datos fiscales capturados. La factura queda pendiente de emisión.';
+            mensajeFactura.hidden = false;
+            modalPagoConfirmado.showModal();
+        });
+
+        document.getElementById('btnNuevaVentaConfirmada').addEventListener('click', () => {
+            window.location.reload();
         });
     </script>
 </body>
