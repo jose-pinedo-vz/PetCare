@@ -15,7 +15,7 @@
 
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Editar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar empleado</h1>
       </div>

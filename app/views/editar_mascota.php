@@ -37,7 +37,7 @@ function v($valor) {
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Editar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar mascota</h1>
       </div>

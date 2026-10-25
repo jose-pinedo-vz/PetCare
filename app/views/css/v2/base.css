@@ -54,6 +54,15 @@ form button {
   font-size: 13px;
 }
 
+.btn-chico.btn-eliminar {
+  background-color: #A4452C;
+  color: var(--white);
+}
+
+.btn-chico.btn-eliminar:hover {
+  background-color: #843620;
+}
+
 .btn-info {
   background-color: var(--accent-teal-dark);
 }

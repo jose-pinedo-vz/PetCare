@@ -252,6 +252,12 @@
 }
 
 /* ORDEN DE COMPRA: interfaz de sugerencias, catálogo y selección. */
+.orden-compra-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .orden-compra-seccion {
   margin-top: 26px;
 }

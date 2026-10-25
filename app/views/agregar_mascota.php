@@ -15,7 +15,7 @@
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Agregar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar mascota</h1>
       </div>

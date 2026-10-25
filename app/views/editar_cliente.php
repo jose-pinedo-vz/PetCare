@@ -25,7 +25,7 @@ if (!$cliente) {
 
 
   <main>
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Editar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar cliente (#<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>)</h1>
       </div>
@@ -146,7 +146,7 @@ if (!$cliente) {
       </fieldset>
 
       <fieldset>
-        <legend> Contactos de Emergencia</legend>
+        <legend> Contactos de emergencia</legend>
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia:</label>

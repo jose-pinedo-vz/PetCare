@@ -67,8 +67,8 @@
                                 <td>5 días hábiles</td>
                                 <td>Entrega de productos veterinarios.</td>
                                 <td>
-                                    <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-eliminar" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -86,8 +86,8 @@
                                 <td>3 días hábiles</td>
                                 <td>Realiza entregas de medicamentos.</td>
                                 <td>
-                                    <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-eliminar" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -105,8 +105,8 @@
                                 <td>7 días hábiles</td>
                                 <td>Proveedor de alimentos y accesorios.</td>
                                 <td>
-                                    <a class="btn" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-eliminar" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                         </tbody>

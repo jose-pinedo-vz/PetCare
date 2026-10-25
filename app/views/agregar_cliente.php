@@ -21,7 +21,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
   <main>
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Agregar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar cliente</h1>
       </div>

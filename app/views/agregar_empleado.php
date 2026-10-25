@@ -14,7 +14,7 @@
 
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Agregar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Agregar empleado</h1>
       </div>
