@@ -59,3 +59,8 @@ $RECYCLE.BIN/
 *.rar
 *.7z
 
+
+# ==========================================
+# configuracion para el correo
+# ==========================================
+config_correo.php
