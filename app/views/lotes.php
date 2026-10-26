@@ -68,6 +68,7 @@
 						</header>
 						<dl class="lote-detalles">
 							<div><dt>ID producto</dt><dd data-lote-producto>1 · Pelota</dd></div>
+							<div><dt>Proveedor</dt><dd>Distribuidora Canina</dd></div>
 							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2026-11-20</dd></div>
 							<div><dt>Precio de compra</dt><dd data-lote-precio>$18.50</dd></div>
 							<div><dt>Ubicación</dt><dd data-lote-ubicacion>A-01</dd></div>
@@ -88,6 +89,7 @@
 						</header>
 						<dl class="lote-detalles">
 							<div><dt>ID producto</dt><dd data-lote-producto>2 · Collar</dd></div>
+							<div><dt>Proveedor</dt><dd>Pet Supplies MX</dd></div>
 							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2027-06-15</dd></div>
 							<div><dt>Precio de compra</dt><dd data-lote-precio>$72.00</dd></div>
 							<div><dt>Ubicación</dt><dd data-lote-ubicacion>B-03</dd></div>
@@ -108,6 +110,7 @@
 						</header>
 						<dl class="lote-detalles">
 							<div><dt>ID producto</dt><dd data-lote-producto>1 · Pelota</dd></div>
+							<div><dt>Proveedor</dt><dd>Distribuidora Canina</dd></div>
 							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2026-10-10</dd></div>
 							<div><dt>Precio de compra</dt><dd data-lote-precio>$15.00</dd></div>
 							<div><dt>Ubicación</dt><dd data-lote-ubicacion>A-02</dd></div>
@@ -120,7 +123,7 @@
 				</div>
 
 				<p class="lotes-sin-resultados" id="sin-lotes" hidden>No hay lotes que coincidan con la búsqueda.</p>
-				<p class="nota-campo">Los registros de esta vista son de demostración; los cambios no se guardan en la base de datos.</p>
+				<p class="nota-campo">El registro de lotes se conectará desde el backend.</p>
 			</section>
 		</main>
 	</div>
@@ -146,6 +149,15 @@
 					</select>
 				</div>
 				<div class="lote-campo">
+					<label for="lote-proveedor">Proveedor</label>
+					<select class="campo" id="lote-proveedor" name="proveedor" required>
+						<option value="">Selecciona un proveedor</option>
+						<option value="Distribuidora Canina">Distribuidora Canina</option>
+						<option value="Pet Supplies MX">Pet Supplies MX</option>
+						<option value="Mascota Feliz">Mascota Feliz</option>
+					</select>
+				</div>
+				<div class="lote-campo">
 					<label for="lote-caducidad">Fecha de caducidad</label>
 					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" required>
 				</div>
@@ -164,32 +176,10 @@
 			</div>
 			<div class="lote-dialog-acciones">
 				<button class="btn-secundario" id="cerrar-dialogo-lote" type="button">Cancelar</button>
-				<button class="btn" type="submit">Agregar a la vista</button>
+				<button class="btn" type="button">Registrar lote</button>
 			</div>
 		</form>
 	</dialog>
-
-	<template id="plantilla-lote">
-		<article class="lote-tarjeta" data-lote>
-			<header class="lote-encabezado">
-				<div class="lote-identidad">
-					<span class="lote-etiqueta">Lote</span>
-					<h2 data-lote-id></h2>
-				</div>
-				<span class="lote-estado" data-lote-estado></span>
-			</header>
-			<dl class="lote-detalles">
-				<div><dt>ID producto</dt><dd data-lote-producto></dd></div>
-				<div><dt>Fecha de caducidad</dt><dd data-lote-fecha></dd></div>
-				<div><dt>Precio de compra</dt><dd data-lote-precio></dd></div>
-				<div><dt>Ubicación</dt><dd data-lote-ubicacion></dd></div>
-			</dl>
-			<div class="lote-cantidad">
-				<span>Cantidad disponible</span>
-				<strong data-lote-cantidad></strong>
-			</div>
-		</article>
-	</template>
 
 	<script>
 		const buscarLote = document.getElementById('buscar-lote');
@@ -197,19 +187,6 @@
 		const listaLotes = document.getElementById('lista-lotes');
 		const mensajeSinLotes = document.getElementById('sin-lotes');
 		const dialogoLote = document.getElementById('dialogo-lote');
-		const formularioLote = document.getElementById('formulario-lote');
-		const plantillaLote = document.getElementById('plantilla-lote');
-		const formatoPrecio = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
-
-		function actualizarResumen() {
-			const lotes = [...listaLotes.querySelectorAll('[data-lote]')];
-			document.getElementById('total-lotes').textContent = lotes.length;
-			document.getElementById('lotes-proximos').textContent = lotes.filter((lote) => lote.dataset.estado === 'proximo').length;
-			document.getElementById('lotes-vencidos').textContent = lotes.filter((lote) => lote.dataset.estado === 'vencido').length;
-			document.getElementById('unidades-lotes').textContent = lotes.reduce((total, lote) => {
-				return total + Number(lote.querySelector('[data-lote-cantidad]').textContent);
-			}, 0);
-		}
 
 		function filtrarLotes() {
 			const consulta = buscarLote.value.trim().toLocaleLowerCase('es');
@@ -226,47 +203,11 @@
 			mensajeSinLotes.hidden = visibles > 0;
 		}
 
-		function obtenerEstadoLote(fechaCaducidad) {
-			const hoy = new Date();
-			hoy.setHours(0, 0, 0, 0);
-			const fecha = new Date(`${fechaCaducidad}T00:00:00`);
-			const diasRestantes = Math.ceil((fecha - hoy) / 86400000);
-
-			if (diasRestantes < 0) return { clase: 'vencido', texto: 'Vencido' };
-			if (diasRestantes <= 60) return { clase: 'proximo', texto: 'Por caducar' };
-			return { clase: 'vigente', texto: 'Vigente' };
-		}
-
 		buscarLote.addEventListener('input', filtrarLotes);
 		filtroLote.addEventListener('change', filtrarLotes);
 
 		document.getElementById('abrir-formulario-lote').addEventListener('click', () => dialogoLote.showModal());
 		document.getElementById('cerrar-dialogo-lote').addEventListener('click', () => dialogoLote.close());
-
-		formularioLote.addEventListener('submit', (event) => {
-			event.preventDefault();
-			const datos = new FormData(formularioLote);
-			const fechaCaducidad = datos.get('fecha_caducidad');
-			const estado = obtenerEstadoLote(fechaCaducidad);
-			const producto = document.getElementById('lote-producto').selectedOptions[0].textContent;
-			const tarjeta = plantillaLote.content.firstElementChild.cloneNode(true);
-
-			tarjeta.dataset.estado = estado.clase;
-			tarjeta.querySelector('[data-lote-id]').textContent = datos.get('lote');
-			tarjeta.querySelector('[data-lote-producto]').textContent = producto;
-			tarjeta.querySelector('[data-lote-fecha]').textContent = fechaCaducidad;
-			tarjeta.querySelector('[data-lote-precio]').textContent = formatoPrecio.format(Number(datos.get('precio_compra')));
-			tarjeta.querySelector('[data-lote-ubicacion]').textContent = datos.get('ubicacion');
-			tarjeta.querySelector('[data-lote-cantidad]').textContent = datos.get('cantidad');
-			tarjeta.querySelector('[data-lote-estado]').classList.add(estado.clase);
-			tarjeta.querySelector('[data-lote-estado]').textContent = estado.texto;
-
-			listaLotes.prepend(tarjeta);
-			formularioLote.reset();
-			dialogoLote.close();
-			actualizarResumen();
-			filtrarLotes();
-		});
 	</script>
 </body>
 
