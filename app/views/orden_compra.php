@@ -13,7 +13,7 @@
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
         <main>
-            <div class="migaja">Gestión de inventario /</div>
+            <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Orden de compra</div>
             <div class="encabezado-pagina">
                 <h1>Orden de compra</h1>
             </div>

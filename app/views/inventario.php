@@ -12,7 +12,7 @@
   <div class="layout">
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-    <main>
+    <main class="">
       <div class="migaja">Gestión de inventario</div>
       <div class="encabezado-pagina">
         <h1>Control de inventario</h1>
@@ -20,8 +20,8 @@
 
       <nav class="inventario-pestanas" aria-label="Secciones de inventario">
         <a href="#catalogo" class="activa" aria-current="page">1. Catálogo de productos</a>
-        <a href="lotes.php#lotes">2. Gestión de lotes</a>
-        <a href="lotes.php#pedidos">3. Pedidos pendientes</a>
+        <a href="lotes.php">2. Gestión de lotes</a>
+        <a href="pedidos.php#pedidos">3. Pedidos pendientes</a>
       </nav>
 
       <section id="catalogo" aria-label="Catálogo de productos">

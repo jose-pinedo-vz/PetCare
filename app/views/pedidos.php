@@ -13,7 +13,7 @@
 		<?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
 		<main>
-			<div class="tarjeta">
+			<div class="">
 			<div class="migaja">Gestión de inventario</div>
 			<div class="encabezado-pagina">
 				<h1>Control de inventario</h1>
@@ -21,7 +21,7 @@
 
 			<nav class="inventario-pestanas" aria-label="Secciones de inventario">
 				<a href="inventario.php">1. Catálogo de productos</a>
-				<a href="lotes.php#lotes">2. Gestión de lotes</a>
+				<a href="lotes.php">2. Gestión de lotes</a>
 				<a href="#pedidos" class="activa" aria-current="page">3. Pedidos pendientes</a>
 			</nav>
 
@@ -29,7 +29,13 @@
 				<div class="inventario-pedidos-toolbar">
 					<label class="visualmente-oculto" for="buscar-pedido">Buscar pedidos</label>
 					<input id="buscar-pedido" class="campo" type="search" placeholder="Buscar por proveedor, ID pedido...">
-					<button class="btn" type="button">+ Nuevo lote</button>
+					<label class="visualmente-oculto" for="filtro-estado-pedido">Filtrar pedidos por estado</label>
+					<select id="filtro-estado-pedido" class="campo pedidos-filtro-estado">
+						<option value="">Todos los estados</option>
+						<option value="confirmado">Entregado</option>
+						<option value="pendiente">Pendiente</option>
+						<option value="cancelado">Cancelado</option>
+					</select>
 				</div>
 
 				<div class="inventario-pedidos-grid" id="lista-pedidos">
@@ -66,7 +72,7 @@
 								<span class="pedido-etiqueta">Orden de compra</span>
 								<h2>ORD-002</h2>
 							</div>
-							<span class="historial-estado pagada">Confirmado</span>
+							<span class="historial-estado pagada">Entregado</span>
 						</header>
 						<a class="pedido-proveedor" href="#pedido-002">
 							<span>Proveedor</span>

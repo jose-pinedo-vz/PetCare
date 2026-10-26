@@ -396,6 +396,11 @@
   min-width: 0;
 }
 
+.inventario-pedidos-toolbar .pedidos-filtro-estado {
+  flex: 0 0 190px;
+  width: 190px;
+}
+
 .inventario-pedidos-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -563,6 +568,218 @@
   opacity: 0.5;
 }
 
+.lotes-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.lote-resumen-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.lote-resumen-tarjeta span {
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.lote-resumen-tarjeta strong {
+  color: var(--primary-dark);
+  font-size: 25px;
+}
+
+.lotes-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lotes-toolbar .campo:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.lotes-filtro-estado {
+  flex: 0 0 190px;
+  width: 190px;
+}
+
+.lotes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lote-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 2px 6px rgba(73, 49, 23, 0.08);
+}
+
+.lote-tarjeta[hidden] {
+  display: none;
+}
+
+.lote-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.lote-identidad {
+  min-width: 0;
+}
+
+.lote-etiqueta {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--texto-suave);
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.lote-encabezado h2 {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 17px;
+}
+
+.lote-estado {
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.lote-estado.vigente {
+  background: #e3ebd6;
+  color: #3c5220;
+}
+
+.lote-estado.proximo {
+  background: #ffe3a0;
+  color: #80520b;
+}
+
+.lote-estado.vencido {
+  background: #f8d5d2;
+  color: #9b3329;
+}
+
+.lote-detalles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
+  margin: 0;
+}
+
+.lote-detalles div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lote-detalles dt {
+  color: var(--texto-suave);
+  font-size: 11px;
+}
+
+.lote-detalles dd {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.lote-cantidad {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.lote-cantidad span {
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.lote-cantidad strong {
+  font-size: 20px;
+}
+
+.lotes-sin-resultados {
+  margin: 24px 0;
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+.lote-dialog {
+  width: min(620px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 22px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--sidebar-light);
+  color: var(--primary-dark);
+}
+
+.lote-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.lote-dialog h2 {
+  margin: 0 0 18px;
+}
+
+.lote-formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lote-campo label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.lote-campo-completo {
+  grid-column: 1 / -1;
+}
+
+.lote-dialog-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 .busqueda-tabla {
   margin-top: 16px;
 }
@@ -571,10 +788,23 @@
   .inventario-pedidos-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .lotes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lotes-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 600px) {
   .inventario-pedidos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lotes-grid,
+  .lotes-resumen {
     grid-template-columns: 1fr;
   }
 
@@ -595,6 +825,34 @@
 
   .inventario-pedidos-toolbar .btn {
     align-self: flex-start;
+  }
+
+  .inventario-pedidos-toolbar .pedidos-filtro-estado {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .lotes-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lotes-toolbar .campo,
+  .lotes-toolbar .lotes-filtro-estado {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .lotes-toolbar .btn {
+    align-self: flex-start;
+  }
+
+  .lote-formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .lote-campo-completo {
+    grid-column: auto;
   }
 }
 

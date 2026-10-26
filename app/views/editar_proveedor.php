@@ -15,7 +15,7 @@
   <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Editar</div>
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de proveedores</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar proveedor</h1>
       </div>
