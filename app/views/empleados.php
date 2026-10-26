@@ -27,7 +27,8 @@ $empleados = Empleados::Listar_empleados_activos();
 
       <div class="tarjeta">
 
-    <div class="barra-acciones">
+    <div class="agregar-buscar">
+      <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
       <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
     </div>
 
@@ -94,5 +95,6 @@ $empleados = Empleados::Listar_empleados_activos();
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
+  <script src="js/buscador_inteligente.js"></script>
 </body>
 </html>

@@ -25,11 +25,12 @@ $proveedores = listar_proveedores();
     </div>
 
     <div class="tarjeta">
-      <div class="barra-acciones">
+      <div class="agregar-buscar">
+        <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
         <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
       </div>
       <div class="tabla-envoltura">
-        <table class="tabla-ancha">
+        <table class="tabla-envoltura">
 <thead>
                     <tr>
                         <th>ID</th>
@@ -73,5 +74,6 @@ $proveedores = listar_proveedores();
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script src="js/buscador_inteligente.js"></script>
 </body>
 </html>

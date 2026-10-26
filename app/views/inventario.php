@@ -45,8 +45,8 @@
 
         <h2 class="subtitulo">Productos</h2>
 
-        <div class="inventario-toolbar">
-          <input type="text" class="campo inventario-buscador" placeholder="Buscar por código o nombre...">
+        <div class="agregar-buscar">
+          <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
           <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 
@@ -145,6 +145,8 @@
             if (event.key === 'Escape' && ventanaAgotados.open) ventanaAgotados.close();
         });
     </script>
+
+    <script src="js/buscador_inteligente.js"></script>
 </body>
 
 </html>

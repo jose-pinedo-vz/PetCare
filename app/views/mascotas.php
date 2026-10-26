@@ -25,7 +25,8 @@ session_start();
 
       <div class="tarjeta">
     
-    <div class="barra-acciones">
+    <div class="agregar-buscar">
+      <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
       <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
     </div>
     <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
@@ -74,5 +75,6 @@ session_start();
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
+  <script src="js/buscador_inteligente.js"></script>
 </body>
 </html>

@@ -59,3 +59,10 @@ $RECYCLE.BIN/
 *.rar
 *.7z
 
+# La carpeta vendor no se sube a gitbub ya que contiene muchos archivos
+# La carpeta vendor trae los archivos necesarios para usar la libreria Dompdf.
+# Para crear el pdf de orden de Compra
+# Para que los demas puedan ejecutar la libreria tienen que poner en la terminar teniendo abierto la ruta de Petcare esto:
+# "composer install"
+vendor/
+
