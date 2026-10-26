@@ -88,7 +88,7 @@
                           <td class="acciones">
                             <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= (int)$producto['id_producto'] ?>">Nueva orden de compra</a>
                             <a class="btn btn-chico" href="editar_producto.php?id=<?= (int)$producto['id_producto'] ?>">Editar</a>
-                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= (int)$producto['id_producto'] ?>">Eliminar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= (int)$producto['id_producto'] ?>&nombre=<?= urlencode($producto['nombre']) ?>&imagen=<?= urlencode($producto['imagen']) ?>">Eliminar</a>
                           </td>
                         </tr>
                       <?php endif; ?>

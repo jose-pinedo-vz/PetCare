@@ -274,8 +274,8 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             id="estado" 
             name="estado" 
             required>
-              <option value="activo" <?= ($estado === 'activo') ? 'selected' : '' ?>>Activo</option>
-              <option value="inactivo" <?= ($estado === 'inactivo') ? 'selected' : '' ?>>Inactivo</option>
+              <option value="1" <?= ((int)$estado === 1) ? 'selected' : '' ?>>Activo</option>
+              <option value="0" <?= ((int)$estado === 0) ? 'selected' : '' ?>>Inactivo</option>
             </select>
           </div>
         </div>

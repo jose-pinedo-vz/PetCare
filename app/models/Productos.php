@@ -57,7 +57,7 @@ function insertarProducto(array $datos) {
         $stmtProd->bindParam(":existencia_maxima",$datos['existencia_maxima'], PDO::PARAM_INT);
         $stmtProd->bindParam(":fecha_ingreso",    $datos['fecha_ingreso'],     PDO::PARAM_STR);
         $stmtProd->bindParam(":imagen",           $datos['imagen'],            PDO::PARAM_STR);
-        $stmtProd->bindParam(":estado",           $datos['estado'],            PDO::PARAM_STR);
+        $stmtProd->bindParam(":estado",           $datos['estado'],            PDO::PARAM_INT);
         
         
         $stmtProd->execute();
@@ -119,7 +119,7 @@ function obtenerDatosProductosActivos(): array {
         $sql = "SELECT id_producto, codigo, nombre, id_categoria, id_proveedor, descripcion, contenido,
             unidad_medida, precio_venta, existencia, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
                 FROM productos
-                WHERE estado = 'activo'
+                WHERE estado = 1
                 ORDER BY id_producto DESC";
 
         $resultado = $conexion->query($sql);
@@ -163,7 +163,7 @@ function obtenerDatosProductosInactivos(): array {
         $sql = "SELECT id_producto, codigo, nombre, id_categoria, id_proveedor, descripcion, contenido,
             unidad_medida, precio_venta, existencia, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
                 FROM productos
-                WHERE estado = 'inactivo'
+                WHERE estado = 0
                 ORDER BY id_producto DESC";
 
         $resultado = $conexion->query($sql);
@@ -229,7 +229,7 @@ function ActualizarProducto(array $datos, $id){
         $stmtProd->bindParam(":existencia_maxima", $datos['existencia_maxima'], PDO::PARAM_INT);
         $stmtProd->bindParam(":fecha_ingreso",     $datos['fecha_ingreso'],     PDO::PARAM_STR);
         $stmtProd->bindParam(":imagen",            $datos['imagen'],            PDO::PARAM_STR);
-        $stmtProd->bindParam(":estado",            $datos['estado'],            PDO::PARAM_STR);
+        $stmtProd->bindParam(":estado",            $datos['estado'],            PDO::PARAM_INT);
         $stmtProd->bindParam(":id_producto",       $id,                         PDO::PARAM_INT);
 
         // Ejecutar la consulta
@@ -248,7 +248,7 @@ function eliminar_producto(int $id): bool
     try {
         $db = ConexionDB::obtenerConexion();
         $stmt = $db->prepare("UPDATE productos 
-                              SET estado = 'inactivo'
+                              SET estado = 0
                               WHERE id_producto = ?");
         return $stmt->execute([$id]);
     } catch (Exception $e) {
@@ -283,6 +283,10 @@ class Productos {
 
     public static function obtenerimagen(int $id){
         return obtenerImagen($id);
+    }
+
+    public static function eliminar_producto(int $id){
+       return eliminar_producto($id);
     }
 }
 
