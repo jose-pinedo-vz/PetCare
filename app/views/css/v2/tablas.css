@@ -43,6 +43,7 @@ table.tabla-ancha {
 }
 
 table td.acciones {
+  text-align: center;
   white-space: nowrap;
 }
 

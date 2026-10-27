@@ -66,7 +66,7 @@
                                 <td>Crédito a 30 días</td>
                                 <td>5 días hábiles</td>
                                 <td>Entrega de productos veterinarios.</td>
-                                <td>
+                                <td class="acciones">
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
                                     <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
@@ -85,7 +85,7 @@
                                 <td>Contado</td>
                                 <td>3 días hábiles</td>
                                 <td>Realiza entregas de medicamentos.</td>
-                                <td>
+                                <td class="acciones">
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
                                     <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
@@ -104,7 +104,7 @@
                                 <td>Crédito a 15 días</td>
                                 <td>7 días hábiles</td>
                                 <td>Proveedor de alimentos y accesorios.</td>
-                                <td>
+                                <td class="acciones">
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
                                     <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>

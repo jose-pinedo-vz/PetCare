@@ -227,6 +227,11 @@
   margin-bottom: 20px;
 }
 
+.inventario-tabla th,
+.inventario-tabla td {
+  text-align: center;
+}
+
 .inventario-buscador {
   flex: 1;
   min-width: 260px;

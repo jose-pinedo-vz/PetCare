@@ -50,7 +50,7 @@
         </div>
 
         <div class="tabla-envoltura">
-          <table>
+          <table class="inventario-tabla">
             <thead>
               <tr>
                 <th>Imagen</th>

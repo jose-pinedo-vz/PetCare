@@ -77,7 +77,7 @@ $listaClientes = Cliente::obtenerTodos();
                       <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
                       <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
                       <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
-                      <!--<button type="submit" class="btn btn-chico btn-eliminar btn-peligro">Eliminar</button>-->
+                      <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Eliminar</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>
