@@ -1,58 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar producto</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-  <style>
-    #preview-crop { max-width: 200px; border-radius: 8px; display: none; margin-top: 8px; }
-    #modal-crop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 99; align-items: center; justify-content: center; }
-    #modal-crop .caja { background: #fff; padding: 15px; border-radius: 8px; max-width: 500px; width: 90%; }
-    #imagen-a-recortar { max-width: 100%; max-height: 60vh; display: block; }
-  </style>
 </head>
+
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-  </header>
+  <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
+    <main>
+      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Agregar</div>
+      <div class="encabezado-pagina">
+        <h1>Registrar producto</h1>
+      </div>
 
-      <li><a href="inventario.php" class="activo">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <h1>Registrar producto</h1>
-
+      <div class="tarjeta">
     <form action="guardar_producto.php" method="POST" enctype="multipart/form-data">
 
       <fieldset>
-        <legend style="font-weight: bold; color: #333; padding: 0 5px;">Datos básicos</legend>
+        <legend>Datos básicos</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="codigo">Código:</label>
             <input 
@@ -65,7 +40,7 @@
           </div>
 
 
-          <div style="grid-column: 1 / -1;">
+          <div class="campo-completo">
             <label class="label-campo" for="nombre">Nombre:</label>
             <input 
             type="text" 
@@ -118,7 +93,7 @@
             </select>
           </div>
 
-          <div style="grid-column: 1 / -1;">
+          <div class="campo-completo">
             <label class="label-campo" for="descripcion">Descripción:</label>
             <textarea 
             class="campo" 
@@ -129,7 +104,7 @@
           </div>
         </div>
 
-        <div style="margin-top: 12px;">
+        <div class="campo-completo-sep">
           <label class="label-campo" for="imagen">Imagen del producto:</label>
           <input 
           type="file" class="campo" id="imagen" name="imagen" accept="image/*" required>
@@ -138,10 +113,10 @@
 
         <div id="modal-crop">
           <div class="caja">
-            <h3 style="margin-top:0;">Recortar foto (cuadrado)</h3>
+            <h3>Recortar foto (cuadrado)</h3>
             <img id="imagen-a-recortar" alt="Imagen a recortar">
-            <div style="margin-top:10px; text-align:right; display:flex; gap:8px; justify-content:flex-end;">
-              <button type="button" id="btn-cancelar-crop">Cancelar</button>
+            <div class="crop-acciones">
+              <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
               <button type="button" id="btn-recortar">Recortar y usar</button>
             </div>
           </div>
@@ -149,9 +124,9 @@
       </fieldset>
 
       <fieldset>
-        <legend style="font-weight: bold; color: #333; padding: 0 5px;">Precios e Inventario</legend>
+        <legend>Precios e inventario</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="precio_compra">Precio de compra ($):</label>
             <input 
@@ -175,7 +150,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="existencia">Existencia (Stock):</label>
+            <label class="label-campo" for="existencia">Existencia (stock):</label>
             <input 
             type="number" 
             step="0.01" 
@@ -222,9 +197,9 @@
       </fieldset>
 
       <fieldset>
-        <legend style="font-weight: bold; color: #333; padding: 0 5px;">Logística y Almacén</legend>
+        <legend>Logística y almacén</legend>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="lote">Lote:</label>
             <input 
@@ -237,7 +212,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="ubicacion">Ubicación / Estante:</label>
+            <label class="label-campo" for="ubicacion">Ubicación / estante:</label>
             <input 
              type="text" 
              class="campo" 
@@ -266,10 +241,16 @@
         </div>
       </fieldset>
 
-      <button type="submit">Guardar</button>
-      <a class="btn" href="inventario.php">Cancelar</a>
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="inventario.php">Cancelar</a>
+        <button type="submit">Guardar</button>
+      </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
@@ -277,6 +258,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-producto.js"></script>
-
 </body>
+
 </html>

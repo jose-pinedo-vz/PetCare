@@ -1,8 +1,40 @@
 <?php
 /* codigo aqui*/
+require_once __DIR__ . '/../models/Cliente.php';
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === 'codigo_postal')
+{
+    resivirCodigoPostal();
+}
+
+function resivirCodigoPostal()
+{
+    $json = file_get_contents('php://input');
+    $codigoPostal = json_decode($json, true);
+
+    $res = Cliente::obtenerCodigoPostal($codigoPostal['codigo_postal']);
+
+    if ($res === [])
+    {
+        echo json_encode(false);
+        exit;
+    }
+    else
+    {
+        echo json_encode($res);
+        exit;
+    }
+}
+
+
+
 
 
 function validar_datos($datos){
+    require_once __DIR__ . '/../models/proveedores.php';
+    require_once __DIR__ . '/validar_rfc.php';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -15,6 +47,8 @@ function validar_datos($datos){
         $errores[] = "La razon no puede tener mas de 30 letras";
     }else if (is_numeric($datos['razon_social'])) {
         $errores[] = "La razón social no puede ser únicamente números.";
+    }else if (existeRazonSocial($datos['razon_social'])) {
+        $errores[] = "La razón social ya existe en la base de datos.";
     }
 
     // Nombre comercial es obligatorio
@@ -31,6 +65,13 @@ function validar_datos($datos){
         $errores[] = "El RFC es obligatoria.";
     }else if (strlen($datos['rfc']) > 13) {
         $errores[] = "El RFC no puede tener mas de 13 letras.";
+    }else {
+        $erroresRfc = validarRfc($datos['rfc']);
+        if (!empty($erroresRfc)) {
+            $errores = array_merge($errores, $erroresRfc);
+        }else if (existeRfc($datos['rfc'])) {
+            $errores[] = "El RFC ya existe en la base de datos.";
+        }
     }
 
     // El telefono es obligatorio
@@ -41,15 +82,21 @@ function validar_datos($datos){
     } else {
         // Extraer solo los números ignorando guiones, espacios y paréntesis
         $soloNumerosTel = preg_replace('/\D/', '', $datos['telefono']);
-        if (strlen($soloNumerosTel) !== 10) {
-            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678 o 345-103-2345).";
+        $datos['telefono'] = $soloNumerosTel; // Actualiza el valor del teléfono con solo números
+        if (strlen($datos['telefono']) !== 10) {
+            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678).";
+        }else if (existeTelefono($datos['telefono'])) {
+            $errores[] = "El teléfono ya existe en la base de datos.";
         }
     }
+    
 
     // El correo es obligatorio
     if (empty($datos['correo'])) {
         $errores[] = "El correo es obligatoria.";
         //$datos['correo'] = NULL;
+    }else if (strlen($datos['correo']) > 100) {
+        $errores[] = "El correo no puede tener mas de 100 letras";   
     }elseif (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
         $errores[] = "El formato del correo no es válido.";
     }else{
@@ -57,6 +104,8 @@ function validar_datos($datos){
         // Verifica registros MX o A (algunos dominios usan registro A como respaldo)
         if(!checkdnsrr($dominio, 'MX') && !checkdnsrr($dominio, 'A')){
             $errores[] = "El dominio del correo no existe o no admite mensajes.";
+        }else if (existeCorreo($datos['correo'])) {
+            $errores[] = "El correo ya existe en la base de datos.";
         }
     }
 
@@ -74,8 +123,8 @@ function validar_datos($datos){
     if (empty($datos['ciudad'])) {
         $errores[] = "La ciudad es obligatoria.";
         //$datos['ciudad'] = NULL;
-    }else if (strlen($datos['ciudad']) > 20) {
-        $errores[] = "La ciudad no puede tener mas de 20 letras";
+    }else if (strlen($datos['ciudad']) > 100) {
+        $errores[] = "La ciudad no puede tener mas de 100 letras";
     }else if (preg_match('/\d/', $datos['ciudad'])) {
         $errores[] = "La ciudad no puede contener números.";
     }
@@ -84,8 +133,8 @@ function validar_datos($datos){
     if (empty($datos['estado'])) {
         $errores[] = "El estado es obligatoria.";
         //$datos['estado'] = NULL;
-    }else if (strlen($datos['estado']) > 20) {
-        $errores[] = "El estado no puede tener mas de 20 letras";
+    }else if (strlen($datos['estado']) > 100) {
+        $errores[] = "El estado no puede tener mas de 100 letras";
     }else if (preg_match('/\d/', $datos['estado'])) {
         $errores[] = "El estado no puede contener números.";
     }
@@ -94,8 +143,8 @@ function validar_datos($datos){
     if (empty($datos['codigo_postal'])) {
         $errores[] = "El codigo postal es obligatoria.";
         //$datos['codigo_postal'] = NULL;
-    }else if (strlen($datos['codigo_postal']) > 10) {
-        $errores[] = "El codigo postal no puede tener mas de 10 letras";
+    }else if (strlen($datos['codigo_postal']) != 5) {
+        $errores[] = "El codigo postal debe tener exactamente 5 caracteres";
     }else if(!is_numeric($datos['codigo_postal'])){
         $errores[] = "El codigo postal debe de ser puros numeros";
     }
@@ -133,7 +182,7 @@ function validar_datos($datos){
         header("Location: ../views/agregar_proveedor.php");
         exit;
     } else {
-        require_once __DIR__ . '/../models/proveedores.php';
+        
         $advert = insertar($datos);
         if (is_array($advert) && count($advert) > 0) {
             if($advert[0] == "Error BD"){
@@ -158,4 +207,68 @@ function listar_proveedores(): array {
     require_once __DIR__ . '/../models/proveedores.php';
     return obtenerProveedoresActivos();
 }
+//valida al provvedor y hace la validacion de datos 
+function actualizar_proveedor(int $id, array $datos) {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $errores = [];
+
+    if (empty($datos['razon_social'])) {
+        $errores[] = "La razón social es obligatoria.";
+    }
+
+    if (empty($datos['nombre_comercial'])) {
+        $errores[] = "El nombre comercial es obligatorio.";
+    }
+
+    if (empty($datos['rfc'])) {
+        $errores[] = "El RFC es obligatorio.";
+    } else if (strlen($datos['rfc']) > 13) {
+        $errores[] = "El RFC no puede tener más de 13 letras.";
+    }
+
+    if (empty($datos['telefono'])) {
+        $errores[] = "El teléfono es obligatorio.";
+    } else if (preg_match('/[a-zA-Z]/', $datos['telefono'])) {
+        $errores[] = "El teléfono no puede contener letras.";
+    } else {
+        $soloNumerosTel = preg_replace('/\D/', '', $datos['telefono']);
+        if (strlen($soloNumerosTel) !== 10) {
+            $errores[] = "El teléfono debe contener exactamente 10 dígitos.";
+        }
+    }
+
+    if (!empty($datos['correo']) && !filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+        $errores[] = "El formato del correo no es válido.";
+    }
+
+    if (!empty($datos['codigo_postal']) && !is_numeric($datos['codigo_postal'])) {
+        $errores[] = "El código postal debe ser solo números.";
+    }
+
+    if (empty($datos['tiempo_entrega']) || !is_numeric($datos['tiempo_entrega'])) {
+        $errores[] = "El tiempo de entrega es obligatorio y debe ser numérico.";
+    }
+
+    if (count($errores) > 0) {
+        $_SESSION['errores'] = $errores;
+        header("Location: editar_proveedor.php?id=$id");
+        exit;
+    }
+
+    require_once __DIR__ . '/../models/proveedores.php';
+    $resultado = actualizarProveedor($id, $datos);
+
+    if ($resultado !== true) {
+        $_SESSION['errores'] = ["No se pudo actualizar el proveedor: " . ($resultado[1] ?? 'error desconocido')];
+        header("Location: editar_proveedor.php?id=$id");
+        exit;
+    }
+
+    header("Location: proveedores.php");
+    exit;
+}
+
 ?>

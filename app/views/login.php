@@ -10,7 +10,7 @@ include 'layout/encabezado.php';
         <p class='msg-error'><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
     <?php endif; ?>
 
-    <form action="/PetCare/app/controllers/Login.php" method="POST">
+    <form action="../controllers/Login.php" method="POST">
         <div style="margin-bottom: 15px;">
             <label for="usuario" class="label-campo">Usuario:</label>
             <input type="text" id="usuario" name="usuario" class="campo" required>
@@ -22,6 +22,9 @@ include 'layout/encabezado.php';
         </div>
 
         <button type="submit">Ingresar</button>
+        <p style="margin-top: 15px;">
+            ¿No tienes una cuenta? <a href="registro_cliente.php">Regístrate aquí</a>
+        </p>
     </form>
 </main>
 

@@ -104,7 +104,7 @@ function eliminar(int $id): bool
                               WHERE id_producto = ? AND esta_activo = 1");
         return $stmt->execute([$id]);
     } catch (Exception $e) {
-        return htmlspecialchars($e->getMessage());
+        return false;
     }
 }
 

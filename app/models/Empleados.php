@@ -4,22 +4,78 @@ require_once __DIR__ . '/conexion_db.php';
 
 class Empleados {
 
+    // si sale 1 es que ya esta registrado
+    public static function estaRegistrado(string $correo, string $telefono, ?int $id_empleado = null): bool {
+      try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        // si se agregara un nuevo empleado
+        if ($id_empleado === null) {
+          $consulta = $conexion -> prepare(
+            "
+            SELECT COUNT(*)
+            FROM empleados
+            WHERE correo = ? OR telefono = ?
+            "
+          );
+          $consulta -> execute([$correo, $telefono]);
+        }
+
+        // si es edicion
+        else {
+          $consulta = $conexion -> prepare (
+            "
+            SELECT COUNT(*)
+            FROM empleados
+            WHERE (correo = ? OR telefono = ?) AND id_empleado != ?
+            "
+          );
+          $consulta -> execute ([$correo, $telefono, $id_empleado]);
+        }
+
+        $total = $consulta -> fetchColumn();
+
+        if ($total > 0) {
+            return true;
+        } else {
+          return false;
+        }
+
+      } catch (Exception $error) {
+        return false;
+      }
+
+    }
+
+    public static function cedulaRegistrada(int $cedula, ?int $id_empleado = null): bool {
+      try {
+        $conexion = ConexionDB::obtenerConexion();
+        if ($id_empleado === null) {
+          $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM empleados WHERE num_cedula_profesional = ?"
+          );
+          $consulta->execute([$cedula]);
+        } else {
+          $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM empleados WHERE num_cedula_profesional = ? AND id_empleado != ?"
+          );
+          $consulta->execute([$cedula, $id_empleado]);
+        }
+        return (int)$consulta->fetchColumn() > 0;
+      } catch (Exception $error) {
+        return false;
+      }
+    }
+
     public static function generarIdEmpleados(PDO $db): int {
-        do {
-            $aleatorio = random_int(100, 9999);
-            $consulta = $db -> prepare(
-                "
-                SELECT 1
-                FROM empleados
-                WHERE id_empleado = ?
-                "
-            );
-            $consulta -> execute([$aleatorio]);
-            $exite = (bool) $consulta -> fetch();
-
-        } while ($exite);
-
-        return $aleatorio;
+        try {
+        // Consultamos el ID máximo actual y le sumamos 1
+        $stmt = $db->query("SELECT COALESCE(MAX(id_empleado), 0) + 1 FROM empleados");
+        return (int) $stmt->fetchColumn();
+             }
+    catch (PDOException $e) {
+        return 1;
+    }
     }
 
     public static function obtenerTodos(): array {

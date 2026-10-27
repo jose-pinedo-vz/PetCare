@@ -1,5 +1,11 @@
 <?php
-session_start();
+
+if (session_status() === PHP_SESSION_NONE)
+{
+    
+    session_start();
+    
+}
 require_once '../models/conexion_db.php';
 $conexion=ConexionDB::obtenerConexion();
 $action=$_GET['action'] ?? '';
@@ -13,13 +19,13 @@ if ($action==='logout')
         setcookie(session_name(),'',time()-42000,$params["path"],$params["domain"],$params["secure"],$params["httponly"]);
     }
     session_destroy();
-    header("Location: login.php");
+    header("Location: ../views/login.php");
     exit();
 }
 
 if (isset($_SESSION['usuario']))
 {
-    header("Location: /PetCare/app/views/clientes.php");
+    header("Location: ../views/clientes.php");
     exit();
 }
  
@@ -43,14 +49,14 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
             {
                 $error="La cuenta se encuentra inactiva.";
             }
-            elseif (password_verify($password, $datosUsuario['contrasena']))
+            elseif ($password === $datosUsuario['contrasena'])
             {
                 session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);
                 $_SESSION['id_usuario']=$datosUsuario['id_usuario'];
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
-                header("Location: /PetCare/app/views/clientes.php");
+                header("Location: ../views/clientes.php");
                 exit();
             }
             else

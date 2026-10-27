@@ -1,55 +1,43 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veterinaria PetCare - Eliminar producto</title>
-    <link rel="stylesheet" href="css/estilos_base.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veterinaria PetCare - Eliminar producto</title>
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
 <body>
 
-    <header>
-        <div class="marca">
-            <img src="img/logo3.svg" alt="Veterinaria PetCare">
-        </div>
+  <div class="layout">
 
-        <div class="sesion">
-            <span>Empleado: Nombre del empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
-
-    <nav>
-      <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-      <li><a href="inventario.php" class="activo">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-      </ul>
-    </nav>
+  <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
+      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Eliminar</div>
+      <div class="encabezado-pagina">
         <h1>Eliminar producto</h1>
+      </div>
 
+      <div class="tarjeta">
         <div class="confirmacion">
-            <p>¿Está seguro de que desea eliminar este producto?</p>
+          <p>¿Está seguro de que desea eliminar este producto?</p>
 
-            <button type="button">Eliminar producto</button>
-            <a class="btn" href="inventario.php">Cancelar</a>
+          <div class="acciones-formulario">
+            <a class="btn-secundario" href="inventario.php">Cancelar</a>
+            <button type="button" class="btn">Eliminar</button>
+          </div>
         </div>
+      </div>
     </main>
 
-    <footer>
-      <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
+
 </body>
+
 </html>
