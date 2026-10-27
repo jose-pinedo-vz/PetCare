@@ -256,8 +256,8 @@ session_start();
             id="estado" 
             name="estado" 
             required>
-              <option value="activo" <?= (isset($old['estado']) && $old['estado'] === 'activo') ? 'selected' : '' ?>>Activo</option>
-              <option value="inactivo" <?= (isset($old['estado']) && $old['estado'] === 'inactivo') ? 'selected' : '' ?>>Inactivo</option>
+              <option value="1" <?= (isset($old['estado']) && (int)$old['estado'] === 1) ? 'selected' : '' ?>>Activo</option>
+              <option value="0" <?= (isset($old['estado']) && (int)$old['estado'] === 0) ? 'selected' : '' ?>>Inactivo</option>
             </select>
           </div>
         </div>

@@ -1,3 +1,17 @@
+<?php
+// Validar si realmente llegaron los datos por la URL (GET)
+if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['imagen'])) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: inventario.php");
+    exit();
+}
+
+// Si sí llegaron, los guardamos con seguridad
+$id_producto = (int) $_GET['id'];
+$nombre = $_GET['nombre'];
+$imagen = $_GET['imagen'];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -19,14 +33,20 @@
       <div class="encabezado-pagina">
         <h1>Eliminar producto</h1>
       </div>
+      <form action="../controllers/eliminar_producto.php" method="POST">
+  
+      <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_producto ?>">
 
       <div class="tarjeta">
         <div class="confirmacion">
-          <p>¿Está seguro de que desea eliminar este producto?</p>
+          <p>¿Está seguro de que desea eliminar este producto?
+            <strong><?= htmlspecialchars((string)$nombre) . ' (ID: ' . htmlspecialchars((string)$id_producto) . ')' ?></strong>
+            Esta acción no se puede deshacer.
+          </p>
 
           <div class="acciones-formulario">
             <a class="btn-secundario" href="inventario.php">Cancelar</a>
-            <button type="button" class="btn">Eliminar</button>
+            <button type="submit" class="btn">Eliminar</button>
           </div>
         </div>
       </div>

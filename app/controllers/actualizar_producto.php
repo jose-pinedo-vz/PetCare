@@ -182,47 +182,13 @@ if (session_status() === PHP_SESSION_NONE) {
         }
     }
 
-    //La imagen es obligatorio
-    $foto = $datos['imagen'] ?? null;
-
-    if (is_string($foto)) {
-        if (trim($foto) === '') {
-            $errores[] = "La imagen es obligatoria.";
-        } elseif (strlen($foto) > 50) {
-            $errores[] = "La imagen no puede tener más de 50 caracteres.";
-        }
-    } elseif (is_array($foto)) {
-        $errorArchivo = $foto['error'] ?? null;
-
-        if ($errorArchivo !== UPLOAD_ERR_OK) {
-            $errores[] = "No se pudo subir la imagen. Código de error: ". htmlspecialchars((string)$errorArchivo);
-        } else {
-            require_once __DIR__ . '/../controllers/ImagenController.php';
-            $resultadoImagen = ImagenController::subir($foto);
-
-            if ($resultadoImagen['exito']) {
-                $rutaImagen = $resultadoImagen['ruta'];
-
-                if (is_string($rutaImagen) && $rutaImagen !== '') {
-                    $datos['imagen'] = $rutaImagen;
-
-                    if (strlen($rutaImagen) > 50) {
-                        $errores[] = "La imagen no puede tener más de 50 caracteres.";
-                    }
-                } else {
-                    $errores[] = "No se obtuvo una ruta válida para la imagen.";
-                }
-            } else {
-                $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
-            }
-        }
-    } else {
-        $errores[] = "La imagen es obligatoria.";
-    }
-
+    
     //El estado es obligatorio
-    if (empty($datos['estado'])) {
+    if (!isset($datos['estado'])) {
         $errores[] = "El estado es obligatorio.";
+    }else{
+        $estado = $datos['estado'];
+        $datos['estado'] = (int)$estado;
     }
 
 
@@ -236,28 +202,72 @@ if (session_status() === PHP_SESSION_NONE) {
         exit;
 
     } else {
-        require_once __DIR__ . '/../models/Productos.php';
-        //if ($datos['estado'] === 'inactivo') {
-        //    $activo = 0;
-        //} else {
-        //    $activo = 1;
-        //}
-        $advert = Productos::ActualizarProducto($datos, $id);
-
-        if (is_array($advert) && count($advert) > 0) {
-            if ($advert[0] === "Error ID") {
-                $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
-            } else if($advert[0] === "Error al aguardar") {
-                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+        //La imagen es obligatorio
+        $foto = $datos['imagen'] ?? null;
+    
+        if (is_string($foto)) {
+            if (trim($foto) === '') {
+                $errores[] = "La imagen es obligatoria.";
+            } elseif (strlen($foto) > 50) {
+                $errores[] = "La imagen no puede tener más de 50 caracteres.";
             }
-            $_SESSION['old'] = $datos;
-
-            header("Location: ../views/editar_producto.php");
-            exit;
+        } elseif (is_array($foto)) {
+            $errorArchivo = $foto['error'] ?? null;
+    
+            if ($errorArchivo !== UPLOAD_ERR_OK) {
+                $errores[] = "No se pudo subir la imagen. Código de error: ". htmlspecialchars((string)$errorArchivo);
+            } else {
+                require_once __DIR__ . '/../controllers/ImagenController.php';
+                $resultadoImagen = ImagenController::subir($foto);
+    
+                if ($resultadoImagen['exito']) {
+                    $rutaImagen = $resultadoImagen['ruta'];
+    
+                    if (is_string($rutaImagen) && $rutaImagen !== '') {
+                        $datos['imagen'] = $rutaImagen;
+    
+                        if (strlen($rutaImagen) > 50) {
+                            $errores[] = "La imagen no puede tener más de 50 caracteres.";
+                        }
+                    } else {
+                        $errores[] = "No se obtuvo una ruta válida para la imagen.";
+                    }
+                } else {
+                    $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
+                }
+            }
         } else {
-            // Éxito: redirige a la lista de productos
-            header('Location: ../views/inventario.php');
-            exit;
+            $errores[] = "La imagen es obligatoria.";
+        }
+
+
+
+        if (count($errores) > 0) {
+        // se muestra errores de que campos no se llenaron
+        $_SESSION['errores'] = $errores;
+        $_SESSION['old']     = $datos;
+
+        header("Location: ../views/editar_producto.php");
+        exit;
+        }else{
+            require_once __DIR__ . '/../models/Productos.php';
+            $advert = Productos::ActualizarProducto($datos, $id);
+
+            if (is_array($advert) && count($advert) > 0) {
+                if ($advert[0] === "Error ID") {
+                    $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
+                } else if($advert[0] === "Error al aguardar") {
+                    $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+                }
+                $_SESSION['old'] = $datos;
+
+                header("Location: ../views/editar_producto.php");
+                exit;
+            } else {
+                // Éxito: redirige a la lista de productos
+                header('Location: ../views/inventario.php');
+                exit;
+            }
         }
 
 

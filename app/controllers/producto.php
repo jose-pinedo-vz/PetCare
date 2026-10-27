@@ -198,31 +198,14 @@ function validar_datos(array $datos) {
     }
 
     //El estado es obligatorio
-    if (empty($datos['estado'])) {
+    if (!isset($datos['estado'])) {
         $errores[] = "El estado es obligatorio.";
-    }
-
-    //La imagen es obligatorio
-    if (empty($datos['imagen'])) {
-        $errores[] = "La imagen es obligatoria.";
     }else{
-        require_once __DIR__ . '/../controllers/ImagenController.php';
-
-        $resultadoImagen = null;
-        $foto = $datos['imagen'];
-
-        if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
-            $resultadoImagen = ImagenController::subir($foto);
-            if ($resultadoImagen['exito']) {
-                $datos['imagen'] = $resultadoImagen['ruta'];
-            } else {
-                $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
-            }
-        }
-        if (strlen($datos['imagen']) > 50) {
-        $errores[] = "La imagen no puede tener mas de 50 caracteres.";
-        }
+        $estado = $datos['estado'];
+        $datos['estado'] = (int)$estado;
     }
+
+    
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
@@ -234,30 +217,57 @@ function validar_datos(array $datos) {
 
     } else {
         require_once __DIR__ . '/../models/Productos.php';
-        //if ($datos['estado'] === 'inactivo') {
-        //    $activo = 0;
-        //} else {
-        //    $activo = 1;
-        //}
-        $advert = Productos::insertarProducto($datos);
+        //La imagen es obligatorio
+        if (empty($datos['imagen'])) {
+            $errores[] = "La imagen es obligatoria.";
+        }else{
+            require_once __DIR__ . '/../controllers/ImagenController.php';
 
-        if (is_array($advert) && count($advert) > 0) {
-            if ($advert[0] === "Error ID") {
-                $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
-            } else if($advert[0] === "Error al aguardar") {
-                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+            $resultadoImagen = null;
+            $foto = $datos['imagen'];
+
+            if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+                $resultadoImagen = ImagenController::subir($foto);
+                if ($resultadoImagen['exito']) {
+                    $datos['imagen'] = $resultadoImagen['ruta'];
+
+                    if (strlen($datos['imagen']) > 50) {
+                        $errores[] = "La imagen no puede tener mas de 50 caracteres.";
+                    }
+                } else {
+                    $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
+                }
             }
-            $_SESSION['old'] = $datos;
+        }
+
+        if (count($errores) > 0) {
+            // se muestra errores de que campos no se llenaron
+            $_SESSION['errores'] = $errores;
+            $_SESSION['old']     = $datos;
 
             header("Location: ../views/agregar_producto.php");
             exit;
-        } else {
-            // Éxito: redirige a la lista de productos
-            header('Location: ../views/inventario.php');
-            exit;
-        }
+        }else{
+            $advert = Productos::insertarProducto($datos);
+
+            if (is_array($advert) && count($advert) > 0) {
+                if ($advert[0] === "Error ID") {
+                    $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
+                } else if($advert[0] === "Error al aguardar") {
+                    $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+                }
+                $_SESSION['old'] = $datos;
+
+                header("Location: ../views/agregar_producto.php");
+                exit;
+            } else {
+                // Éxito: redirige a la lista de productos
+                header('Location: ../views/inventario.php');
+                exit;
+            }
 
 
+    }
     }
 
 }

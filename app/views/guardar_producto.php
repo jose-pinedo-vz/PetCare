@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'lote'                  => trim($_POST['lote'] ?? ''),
         'ubicacion'             => trim($_POST['ubicacion'] ?? ''),
         'imagen'                => $_FILES['imagen'] ?? null,
-        'estado'                => trim($_POST['estado'] ?? '')
+        'estado'                => $_POST['estado'] ?? ''
     ];
 
     validar_datos($datos);
