@@ -46,7 +46,7 @@ $imagen = $_GET['imagen'];
 
           <div class="acciones-formulario">
             <a class="btn btn-secundario btn-chico" href="inventario.php">Cancelar</a>
-            <button type="button" class="btn btn-chico btn-peligro">Eliminar producto</button>
+            <button type="submit" class="btn btn-chico btn-peligro">Eliminar producto</button>
           </div>
         </div>
       </div>
