@@ -58,7 +58,7 @@ include 'layout/encabezado.php';
             </select>
         </div>
 
-        <button type="submit">Guardar Usuario</button>
+        <button type="submit" class="btn btn-chico">Guardar Usuario</button>
     </form>
 </main>
 

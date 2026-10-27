@@ -254,7 +254,7 @@
 /* ORDEN DE COMPRA: interfaz de sugerencias, catálogo y selección. */
 .orden-compra-acciones {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -314,12 +314,6 @@
 .orden-compra-tabla-catalogo,
 .orden-compra-tabla-seleccionados {
   min-width: 1050px;
-}
-
-.orden-compra-tabla-catalogo input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary-bg);
 }
 
 .orden-compra-input {

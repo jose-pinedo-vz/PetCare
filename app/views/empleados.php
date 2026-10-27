@@ -29,14 +29,14 @@ $empleados = Empleados::Listar_empleados_activos();
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
-          <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
+          <a class="btn btn-chico" href="agregar_empleado.php">+ Agregar empleado</a>
 
           <form class="busqueda-barra" method="get" action="empleados.php" role="search">
             <label class="visualmente-oculto" for="buscarEmpleado">Buscar empleado</label>
             <input class="campo" id="buscarEmpleado" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info" type="submit">Buscar</button>
+            <button class="btn btn-info btn-chico" type="submit">Buscar</button>
             <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn-secundario" href="empleados.php">Limpiar</a>
+              <a class="btn btn-secundario btn-chico" href="empleados.php">Limpiar</a>
             <?php endif; ?>
           </form>
         </div>
@@ -87,8 +87,8 @@ $empleados = Empleados::Listar_empleados_activos();
                   <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
                   <td><?= htmlspecialchars($e['horario']) ?></td>
                   <td class="acciones">
-                    <a class="btn" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
-                    <a class="btn btn-peligro" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
+                    <a class="btn btn-chico" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
+                    <a class="btn btn-peligro btn-chico" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach; ?>

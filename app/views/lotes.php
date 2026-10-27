@@ -54,7 +54,7 @@
 						<option value="proximo">Por caducar</option>
 						<option value="vencido">Vencidos</option>
 					</select>
-					<button class="btn" id="abrir-formulario-lote" type="button">+ Registrar lote</button>
+					<button class="btn btn-chico" id="abrir-formulario-lote" type="button">+ Registrar lote</button>
 				</div>
 
 				<div class="lotes-grid" id="lista-lotes">
@@ -175,8 +175,8 @@
 				</div>
 			</div>
 			<div class="lote-dialog-acciones">
-				<button class="btn-secundario" id="cerrar-dialogo-lote" type="button">Cancelar</button>
-				<button class="btn" type="button">Registrar lote</button>
+				<button class="btn btn-secundario btn-chico" id="cerrar-dialogo-lote" type="button">Cancelar</button>
+				<button class="btn btn-chico" type="button">Registrar lote</button>
 			</div>
 		</form>
 	</dialog>

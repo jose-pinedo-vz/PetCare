@@ -59,9 +59,9 @@
 						</div>
 						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
 						<div class="pedido-acciones">
-									<button class="btn pedido-registrar" type="button" data-abrir-registro>Registrar pedido</button>
-							<button class="btn-secundario" type="button" data-abrir-detalles>Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-001">Eliminar</button>
+									<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
+							<button class="btn btn-secundario btn-chico" type="button" data-abrir-detalles>Ver detalles</button>
+							<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-001">Eliminar</button>
 						</div>
 						<template data-productos>
 							<tr><td>Alimento premium para perro 10 kg</td><td>2</td><td>$600.00</td><td>$1,200.00</td></tr>
@@ -89,9 +89,9 @@
 						</div>
 						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
 						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button" data-abrir-registro>Registrar pedido</button>
-							<button class="btn-secundario" type="button" data-abrir-detalles>Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-002">Eliminar</button>
+							<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
+							<button class="btn btn-secundario btn-chico" type="button" data-abrir-detalles>Ver detalles</button>
+							<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-002">Eliminar</button>
 						</div>
 						<template data-productos>
 							<tr><td>Alimento premium para perro 10 kg</td><td>1</td><td>$600.00</td><td>$600.00</td></tr>
@@ -120,9 +120,9 @@
 						</div>
 						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
 						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button" data-abrir-registro>Registrar pedido</button>
-							<button class="btn-secundario" type="button" data-abrir-detalles>Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-003">Eliminar</button>
+							<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
+							<button class="btn btn-secundario btn-chico" type="button" data-abrir-detalles>Ver detalles</button>
+							<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-003">Eliminar</button>
 						</div>
 						<template data-productos>
 							<tr><td>Alimento para gato adulto 3 kg</td><td>4</td><td>$250.00</td><td>$1,000.00</td></tr>
@@ -134,8 +134,8 @@
 				<p class="pedido-sin-resultados" id="sin-pedidos" hidden>No hay pedidos que coincidan con la búsqueda.</p>
 				<div class="pedido-paginacion" aria-label="Paginación de pedidos">
 					<span>1-3 de 8 pedidos</span>
-					<button class="btn-secundario" type="button" aria-label="Página anterior" disabled>‹</button>
-					<button class="btn-secundario" type="button" aria-label="Página siguiente">›</button>
+					<button class="btn btn-secundario btn-chico" type="button" aria-label="Página anterior" disabled>‹</button>
+					<button class="btn btn-secundario btn-chico" type="button" aria-label="Página siguiente">›</button>
 				</div>
 			</section>
 			</div>
@@ -185,8 +185,8 @@
 				</div>
 			</div>
 			<div class="lote-dialog-acciones">
-				<button class="btn-secundario" id="cerrar-registro-pedido" type="button">Cancelar</button>
-				<button class="btn" type="button">Registrar pedido</button>
+				<button class="btn btn-secundario btn-chico" id="cerrar-registro-pedido" type="button">Cancelar</button>
+				<button class="btn btn-chico" type="button">Registrar pedido</button>
 			</div>
 		</form>
 	</dialog>
@@ -232,9 +232,9 @@
 			</div>
 
 			<footer class="pedido-detalle-acciones">
-				<button class="btn" type="button">Registrar entrega</button>
-				<button class="btn btn-peligro" type="button">Cancelar pedido</button>
-				<button class="btn-secundario" type="button">Imprimir / Descargar</button>
+				<button class="btn btn-chico" type="button">Registrar entrega</button>
+				<button class="btn btn-peligro btn-chico" type="button">Cancelar pedido</button>
+				<button class="btn btn-secundario btn-chico" type="button">Imprimir / Descargar</button>
 			</footer>
 		</div>
 	</dialog>

@@ -29,14 +29,14 @@ $listaClientes = Cliente::obtenerTodos();
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
-          <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
+          <a class="btn btn-chico" href="agregar_cliente.php">+ Agregar cliente</a>
 
           <form class="busqueda-barra" method="get" action="clientes.php" role="search">
             <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
             <input class="campo" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info" type="submit">Buscar</button>
+            <button class="btn btn-info btn-chico" type="submit">Buscar</button>
             <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn-secundario" href="clientes.php">Limpiar</a>
+              <a class="btn btn-secundario btn-chico" href="clientes.php">Limpiar</a>
             <?php endif; ?>
           </form>
         </div>
@@ -46,7 +46,7 @@ $listaClientes = Cliente::obtenerTodos();
         if (empty($listaClientes)): ?>
           <div class="vacio">
             <p>No hay clientes registrados en la base de datos.</p>
-            <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
+            <a class="btn btn-chico" href="agregar_cliente.php">+ Registrar el primer cliente</a>
           </div>
         <?php else: ?>
 
@@ -77,7 +77,7 @@ $listaClientes = Cliente::obtenerTodos();
                       <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
                       <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
                       <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
-                      <!--<button type="submit" class="btn btn-chico btn-eliminar">Eliminar</button>-->
+                      <!--<button type="submit" class="btn btn-chico btn-eliminar btn-peligro">Eliminar</button>-->
                     </td>
                   </tr>
                 <?php endforeach; ?>

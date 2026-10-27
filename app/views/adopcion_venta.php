@@ -20,7 +20,7 @@
             </div>
             <div class="tarjeta">
                 <div class="barra-acciones">
-                    <a class="btn" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
+                    <a class="btn btn-chico" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">
@@ -66,8 +66,8 @@
                                 <td>2026-09-15</td>
                                 <td>Esterilizada</td>
                                 <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -89,8 +89,8 @@
                                 <td>2026-09-01</td>
                                 <td>Pelaje en buen estado</td>
                                 <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -112,8 +112,8 @@
                                 <td>2026-08-20</td>
                                 <td>Adopción pendiente de firma</td>
                                 <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                         </tbody>

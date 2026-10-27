@@ -29,7 +29,7 @@
           <div class="inventario-tarjeta">
             <h3>Riesgo de desabasto</h3>
             <p>3 productos</p>
-            <button class="btn inventario-btn-contactar" type="button" data-abrir-agotados>Detalles</button>
+            <button class="btn inventario-btn-contactar btn-chico" type="button" data-abrir-agotados>Detalles</button>
           </div>
 
           <div class="inventario-tarjeta">
@@ -46,7 +46,7 @@
         <div class="inventario-toolbar">
           <label class="visualmente-oculto" for="buscar-producto">Buscar producto</label>
           <input id="buscar-producto" type="search" class="campo inventario-buscador" placeholder="Buscar por nombre o código de barras...">
-          <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
+          <a class="btn btn-chico" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 
         <div class="tabla-envoltura">
@@ -121,7 +121,7 @@
       </table>
     </div>
     <div class="inventario-dialog-acciones">
-      <button id="cerrar-agotados" class="btn" type="button">Cerrar</button>
+      <button id="cerrar-agotados" class="btn btn-chico" type="button">Cerrar</button>
     </div>
   </dialog>
 

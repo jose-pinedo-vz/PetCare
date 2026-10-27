@@ -27,14 +27,14 @@
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
-          <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+          <a class="btn btn-chico" href="agregar_mascota.php">+ Agregar mascota</a>
 
           <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
             <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
             <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info" type="submit">Buscar</button>
+            <button class="btn btn-info btn-chico" type="submit">Buscar</button>
             <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn-secundario" href="mascotas.php">Limpiar</a>
+              <a class="btn btn-secundario btn-chico" href="mascotas.php">Limpiar</a>
             <?php endif; ?>
           </form>
         </div>
@@ -62,8 +62,8 @@
                     <td><?= htmlspecialchars($mascota['sexo']) ?></td>
                     <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
                     <td class="acciones">
-                      <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
-                      <a class="btn btn-peligro" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+                      <a class="btn btn-chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
+                      <a class="btn btn-peligro btn-chico" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>

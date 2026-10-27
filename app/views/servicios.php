@@ -48,7 +48,7 @@
                     <div class="inventario-tarjeta">
                         <h3>Nuevo servicio</h3>
                         <p>Agrega otro servicio al catálogo</p>
-                        <a class="btn inventario-btn-contactar" href="agregar_servicio.php">+ Agregar servicio</a>
+                        <a class="btn inventario-btn-contactar btn-chico" href="agregar_servicio.php">+ Agregar servicio</a>
                     </div>
                 </div>
  
@@ -66,7 +66,7 @@
                             <option value="Cancelada">Cancelada</option>
                             <option value="No asistió">No asistió</option>
                         </select>
-                        <button type="submit">Filtrar</button>
+                        <button type="submit" class="btn btn-chico">Filtrar</button>
                     </form>
  
                     <div class="tabla-envoltura">

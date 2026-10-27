@@ -55,7 +55,7 @@
                         <table class="orden-compra-tabla-catalogo">
                             <thead>
                                 <tr>
-                                    <th>Seleccionar</th>
+                                    <th>Acción</th>
                                     <th>Imagen</th>
                                     <th>Código</th>
                                     <th>Nombre</th>
@@ -66,14 +66,14 @@
                             <tbody>
                                 <!-- Catálogo ilustrativo: reemplazar por los productos relacionados con el proveedor seleccionado. -->
                                 <tr>
-                                    <td><input type="checkbox" aria-label="Seleccionar alimento para perro adulto"></td>
+                                    <td><button class="btn btn-chico" type="button">Agregar</button></td>
                                     <td><img src="imagen.jpg" alt="Imagen de productos"></td>
                                     <td>ALI-001</td>
                                     <td>Pelotas</td>
                                     <td>3</td>
                                 </tr>
                                 <tr>
-                                    <td><input type="checkbox" aria-label="Seleccionar alimento para perro adulto"></td>
+                                    <td><button class="btn btn-chico" type="button">Agregar</button></td>
                                     <td><img src="imagen.jpg" alt="Imagen de productos"></td>
                                     <td>839301</td>
                                     <td>Camas para gato</td>
@@ -96,6 +96,7 @@
                                     <th>Producto</th>
                                     <th>Contenido / unidad</th>
                                     <th>Cantidad editable</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -106,6 +107,7 @@
                                     <td>Alimento para perro adulto</td>
                                     <td>10 kg</td>
                                     <td><input type="number" min="1" value="2"></td>
+                                    <td class="acciones"><button class="btn btn-chico btn-peligro" type="button" aria-label="Eliminar Alimento para perro adulto">Eliminar</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -119,8 +121,8 @@
                 </div>
 
                 <div class="orden-compra-acciones">
-                    <button class="btn btn-success" type="button">Confirmar orden</button>
-                    <button class="btn btn-peligro" type="button">Cancelar orden</button>
+                    <button class="btn btn-peligro btn-chico" type="button">Cancelar orden</button>
+                    <button class="btn btn-chico" type="button">Confirmar orden</button>
                 </div>
 
             </div>

@@ -303,8 +303,8 @@
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Regresar</a>
-        <button type="submit" class="btn">Guardar</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Regresar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
 
     </form>

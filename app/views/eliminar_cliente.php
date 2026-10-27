@@ -25,8 +25,8 @@
           <p>¿Está seguro de que desea eliminar este cliente?</p>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="clientes.php">Cancelar</a>
-            <button type="submit" class="btn">Eliminar cliente</button>
+            <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+            <button type="submit" class="btn btn-chico btn-peligro">Eliminar cliente</button>
             
           </div>
         </div>

@@ -20,14 +20,14 @@
             </div>
             <div class="tarjeta">
                 <div class="barra-acciones-busqueda">
-                    <a class="btn" href="agregar_proveedor.php">+Agregar proveedor</a>
+                    <a class="btn btn-chico" href="agregar_proveedor.php">+Agregar proveedor</a>
 
                     <form class="busqueda-barra" method="get" action="proveedores.php" role="search">
                         <label class="visualmente-oculto" for="buscarProveedor">Buscar proveedor</label>
                         <input class="campo" id="buscarProveedor" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-                        <button class="btn btn-info" type="submit">Buscar</button>
+                        <button class="btn btn-info btn-chico" type="submit">Buscar</button>
                         <?php if (!empty($_GET['buscar'])): ?>
-                            <a class="btn-secundario" href="proveedores.php">Limpiar</a>
+                            <a class="btn btn-secundario btn-chico" href="proveedores.php">Limpiar</a>
                         <?php endif; ?>
                     </form>
                 </div>
@@ -68,7 +68,7 @@
                                 <td>Entrega de productos veterinarios.</td>
                                 <td>
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -87,7 +87,7 @@
                                 <td>Realiza entregas de medicamentos.</td>
                                 <td>
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -106,7 +106,7 @@
                                 <td>Proveedor de alimentos y accesorios.</td>
                                 <td>
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                         </tbody>

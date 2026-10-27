@@ -200,8 +200,8 @@ if (session_status() === PHP_SESSION_NONE) {
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="clientes.php">Cancelar</a>
-        <button type="submit" class="btn">Guardar cliente</button>
+        <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cliente</button>
       </div>
     </form>
   
