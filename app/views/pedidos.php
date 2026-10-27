@@ -59,7 +59,7 @@
 						</div>
 						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
 						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button">Registrar pedido</button>
+									<button class="btn pedido-registrar" type="button" data-abrir-registro>Registrar pedido</button>
 							<button class="btn-secundario" type="button" data-abrir-detalles>Ver detalles</button>
 							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-001">Eliminar</button>
 						</div>
@@ -89,7 +89,7 @@
 						</div>
 						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
 						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button">Registrar pedido</button>
+							<button class="btn pedido-registrar" type="button" data-abrir-registro>Registrar pedido</button>
 							<button class="btn-secundario" type="button" data-abrir-detalles>Ver detalles</button>
 							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-002">Eliminar</button>
 						</div>
@@ -120,7 +120,7 @@
 						</div>
 						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
 						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button">Registrar pedido</button>
+							<button class="btn pedido-registrar" type="button" data-abrir-registro>Registrar pedido</button>
 							<button class="btn-secundario" type="button" data-abrir-detalles>Ver detalles</button>
 							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-003">Eliminar</button>
 						</div>
@@ -141,6 +141,55 @@
 			</div>
 		</main>
 	</div>
+
+	<dialog class="lote-dialog" id="dialogo-registro-pedido" aria-labelledby="titulo-registro-pedido">
+		<h2 id="titulo-registro-pedido">Registrar pedido</h2>
+		<form id="formulario-registro-pedido">
+			<div class="lote-formulario">
+				<div class="lote-campo">
+					<label for="pedido-id">Código de lote</label>
+					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" required>
+				</div>
+				<div class="lote-campo">
+					<label for="pedido-producto">Producto</label>
+					<select class="campo" id="pedido-producto" name="producto" required>
+						<option value="">Selecciona un producto</option>
+						<option value="1">1 · Pelota</option>
+						<option value="2">2 · Collar</option>
+					</select>
+				</div>
+				<div class="lote-campo">
+					<label for="pedido-proveedor">Proveedor</label>
+					<select class="campo" id="pedido-proveedor" name="proveedor" required>
+						<option value="">Selecciona un proveedor</option>
+						<option value="Distribuidora Canina">Distribuidora Canina</option>
+						<option value="Pet Supplies MX">Pet Supplies MX</option>
+						<option value="Mascota Feliz">Mascota Feliz</option>
+					</select>
+				</div>
+				<div class="lote-campo">
+					<label for="pedido-caducidad">Fecha de caducidad</label>
+					<input class="campo" id="pedido-caducidad" name="fecha_caducidad" type="date" required>
+				</div>
+				<div class="lote-campo">
+					<label for="pedido-precio">Precio de compra</label>
+					<input class="campo" id="pedido-precio" name="precio_compra" type="number" min="0" step="0.01" required>
+				</div>
+				<div class="lote-campo">
+					<label for="pedido-ubicacion">Ubicación</label>
+					<input class="campo" id="pedido-ubicacion" name="ubicacion" type="text" maxlength="20" required>
+				</div>
+				<div class="lote-campo">
+					<label for="pedido-cantidad">Cantidad</label>
+					<input class="campo" id="pedido-cantidad" name="cantidad" type="number" min="0" step="1" required>
+				</div>
+			</div>
+			<div class="lote-dialog-acciones">
+				<button class="btn-secundario" id="cerrar-registro-pedido" type="button">Cancelar</button>
+				<button class="btn" type="button">Registrar pedido</button>
+			</div>
+		</form>
+	</dialog>
 
 	<dialog class="pedido-detalle-modal" id="modal-detalle-pedido" aria-labelledby="modal-pedido-folio">
 		<div class="pedido-detalle-contenido">
@@ -199,6 +248,16 @@
 		const tarjetasPedidos = [...document.querySelectorAll('[data-pedido]')];
 		const mensajeSinPedidos = document.getElementById('sin-pedidos');
 		const modalDetallePedido = document.getElementById('modal-detalle-pedido');
+		const dialogoRegistroPedido = document.getElementById('dialogo-registro-pedido');
+
+		document.querySelectorAll('[data-abrir-registro]').forEach((boton) => {
+			boton.addEventListener('click', () => dialogoRegistroPedido.showModal());
+		});
+
+		document.getElementById('cerrar-registro-pedido').addEventListener('click', () => dialogoRegistroPedido.close());
+		dialogoRegistroPedido.addEventListener('click', (evento) => {
+			if (evento.target === dialogoRegistroPedido) dialogoRegistroPedido.close();
+		});
 
 		document.querySelectorAll('[data-abrir-detalles]').forEach((boton) => {
 			boton.addEventListener('click', () => {
