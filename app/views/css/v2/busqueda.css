@@ -1,0 +1,25 @@
+.barra-acciones-busqueda {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.busqueda-barra {
+    display: flex;
+    flex: 1 1 320px;
+    max-width: 560px;
+    align-items: center;
+    gap: 8px;
+}
+
+.busqueda-barra .campo {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 650px) {
+    .busqueda-barra {max-width: none;}
+}

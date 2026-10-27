@@ -81,9 +81,9 @@
 
             <div class="pago-acciones">
                 <form method="dialog">
-                    <button class="btn-secundario" type="submit">Volver a la venta</button>
+                    <button class="btn btn-secundario btn-chico" type="submit">Volver a la venta</button>
                 </form>
-                <button class="btn pago-confirmar" id="btnConfirmarPago" type="button">Confirmar pago</button>
+                <button class="btn pago-confirmar btn-chico" id="btnConfirmarPago" type="button">Confirmar pago</button>
             </div>
         </section>
     </div>
