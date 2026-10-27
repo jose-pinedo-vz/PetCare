@@ -9,13 +9,8 @@ $sbModulos = [
     'empleados'     => ['Empleados',         'empleados.php'],
     'proveedores'   => ['Proveedores',       'proveedores.php'],
     'inventario'    => ['Inventario',        'inventario.php'],
-<<<<<<< HEAD
-    'ventas'        => ['Ventas',            'Ventas.php'],
-    'servicios'     => ['Servicios',         null],
-=======
     'ventas'        => ['Ventas',            'ventas.php'],
     'servicios'     => ['Servicios',         'servicios.php'],
->>>>>>> a3e474dbd4e67829925981cbf05517c2bdee9576
     'adopcion'      => ['Adopción y venta',  'adopcion_venta.php'],
     'veterinaria'   => ['Veterinaria',       null],
     'pagos'         => ['Pagos',             null],
