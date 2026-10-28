@@ -31,8 +31,8 @@
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="adopcion_venta.php">Cancelar</a>
-        <button type="submit" class="btn">Eliminar </button>
+        <a class="btn btn-secundario btn-chico" href="adopcion_venta.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico btn-peligro">Eliminar </button>
       </div>
     </form>
   

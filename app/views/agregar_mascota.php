@@ -15,7 +15,7 @@
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Agregar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar mascota</h1>
       </div>
@@ -101,8 +101,8 @@
                 <h3>Recortar foto (cuadrado)</h3>
                 <img id="imagen-a-recortar" alt="Imagen a recortar">
                 <div class="crop-acciones">
-                  <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
-                  <button type="button" id="btn-recortar">Recortar y usar</button>
+                  <button type="button" id="btn-cancelar-crop" class="btn btn-secundario btn-chico">Cancelar</button>
+                  <button type="button" id="btn-recortar" class="btn btn-chico">Recortar y usar</button>
                 </div>
               </div>
             </div>
@@ -161,8 +161,8 @@
           </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
-        <button type="submit">Guardar</button>
+        <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
     </form>
   

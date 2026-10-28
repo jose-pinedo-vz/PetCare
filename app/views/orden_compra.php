@@ -13,7 +13,7 @@
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
         <main>
-            <div class="migaja">Gestión de inventario /</div>
+            <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Orden de compra</div>
             <div class="encabezado-pagina">
                 <h1>Orden de compra</h1>
             </div>
@@ -55,7 +55,7 @@
                         <table class="orden-compra-tabla-catalogo">
                             <thead>
                                 <tr>
-                                    <th>Seleccionar</th>
+                                    <th>Acción</th>
                                     <th>Imagen</th>
                                     <th>Código</th>
                                     <th>Nombre</th>
@@ -66,14 +66,14 @@
                             <tbody>
                                 <!-- Catálogo ilustrativo: reemplazar por los productos relacionados con el proveedor seleccionado. -->
                                 <tr>
-                                    <td><input type="checkbox" aria-label="Seleccionar alimento para perro adulto"></td>
+                                    <td><button class="btn btn-chico" type="button">Agregar</button></td>
                                     <td><img src="imagen.jpg" alt="Imagen de productos"></td>
                                     <td>ALI-001</td>
                                     <td>Pelotas</td>
                                     <td>3</td>
                                 </tr>
                                 <tr>
-                                    <td><input type="checkbox" aria-label="Seleccionar alimento para perro adulto"></td>
+                                    <td><button class="btn btn-chico" type="button">Agregar</button></td>
                                     <td><img src="imagen.jpg" alt="Imagen de productos"></td>
                                     <td>839301</td>
                                     <td>Camas para gato</td>
@@ -91,37 +91,23 @@
                         <table class="orden-compra-tabla-seleccionados">
                             <thead>
                                 <tr>
+                                    <th>Imagen</th>
                                     <th>Código</th>
-                                    <th>Código de barra</th>
                                     <th>Producto</th>
                                     <th>Contenido / unidad</th>
-                                    <th>Existencia</th>
-                                    <th>Lote / caducidad</th>
-                                    <th>Precio de compra editable</th>
                                     <th>Cantidad editable</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Selección de ejemplo: editar precio y cantidad; los controles son solo interfaz y no calculan ni guardan datos. -->
                                 <tr>
+                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
                                     <td>ALI-001</td>
-                                    <td>7501234567890</td>
                                     <td>Alimento para perro adulto</td>
-                                    <td>20 kg / saco</td>
-                                    <td>3 kg</td>
-                                    <td>LT-2408 / 2026-12-15</td>
-                                    <td><label class="visualmente-oculto" for="precio-ali-001">Precio de compra de alimento para perro adulto</label><input id="precio-ali-001" class="campo orden-compra-input" type="number" min="0" step="0.01" value="680.00"></td>
-                                    <td><label class="visualmente-oculto" for="cantidad-ali-001">Cantidad de alimento para perro adulto</label><input id="cantidad-ali-001" class="campo orden-compra-input" type="number" min="1" step="1" value="5"></td>
-                                </tr>
-                                <tr>
-                                    <td>MED-014</td>
-                                    <td>7501234567891</td>
-                                    <td>Guantes de exploración</td>
-                                    <td>100 / caja</td>
-                                    <td>24 cajas</td>
-                                    <td>LT-2510 / 2027-05-30</td>
-                                    <td><label class="visualmente-oculto" for="precio-med-014">Precio de compra de guantes de exploración</label><input id="precio-med-014" class="campo orden-compra-input" type="number" min="0" step="0.01" value="95.50"></td>
-                                    <td><label class="visualmente-oculto" for="cantidad-med-014">Cantidad de guantes de exploración</label><input id="cantidad-med-014" class="campo orden-compra-input" type="number" min="1" step="1" value="10"></td>
+                                    <td>10 kg</td>
+                                    <td><input type="number" min="1" value="2"></td>
+                                    <td class="acciones"><button class="btn btn-chico btn-peligro" type="button" aria-label="Eliminar Alimento para perro adulto">Eliminar</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -135,8 +121,8 @@
                 </div>
 
                 <div class="orden-compra-acciones">
-                    <button class="btn btn-success" type="button">Confirmar orden</button>
-                    <button class="btn btn-peligro" type="button">Cancelar orden</button>
+                    <button class="btn btn-peligro btn-chico" type="button">Cancelar orden</button>
+                    <button class="btn btn-chico" type="button">Confirmar orden</button>
                 </div>
 
             </div>

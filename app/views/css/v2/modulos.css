@@ -227,6 +227,11 @@
   margin-bottom: 20px;
 }
 
+.inventario-tabla th,
+.inventario-tabla td {
+  text-align: center;
+}
+
 .inventario-buscador {
   flex: 1;
   min-width: 260px;
@@ -252,6 +257,12 @@
 }
 
 /* ORDEN DE COMPRA: interfaz de sugerencias, catálogo y selección. */
+.orden-compra-acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .orden-compra-seccion {
   margin-top: 26px;
 }
@@ -308,12 +319,6 @@
 .orden-compra-tabla-catalogo,
 .orden-compra-tabla-seleccionados {
   min-width: 1050px;
-}
-
-.orden-compra-tabla-catalogo input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary-bg);
 }
 
 .orden-compra-input {
@@ -388,6 +393,11 @@
 .inventario-pedidos-toolbar .campo {
   flex: 1;
   min-width: 0;
+}
+
+.inventario-pedidos-toolbar .pedidos-filtro-estado {
+  flex: 0 0 190px;
+  width: 190px;
 }
 
 .inventario-pedidos-grid {
@@ -557,6 +567,382 @@
   opacity: 0.5;
 }
 
+.pedido-detalle-modal {
+  width: min(850px, calc(100% - 32px));
+  max-width: 850px;
+  max-height: calc(100% - 32px);
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  color: var(--primary-dark);
+  background: var(--white);
+  box-shadow: 0 16px 48px rgba(35, 25, 14, 0.28);
+}
+
+.pedido-detalle-modal::backdrop {
+  background: rgba(31, 25, 18, 0.58);
+}
+
+.pedido-detalle-contenido {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.pedido-detalle-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.pedido-detalle-encabezado h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.pedido-modal-cerrar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--primary-dark);
+  background: var(--sidebar-light);
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.pedido-modal-cerrar:hover {
+  background: var(--gray-light);
+}
+
+.pedido-detalle-resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.pedido-detalle-resumen > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pedido-detalle-resumen > div > span:first-child,
+.pedido-detalle-resumen > div > time {
+  font-size: 12px;
+}
+
+.pedido-detalle-resumen > div > span:first-child {
+  color: var(--texto-suave);
+}
+
+.pedido-detalle-productos {
+  padding: 18px 0;
+}
+
+.pedido-detalle-productos h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.pedido-detalle-tabla-envoltura {
+  overflow-x: auto;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+
+.pedido-detalle-tabla-envoltura table {
+  min-width: 560px;
+}
+
+.pedido-detalle-tabla-envoltura th,
+.pedido-detalle-tabla-envoltura td {
+  padding: 10px 12px;
+}
+
+.pedido-detalle-tabla-envoltura th {
+  text-align: center;
+}
+
+.pedido-detalle-tabla-envoltura th:not(:first-child),
+.pedido-detalle-tabla-envoltura td:not(:first-child) {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pedido-detalle-pie {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 0;
+  border-top: 1px solid var(--gray-light);
+}
+
+.pedido-detalle-observaciones {
+  min-width: 0;
+}
+
+.pedido-detalle-observaciones strong,
+.pedido-detalle-total span {
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.pedido-detalle-observaciones p {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.pedido-detalle-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.pedido-detalle-total strong {
+  font-size: 20px;
+}
+
+.pedido-detalle-acciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.pedido-detalle-acciones .btn,
+.pedido-detalle-acciones .btn-secundario {
+  font-size: 13px;
+}
+
+.lotes-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.lote-resumen-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.lote-resumen-tarjeta span {
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.lote-resumen-tarjeta strong {
+  color: var(--primary-dark);
+  font-size: 25px;
+}
+
+.lotes-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lotes-toolbar .campo:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.lotes-filtro-estado {
+  flex: 0 0 190px;
+  width: 190px;
+}
+
+.lotes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lote-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 2px 6px rgba(73, 49, 23, 0.08);
+}
+
+.lote-tarjeta[hidden] {
+  display: none;
+}
+
+.lote-encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.lote-identidad {
+  min-width: 0;
+}
+
+.lote-etiqueta {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--texto-suave);
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.lote-encabezado h2 {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 17px;
+}
+
+.lote-estado {
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.lote-estado.vigente {
+  background: #e3ebd6;
+  color: #3c5220;
+}
+
+.lote-estado.proximo {
+  background: #ffe3a0;
+  color: #80520b;
+}
+
+.lote-estado.vencido {
+  background: #f8d5d2;
+  color: #9b3329;
+}
+
+.lote-detalles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
+  margin: 0;
+}
+
+.lote-detalles div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lote-detalles dt {
+  color: var(--texto-suave);
+  font-size: 11px;
+}
+
+.lote-detalles dd {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.lote-cantidad {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.lote-cantidad span {
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.lote-cantidad strong {
+  font-size: 20px;
+}
+
+.lotes-sin-resultados {
+  margin: 24px 0;
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+.lote-dialog {
+  width: min(620px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 22px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--sidebar-light);
+  color: var(--primary-dark);
+}
+
+.lote-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.lote-dialog h2 {
+  margin: 0 0 18px;
+}
+
+.lote-formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lote-campo label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.lote-campo-completo {
+  grid-column: 1 / -1;
+}
+
+.lote-dialog-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 .busqueda-tabla {
   margin-top: 16px;
 }
@@ -565,10 +951,51 @@
   .inventario-pedidos-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .lotes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lotes-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 600px) {
   .inventario-pedidos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pedido-detalle-contenido {
+    padding: 18px;
+  }
+
+  .pedido-detalle-resumen {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .pedido-detalle-pie {
+    align-items: flex-start;
+    flex-direction: column-reverse;
+  }
+
+  .pedido-detalle-total {
+    align-items: flex-start;
+    margin-left: 0;
+  }
+
+  .pedido-detalle-acciones {
+    flex-direction: column;
+  }
+
+  .pedido-detalle-acciones .btn,
+  .pedido-detalle-acciones .btn-secundario {
+    width: 100%;
+  }
+
+  .lotes-grid,
+  .lotes-resumen {
     grid-template-columns: 1fr;
   }
 
@@ -589,6 +1016,34 @@
 
   .inventario-pedidos-toolbar .btn {
     align-self: flex-start;
+  }
+
+  .inventario-pedidos-toolbar .pedidos-filtro-estado {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .lotes-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lotes-toolbar .campo,
+  .lotes-toolbar .lotes-filtro-estado {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .lotes-toolbar .btn {
+    align-self: flex-start;
+  }
+
+  .lote-formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .lote-campo-completo {
+    grid-column: auto;
   }
 }
 
@@ -633,7 +1088,7 @@
   width: 100%;
   min-width: 820px;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
 }
 
 .servicio-tabla th {
@@ -734,7 +1189,7 @@
 .pago-tabla {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
   font-size: 12px;
 }
 
@@ -754,6 +1209,7 @@
 .pago-tabla td:first-child {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 9px;
   white-space: normal;
 }
@@ -1350,7 +1806,7 @@
   width: 100%;
   min-width: 960px;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
   font-size: 12px;
 }
 
@@ -1380,6 +1836,7 @@
 
 .historial-acciones {
   display: flex;
+  justify-content: center;
   gap: 5px;
   min-width: 350px;
 }
@@ -1794,6 +2251,7 @@
 
 .corte-fila-acciones {
   display: flex;
+  justify-content: center;
   gap: 4px;
 }
 
@@ -1882,7 +2340,7 @@
 }
 
 .corte-monto {
-  text-align: right;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -1991,4 +2449,17 @@
   .corte-acciones {
     grid-template-columns: 1fr;
   }
+}
+
+
+/*modal en mascotas y clientes*/
+
+.fila-clic {
+  cursor: pointer;
+}
+
+.detalle-cuerpo {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
 }

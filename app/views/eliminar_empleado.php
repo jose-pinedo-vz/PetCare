@@ -31,8 +31,8 @@
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn">Eliminar empleado</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico btn-peligro">Eliminar empleado</button>
       </div>
     </form>
   

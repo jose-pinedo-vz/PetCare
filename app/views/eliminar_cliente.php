@@ -15,7 +15,7 @@
   <?php $paginaActiva = 'clientes'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Eliminar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar cliente</h1>
       </div>
@@ -25,8 +25,9 @@
           <p>¿Está seguro de que desea eliminar este cliente?</p>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="clientes.php">Cancelar</a>
-            <button type="submit" class="btn">Eliminar cliente</button>
+            <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+            <button type="submit" class="btn btn-chico btn-peligro">Eliminar cliente</button>
+            
           </div>
         </div>
       </div>

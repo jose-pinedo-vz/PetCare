@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Veterinaria PetCare - Pedidos pendientes</title>
+	<title>Veterinaria PetCare - Gestión de lotes</title>
 	<link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
@@ -20,103 +20,110 @@
 
 			<nav class="inventario-pestanas" aria-label="Secciones de inventario">
 				<a href="inventario.php">1. Catálogo de productos</a>
-				<a href="lotes.php#lotes">2. Gestión de lotes</a>
-				<a href="#pedidos" class="activa" aria-current="page">3. Pedidos pendientes</a>
+				<a href="#lotes" class="activa" aria-current="page">2. Gestión de lotes</a>
+				<a href="pedidos.php">3. Pedidos pendientes</a>
 			</nav>
 
-			<section id="pedidos" aria-label="Pedidos pendientes">
-				<div class="inventario-pedidos-toolbar">
-					<label class="visualmente-oculto" for="buscar-pedido">Buscar pedidos</label>
-					<input id="buscar-pedido" class="campo" type="search" placeholder="Buscar por proveedor, ID pedido...">
-					<button class="btn" type="button">+ Nuevo lote</button>
+			<section id="lotes" aria-label="Gestión de lotes">
+				<div class="lotes-resumen" aria-label="Resumen de lotes">
+					<div class="lote-resumen-tarjeta">
+						<span>Lotes registrados</span>
+						<strong id="total-lotes">3</strong>
+					</div>
+					<div class="lote-resumen-tarjeta">
+						<span>Por caducar (60 días)</span>
+						<strong id="lotes-proximos">1</strong>
+					</div>
+					<div class="lote-resumen-tarjeta">
+						<span>Lotes vencidos</span>
+						<strong id="lotes-vencidos">1</strong>
+					</div>
+					<div class="lote-resumen-tarjeta">
+						<span>Unidades en lotes</span>
+						<strong id="unidades-lotes">42</strong>
+					</div>
 				</div>
 
-				<div class="inventario-pedidos-grid" id="lista-pedidos">
-					<article class="pedido-tarjeta" data-pedido>
-						<header class="pedido-encabezado">
-							<span class="pedido-icono" aria-hidden="true">OC</span>
-							<div>
-								<span class="pedido-etiqueta">Orden de compra</span>
-								<h2>ORD-001</h2>
+				<div class="lotes-toolbar">
+					<label class="visualmente-oculto" for="buscar-lote">Buscar lotes</label>
+					<input id="buscar-lote" class="campo" type="search" placeholder="Buscar por lote, producto o ubicación...">
+					<label class="visualmente-oculto" for="filtro-lote-estado">Filtrar lotes por estado</label>
+					<select id="filtro-lote-estado" class="campo lotes-filtro-estado">
+						<option value="">Todos los lotes</option>
+						<option value="vigente">Vigentes</option>
+						<option value="proximo">Por caducar</option>
+						<option value="vencido">Vencidos</option>
+					</select>
+					<button class="btn" id="abrir-formulario-lote" type="button">+ Registrar lote</button>
+				</div>
+
+				<div class="lotes-grid" id="lista-lotes">
+					<article class="lote-tarjeta" data-lote data-estado="proximo">
+						<header class="lote-encabezado">
+							<div class="lote-identidad">
+								<span class="lote-etiqueta">Lote</span>
+								<h2 data-lote-id>LOT-2026-014</h2>
 							</div>
-							<span class="historial-estado pendiente">Pendiente</span>
+							<span class="lote-estado proximo" data-lote-estado>Por caducar</span>
 						</header>
-						<a class="pedido-proveedor" href="#pedido-001">
-							<span>Proveedor</span>
-							<strong>Distribuidores Caninos</strong>
-							<span class="pedido-flecha" aria-hidden="true">›</span>
-						</a>
-						<div class="pedido-fechas">
-							<div><span>Fecha de solicitud</span><time datetime="2026-10-15">2026-10-15</time></div>
-							<div><span>Fecha esperada</span><time datetime="2026-10-20">2026-10-20</time></div>
-						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
-						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button">Registrar pedido</button>
-							<button class="btn-secundario" type="button">Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-001">Eliminar</button>
+						<dl class="lote-detalles">
+							<div><dt>ID producto</dt><dd data-lote-producto>1 · Pelota</dd></div>
+							<div><dt>Proveedor</dt><dd>Distribuidora Canina</dd></div>
+							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2026-11-20</dd></div>
+							<div><dt>Precio de compra</dt><dd data-lote-precio>$18.50</dd></div>
+							<div><dt>Ubicación</dt><dd data-lote-ubicacion>A-01</dd></div>
+						</dl>
+						<div class="lote-cantidad">
+							<span>Cantidad disponible</span>
+							<strong data-lote-cantidad>24</strong>
 						</div>
 					</article>
 
-					<article class="pedido-tarjeta" data-pedido>
-						<header class="pedido-encabezado">
-							<span class="pedido-icono" aria-hidden="true">OC</span>
-							<div>
-								<span class="pedido-etiqueta">Orden de compra</span>
-								<h2>ORD-002</h2>
+					<article class="lote-tarjeta" data-lote data-estado="vigente">
+						<header class="lote-encabezado">
+							<div class="lote-identidad">
+								<span class="lote-etiqueta">Lote</span>
+								<h2 data-lote-id>LOT-2026-018</h2>
 							</div>
-							<span class="historial-estado pagada">Confirmado</span>
+							<span class="lote-estado vigente" data-lote-estado>Vigente</span>
 						</header>
-						<a class="pedido-proveedor" href="#pedido-002">
-							<span>Proveedor</span>
-							<strong>Distribuidores Caninos</strong>
-							<span class="pedido-flecha" aria-hidden="true">›</span>
-						</a>
-						<div class="pedido-fechas">
-							<div><span>Fecha de solicitud</span><time datetime="2026-10-20">2026-10-20</time></div>
-							<div><span>Fecha esperada</span><time datetime="2026-10-25">2026-10-25</time></div>
-						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
-						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button">Registrar pedido</button>
-							<button class="btn-secundario" type="button">Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-002">Eliminar</button>
+						<dl class="lote-detalles">
+							<div><dt>ID producto</dt><dd data-lote-producto>2 · Collar</dd></div>
+							<div><dt>Proveedor</dt><dd>Pet Supplies MX</dd></div>
+							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2027-06-15</dd></div>
+							<div><dt>Precio de compra</dt><dd data-lote-precio>$72.00</dd></div>
+							<div><dt>Ubicación</dt><dd data-lote-ubicacion>B-03</dd></div>
+						</dl>
+						<div class="lote-cantidad">
+							<span>Cantidad disponible</span>
+							<strong data-lote-cantidad>18</strong>
 						</div>
 					</article>
 
-					<article class="pedido-tarjeta" data-pedido>
-						<header class="pedido-encabezado">
-							<span class="pedido-icono" aria-hidden="true">OC</span>
-							<div>
-								<span class="pedido-etiqueta">Orden de compra</span>
-								<h2>ORD-003</h2>
+					<article class="lote-tarjeta" data-lote data-estado="vencido">
+						<header class="lote-encabezado">
+							<div class="lote-identidad">
+								<span class="lote-etiqueta">Lote</span>
+								<h2 data-lote-id>LOT-2025-009</h2>
 							</div>
-							<span class="historial-estado cancelada">Cancelado</span>
+							<span class="lote-estado vencido" data-lote-estado>Vencido</span>
 						</header>
-						<a class="pedido-proveedor" href="#pedido-003">
-							<span>Proveedor</span>
-							<strong>Distribuidores Caninos</strong>
-							<span class="pedido-flecha" aria-hidden="true">›</span>
-						</a>
-						<div class="pedido-fechas">
-							<div><span>Fecha de solicitud</span><time datetime="2026-10-20">2026-10-20</time></div>
-							<div><span>Fecha esperada</span><time datetime="2026-10-25">2026-10-25</time></div>
-						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
-						<div class="pedido-acciones">
-							<button class="btn pedido-registrar" type="button">Registrar pedido</button>
-							<button class="btn-secundario" type="button">Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar" type="button" aria-label="Eliminar ORD-003">Eliminar</button>
+						<dl class="lote-detalles">
+							<div><dt>ID producto</dt><dd data-lote-producto>1 · Pelota</dd></div>
+							<div><dt>Proveedor</dt><dd>Distribuidora Canina</dd></div>
+							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2026-10-10</dd></div>
+							<div><dt>Precio de compra</dt><dd data-lote-precio>$15.00</dd></div>
+							<div><dt>Ubicación</dt><dd data-lote-ubicacion>A-02</dd></div>
+						</dl>
+						<div class="lote-cantidad">
+							<span>Cantidad disponible</span>
+							<strong data-lote-cantidad>0</strong>
 						</div>
 					</article>
 				</div>
 
-				<p class="pedido-sin-resultados" id="sin-pedidos" hidden>No hay pedidos que coincidan con la búsqueda.</p>
-				<div class="pedido-paginacion" aria-label="Paginación de pedidos">
-					<span>1-3 de 8 pedidos</span>
-					<button class="btn-secundario" type="button" aria-label="Página anterior" disabled>‹</button>
-					<button class="btn-secundario" type="button" aria-label="Página siguiente">›</button>
-				</div>
+				<p class="lotes-sin-resultados" id="sin-lotes" hidden>No hay lotes que coincidan con la búsqueda.</p>
+				<p class="nota-campo">El registro de lotes se conectará desde el backend.</p>
 			</section>
 		</main>
 	</div>
@@ -125,23 +132,82 @@
 		<p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
 	</footer>
 
+	<dialog class="lote-dialog" id="dialogo-lote" aria-labelledby="titulo-dialogo-lote">
+		<h2 id="titulo-dialogo-lote">Registrar lote</h2>
+		<form id="formulario-lote">
+			<div class="lote-formulario">
+				<div class="lote-campo">
+					<label for="lote-id">Código de lote</label>
+					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" required>
+				</div>
+				<div class="lote-campo">
+					<label for="lote-producto">Producto</label>
+					<select class="campo" id="lote-producto" name="producto" required>
+						<option value="">Selecciona un producto</option>
+						<option value="1">1 · Pelota</option>
+						<option value="2">2 · Collar</option>
+					</select>
+				</div>
+				<div class="lote-campo">
+					<label for="lote-proveedor">Proveedor</label>
+					<select class="campo" id="lote-proveedor" name="proveedor" required>
+						<option value="">Selecciona un proveedor</option>
+						<option value="Distribuidora Canina">Distribuidora Canina</option>
+						<option value="Pet Supplies MX">Pet Supplies MX</option>
+						<option value="Mascota Feliz">Mascota Feliz</option>
+					</select>
+				</div>
+				<div class="lote-campo">
+					<label for="lote-caducidad">Fecha de caducidad</label>
+					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" required>
+				</div>
+				<div class="lote-campo">
+					<label for="lote-precio">Precio de compra</label>
+					<input class="campo" id="lote-precio" name="precio_compra" type="number" min="0" step="0.01" required>
+				</div>
+				<div class="lote-campo">
+					<label for="lote-ubicacion">Ubicación</label>
+					<input class="campo" id="lote-ubicacion" name="ubicacion" type="text" maxlength="20" required>
+				</div>
+				<div class="lote-campo">
+					<label for="lote-cantidad">Cantidad</label>
+					<input class="campo" id="lote-cantidad" name="cantidad" type="number" min="0" step="1" required>
+				</div>
+			</div>
+			<div class="lote-dialog-acciones">
+				<button class="btn btn-secundario btn-chico" id="cerrar-dialogo-lote" type="button">Cancelar</button>
+				<button class="btn btn-chico" type="button">Registrar lote</button>
+			</div>
+		</form>
+	</dialog>
+
 	<script>
-		const buscadorPedidos = document.getElementById('buscar-pedido');
-		const tarjetasPedidos = [...document.querySelectorAll('[data-pedido]')];
-		const mensajeSinPedidos = document.getElementById('sin-pedidos');
+		const buscarLote = document.getElementById('buscar-lote');
+		const filtroLote = document.getElementById('filtro-lote-estado');
+		const listaLotes = document.getElementById('lista-lotes');
+		const mensajeSinLotes = document.getElementById('sin-lotes');
+		const dialogoLote = document.getElementById('dialogo-lote');
 
-		buscadorPedidos.addEventListener('input', () => {
-			const consulta = buscadorPedidos.value.trim().toLocaleLowerCase('es');
-			let pedidosVisibles = 0;
+		function filtrarLotes() {
+			const consulta = buscarLote.value.trim().toLocaleLowerCase('es');
+			const estadoSeleccionado = filtroLote.value;
+			let visibles = 0;
 
-			tarjetasPedidos.forEach((tarjeta) => {
-				const coincide = tarjeta.textContent.toLocaleLowerCase('es').includes(consulta);
-				tarjeta.hidden = !coincide;
-				if (coincide) pedidosVisibles += 1;
+			listaLotes.querySelectorAll('[data-lote]').forEach((lote) => {
+				const coincideTexto = lote.textContent.toLocaleLowerCase('es').includes(consulta);
+				const coincideEstado = !estadoSeleccionado || lote.dataset.estado === estadoSeleccionado;
+				lote.hidden = !coincideTexto || !coincideEstado;
+				if (!lote.hidden) visibles += 1;
 			});
 
-			mensajeSinPedidos.hidden = pedidosVisibles > 0;
-		});
+			mensajeSinLotes.hidden = visibles > 0;
+		}
+
+		buscarLote.addEventListener('input', filtrarLotes);
+		filtroLote.addEventListener('change', filtrarLotes);
+
+		document.getElementById('abrir-formulario-lote').addEventListener('click', () => dialogoLote.showModal());
+		document.getElementById('cerrar-dialogo-lote').addEventListener('click', () => dialogoLote.close());
 	</script>
 </body>
 

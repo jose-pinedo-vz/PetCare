@@ -15,7 +15,7 @@
   <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Editar</div>
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de proveedores</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar proveedor</h1>
       </div>
@@ -230,8 +230,8 @@
             </fieldset>
 
             <div class="acciones-formulario">
-        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-        <button type="submit">Guardar</button>
+        <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
 
         </form>

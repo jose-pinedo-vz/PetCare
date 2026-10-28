@@ -31,8 +31,8 @@
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
-        <button type="submit">Eliminar mascota</button>
+        <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico btn-peligro">Eliminar mascota</button>
       </div>
     </form>
   

@@ -19,8 +19,12 @@
                 <h1>Adopción y venta</h1>
             </div>
             <div class="tarjeta">
-                <div class="barra-acciones">
-                    <a class="btn" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
+                <div class="barra-acciones-busqueda">
+                    <div class="busqueda-barra" role="search">
+                        <label class="visualmente-oculto" for="buscarAdopcionVenta">Buscar adopciones o ventas</label>
+                        <input class="campo" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
+                    </div>
+                    <a class="btn" href="agregar_adopcion_venta.php">+ Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">
@@ -46,7 +50,7 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="registrosAdopcionVenta">
                             <tr>
                                 <td>1</td>
                                 <td>Perro</td>
@@ -65,9 +69,9 @@
                                 <td>Rabia, Parvovirus, Moquillo</td>
                                 <td>2026-09-15</td>
                                 <td>Esterilizada</td>
-                                <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                <td class="acciones">
+                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -88,9 +92,9 @@
                                 <td>Triple felina</td>
                                 <td>2026-09-01</td>
                                 <td>Pelaje en buen estado</td>
-                                <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                <td class="acciones">
+                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
                             </tr>
                             <tr>
@@ -111,10 +115,13 @@
                                 <td>Rabia, Quíntuple</td>
                                 <td>2026-08-20</td>
                                 <td>Adopción pendiente de firma</td>
-                                <td>
-                                    <a class="btn" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
+                                <td class="acciones">
+                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
                                 </td>
+                            </tr>
+                            <tr id="sinResultados" hidden>
+                                <td colspan="18">No se encontraron registros.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -127,6 +134,29 @@
         <footer>
             <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
         </footer>
+        <script>
+            const buscadorAdopcionVenta = document.getElementById('buscarAdopcionVenta');
+            const filasAdopcionVenta = document.querySelectorAll('#registrosAdopcionVenta tr:not(#sinResultados)');
+            const mensajeSinResultados = document.getElementById('sinResultados');
+
+            buscadorAdopcionVenta.addEventListener('input', () => {
+                const termino = buscadorAdopcionVenta.value.trim().toLocaleLowerCase();
+                let resultados = 0;
+
+                filasAdopcionVenta.forEach((fila) => {
+                    const texto = Array.from(fila.cells)
+                        .slice(0, -1)
+                        .map((celda) => celda.textContent)
+                        .join(' ')
+                        .toLocaleLowerCase();
+                    const coincide = texto.includes(termino);
+                    fila.hidden = !coincide;
+                    resultados += coincide ? 1 : 0;
+                });
+
+                mensajeSinResultados.hidden = resultados > 0;
+            });
+        </script>
 </body>
 
 </html>                             

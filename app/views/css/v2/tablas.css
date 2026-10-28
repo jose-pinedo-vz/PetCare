@@ -1,7 +1,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
+  text-align: center;
   border: none;
 }
 
@@ -10,6 +10,10 @@ table {
   border: 1px solid var(--border-light);
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.tabla-envoltura table th {
+  text-align: center;
 }
 
 table th {
@@ -39,6 +43,7 @@ table.tabla-ancha {
 }
 
 table td.acciones {
+  text-align: center;
   white-space: nowrap;
 }
 

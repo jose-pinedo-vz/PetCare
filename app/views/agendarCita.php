@@ -20,7 +20,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
   <main>
-      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de Citas</a> / Agendar</div>
+      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de citas</a> / Agendar</div>
       <div class="encabezado-pagina">
         <h1>Agendar cita</h1>
       </div>
@@ -45,7 +45,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <form id="formCita" action="../controllers/citas.php" method="POST">
       <fieldset>
-        <legend>Datos de la Cita</legend>
+        <legend>Datos de la cita</legend>
 
         <div class="grid-formulario">
           <div>
@@ -74,8 +74,8 @@ if (session_status() === PHP_SESSION_NONE) {
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="citas.php">Cancelar</a>
-        <button type="submit" class="btn">Guardar cita</button>
+        <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cita</button>
       </div>
     </form>
   

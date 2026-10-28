@@ -20,6 +20,10 @@
     min-width: 0;
 }
 
+.barra-acciones-busqueda .busqueda-barra {
+    max-width: none;
+}
+
 @media (max-width: 650px) {
     .busqueda-barra {max-width: none;}
 }

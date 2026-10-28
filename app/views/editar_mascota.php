@@ -37,7 +37,7 @@ function v($valor) {
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Editar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar mascota</h1>
       </div>
@@ -125,8 +125,8 @@ function v($valor) {
             <h3>Recortar foto (cuadrado)</h3>
             <img id="imagen-a-recortar" alt="Imagen a recortar">
             <div class="crop-acciones">
-              <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
-              <button type="button" id="btn-recortar">Recortar y usar</button>
+              <button type="button" id="btn-cancelar-crop" class="btn btn-secundario btn-chico">Cancelar</button>
+              <button type="button" id="btn-recortar" class="btn btn-chico">Recortar y usar</button>
             </div>
           </div>
         </div>
@@ -194,8 +194,8 @@ function v($valor) {
           </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
-        <button type="submit">Guardar cambios</button>
+        <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cambios</button>
       </div>
     </form>
   

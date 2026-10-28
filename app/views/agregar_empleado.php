@@ -14,7 +14,7 @@
 
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Agregar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Agregar empleado</h1>
       </div>
@@ -303,8 +303,8 @@
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Regresar</a>
-        <button type="submit" class="btn">Guardar</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Regresar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
 
     </form>

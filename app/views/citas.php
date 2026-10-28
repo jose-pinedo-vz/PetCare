@@ -15,7 +15,7 @@ function mostrarProximasCitas()
         <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
         <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
         <p><strong>Motivo de consulta:</strong><?php echo "<br>" . $d['motivo']; ?></p>
-        <button class="btn" type="button">Consulta</button>
+        <button class="btn btn-chico" type="button">Consulta</button>
       </div>
 <?php }
   }
@@ -36,7 +36,7 @@ function mostrarCitasAtendidas()
         <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
         <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
         <p><strong>Motivo de consulta: </strong> <?php echo "<br>" . $d['motivo']; ?> </p>
-        <button class="btn" type="button">Pagar</button>
+        <button class="btn btn-chico" type="button">Pagar</button>
       </div>
 <?php }
   }
@@ -65,7 +65,7 @@ function mostrarCitasAtendidas()
 
 
     <main>
-      <div class="migaja">Gestión de Citas /</div>
+      <div class="migaja">Gestión de citas /</div>
       <div class="encabezado-pagina">
         <h1>Citas</h1>
       </div>
@@ -73,8 +73,6 @@ function mostrarCitasAtendidas()
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
-          <a class="btn" href="agendarCita.php">+ Agendar cita</a>
-
           <form class="busqueda-barra" method="get" action="citas.php" role="search">
 
             <label class="visualmente-oculto" for="buscarCita">Buscar cita</label>
@@ -84,15 +82,17 @@ function mostrarCitasAtendidas()
 
             
             <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn-secundario" href="citas.php">Limpiar</a>
+              <a class="btn btn-secundario btn-chico" href="citas.php">Limpiar</a>
             <?php endif; ?>
           </form>
+
+          <a class="btn" href="agendarCita.php">+ Agendar cita</a>
         </div>
 
         <div class="contenedor_citas">
           <div class="boton_control">
-            <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
-            <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
+            <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
+            <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
           </div>
 
           <div class="panel_contenido">
