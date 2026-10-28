@@ -23,8 +23,9 @@ $animales = listar_adopciones_ventas();
                 <h1>Adopción y venta</h1>
             </div>
             <div class="tarjeta">
-                <div class="barra-acciones">
-                    <a class="btn btn-chico" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
+                <div class="agregar-buscar">
+                    <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
+                    <a class="btn" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">
