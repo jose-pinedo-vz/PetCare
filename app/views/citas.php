@@ -91,39 +91,20 @@ if (session_status() === PHP_SESSION_NONE)
 
     <div class="contenedor_citas">
       <div class="boton_control">
-        <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
-        <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
+        <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
+        <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
       </div>
 
       <div class="panel_contenido">
-        <!-- Sección de espera  -->
         <div id="seccion_espera" class="seccion-panel">
           <h3>Citas en espera</h3>
           <?php mostrarProximasCitas(); ?>
         </div>
 
-        <div class="contenedor_citas">
-          <div class="boton_control">
-            <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
-            <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
-          </div>
-
-          <div class="panel_contenido">
-            <!-- Sección de espera  -->
-            <div id="seccion_espera" class="seccion-panel">
-              <h3>Citas en espera</h3>
-              <?php mostrarProximasCitas(); ?>
-            </div>
-
-            <!-- Sección de atendidos-->
-            <div id="seccion_atendidos" class="seccion-panel oculto">
-              <h3>Citas atendidas (pendientes de pago)</h3>
-              <?php mostrarCitasAtendidas(); ?>
-            </div>
-
-          </div>
+        <div id="seccion_atendidas" class="seccion-panel oculto">
+          <h3>Citas atendidas (pendientes de pago)</h3>
+          <?php mostrarCitasAtendidas(); ?>
         </div>
-
       </div>
     </div>
   
