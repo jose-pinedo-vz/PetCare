@@ -72,10 +72,10 @@ function mostrarCitasAtendidas()
 
       <div class="tarjeta">
 
-        <div class="barra-acciones-busqueda">
-          <form class="busqueda-barra" method="get" action="citas.php" role="search">
+        <div class="agregar-buscar">
+          <form method="get" action="citas.php" role="search">
             <label class="visualmente-oculto" for="buscarCita">Buscar cita</label>
-            <input class="campo" id="buscarCita" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+            <input class="campo buscador-inteligente" id="buscarCita" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn btn-secundario btn-chico" href="citas.php">Limpiar</a>
             <?php endif; ?>

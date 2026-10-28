@@ -1,29 +1,24 @@
-.barra-acciones-busqueda {
+.agregar-buscar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    gap: 15px;
     margin-bottom: 20px;
 }
 
-.busqueda-barra {
+.agregar-buscar form {
     display: flex;
-    flex: 1 1 320px;
-    max-width: 560px;
+    flex: 1 1 260px;
+    min-width: 260px;
     align-items: center;
     gap: 8px;
 }
 
-.busqueda-barra .campo {
+.buscador-inteligente {
     flex: 1;
     min-width: 0;
 }
 
-.barra-acciones-busqueda .busqueda-barra {
-    max-width: none;
-}
-
 @media (max-width: 650px) {
-    .busqueda-barra {max-width: none;}
+    .agregar-buscar form {min-width: 0;}
 }

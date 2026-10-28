@@ -26,10 +26,10 @@
 
       <div class="tarjeta">
 
-        <div class="barra-acciones-busqueda">
-          <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
+        <div class="agregar-buscar">
+          <form method="get" action="mascotas.php" role="search">
             <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
-            <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+            <input class="campo buscador-inteligente" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn btn-secundario btn-chico" href="mascotas.php">Limpiar</a>
             <?php endif; ?>

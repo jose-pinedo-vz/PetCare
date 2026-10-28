@@ -8,7 +8,7 @@
 
     <div class="busqueda-productos">
         <label class="visualmente-oculto" for="buscarProducto">Nombre o código del producto</label>
-        <input class="campo" id="buscarProducto" type="search" placeholder="Escribe el nombre o código del producto..." autocomplete="off" autofocus>
+        <input class="campo buscador-inteligente" id="buscarProducto" type="search" placeholder="Escribe el nombre o código del producto..." autocomplete="off" autofocus>
 
         <div class="tabla-envoltura busqueda-tabla">
             <table>

@@ -19,10 +19,10 @@
                 <h1>Proveedores</h1>
             </div>
             <div class="tarjeta">
-                <div class="barra-acciones-busqueda">
-                    <form class="busqueda-barra" method="get" action="proveedores.php" role="search">
+                <div class="agregar-buscar">
+                    <form method="get" action="proveedores.php" role="search">
                         <label class="visualmente-oculto" for="buscarProveedor">Buscar proveedor</label>
-                        <input class="campo" id="buscarProveedor" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+                        <input class="campo buscador-inteligente" id="buscarProveedor" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
                         <?php if (!empty($_GET['buscar'])): ?>
                             <a class="btn btn-secundario btn-chico" href="proveedores.php">Limpiar</a>
                         <?php endif; ?>

@@ -22,7 +22,7 @@
                     <label for="buscarVenta">Buscar folio, cliente o empleado</label>
                     <div class="historial-control-icono">
                         <span aria-hidden="true">⌕</span>
-                        <input class="campo" id="buscarVenta" type="search" placeholder="Ej. F00123, Juan Pérez, Ana López...">
+                        <input class="campo buscador-inteligente" id="buscarVenta" type="search" placeholder="Ej. F00123, Juan Pérez, Ana López...">
                     </div>
                 </div>
                 <div class="historial-filtro">

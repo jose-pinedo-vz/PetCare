@@ -43,9 +43,9 @@
           </div>
         </div>
 
-        <div class="inventario-toolbar">
+        <div class="inventario-toolbar agregar-buscar">
           <label class="visualmente-oculto" for="buscar-producto">Buscar producto</label>
-          <input id="buscar-producto" type="search" class="campo inventario-buscador" placeholder="Buscar por nombre o código de barras...">
+          <input id="buscar-producto" type="search" class="campo inventario-buscador buscador-inteligente" placeholder="Buscar por nombre o código de barras...">
           <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 

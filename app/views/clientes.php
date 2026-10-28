@@ -28,10 +28,10 @@ $listaClientes = Cliente::obtenerTodos();
 
       <div class="tarjeta">
 
-        <div class="barra-acciones-busqueda">
-          <form class="busqueda-barra" method="get" action="clientes.php" role="search">
+        <div class="agregar-buscar">
+          <form method="get" action="clientes.php" role="search">
             <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
-            <input class="campo" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+            <input class="campo buscador-inteligente" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn btn-secundario btn-chico" href="clientes.php">Limpiar</a>
             <?php endif; ?>

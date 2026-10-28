@@ -19,11 +19,9 @@
                 <h1>Adopción y venta</h1>
             </div>
             <div class="tarjeta">
-                <div class="barra-acciones-busqueda">
-                    <div class="busqueda-barra" role="search">
-                        <label class="visualmente-oculto" for="buscarAdopcionVenta">Buscar adopciones o ventas</label>
-                        <input class="campo" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
-                    </div>
+                <div class="agregar-buscar">
+                    <label class="visualmente-oculto" for="buscarAdopcionVenta">Buscar adopciones o ventas</label>
+                    <input class="campo buscador-inteligente" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
                     <a class="btn" href="agregar_adopcion_venta.php">+ Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">

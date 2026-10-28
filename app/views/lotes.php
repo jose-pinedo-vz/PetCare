@@ -46,7 +46,7 @@
 
 				<div class="lotes-toolbar">
 					<label class="visualmente-oculto" for="buscar-lote">Buscar lotes</label>
-					<input id="buscar-lote" class="campo" type="search" placeholder="Buscar por lote, producto o ubicación...">
+					<input id="buscar-lote" class="campo buscador-inteligente" type="search" placeholder="Buscar por lote, producto o ubicación...">
 					<label class="visualmente-oculto" for="filtro-lote-estado">Filtrar lotes por estado</label>
 					<select id="filtro-lote-estado" class="campo lotes-filtro-estado">
 						<option value="">Todos los lotes</option>

@@ -71,7 +71,7 @@
                     <section class="tarjeta corte-panel corte-anteriores" aria-labelledby="tituloCortesAnteriores">
                         <h2 id="tituloCortesAnteriores">Cortes anteriores</h2>
                         <label class="visualmente-oculto" for="buscarCorte">Buscar corte por fecha o folio</label>
-                        <input class="campo corte-busqueda" id="buscarCorte" type="search" placeholder="Buscar por fecha o folio...">
+                        <input class="campo corte-busqueda buscador-inteligente" id="buscarCorte" type="search" placeholder="Buscar por fecha o folio...">
                         <div class="corte-tabla-envoltura">
                             <table class="corte-tabla corte-tabla-anteriores">
                                 <thead>

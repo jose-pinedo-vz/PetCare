@@ -8,7 +8,7 @@
 
     <div class="busqueda-productos">
         <label class="visualmente-oculto" for="buscarServicio">Buscar servicio</label>
-        <input class="campo" id="buscarServicio" type="search" placeholder="Escribe el nombre o categoría del servicio..." autocomplete="off">
+        <input class="campo buscador-inteligente" id="buscarServicio" type="search" placeholder="Escribe el nombre o categoría del servicio..." autocomplete="off">
 
         <div class="tabla-envoltura busqueda-tabla servicio-tabla-envoltura">
             <table class="servicio-tabla">
