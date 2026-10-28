@@ -10,10 +10,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
-$idVeterinario = (int)($_SESSION['id_usuario'] ?? 1);
+$idUsuario = (int)($_SESSION['id_usuario'] ?? 1);
 $idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
 
 $ficha=new FichaMedica();
+$idVeterinario=$ficha->obtenerEmpleadoPorUsuario($idUsuario);
 
 function errorSession(string $error, int $idConsulta = 0) : void
 {
