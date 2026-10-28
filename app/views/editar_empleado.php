@@ -90,7 +90,7 @@ unset($_SESSION['error']);
   <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Editar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar empleado</h1>
       </div>
@@ -221,8 +221,8 @@ unset($_SESSION['error']);
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar cambios</button>
+        <a class="btn-secundario" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn">Guardar cambios</button>
       </div>
 
     </form>

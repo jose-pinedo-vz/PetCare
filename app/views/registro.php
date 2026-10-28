@@ -4,7 +4,7 @@ include 'layout/encabezado.php';
 ?>
 
 <main>
-    <h2>Registrar nuevo usuario</h2>
+    <h2>Registrar Nuevo Usuario</h2>
     <a href="Bienvenido.php" style="color: var(--accent-teal); text-decoration: underline;">← Volver al inicio</a>
     <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 20px 0;">
 
@@ -58,7 +58,7 @@ include 'layout/encabezado.php';
             </select>
         </div>
 
-        <button type="submit" class="btn btn-chico">Guardar Usuario</button>
+        <button type="submit">Guardar Usuario</button>
     </form>
 </main>
 

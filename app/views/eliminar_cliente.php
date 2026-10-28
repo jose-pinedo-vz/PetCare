@@ -32,8 +32,8 @@ $apellido_cliente = $_GET['apellido'];
 
   <main>
 
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Eliminar</div>
-      <div class="encabezado-pagina">
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Eliminar</div>
+
     <h1>Eliminar cliente</h1>
 
     <?php if (isset($_SESSION['error'])): ?>
@@ -57,9 +57,8 @@ $apellido_cliente = $_GET['apellido'];
         </fieldset>
 
           <div class="acciones-formulario">
-            <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
-            <button type="submit" class="btn btn-chico btn-peligro">Eliminar cliente</button>
-            
+            <a class="btn-secundario" href="clientes.php">Cancelar</a>
+            <button type="submit" class="btn">Eliminar</button>
           </div>
 
         </div>

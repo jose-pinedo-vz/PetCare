@@ -24,7 +24,7 @@ $animales = listar_adopciones_ventas();
             </div>
             <div class="tarjeta">
                 <div class="barra-acciones">
-                    <a class="btn btn-chico" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
+                    <a class="btn" href="agregar_adopcion_venta.php">+ Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">
@@ -72,8 +72,8 @@ $animales = listar_adopciones_ventas();
                                         <td><?= htmlspecialchars(substr((string)$animal['desparasitacion'], 0, 10)) ?></td>
                                         <td><?= htmlspecialchars((string)$animal['observaciones']) ?></td>
                                         <td>
-                                            <a class="btn btn-chico" href="editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
-                                            <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
+                                            <a class="btn" href="editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
+                                            <a class="btn btn-peligro" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

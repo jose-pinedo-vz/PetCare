@@ -275,8 +275,8 @@
             </fieldset>
 
             <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="adopcion_venta.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar</button>
+        <a class="btn-secundario" href="adopcion_venta.php">Cancelar</a>
+        <button type="submit">Guardar</button>
       </div>
 
         </form>

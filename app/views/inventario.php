@@ -13,37 +13,33 @@
 </head>
 
 <body>
-  <div class="layout">
-    <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-    <main class="">
-      <div class="migaja">Gestión de inventario</div>
+  <div class="layout">
+
+  <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
+
+    <main>
+      <div class="migaja">Gestión de inventario /</div>
       <div class="encabezado-pagina">
         <h1>Control de inventario</h1>
       </div>
 
-      <nav class="inventario-pestanas" aria-label="Secciones de inventario">
-        <a href="#catalogo" class="activa" aria-current="page">1. Catálogo de productos</a>
-        <a href="lotes.php">2. Gestión de lotes</a>
-        <a href="pedidos.php#pedidos">3. Pedidos pendientes</a>
-      </nav>
-
-      <section id="catalogo" aria-label="Catálogo de productos">
+      <div class="tarjeta">
         <div class="inventario-resumen">
           <div class="inventario-tarjeta">
             <h3>Riesgo de desabasto</h3>
-            <p>3 productos</p>
-            <button class="btn inventario-btn-contactar btn-chico" type="button" data-abrir-agotados>Detalles</button>
+            <p>-----------</p>
+            <button class="btn inventario-btn-contactar" type="button" data-abrir-agotados>detalles</button>
           </div>
 
           <div class="inventario-tarjeta">
             <h3>Total catálogo</h3>
-            <p>128 productos</p>
+            <p>x Productos</p>
           </div>
 
           <div class="inventario-tarjeta">
             <h3>Movimientos hoy</h3>
-            <p>14 registros</p>
+            <p>------------</p>
           </div>
         </div>
 
@@ -74,7 +70,7 @@
                           <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
                           <td><?= $producto['codigo'] ?></td>
                           <td><?= $producto['nombre'] ?></td>
-                          <td><span class="estado-chip estado-espera"><?= $producto['existencia'] ?> (bajo)</span></td>
+                          <td class="existencia-baja"><?= $producto['existencia'] ?> (bajo)</td>
                           <td>$<?= $producto['precio_venta'] ?></td>
                           <td class="acciones">
                             <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= $producto['id_producto'] ?>">Nueva orden de compra</a>
@@ -87,7 +83,7 @@
                           <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
                           <td><?= $producto['codigo'] ?></td>
                           <td><?= $producto['nombre'] ?></td>
-                          <td><span class="estado-chip estado-atendida"><?= $producto['existencia'] ?> (normal)</span></td>
+                          <td><?= $producto['existencia'] ?></td>
                           <td>$<?= $producto['precio_venta'] ?></td>
                           <td class="acciones">
                             <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= (int)$producto['id_producto'] ?>">Nueva orden de compra</a>
@@ -103,42 +99,42 @@
             </tbody>
           </table>
         </div>
-      </section>
+      </div>
     </main>
+
   </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
-  <dialog id="ventana-agotados" class="inventario-dialog" aria-labelledby="titulo-agotados">
-    <h2 id="titulo-agotados">Productos agotados</h2>
-    <div class="tabla-envoltura">
-      <table>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Existencia</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Pelota</td>
-            <td>2 (bajo)</td>
-            <td class="acciones">
-              <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="inventario-dialog-acciones">
-      <button id="cerrar-agotados" class="btn btn-chico" type="button">Cerrar</button>
-    </div>
-  </dialog>
+    <dialog id="ventana-agotados" class="inventario-dialog" aria-labelledby="titulo-agotados">
+        <h2 id="titulo-agotados">Productos agotados</h2>
+        <div class="tabla-envoltura">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Existencia</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pelota</td>
+                        <td>2 (bajo)</td>
+                        <td class="acciones">
+                            <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden de compra</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="inventario-dialog-acciones">
+            <button id="cerrar-agotados" class="btn" type="button">Cerrar</button>
+        </div>
+    </dialog>
 
-<<<<<<< HEAD
     <script>
         const ventanaAgotados = document.getElementById('ventana-agotados');
         document.querySelectorAll('[data-abrir-agotados]').forEach((boton) => {
@@ -151,36 +147,6 @@
     </script>
 
     <script src="js/buscador_inteligente.js"></script>
-=======
-  <script>
-    const buscadorProductos = document.getElementById('buscar-producto');
-    const filasProductos = [...document.querySelectorAll('tbody tr')];
-    const ventanaAgotados = document.getElementById('ventana-agotados');
-
-    buscadorProductos?.addEventListener('input', () => {
-      const consulta = buscadorProductos.value.trim().toLocaleLowerCase('es');
-
-      filasProductos.forEach((fila) => {
-        const coincidencia = fila.textContent.toLocaleLowerCase('es').includes(consulta);
-        fila.hidden = !coincidencia;
-      });
-    });
-
-    document.querySelectorAll('[data-abrir-agotados]').forEach((boton) => {
-      boton.addEventListener('click', () => ventanaAgotados.showModal());
-    });
-
-    document.getElementById('cerrar-agotados').addEventListener('click', () => {
-      ventanaAgotados.close();
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && ventanaAgotados.open) {
-        ventanaAgotados.close();
-      }
-    });
-  </script>
->>>>>>> a3e474dbd4e67829925981cbf05517c2bdee9576
 </body>
 
 </html>

@@ -21,7 +21,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
   <main>
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Agregar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar cliente</h1>
       </div>
@@ -220,8 +220,8 @@ if (session_status() === PHP_SESSION_NONE) {
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar cliente</button>
+        <a class="btn-secundario" href="clientes.php">Cancelar</a>
+        <button type="submit">Guardar</button>
       </div>
 
     </form>

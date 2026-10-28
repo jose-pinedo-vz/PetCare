@@ -55,8 +55,8 @@ $proveedores = listar_proveedores();
                                 <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
                                 <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
                                 <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>">Eliminar</a>
+                                    <a class="btn" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
+                                    <a class="btn btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

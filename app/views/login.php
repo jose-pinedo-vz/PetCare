@@ -21,7 +21,7 @@ include 'layout/encabezado.php';
             <input type="password" id="password" name="password" class="campo" required>
         </div>
 
-        <button type="submit" class="btn btn-chico">Ingresar</button>
+        <button type="submit">Ingresar</button>
     </form>
 </main>
 

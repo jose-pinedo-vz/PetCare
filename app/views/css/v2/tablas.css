@@ -12,10 +12,6 @@ table {
   overflow-y: hidden;
 }
 
-.tabla-envoltura table th {
-  text-align: center;
-}
-
 table th {
   background-color: var(--primary-dark);
   color: var(--white);

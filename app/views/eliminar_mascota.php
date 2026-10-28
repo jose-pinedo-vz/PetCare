@@ -54,8 +54,8 @@ if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
 
 
         <div class="acciones-formulario">
-          <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
-          <button type="submit" class="btn btn-chico btn-peligro">Eliminar</button>
+          <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+          <button type="submit" class="btn">Eliminar</button>
         </div>
 
       </div>

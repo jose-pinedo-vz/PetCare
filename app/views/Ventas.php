@@ -25,7 +25,7 @@
                             <label for="barcodeInput">Código de barras</label>
                             <div class="venta-busqueda">
                                 <input class="campo" type="text" id="barcodeInput" placeholder="Escanea o escribe un código" autocomplete="off">
-                                <button class="btn btn-info btn-chico" id="btnBuscarProducto" type="button">Buscar producto</button>
+                                <button class="btn btn-info" id="btnBuscarProducto" type="button">Buscar producto</button>
                             </div>
                             <span class="nota-campo">El producto se agregará a la lista de venta.</span>
                         </div>
@@ -59,15 +59,15 @@
                                     <td>$0.00</td>
                                     <td>$20.00</td>
                                     <td class="acciones">
-                                        <a class="btn btn-peligro btn-chico" href="enespera.php?id=1">Eliminar</a>
+                                        <a class="btn btn-peligro" href="enespera.php?id=1">Eliminar</a>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="venta-carrito-acciones">
-                        <button class="btn btn-info btn-chico" id="btnAgregarServicio" type="button">Agregar servicio</button>
-                        <button class="btn btn-chico" id="btnNuevaVenta" type="button">Nueva venta</button> <!-- este boton deberia limpiar la venta actual y reiniciar todo, tambien se deberia preguntar si se desea cancelar la venta actual, o eso interprete -->
+                        <button class="btn btn-info" id="btnAgregarServicio" type="button">Agregar servicio</button>
+                        <button class="btn btn-peligro" id="btnNuevaVenta" type="button">Nueva venta</button> <!-- este boton deberia limpiar la venta actual y reiniciar todo, tambien se deberia preguntar si se desea cancelar la venta actual, o eso interprete -->
                     </div>
                     <p class="venta-mensaje" id="ventaMensaje" role="status" aria-live="polite"></p>
                 </section>
@@ -82,15 +82,15 @@
                             <div class="venta-total"><span>Total</span><strong id="lblTotal">$23.20 MXN</strong></div>
                         </div>
                         <div class="venta-acciones">
-                            <button class="btn btn-info btn-chico" id="btnCobrar" type="button">Cobrar</button>
-                            <button class="btn btn-peligro btn-chico" id="btnCancelarVenta" type="button">Cancelar venta</button> <!-- este boton deberia cancelar la venta actual, y se deberia preguntar si se desea cancelar la venta actual y limpiar la ventana actual, o eso entnedi -->
+                            <button class="btn btn-info" id="btnCobrar" type="button">Cobrar</button>
+                            <button class="btn btn-peligro" id="btnCancelarVenta" type="button">Cancelar venta</button> <!-- este boton deberia cancelar la venta actual, y se deberia preguntar si se desea cancelar la venta actual y limpiar la ventana actual, o eso entnedi -->
                         </div>
                     </aside>
                     <section class="tarjeta venta-herramientas" aria-labelledby="tituloHerramientasVenta">
                         <h2 id="tituloHerramientasVenta">Accesos</h2>
                         <div class="venta-reportes">
-                            <a class="btn btn-secundario btn-chico" href="corte_caja.php">Corte de caja</a>
-                            <a class="btn btn-secundario btn-chico" href="historial_ventas.php">Historial de ventas</a>
+                            <a class="btn-secundario" href="corte_caja.php">Corte de caja</a>
+                            <a class="btn-secundario" href="historial_ventas.php">Historial de ventas</a>
                         </div>
                     </section>
                 </div>
@@ -113,9 +113,9 @@
             <div class="venta-total">Total cobrado: <strong>$23.20 MXN</strong></div>
             <p class="resultado-factura" id="mensajeFactura" role="status" hidden></p>
             <div class="venta-carrito-acciones">
-                <button class="btn btn-secundario btn-chico" id="btnImprimirTicket" type="button">Imprimir ticket</button>
-                <button class="btn btn-chico" id="btnGenerarFactura" type="button">Generar factura</button>
-                <button class="btn btn-secundario btn-chico" id="btnNuevaVentaConfirmada" type="button">Nueva venta</button>
+                <button class="btn-secundario" id="btnImprimirTicket" type="button">Imprimir ticket</button>
+                <button class="btn" id="btnGenerarFactura" type="button">Generar factura</button>
+                <button class="btn-secundario" id="btnNuevaVentaConfirmada" type="button">Nueva venta</button>
             </div>
         </div>
     </dialog>
@@ -136,8 +136,8 @@
             <label class="label-campo" for="facturaCorreo">Correo electrónico</label>
             <input class="campo" id="facturaCorreo" name="correo" type="email" autocomplete="email" required>
             <div class="pago-acciones">
-                <button class="btn btn-secundario btn-chico" id="btnVolverPagoConfirmado" type="button">Cancelar</button>
-                <button class="btn btn-chico" type="submit">Continuar</button>
+                <button class="btn-secundario" id="btnVolverPagoConfirmado" type="button">Cancelar</button>
+                <button class="btn" type="submit">Continuar</button>
             </div>
         </form>
     </dialog>
