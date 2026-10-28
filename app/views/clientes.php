@@ -35,9 +35,7 @@ $listaClientes = Cliente::obtenerTodos();
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
 
-    <?php
-    $listaClientes = Cliente::obtenerTodos();
-    if (empty($listaClientes)): ?>
+    <?php if (empty($listaClientes)): ?>
       <div class="vacio">
         <p>No hay clientes registrados en la base de datos.</p>
         <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
@@ -59,7 +57,7 @@ $listaClientes = Cliente::obtenerTodos();
           </thead>
           <tbody>
             <?php foreach ($listaClientes as $c): ?>
-              <tr>
+              <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($c, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) ?: '{}', ENT_QUOTES, 'UTF-8') ?>">
                 <td><strong><?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
                 <td><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
                 <td><?php echo htmlspecialchars($c['telefono']); ?></td>
@@ -80,64 +78,6 @@ $listaClientes = Cliente::obtenerTodos();
       </div>
       <!-- TERMINA CONTENEDOR RESPONSIVE -->
 
-        <div class="barra-acciones-busqueda">
-          <a class="btn btn-chico" href="agregar_cliente.php">+ Agregar cliente</a>
-
-          <form class="busqueda-barra" method="get" action="clientes.php" role="search">
-            <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
-            <input class="campo" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info btn-chico" type="submit">Buscar</button>
-            <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn btn-secundario btn-chico" href="clientes.php">Limpiar</a>
-            <?php endif; ?>
-          </form>
-        </div>
-
-        <?php
-        $listaClientes = Cliente::obtenerTodos();
-        if (empty($listaClientes)): ?>
-          <div class="vacio">
-            <p>No hay clientes registrados en la base de datos.</p>
-            <a class="btn btn-chico" href="agregar_cliente.php">+ Registrar el primer cliente</a>
-          </div>
-        <?php else: ?>
-
-          <!-- INICIA CONTENEDOR RESPONSIVE -->
-          <div class="tabla-envoltura">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Teléfono</th>
-                  <th>Correo</th>
-                  <th>Ciudad / Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($listaClientes as $c): ?>
-                  <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($c), ENT_QUOTES) ?>">
-                    <td><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
-                    <td><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
-                    <td><?php echo htmlspecialchars($c['telefono']); ?></td>
-                    <td><?php echo htmlspecialchars($c['correo']); ?></td>
-                    <td><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-
-                    <!-- Celda de acciones con white-space: nowrap; -->
-                    <td class="acciones">
-                      <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
-                      <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
-                      <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
-                      <!--<button type="submit" class="btn btn-chico btn-eliminar btn-peligro">Eliminar</button>-->
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-          <!-- TERMINA CONTENEDOR RESPONSIVE -->
-
         <?php endif; ?>
 
       </div>
@@ -149,12 +89,10 @@ $listaClientes = Cliente::obtenerTodos();
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
-<<<<<<< HEAD
   <script src="js/buscador_inteligente.js"></script>
-=======
-  <dialog class="producto-dialog" id="modalDetalle">
+  <dialog class="producto-dialog" id="modalDetalle" aria-labelledby="tituloDetalleCliente">
   <div class="producto-dialog-encabezado">
-    <h1>Detalle del cliente</h1>
+    <h1 id="tituloDetalleCliente">Detalle del cliente</h1>
     <form method="dialog"><button class="producto-dialog-cerrar" aria-label="Cerrar">&times;</button></form>
   </div>
 
@@ -181,7 +119,7 @@ $listaClientes = Cliente::obtenerTodos();
 </dialog>
 
 <script>
-  document.querySelector('tbody').addEventListener('click', (e) => {
+  document.querySelector('.tabla-envoltura tbody')?.addEventListener('click', (e) => {
     if (e.target.closest('a, button')) return;
     const fila = e.target.closest('tr[data-registro]');
     if (!fila) return;
@@ -193,8 +131,6 @@ $listaClientes = Cliente::obtenerTodos();
     document.getElementById('modalDetalle').showModal();
   });
 </script>
-
->>>>>>> a3e474dbd4e67829925981cbf05517c2bdee9576
 </body>
 
 </html>

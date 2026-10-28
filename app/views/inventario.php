@@ -138,7 +138,6 @@
     </div>
   </dialog>
 
-<<<<<<< HEAD
     <script>
         const ventanaAgotados = document.getElementById('ventana-agotados');
         document.querySelectorAll('[data-abrir-agotados]').forEach((boton) => {
@@ -151,36 +150,6 @@
     </script>
 
     <script src="js/buscador_inteligente.js"></script>
-=======
-  <script>
-    const buscadorProductos = document.getElementById('buscar-producto');
-    const filasProductos = [...document.querySelectorAll('tbody tr')];
-    const ventanaAgotados = document.getElementById('ventana-agotados');
-
-    buscadorProductos?.addEventListener('input', () => {
-      const consulta = buscadorProductos.value.trim().toLocaleLowerCase('es');
-
-      filasProductos.forEach((fila) => {
-        const coincidencia = fila.textContent.toLocaleLowerCase('es').includes(consulta);
-        fila.hidden = !coincidencia;
-      });
-    });
-
-    document.querySelectorAll('[data-abrir-agotados]').forEach((boton) => {
-      boton.addEventListener('click', () => ventanaAgotados.showModal());
-    });
-
-    document.getElementById('cerrar-agotados').addEventListener('click', () => {
-      ventanaAgotados.close();
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && ventanaAgotados.open) {
-        ventanaAgotados.close();
-      }
-    });
-  </script>
->>>>>>> a3e474dbd4e67829925981cbf05517c2bdee9576
 </body>
 
 </html>

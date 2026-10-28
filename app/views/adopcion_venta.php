@@ -23,8 +23,9 @@ $animales = listar_adopciones_ventas();
                 <h1>Adopción y venta</h1>
             </div>
             <div class="tarjeta">
-                <div class="barra-acciones">
-                    <a class="btn btn-chico" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
+                <div class="agregar-buscar">
+                    <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
+                    <a class="btn" href="agregar_adopcion_venta.php">+Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
                     <table border="1">
@@ -73,6 +74,13 @@ $animales = listar_adopciones_ventas();
                                         <td><?= htmlspecialchars((string)$animal['observaciones']) ?></td>
                                         <td>
                                             <a class="btn btn-chico" href="editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
+                                            <form action="../controllers/procesar_venta_adopcion.php" method="POST" style="display:inline;" onsubmit="return confirm('¿Deseas confirmar la transacción de este animal?');">
+                                                <input type="hidden" name="id_animal" value="<?= $animal['id_animal'] ?>">
+                                                <input type="hidden" name="precio_de_venta" value="<?= $animal['precio_de_venta'] ?>">
+                                                <input type="hidden" name="especie" value="<?= htmlspecialchars((string)($animal['especie'] ?? '-')) ?>">
+                                                <input type="hidden" name="raza" value="<?= htmlspecialchars((string)($animal['raza'] ?? '-')) ?>">
+                                                <button type="submit" class="btn btn-chico btn-secundario">Vender</button>
+                                            </form>
                                             <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Eliminar</a>
                                         </td>
                                     </tr>

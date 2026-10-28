@@ -1,4 +1,13 @@
 <?php
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+    header("Location: ../views/login.php");
+    exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 require_once __DIR__ . '/../controllers/proveedor.php';
 $proveedores = listar_proveedores();
 ?>
@@ -19,7 +28,7 @@ $proveedores = listar_proveedores();
   <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-    <div class="migaja">Gestión de Proveedores /</div>
+    <div class="migaja">Gestión de proveedores /</div>
     <div class="encabezado-pagina">
       <h1>Proveedores</h1>
     </div>

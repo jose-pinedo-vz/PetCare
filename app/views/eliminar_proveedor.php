@@ -5,7 +5,18 @@ if (!isset($_GET['id']) || !isset($_GET['razon_social'])) {
     header("Location: proveedores.php");
     exit();
 }
-
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 // Si sí llegaron, los guardamos con seguridad
 $id_proveedor = (int) $_GET['id'];
 $razon_social = $_GET['razon_social'];
