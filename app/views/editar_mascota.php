@@ -42,6 +42,29 @@ function dato(array $old, array $mascota, string $campo): string
 $sexoActual = $old['sexo'] ?? $mascota['sexo'] ?? '';
 $tamActual  = $old['tamanio'] ?? $mascota['tamanio'] ?? '';
 $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
+
+$coloresLista = [
+    'Blanco', 'Negro', 'Gris', 'Café', 'Amarillo', 'Verde', 'Rojo',
+    'Blanco y negro', 'Café y blanco', 'Café y amarillo', 'Blanco y gris',
+    'Verde y amarillo', 'Blanco, amarillo y negro'
+];
+
+$colorActual      = (string)($old['color'] ?? $mascota['color'] ?? '');
+$colorEspecActual = (string)($old['color_espec'] ?? '');
+
+if ($colorActual !== '' && $colorActual !== 'Otro' && !in_array($colorActual, $coloresLista, true)) {
+    $colorEspecActual = $colorActual;
+    $colorActual      = 'Otro';
+}
+
+$especiesLista = ['Perro', 'Gato', 'Conejo', 'Hamster', 'Hurón', 'Erizo', 'Tortuga', 'Ave'];
+
+$especieActual = (string)($old['especie'] ?? $mascota['especie'] ?? '');
+
+if ($especieActual !== '' && !in_array($especieActual, $especiesLista, true)) {
+    $especiesLista[] = $especieActual;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -82,7 +105,7 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
   <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Editar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar mascota</h1>
       </div>
@@ -113,7 +136,12 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
 
           <div>
             <label class="label-campo" for="especie">Especie *:</label>
-            <input type="text" class="campo" id="especie" name="especie" value="<?= dato($old, $mascota, 'especie') ?>" required>
+            <select class="campo" id="especie" name="especie" required>
+              <option value="">Seleccionar...</option>
+              <?php foreach ($especiesLista as $opcionEspecie): ?>
+                <option value="<?= htmlspecialchars($opcionEspecie) ?>" <?= $especieActual === $opcionEspecie ? 'selected' : '' ?>><?= htmlspecialchars($opcionEspecie) ?></option>
+              <?php endforeach; ?>
+            </select>
           </div>
 
           <div>
@@ -135,8 +163,21 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
 
           <div>
-            <label class="label-campo" for="color">Color:</label>
-            <input type="text" class="campo" id="color" name="color" value="<?= dato($old, $mascota, 'color') ?>">
+            <label class="label-campo" for="color">Color *:</label>
+            <select class="campo" id="color" name="color" required>
+              <option value="">Seleccionar...</option>
+              <?php foreach ($coloresLista as $opcionColor): ?>
+                <option value="<?= htmlspecialchars($opcionColor) ?>" <?= $colorActual === $opcionColor ? 'selected' : '' ?>><?= htmlspecialchars($opcionColor) ?></option>
+              <?php endforeach; ?>
+              <option value="Otro" <?= $colorActual === 'Otro' ? 'selected' : '' ?>>Otro (especificar)</option>
+            </select>
+          </div>
+          
+          <div id="contenedor-color-espec" style="<?= $colorActual === 'Otro' ? '' : 'display: none;' ?>">
+            <label class="label-campo" for="color_espec">Especifique el color *:</label>
+            <input type="text" class="campo" id="color_espec" name="color_espec" style="border: 1px solid #3b82f6; background-color: #f9f9f9;"
+                   value="<?= htmlspecialchars($colorEspecActual) ?>"
+                   placeholder="Ej. Marrón rojizo" <?= $colorActual === 'Otro' ? 'required' : '' ?>>
           </div>
 
           <div>
@@ -145,7 +186,7 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
 
           <div>
-            <label class="label-campo" for="tamanio">Tamaño:</label>
+            <label class="label-campo" for="tamanio">Tamaño *:</label>
             <select class="campo" id="tamanio" name="tamanio">
               <option value="">Seleccionar...</option>
               <option value="Pequeño" <?= $tamActual === 'Pequeño' ? 'selected' : '' ?>>Pequeño</option>
@@ -166,11 +207,31 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
         </div>
 
+  
         <div class="campo-completo-sep">
           <label class="label-campo" for="fotografia">Fotografía:</label>
           <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*">
-          <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
-          <p class="nota-campo">Deja este campo vacío si no quieres cambiar la foto actual.</p>
+
+          <div id="contenedor-imagen-nueva" style="margin-top: 12px; display: none;">
+              <p style="margin: 0 0 4px 0; font-size: 0.75rem; color: #b0bec5; letter-spacing: 0.5px; font-weight: 600;">Imagen nueva</p>
+              <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
+          </div>
+
+          <?php if (!empty($mascota['fotografia'])): ?>
+              <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+                <div>
+                  <p style="margin: 0 0 4px 0; font-size: 0.75rem; color: #b0bec5; letter-spacing: 0.5px; font-weight: 600;"> <br>Imagen actual</p>
+                  <img src="../../<?= htmlspecialchars($mascota['fotografia']) ?>" alt="Foto de la mascota" style="max-width: 200px; max-height: 200px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);">
+                </div>
+              </div>
+              
+            <p style="margin: 3px 0 0 0; font-size: 0.85rem; color: #90a4ae;">Sube un archivo nuevo solo si deseas reemplazarla.</p>
+          <?php endif; ?>
+
+
+          <?php if (empty($mascota['fotografia'])): ?>
+            <p style="font-size: 0.95rem; color: #90a4ae;"><br>Al elegir una foto se abrirá el cuadrado de recorte.</p>
+          <?php endif; ?>
         </div>
 
         <div id="modal-crop">
@@ -190,22 +251,22 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
 
         <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="alergias">Alergias:</label>
+            <label class="label-campo" for="alergias">Alergias *:</label>
             <textarea class="campo" id="alergias" name="alergias" rows="2"><?= dato($old, $mascota, 'alergias') ?></textarea>
           </div>
 
           <div>
-            <label class="label-campo" for="enfermedades">Enfermedades:</label>
+            <label class="label-campo" for="enfermedades">Enfermedades *:</label>
             <textarea class="campo" id="enfermedades" name="enfermedades" rows="2"><?= dato($old, $mascota, 'enfermedades') ?></textarea>
           </div>
 
           <div>
-            <label class="label-campo" for="medicamentos">Medicamentos:</label>
+            <label class="label-campo" for="medicamentos">Medicamentos *:</label>
             <textarea class="campo" id="medicamentos" name="medicamentos" rows="2"><?= dato($old, $mascota, 'medicamentos') ?></textarea>
           </div>
 
           <div>
-            <label class="label-campo" for="condiciones_especiales">Condiciones especiales:</label>
+            <label class="label-campo" for="condiciones_especiales">Condiciones especiales *:</label>
             <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= dato($old, $mascota, 'condiciones_especiales') ?></textarea>
           </div>
 
@@ -215,7 +276,7 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
           </div>
 
           <div>
-            <label class="label-campo" for="ultima_desparasitacion">Última desparasitación:</label>
+            <label class="label-campo" for="ultima_desparasitacion">Última desparasitación *:</label>
             <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= dato($old, $mascota, 'ultima_desparasitacion') ?>">
           </div>
 
@@ -261,6 +322,38 @@ $activo     = (int)($old['esta_activo'] ?? $mascota['esta_activo'] ?? 1) === 1;
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-mascota.js"></script>
+
+  <script>
+    const previewImg = document.getElementById('preview-crop');
+    const contenedorNuevo = document.getElementById('contenedor-imagen-nueva');
+
+    if (previewImg && contenedorNuevo) {
+        const observador = new MutationObserver(() => {
+            if (previewImg.getAttribute('src')) {
+                contenedorNuevo.style.display = 'block';
+            }
+        });
+        observador.observe(previewImg, { attributes: true, attributeFilter: ['src'] });
+    }
+  </script>
+
+  
+  <script>
+    const selectColor = document.getElementById('color');
+    const contenedorColorEspec = document.getElementById('contenedor-color-espec');
+    const inputColorEspec = document.getElementById('color_espec');
+ 
+    function alternarColorEspec() {
+        const esOtro = selectColor.value === 'Otro';
+        contenedorColorEspec.style.display = esOtro ? '' : 'none';
+        inputColorEspec.required = esOtro;
+    }
+ 
+    if (selectColor && contenedorColorEspec && inputColorEspec) {
+        selectColor.addEventListener('change', alternarColorEspec);
+        alternarColorEspec();
+    }
+  </script>
 
 </body>
 </html>

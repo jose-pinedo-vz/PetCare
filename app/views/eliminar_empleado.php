@@ -28,7 +28,7 @@ $apellido_empleado = $_GET['apellido'];
 
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Eliminar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar empleado</h1>
       </div>

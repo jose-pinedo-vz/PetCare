@@ -52,7 +52,7 @@ unset($_SESSION['error']);
   <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Agregar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Agregar empleado</h1>
       </div>
@@ -74,13 +74,17 @@ unset($_SESSION['error']);
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
-            <input type="text" class="campo" id="nombre" name="nombre" maxlength="20" required
+            <input type="text" class="campo" id="nombre" name="nombre" minlength="2" maxlength="20" required
+              pattern="^(?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.)(?: (?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.))*$"
+              title="Solo letras y un espacio simple entre palabras. Se permite punto en abreviaturas (ej: Ma. Luisa, J. Carlos). Mínimo 2 letras por palabra."
               value="<?= viejo('oldnombre_empleado') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="apellido">Apellido *:</label>
-            <input type="text" class="campo" id="apellido" name="apellido" maxlength="40" required
+            <input type="text" class="campo" id="apellido" name="apellido" minlength="2" maxlength="40" required
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}( [A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y un espacio simple entre palabras (mínimo 2 letras por palabra)"
               value="<?= viejo('oldapellido') ?>">
           </div>
         </div>
@@ -92,6 +96,8 @@ unset($_SESSION['error']);
           <div>
             <label class="label-campo" for="telefono">Teléfono *:</label>
             <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required
+              pattern="^[0-9]{10}$|^[0-9]{3}[-\s]?[0-9]{3}[-\s]?[0-9]{4}$"
+              title="10 dígitos numéricos (ej. 3312345678 o 345-103-2345)"
               value="<?= viejo('oldtelefono') ?>">
           </div>
 
@@ -108,7 +114,8 @@ unset($_SESSION['error']);
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="codigo_postal">Código postal *:</label>
-            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="5" required
+              pattern="^[0-9]{5}$" title="Código postal de exactamente 5 dígitos numéricos"
               value="<?= viejo('oldcodigo_postal') ?>">
           </div>
 
@@ -119,19 +126,22 @@ unset($_SESSION['error']);
 
           <div>
             <label class="label-campo" for="calle">Calle *:</label>
-            <input type="text" class="campo" id="calle" name="calle" maxlength="100" required
+            <input type="text" class="campo" id="calle" name="calle" minlength="3" maxlength="100" required
+              title="Debe incluir el nombre de la calle (mínimo 3 caracteres)"
               value="<?= viejo('oldcalle') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="numero_exterior">Número exterior *:</label>
             <input type="text" class="campo" id="numero_exterior" name="numero_exterior" maxlength="15" required
+              pattern="^[a-zA-Z0-9\-\/]{1,15}$" title="Solo números, letras y guiones (sin espacios)"
               value="<?= viejo('oldnumero_exterior') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="numero_interior">Número interior:</label>
             <input type="text" class="campo" id="numero_interior" name="numero_interior" maxlength="15"
+              pattern="^[a-zA-Z0-9\-\/]{1,15}$" title="Solo números, letras y guiones (sin espacios)"
               value="<?= viejo('oldnumero_interior') ?>">
           </div>
 
@@ -176,13 +186,16 @@ unset($_SESSION['error']);
 
           <div>
             <label class="label-campo" for="especialidad">Especialidad:</label>
-            <input type="text" class="campo" id="especialidad" name="especialidad" maxlength="50"
+            <input type="text" class="campo" id="especialidad" name="especialidad" minlength="3" maxlength="50"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y espacios (sin números ni símbolos especiales)"
               value="<?= viejo('oldespecialidad') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional:</label>
-            <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" maxlength="20"
+            <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" minlength="6" maxlength="10"
+              pattern="^[0-9]{6,10}$" title="Entre 6 y 10 dígitos numéricos"
               value="<?= viejo('oldnum_cedula_profesional') ?>">
           </div>
 

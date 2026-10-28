@@ -33,6 +33,8 @@ function resivirCodigoPostal()
 
 
 function validar_datos($datos){
+    require_once __DIR__ . '/../models/proveedores.php';
+    require_once __DIR__ . '/validar_rfc.php';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -45,6 +47,8 @@ function validar_datos($datos){
         $errores[] = "La razon no puede tener mas de 30 letras";
     }else if (is_numeric($datos['razon_social'])) {
         $errores[] = "La razón social no puede ser únicamente números.";
+    }else if (existeRazonSocial($datos['razon_social'])) {
+        $errores[] = "La razón social ya existe en la base de datos.";
     }
 
     // Nombre comercial es obligatorio
@@ -61,6 +65,13 @@ function validar_datos($datos){
         $errores[] = "El RFC es obligatoria.";
     }else if (strlen($datos['rfc']) > 13) {
         $errores[] = "El RFC no puede tener mas de 13 letras.";
+    }else {
+        $erroresRfc = validarRfc($datos['rfc']);
+        if (!empty($erroresRfc)) {
+            $errores = array_merge($errores, $erroresRfc);
+        }else if (existeRfc($datos['rfc'])) {
+            $errores[] = "El RFC ya existe en la base de datos.";
+        }
     }
 
     // El telefono es obligatorio
@@ -71,10 +82,14 @@ function validar_datos($datos){
     } else {
         // Extraer solo los números ignorando guiones, espacios y paréntesis
         $soloNumerosTel = preg_replace('/\D/', '', $datos['telefono']);
-        if (strlen($soloNumerosTel) !== 10) {
-            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678 o 345-103-2345).";
+        $datos['telefono'] = $soloNumerosTel; // Actualiza el valor del teléfono con solo números
+        if (strlen($datos['telefono']) !== 10) {
+            $errores[] = "El teléfono debe contener exactamente 10 dígitos (ej: 3312345678).";
+        }else if (existeTelefono($datos['telefono'])) {
+            $errores[] = "El teléfono ya existe en la base de datos.";
         }
     }
+    
 
     // El correo es obligatorio
     if (empty($datos['correo'])) {
@@ -89,6 +104,8 @@ function validar_datos($datos){
         // Verifica registros MX o A (algunos dominios usan registro A como respaldo)
         if(!checkdnsrr($dominio, 'MX') && !checkdnsrr($dominio, 'A')){
             $errores[] = "El dominio del correo no existe o no admite mensajes.";
+        }else if (existeCorreo($datos['correo'])) {
+            $errores[] = "El correo ya existe en la base de datos.";
         }
     }
 
@@ -165,7 +182,7 @@ function validar_datos($datos){
         header("Location: ../views/agregar_proveedor.php");
         exit;
     } else {
-        require_once __DIR__ . '/../models/proveedores.php';
+        
         $advert = insertar($datos);
         if (is_array($advert) && count($advert) > 0) {
             if($advert[0] == "Error BD"){

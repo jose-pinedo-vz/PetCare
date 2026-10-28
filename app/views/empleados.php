@@ -20,7 +20,7 @@ $empleados = Empleados::Listar_empleados_activos();
   <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja">Gestión de Empleados /</div>
+      <div class="migaja">Gestión de empleados /</div>
       <div class="encabezado-pagina">
         <h1>Empleados</h1>
       </div>

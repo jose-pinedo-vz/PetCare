@@ -80,6 +80,9 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         if ($datos['peso'] <= 0) {
             $errores[] = "El peso debe ser un número mayor a 0 (ejemplo: 5.5).";
         }
+        if ($datos['peso'] > 100) {
+          $errores[] = "El peso no puede ser mayor a 100 kg.";
+        }
     }
     // Tamanio obligatorio
     if (empty(trim($datos['tamanio']))) {

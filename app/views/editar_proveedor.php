@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 require_once __DIR__ . '/../controllers/proveedor.php';
 require_once __DIR__ . '/../models/proveedores.php';
@@ -60,7 +59,7 @@ if (!$proveedor) {
   <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Editar</div>
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de proveedores</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar proveedor</h1>
       </div>
@@ -105,7 +104,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -160,7 +159,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -226,7 +225,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="codigo_postal">
-                            Código Postal:
+                            Código postal:
                         </label>
 
                         <input
@@ -312,8 +311,4 @@ if (!$proveedor) {
   </footer>
 
 </body>
-<<<<<<< HEAD
-=======
-
->>>>>>> d7a9e6bcd315c9e8ca8e2d8788e907503afa5f55
 </html>

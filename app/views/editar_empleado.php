@@ -82,6 +82,7 @@ unset($_SESSION['error']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar empleado</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
 
@@ -90,7 +91,7 @@ unset($_SESSION['error']);
   <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Editar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Editar</div>
       <div class="encabezado-pagina">
         <h1>Editar empleado</h1>
       </div>
@@ -114,12 +115,18 @@ unset($_SESSION['error']);
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
-            <input type="text" class="campo" id="nombre" name="nombre" maxlength="20" required value="<?= e($nombre) ?>">
+            <input type="text" class="campo" id="nombre" name="nombre" minlength="2" maxlength="20" required
+              pattern="^(?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.)(?: (?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.))*$"
+              title="Solo letras y un espacio simple entre palabras. Se permite punto en abreviaturas (ej: Ma. Luisa, J. Carlos). Mínimo 2 letras por palabra."
+              value="<?= e($nombre) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="apellido">Apellido *:</label>
-            <input type="text" class="campo" id="apellido" name="apellido" maxlength="40" required value="<?= e($apellido) ?>">
+            <input type="text" class="campo" id="apellido" name="apellido" minlength="2" maxlength="40" required
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}( [A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y un espacio simple entre palabras (mínimo 2 letras por palabra)"
+              value="<?= e($apellido) ?>">
           </div>
         </div>
       </fieldset>
@@ -129,12 +136,16 @@ unset($_SESSION['error']);
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="telefono">Teléfono *:</label>
-            <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required value="<?= e($telefono) ?>">
+            <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required
+              pattern="^[0-9]{10}$|^[0-9]{3}[-\s]?[0-9]{3}[-\s]?[0-9]{4}$"
+              title="10 dígitos numéricos (ej. 3312345678 o 345-103-2345)"
+              value="<?= e($telefono) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="correo">Correo electrónico *:</label>
-            <input type="email" class="campo" id="correo" name="correo" maxlength="100" required value="<?= e($correo) ?>">
+            <input type="email" class="campo" id="correo" name="correo" maxlength="100" required
+              value="<?= e($correo) ?>">
           </div>
         </div>
       </fieldset>
@@ -143,38 +154,59 @@ unset($_SESSION['error']);
         <legend>Domicilio</legend>
         <div class="grid-formulario">
           <div>
+            <label class="label-campo" for="codigo_postal">Código postal *:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="5" required
+              pattern="^[0-9]{5}$" title="Código postal de exactamente 5 dígitos numéricos"
+              value="<?= e($codigoPost) ?>">
+          </div>
+
+          <div>
+            <label class="label-campo">&nbsp;</label>
+            <button type="button" class="btn" id="validar_codigo_postal" onclick="codigoPostalEmpleados(event)">Validar código postal</button>
+          </div>
+
+          <div>
             <label class="label-campo" for="calle">Calle *:</label>
-            <input type="text" class="campo" id="calle" name="calle" maxlength="100" required value="<?= e($calle) ?>">
+            <input type="text" class="campo" id="calle" name="calle" minlength="3" maxlength="100" required
+              title="Debe incluir el nombre de la calle (mínimo 3 caracteres)"
+              value="<?= e($calle) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="numero_exterior">Número exterior *:</label>
-            <input type="text" class="campo" id="numero_exterior" name="numero_exterior" maxlength="15" required value="<?= e($numExterior) ?>">
+            <input type="text" class="campo" id="numero_exterior" name="numero_exterior" maxlength="15" required
+              pattern="^[a-zA-Z0-9\-\/]{1,15}$" title="Solo números, letras y guiones (sin espacios)"
+              value="<?= e($numExterior) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="numero_interior">Número interior:</label>
-            <input type="text" class="campo" id="numero_interior" name="numero_interior" maxlength="15" value="<?= e($numInterior) ?>">
+            <input type="text" class="campo" id="numero_interior" name="numero_interior" maxlength="15"
+              pattern="^[a-zA-Z0-9\s.\-\/]{1,15}$" title="Número interior válido"
+              value="<?= e($numInterior) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="colonia">Colonia *:</label>
-            <input type="text" class="campo" id="colonia" name="colonia" maxlength="60" required value="<?= e($colonia) ?>">
+            <select class="campo" id="colonia" name="colonia" required>
+              <?php if (!empty($colonia)): ?>
+                <option value="<?= e($colonia) ?>" selected><?= e($colonia) ?></option>
+              <?php else: ?>
+                <option value="">Valide su código postal...</option>
+              <?php endif; ?>
+            </select>
           </div>
 
           <div>
             <label class="label-campo" for="ciudad">Ciudad *:</label>
-            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required value="<?= e($ciudad) ?>">
+            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required readonly
+              value="<?= e($ciudad) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="estado">Estado *:</label>
-            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required value="<?= e($estado) ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="codigo_postal">Código postal *:</label>
-            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required value="<?= e($codigoPost) ?>">
+            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required readonly
+              value="<?= e($estado) ?>">
           </div>
         </div>
       </fieldset>
@@ -195,12 +227,17 @@ unset($_SESSION['error']);
 
           <div>
             <label class="label-campo" for="especialidad">Especialidad:</label>
-            <input type="text" class="campo" id="especialidad" name="especialidad" maxlength="50" value="<?= e($especialidad) ?>">
+            <input type="text" class="campo" id="especialidad" name="especialidad" minlength="3" maxlength="50"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y espacios (sin números ni símbolos especiales)"
+              value="<?= e($especialidad) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional:</label>
-            <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" maxlength="20" value="<?= e($cedula) ?>">
+            <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" minlength="6" maxlength="8"
+              pattern="^[0-9]{6,8}$" title="Entre 6 y 8 dígitos numéricos"
+              value="<?= e($cedula) ?>">
           </div>
 
           <div>
