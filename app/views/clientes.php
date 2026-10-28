@@ -29,16 +29,15 @@ $listaClientes = Cliente::obtenerTodos();
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
-          <a class="btn btn-chico" href="agregar_cliente.php">+ Agregar cliente</a>
-
           <form class="busqueda-barra" method="get" action="clientes.php" role="search">
             <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
             <input class="campo" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info btn-chico" type="submit">Buscar</button>
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn btn-secundario btn-chico" href="clientes.php">Limpiar</a>
             <?php endif; ?>
           </form>
+
+          <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
         </div>
 
         <?php
@@ -46,7 +45,7 @@ $listaClientes = Cliente::obtenerTodos();
         if (empty($listaClientes)): ?>
           <div class="vacio">
             <p>No hay clientes registrados en la base de datos.</p>
-            <a class="btn btn-chico" href="agregar_cliente.php">+ Registrar el primer cliente</a>
+            <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
           </div>
         <?php else: ?>
 

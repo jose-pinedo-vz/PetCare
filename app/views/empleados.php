@@ -29,16 +29,15 @@ $empleados = Empleados::Listar_empleados_activos();
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
-          <a class="btn btn-chico" href="agregar_empleado.php">+ Agregar empleado</a>
-
           <form class="busqueda-barra" method="get" action="empleados.php" role="search">
             <label class="visualmente-oculto" for="buscarEmpleado">Buscar empleado</label>
-            <input class="campo" id="buscarEmpleado" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info btn-chico" type="submit">Buscar</button>
+            <input class="campo" id="buscarEmpleado" name="buscar" type="search" placeholder="Buscar..." value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn btn-secundario btn-chico" href="empleados.php">Limpiar</a>
             <?php endif; ?>
           </form>
+
+          <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
         </div>
 
 

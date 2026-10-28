@@ -54,7 +54,7 @@
 						<option value="proximo">Por caducar</option>
 						<option value="vencido">Vencidos</option>
 					</select>
-					<button class="btn btn-chico" id="abrir-formulario-lote" type="button">+ Registrar lote</button>
+					<button class="btn" id="abrir-formulario-lote" type="button">+ Registrar lote</button>
 				</div>
 
 				<div class="lotes-grid" id="lista-lotes">

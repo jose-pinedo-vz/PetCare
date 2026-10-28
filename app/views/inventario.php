@@ -46,7 +46,7 @@
         <div class="inventario-toolbar">
           <label class="visualmente-oculto" for="buscar-producto">Buscar producto</label>
           <input id="buscar-producto" type="search" class="campo inventario-buscador" placeholder="Buscar por nombre o código de barras...">
-          <a class="btn btn-chico" href="agregar_producto.php">+ Agregar producto</a>
+          <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 
         <div class="tabla-envoltura">
