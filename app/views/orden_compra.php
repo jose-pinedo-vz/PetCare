@@ -121,8 +121,8 @@
                 </div>
 
                 <div class="orden-compra-acciones">
-                    <a class="btn btn-peligro btn-chico" href="../controllers/pdf_ordencompra.php" target="_blank" rel="noopener">Confirmar orden</a>
-                    <a class= "btn btn-chico" href="inventario.php">Cancelar orden</a>
+                    <a class="btn btn-peligro btn-chico" href="../controllers/pdf_ordencompra.php" target="_blank" rel="noopener">Cancelar orden</a>
+                    <a class= "btn btn-chico" href="inventario.php">Confirmar orden</a>
                 </div>
 
             </div>
