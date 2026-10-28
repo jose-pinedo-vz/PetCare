@@ -50,7 +50,7 @@ $razon_social = $_GET['razon_social'];
 
         <div class="acciones-formulario">
           <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-          <button type="submit">Eliminar</button>
+          <button type="submit" class="btn btn-chico btn-peligro">Eliminar proveedorr</button>
         </div>
 
       </div>

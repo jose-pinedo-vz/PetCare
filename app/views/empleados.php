@@ -7,20 +7,24 @@ $empleados = Empleados::Listar_empleados_activos();
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Empleados</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
+
 <body>
 
   <div class="layout">
 
-  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
+    <?php $paginaActiva = 'empleados';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <main>
-      <div class="migaja">Gestión de Empleados /</div>
+
+    <main>
+      <div class="migaja">Gestión de empleados /</div>
       <div class="encabezado-pagina">
         <h1>Empleados</h1>
       </div>
@@ -77,8 +81,8 @@ $empleados = Empleados::Listar_empleados_activos();
           <td><?= htmlspecialchars(substr((string)($e['Fecha_de_contratacion'] ?? ''), 0, 10)) ?></td>
           <td><?= htmlspecialchars($e['horario']) ?></td>
           <td class="acciones">
-            <a class="btn" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
-            <a class="btn btn-peligro" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
+            <a class="btn btn-chico" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
+            <a class="btn btn-peligro btn-chico" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
           </td>
         </tr>
 <?php endforeach; ?>
