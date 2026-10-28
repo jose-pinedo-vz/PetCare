@@ -1,3 +1,18 @@
+<?php
+require_once __DIR__ . '/../models/Mascota.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$id_mascota = (int)($_GET['id_mascota'] ?? $_GET['id'] ?? 0);
+$mascota = $id_mascota > 0 ? Mascota::obtenerPorId($id_mascota) : null;
+
+if ($mascota === null || (int)($mascota['esta_activo'] ?? 1) !== 1) {
+    header('Location: mascotas.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,26 +29,37 @@
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Eliminar</div>
-      <div class="encabezado-pagina">
-        <h1>Eliminar mascota</h1>
+
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Eliminar</div>
+
+    <h1>Eliminar mascota</h1>
+        <?php if (isset($_SESSION['error'])): ?>
+      <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
+        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
       </div>
+    <?php endif; ?>
+        <form action="../controllers/procesar_eliminar_mascotas.php" method="POST">
+
+      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= (int)$id_mascota ?>">
 
       <div class="tarjeta">
-    
 
-    <form action="procesar_eliminar_mascota.php" method="POST">
+        <fieldset>
+          <p>
+            ¿Está seguro de que desea eliminar a la mascota
+            <strong><?= htmlspecialchars((string)$mascota['nombre']) . ' (ID: ' . $id_mascota . ')' ?></strong>?
+            Esta acción no se puede deshacer.
+          </p>
+        </fieldset>
 
-      <input type="hidden" id="id_mascota" name="id_mascota" value="<?= htmlspecialchars($_GET['id'] ?? '') ?>">
 
-      <fieldset>
-        <p>¿Está seguro de que desea eliminar a esta mascota? Esta acción no se puede deshacer.</p>
-      </fieldset>
+        <div class="acciones-formulario">
+          <a class="btn-secundario" href="mascotas.php">Cancelar</a>
+          <button type="submit" class="btn">Eliminar</button>
+        </div>
 
-      <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico btn-peligro">Eliminar mascota</button>
       </div>
+
     </form>
   
       </div>

@@ -221,6 +221,25 @@ legend {
   display: none !important;
 }
 
+.alerta-errores {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.alerta-errores h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.alerta-errores ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
 @media (max-width: 768px) {
   .grid-formulario {
     grid-template-columns: 1fr;

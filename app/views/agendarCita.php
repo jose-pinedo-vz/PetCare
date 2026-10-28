@@ -2,6 +2,18 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
 ?>
 
 <!DOCTYPE html>
@@ -11,6 +23,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agendar cita</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/agendarCitas.js"></script>
 </head>
 <body>
 
@@ -52,30 +65,44 @@ if (session_status() === PHP_SESSION_NONE) {
             <label class="label-campo" for="claveCliente">Clave del cliente *:</label>
             <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? '')); unset($_SESSION['oldClave']); ?>">
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? $_GET['claveCliente'] ?? '')); unset($_SESSION['oldClave']); ?>">
           </div>
 
           <div>
-            <label class="label-campo" for="fecha">Fecha:</label>
-            <input type="date" class="campo" id="fecha" name="fecha" required 
+            <label class="label-campo" for="fecha">Fecha *:</label>
+            <input type="date" class="campo" id="fecha" name="fecha" data-fecha="fecha" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
 
           </div>
 
           <div class="campo-completo">
-            <label class="label-campo" for="motivoConsulta">Motivo de consulta:</label>
+            <label class="label-campo" for="motivoConsulta">Motivo de consulta *:</label>
             <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
+
+          </div>
+            
+          <div>
+            <label class="label-campo" for="horarioConsulta">Horario de consulta *:</label>
+
+            <select class="campo" name="horarioConsulta" id="horarioConsulta" required>
+              <option value="">Seleccione una fecha primero</option>
+            </select>
 
           </div>
         </div>
       </fieldset>
 
       <div class="acciones-formulario">
+<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar cita</button>
+=======
+        <a class="btn-secundario" href="citas.php">Cancelar</a>
+        <button type="submit" class="btn">Guardar</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
     </form>
   

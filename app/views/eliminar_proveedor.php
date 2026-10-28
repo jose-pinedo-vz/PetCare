@@ -1,3 +1,27 @@
+<?php
+// Validar si realmente llegaron los datos por la URL (GET)
+if (!isset($_GET['id']) || !isset($_GET['razon_social'])) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: proveedores.php");
+    exit();
+}
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+// Si sí llegaron, los guardamos con seguridad
+$id_proveedor = (int) $_GET['id'];
+$razon_social = $_GET['razon_social'];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -20,24 +44,26 @@
         <h1>Eliminar proveedor</h1>
       </div>
 
-      <div class="tarjeta">
-    <form action="eliminar_proveedor.php" method="POST">
+    <form action="../controllers/eliminar_proveedor.php" method="POST">
+  
+      <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_proveedor ?>">
 
-      <input type="hidden" id="id_proveedor" name="id_proveedor" value="1">
+      <div class="tarjeta"> 
 
-      <fieldset>
+        <fieldset>
+          <p>
+            ¿Está seguro de que desea eliminar al proveedor
+            <strong><?= htmlspecialchars((string)$razon_social) . ' (ID: ' . htmlspecialchars((string)$id_proveedor) . ')' ?></strong>?
+            Esta acción no se puede deshacer.
+          </p>
 
-        <p>
-          ¿Está seguro de que desea eliminar al proveedor
-          <strong>Distribuidora Veterinaria del Norte S.A. de C.V.</strong>?
-          Esta acción no se puede deshacer.
-        </p>
+        </fieldset>
 
-      </fieldset>
+        <div class="acciones-formulario">
+          <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+          <button type="submit">Eliminar</button>
+        </div>
 
-      <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico btn-peligro">Eliminar proveedor</button>
       </div>
 
     </form>

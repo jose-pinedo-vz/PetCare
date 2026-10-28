@@ -1,3 +1,17 @@
+<?php 
+// Validar si realmente llegaron los datos por la URL (GET)
+if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: empleados.php");
+    exit();
+}
+
+// Si sí llegaron, los guardamos con seguridad
+$id_empleado = $_GET['id'];
+$nombre_empleado = $_GET['nombre'];
+$apellido_empleado = $_GET['apellido'];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,17 +36,23 @@
       <div class="tarjeta">
     
 
-    <form action="procesar_eliminar_empleado.php" method="POST">
-
-      <input type="hidden" id="id_empleado" name="id_empleado" value="1">
+    <form action="../controllers/eliminar_empleado.php" method="POST">
+  
+      <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$id_empleado ?>">
 
       <fieldset>
-        <p>¿Está seguro de que desea eliminar a este empleado? Esta acción no se puede deshacer.</p>
+
+        <p>
+          ¿Está seguro de que desea eliminar al empleado
+          <strong><?= htmlspecialchars((string)$nombre_empleado) .' ' . htmlspecialchars((string)$apellido_empleado) . ' (ID: ' . htmlspecialchars((string)$id_empleado) . ')' ?></strong>?
+          Esta acción no se puede deshacer.
+        </p>
+
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico btn-peligro">Eliminar empleado</button>
+        <a class="btn-secundario" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn">Eliminar</button>
       </div>
     </form>
   
@@ -44,6 +64,5 @@
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
-
 </body>
 </html>

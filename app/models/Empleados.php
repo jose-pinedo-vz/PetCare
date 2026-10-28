@@ -4,22 +4,78 @@ require_once __DIR__ . '/conexion_db.php';
 
 class Empleados {
 
+    // si sale 1 es que ya esta registrado
+    public static function estaRegistrado(string $correo, string $telefono, ?int $id_empleado = null): bool {
+      try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        // si se agregara un nuevo empleado
+        if ($id_empleado === null) {
+          $consulta = $conexion -> prepare(
+            "
+            SELECT COUNT(*)
+            FROM empleados
+            WHERE correo = ? OR telefono = ?
+            "
+          );
+          $consulta -> execute([$correo, $telefono]);
+        }
+
+        // si es edicion
+        else {
+          $consulta = $conexion -> prepare (
+            "
+            SELECT COUNT(*)
+            FROM empleados
+            WHERE (correo = ? OR telefono = ?) AND id_empleado != ?
+            "
+          );
+          $consulta -> execute ([$correo, $telefono, $id_empleado]);
+        }
+
+        $total = $consulta -> fetchColumn();
+
+        if ($total > 0) {
+            return true;
+        } else {
+          return false;
+        }
+
+      } catch (Exception $error) {
+        return false;
+      }
+
+    }
+
+    public static function cedulaRegistrada(int $cedula, ?int $id_empleado = null): bool {
+      try {
+        $conexion = ConexionDB::obtenerConexion();
+        if ($id_empleado === null) {
+          $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM empleados WHERE num_cedula_profesional = ?"
+          );
+          $consulta->execute([$cedula]);
+        } else {
+          $consulta = $conexion->prepare(
+            "SELECT COUNT(*) FROM empleados WHERE num_cedula_profesional = ? AND id_empleado != ?"
+          );
+          $consulta->execute([$cedula, $id_empleado]);
+        }
+        return (int)$consulta->fetchColumn() > 0;
+      } catch (Exception $error) {
+        return false;
+      }
+    }
+
     public static function generarIdEmpleados(PDO $db): int {
-        do {
-            $aleatorio = random_int(100, 9999);
-            $consulta = $db -> prepare(
-                "
-                SELECT 1
-                FROM empleados
-                WHERE id_empleado = ?
-                "
-            );
-            $consulta -> execute([$aleatorio]);
-            $exite = (bool) $consulta -> fetch();
-
-        } while ($exite);
-
-        return $aleatorio;
+        try {
+        // Consultamos el ID máximo actual y le sumamos 1
+        $stmt = $db->query("SELECT COALESCE(MAX(id_empleado), 0) + 1 FROM empleados");
+        return (int) $stmt->fetchColumn();
+             }
+    catch (PDOException $e) {
+        return 1;
+    }
     }
 
     public static function obtenerTodos(): array {
@@ -63,20 +119,61 @@ class Empleados {
     public static function insertar(array $datos) : array {
         try {
             $conexion = ConexionDB::obtenerConexion();
-            $id = obtenerPorId($conexion);
+            $id = self::generarIdEmpleados($conexion);
 
             $consulta_sql = "
-            INSERT INTO empleados (
-                id_cliente, nombre, apellido, telefono, correo, calle,
-                numero_exterior, numero_interior, colonia, ciudad, estado,
-                codigo_postal, puesto, especialidad, num_cedula_profecional,
-                Fecha_de_contratacion, horario
-            )
-            VALUES (
-                ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?
-            )
+                INSERT INTO empleados (
+                    id_empleado, nombre, apellido, telefono, correo, calle,
+                    numero_exterior, numero_interior, colonia, ciudad, estado,
+                    codigo_postal, puesto, especialidad, num_cedula_profesional,
+                    Fecha_de_contratacion, horario
+                )
+                VALUES (
+                    ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?
+                )
+            ";
+
+            $consulta = $conexion -> prepare($consulta_sql);
+            $consulta -> execute([
+                $id,
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                $datos['calle'],
+                $datos['numero_exterior'],
+                !empty($datos['numero_interior']) ? $datos['numero_interior'] : null,
+                $datos['colonia'],
+                $datos['ciudad'],
+                $datos['estado'],
+                $datos['codigo_postal'],
+                $datos['puesto'],
+                !empty($datos['especialidad']) ? $datos['especialidad'] : null,
+                !empty($datos['num_cedula_profesional']) ? $datos['num_cedula_profesional'] : null,
+                !empty($datos['Fecha_de_contratacion']) ? $datos['Fecha_de_contratacion'] : null,
+                $datos['horario'],
+            ]);
+
+            return ['exito' => true, 'mensaje' => 'Empleado guardado con exito'];
+        }
+        catch (Exception $error) {
+            return ['exito' => false, 'mensaje' => $error -> getMessage()];
+        }
+    }
+
+    public static function actualizar(int $id, array $datos) : array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+
+            $consulta_sql = "
+                UPDATE empleados SET
+                    nombre = ?, apellido = ?, telefono = ?, correo = ?, calle = ?,
+                    numero_exterior = ?, numero_interior = ?, colonia = ?, ciudad = ?, estado = ?,
+                    codigo_postal = ?, puesto = ?, especialidad = ?, num_cedula_profesional = ?,
+                    Fecha_de_contratacion = ?, horario = ?
+                WHERE id_empleado = ?
             ";
 
             $consulta = $conexion -> prepare($consulta_sql);
@@ -94,14 +191,14 @@ class Empleados {
                 $datos['codigo_postal'],
                 $datos['puesto'],
                 !empty($datos['especialidad']) ? $datos['especialidad'] : null,
-                !empty($datos['num_cedula_profecional']) ? $datos['num_cedula_profecional'] : null,
+                !empty($datos['num_cedula_profesional']) ? $datos['num_cedula_profesional'] : null,
+                !empty($datos['Fecha_de_contratacion']) ? $datos['Fecha_de_contratacion'] : null,
                 $datos['horario'],
                 $id
             ]);
 
             return ['exito' => true, 'mensaje' => 'Empleado actualizado con exito'];
-        }
-        catch (Exception $error) {
+        } catch (Exception $error) {
             return ['exito' => false, 'mensaje' => $error -> getMessage()];
         }
     }

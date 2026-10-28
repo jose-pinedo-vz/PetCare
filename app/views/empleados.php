@@ -1,4 +1,7 @@
 <?php
+// Mostrar nombre del usuario
+session_start();
+
 require_once __DIR__ . '/../models/Empleados.php';
 $empleados = Empleados::Listar_empleados_activos();
 ?>
@@ -19,8 +22,7 @@ $empleados = Empleados::Listar_empleados_activos();
     <?php $paginaActiva = 'empleados';
     include __DIR__ . '/layout/sidebar.php'; ?>
 
-
-    <main>
+  <main>
       <div class="migaja">Gestión de empleados /</div>
       <div class="encabezado-pagina">
         <h1>Empleados</h1>
@@ -28,58 +30,64 @@ $empleados = Empleados::Listar_empleados_activos();
 
       <div class="tarjeta">
 
-        <div class="barra-acciones-busqueda">
-          <form class="busqueda-barra" method="get" action="empleados.php" role="search">
-            <label class="visualmente-oculto" for="buscarEmpleado">Buscar empleado</label>
-            <input class="campo" id="buscarEmpleado" name="buscar" type="search" placeholder="Buscar..." value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn btn-secundario btn-chico" href="empleados.php">Limpiar</a>
-            <?php endif; ?>
-          </form>
+    <div class="barra-acciones">
+      <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
+    </div>
 
-          <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
-        </div>
+    <div class="tabla-envoltura">
+    <table class="tabla-ancha">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Teléfono</th>
+          <th>Correo</th>
+          <th>Calle</th>
+          <th>Número exterior</th>
+          <th>Número interior</th>
+          <th>Colonia</th>
+          <th>Ciudad</th>
+          <th>Estado</th>
+          <th>Código postal</th>
+          <th>Puesto</th>
+          <th>Especialidad</th>
+          <th>Cédula profesional</th>
+          <th>Fecha de contratación</th>
+          <th>Horario</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+<?php foreach ($empleados as $e): ?>
+        <tr>
+          <td><?= (int)$e['id_empleado'] ?></td>
+          <td><?= htmlspecialchars($e['nombre']) ?></td>
+          <td><?= htmlspecialchars($e['apellido']) ?></td>
+          <td><?= htmlspecialchars($e['telefono']) ?></td>
+          <td><?= htmlspecialchars($e['correo']) ?></td>
+          <td><?= htmlspecialchars($e['calle']) ?></td>
+          <td><?= htmlspecialchars($e['numero_exterior']) ?></td>
+          <td><?= htmlspecialchars($e['numero_interior'] ?? '') ?></td>
+          <td><?= htmlspecialchars($e['colonia']) ?></td>
+          <td><?= htmlspecialchars($e['ciudad']) ?></td>
+          <td><?= htmlspecialchars($e['estado']) ?></td>
+          <td><?= htmlspecialchars($e['codigo_postal']) ?></td>
+          <td><?= htmlspecialchars($e['puesto']) ?></td>
+          <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
+          <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
+          <td><?= htmlspecialchars(substr((string)($e['Fecha_de_contratacion'] ?? ''), 0, 10)) ?></td>
+          <td><?= htmlspecialchars($e['horario']) ?></td>
+          <td class="acciones">
+            <a class="btn" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
+            <a class="btn btn-peligro" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
+          </td>
+        </tr>
+<?php endforeach; ?>
+      </tbody>
+    </table>
+    </div>
 
-
-        <div class="tabla-envoltura">
-          <table class="tabla-ancha">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-                <th>Puesto</th>
-                <th>Especialidad</th>
-                <th>Cédula profesional</th>
-                <th>Fecha de contratación</th>
-                <th>Horario</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($empleados as $e): ?>
-                <tr>
-                  <td><?= htmlspecialchars((string)$e['id_empleado']) ?></td>
-                  <td><?= htmlspecialchars($e['nombre'] ?? '') ?></td>
-                  <td><?= htmlspecialchars($e['apellido'] ?? '') ?></td>
-                  <td><?= htmlspecialchars($e['telefono'] ?? '') ?></td>
-                  <td><?= htmlspecialchars($e['correo'] ?? '') ?></td>
-                  <td><?= htmlspecialchars($e['puesto'] ?? '') ?></td>
-                  <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
-                  <td><?= htmlspecialchars((string)($e['num_cedula_profecional'] ?? $e['num_cedula_profesional'] ?? '')) ?></td>
-                  <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
-                  <td><?= htmlspecialchars($e['horario'] ?? '') ?></td>
-                  <td class="acciones">
-                    <a class="btn btn-chico" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
-                    <a class="btn btn-peligro btn-chico" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
       </div>
     </main>
 
@@ -90,5 +98,4 @@ $empleados = Empleados::Listar_empleados_activos();
   </footer>
 
 </body>
-
 </html>

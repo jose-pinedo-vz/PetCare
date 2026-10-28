@@ -1,4 +1,17 @@
-<?php require_once __DIR__ . '/../controllers/MascotaController.php'; ?>
+<?php require_once __DIR__ . '/../controllers/MascotaController.php';
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -13,12 +26,10 @@
 <body>
 
   <div class="layout">
-
-    <?php $paginaActiva = 'mascotas';
-    include __DIR__ . '/layout/sidebar.php'; ?>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
 
-    <main>
+  <main>
       <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>

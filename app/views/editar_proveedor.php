@@ -1,3 +1,48 @@
+<<<<<<< HEAD
+<?php
+require_once __DIR__ . '/../controllers/proveedor.php';
+require_once __DIR__ . '/../models/proveedores.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$errores = $_SESSION['errores'] ?? [];
+unset($_SESSION['errores']);
+
+$idProveedor = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)
+    ?: filter_input(INPUT_POST, 'id_proveedor', FILTER_VALIDATE_INT);
+
+if ($idProveedor === false || $idProveedor === null) {
+    header("Location: proveedores.php");
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $datos = [
+        'razon_social'     => trim($_POST['razon_social'] ?? ''),
+        'nombre_comercial' => trim($_POST['nombre_comercial'] ?? ''),
+        'rfc'              => trim($_POST['rfc'] ?? ''),
+        'telefono'         => trim($_POST['telefono'] ?? ''),
+        'correo'           => trim($_POST['correo'] ?? ''),
+        'domicilio'        => trim($_POST['domicilio'] ?? ''),
+        'ciudad'           => trim($_POST['ciudad'] ?? ''),
+        'estado'           => trim($_POST['estado'] ?? ''),
+        'codigo_postal'    => trim($_POST['codigo_postal'] ?? ''),
+        'condicion_pago'   => trim($_POST['condicion_pago'] ?? ''),
+        'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
+        'observaciones'    => trim($_POST['observaciones'] ?? '')
+    ];
+    actualizar_proveedor($idProveedor, $datos); 
+}
+
+$proveedor = obtenerProveedorPorId($idProveedor);
+
+if (!$proveedor) {
+    header("Location: proveedores.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -21,7 +66,21 @@
       </div>
 
       <div class="tarjeta">
-        <form action="guardar_proveedor.php" method="POST">
+
+        <?php if (!empty($errores)): ?>
+            <div class="alerta-errores">
+              <h4>Por favor corrige los siguientes errores:</h4>
+              <ul>
+                <?php foreach ($errores as $error): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+        <?php endif; ?>
+
+        <form action="editar_proveedor.php" method="POST">
+
+            <input type="hidden" name="id_proveedor" value="<?= (int)$proveedor['id_proveedor'] ?>">
 
             <fieldset>
 
@@ -40,6 +99,7 @@
                             id="razon_social"
                             name="razon_social"
                             maxlength="100"
+                            value="<?= htmlspecialchars($proveedor['razon_social']) ?>"
                             required>
                     </div>
 
@@ -54,6 +114,7 @@
                             id="nombre_comercial"
                             name="nombre_comercial"
                             maxlength="100"
+                            value="<?= htmlspecialchars($proveedor['nombre_comercial']) ?>"
                             required>
                     </div>
 
@@ -68,6 +129,7 @@
                             id="rfc"
                             name="rfc"
                             maxlength="13"
+                            value="<?= htmlspecialchars($proveedor['rfc']) ?>"
                             required>
                     </div>
 
@@ -92,6 +154,7 @@
                             id="telefono"
                             name="telefono"
                             maxlength="15"
+                            value="<?= htmlspecialchars($proveedor['telefono']) ?>"
                             required>
                     </div>
 
@@ -106,7 +169,7 @@
                             id="correo"
                             name="correo"
                             maxlength="100"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['correo'] ?? '') ?>">
                     </div>
 
                 </div>
@@ -130,7 +193,7 @@
                             id="domicilio"
                             name="domicilio"
                             maxlength="100"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['domicilio'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -144,7 +207,7 @@
                             id="ciudad"
                             name="ciudad"
                             maxlength="60"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['ciudad'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -158,7 +221,7 @@
                             id="estado"
                             name="estado"
                             maxlength="60"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['estado'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -172,7 +235,7 @@
                             id="codigo_postal"
                             name="codigo_postal"
                             maxlength="10"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['codigo_postal'] ?? '') ?>">
                     </div>
 
                 </div>
@@ -187,7 +250,7 @@
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
-                            Condición de pago:
+                            Condición de pago *:
                         </label>
 
                         <input
@@ -195,7 +258,8 @@
                             class="campo"
                             id="condicion_pago"
                             name="condicion_pago"
-                            maxlength="60">
+                            maxlength="60"
+                            value="<?= htmlspecialchars($proveedor['condicion_pago'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -209,6 +273,7 @@
                             id="tiempo_entrega"
                             name="tiempo_entrega"
                             maxlength="60"
+                            value="<?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?>"
                             required>
                     </div>
 
@@ -222,7 +287,7 @@
                             id="observaciones"
                             name="observaciones"
                             rows="3"
-                            maxlength="255"></textarea>
+                            maxlength="255"><?= htmlspecialchars($proveedor['observaciones'] ?? '') ?></textarea>
                     </div>
 
                 </div>
@@ -230,8 +295,13 @@
             </fieldset>
 
             <div class="acciones-formulario">
+<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar</button>
+=======
+        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+        <button type="submit">Guardar cambios</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
 
         </form>
@@ -247,5 +317,8 @@
   </footer>
 
 </body>
+<<<<<<< HEAD
+=======
 
+>>>>>>> d7a9e6bcd315c9e8ca8e2d8788e907503afa5f55
 </html>

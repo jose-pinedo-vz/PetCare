@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../models/Ventas_db.php';
+
+$productos = Ventas::obtenerProductos(conexionDB::obtenerConexion());
+?>
 <dialog class="inventario-dialog producto-dialog" id="modalBuscarProducto" aria-labelledby="tituloBuscarProducto">
     <div class="producto-dialog-encabezado">
         <h1 id="tituloBuscarProducto"> Buscar producto</h1>
@@ -23,6 +28,17 @@
                 </thead>
                 <tbody id="resultadosProductos">
                     <tr><td colspan="5" class="vacio">Escribe para buscar productos.</td></tr>
+                    <?php foreach ($productos as $p): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars((string)$p['codigo']); ?></td>
+                            <td><?php echo htmlspecialchars($p['nombre']); ?></td>
+                            <td><?php echo htmlspecialchars($p['precio_venta']); ?></td>
+                            <td><?php echo htmlspecialchars($p['existencia']); ?></td>
+                            <td>
+                                <a class="btn" href="../controllers/busca_producto.php?accion=agregar&codigo=<?php echo urlencode($p['codigo']); ?>&nombre=<?php echo urlencode($p['nombre']); ?>&precio=<?php echo urlencode($p['precio_venta']); ?>&existencia=<?php echo urlencode($p['existencia']); ?>">Seleccionar</a>
+                            </td> 
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
