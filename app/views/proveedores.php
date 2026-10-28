@@ -32,81 +32,32 @@
                     </form>
                 </div>
                 <div class="tabla-envoltura">
-                    <table border="1">
+                    <table class="tabla-proveedores" border="1">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Razón social</th>
-                                <th>Nombre comercial</th>
-                                <th>RFC</th>
-                                <th>Teléfono</th>
-                                <th>Correo</th>
-                                <th>Domicilio</th>
-                                <th>Ciudad</th>
-                                <th>Estado</th>
-                                <th>Código postal</th>
-                                <th>Condición de pago</th>
-                                <th>Tiempo de entrega</th>
-                                <th>Observaciones</th>
-                                <th>Acciones</th>
+                                <th>ID</th><!-- se queda -->
+                                <th>Razón social</th><!-- se queda -->
+                                
+                                <th>Teléfono</th><!-- se queda -->
+                                <th>Correo</th><!-- se queda -->
+                                <th>Ciudad</th><!-- se queda -->
+                                <th>Estado</th><!-- se queda -->
+                                <th>Tiempo de entrega</th><!-- se queda -->
+                                <th>Acciones</th><!-- se queda -->
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>1</td>
-                                <td>Distribuidora Veterinaria del Norte S.A. de C.V.</td>
-                                <td>VetNorte</td>
-                                <td>DVN230415AB1</td>
-                                <td>4921234567</td>
-                                <td>contacto@vetnorte.com</td>
-                                <td>Av. Universidad 125</td>
-                                <td>Zacatecas</td>
-                                <td>Zacatecas</td>
-                                <td>98000</td>
-                                <td>Crédito a 30 días</td>
-                                <td>5 días hábiles</td>
-                                <td>Entrega de productos veterinarios.</td>
+                                <td>Proveedor A</td>
+                                <td>555-1234</td>
+                                <td>proveedorA@example.com</td>
+                                <td> Ciudad A</td>
+                                <td>Activo</td>
+                                <td>5 días</td>
                                 <td class="acciones">
                                     <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Productos Médicos y Veterinarios S.A. de C.V.</td>
-                                <td>ProVet</td>
-                                <td>PMV210820CD2</td>
-                                <td>4927654321</td>
-                                <td>ventas@provet.com</td>
-                                <td>Calle Hidalgo 240</td>
-                                <td>Guadalupe</td>
-                                <td>Zacatecas</td>
-                                <td>98600</td>
-                                <td>Contado</td>
-                                <td>3 días hábiles</td>
-                                <td>Realiza entregas de medicamentos.</td>
-                                <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Comercializadora Animal del Centro S.A. de C.V.</td>
-                                <td>Animal Center</td>
-                                <td>CAC240312EF3</td>
-                                <td>4929876543</td>
-                                <td>info@animalcenter.com</td>
-                                <td>Av. México 350</td>
-                                <td>Fresnillo</td>
-                                <td>Zacatecas</td>
-                                <td>99000</td>
-                                <td>Crédito a 15 días</td>
-                                <td>7 días hábiles</td>
-                                <td>Proveedor de alimentos y accesorios.</td>
-                                <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_proveedor.php?id=1">Eliminar</a>
+                                    <a class="btn btn-chico btn-peligro" href="eliminar_proveedor.php?id=1" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</a>
                                 </td>
                             </tr>
                         </tbody>

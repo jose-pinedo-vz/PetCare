@@ -51,13 +51,6 @@ $empleados = Empleados::Listar_empleados_activos();
                 <th>Apellido</th>
                 <th>Teléfono</th>
                 <th>Correo</th>
-                <th>Calle</th>
-                <th>Número exterior</th>
-                <th>Número interior</th>
-                <th>Colonia</th>
-                <th>Ciudad</th>
-                <th>Estado</th>
-                <th>Código postal</th>
                 <th>Puesto</th>
                 <th>Especialidad</th>
                 <th>Cédula profesional</th>
@@ -69,23 +62,16 @@ $empleados = Empleados::Listar_empleados_activos();
             <tbody>
               <?php foreach ($empleados as $e): ?>
                 <tr>
-                  <td><?= $e['id_empleado'] ?></td>
-                  <td><?= htmlspecialchars($e['nombre']) ?></td>
-                  <td><?= htmlspecialchars($e['apellido']) ?></td>
-                  <td><?= htmlspecialchars($e['telefono']) ?></td>
-                  <td><?= htmlspecialchars($e['correo']) ?></td>
-                  <td><?= htmlspecialchars($e['calle']) ?></td>
-                  <td><?= htmlspecialchars($e['numero_exterior']) ?></td>
-                  <td><?= htmlspecialchars($e['numero_interior'] ?? '') ?></td>
-                  <td><?= htmlspecialchars($e['colonia']) ?></td>
-                  <td><?= htmlspecialchars($e['ciudad']) ?></td>
-                  <td><?= htmlspecialchars($e['estado']) ?></td>
-                  <td><?= htmlspecialchars($e['codigo_postal']) ?></td>
-                  <td><?= htmlspecialchars($e['puesto']) ?></td>
+                  <td><?= htmlspecialchars((string)$e['id_empleado']) ?></td>
+                  <td><?= htmlspecialchars($e['nombre'] ?? '') ?></td>
+                  <td><?= htmlspecialchars($e['apellido'] ?? '') ?></td>
+                  <td><?= htmlspecialchars($e['telefono'] ?? '') ?></td>
+                  <td><?= htmlspecialchars($e['correo'] ?? '') ?></td>
+                  <td><?= htmlspecialchars($e['puesto'] ?? '') ?></td>
                   <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
-                  <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
+                  <td><?= htmlspecialchars((string)($e['num_cedula_profecional'] ?? $e['num_cedula_profesional'] ?? '')) ?></td>
                   <td><?= htmlspecialchars((string)($e['Fecha_de_contratacion'] ?? '')) ?></td>
-                  <td><?= htmlspecialchars($e['horario']) ?></td>
+                  <td><?= htmlspecialchars($e['horario'] ?? '') ?></td>
                   <td class="acciones">
                     <a class="btn btn-chico" href="editar_empleado.php?id=<?= $e['id_empleado'] ?>">Editar</a>
                     <a class="btn btn-peligro btn-chico" href="../controllers/eliminar_empleado.php?id=<?= $e['id_empleado'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este empleado?');">Eliminar</a>
