@@ -25,8 +25,8 @@
           <p>¿Está seguro de que desea eliminar este producto?</p>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="inventario.php">Cancelar</a>
-            <button type="button" class="btn">Eliminar</button>
+            <a class="btn btn-secundario btn-chico" href="inventario.php">Cancelar</a>
+            <button type="button" class="btn btn-chico btn-peligro">Eliminar producto</button>
           </div>
         </div>
       </div>

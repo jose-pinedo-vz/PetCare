@@ -214,9 +214,145 @@ $registro=obtenerPorId($id);
   </div>
 </fieldset>
 
-      <div class="acciones-formulario">
-        <a class="btn-secundario" href="adopcion_venta.php">Cancelar</a>
-        <button type="submit">Guardar</button>
+            </fieldset>
+
+            <fieldset>
+
+                <legend>Datos de ingreso</legend>
+
+                <div class="grid-formulario">
+
+                    <div>
+                        <label class="label-campo" for="fecha_de_ingreso">
+                            Fecha de ingreso *:
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            class="campo"
+                            id="fecha_de_ingreso"
+                            name="fecha_de_ingreso"
+                            required>
+                    </div>
+
+                    <div>
+                        <label class="label-campo" for="estado">
+                            Estado:
+                        </label>
+
+                        <input
+                            type="text"
+                            class="campo"
+                            id="estado"
+                            name="estado">
+                    </div>
+
+                    <div class="campo-completo">
+                        <label class="label-campo" for="procedencia">
+                            Procedencia *:
+                        </label>
+
+                        <textarea
+                            class="campo"
+                            id="procedencia"
+                            name="procedencia"
+                            rows="3"
+                            required></textarea>
+                    </div>
+
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+
+                <legend>Información comercial</legend>
+
+                <div class="grid-formulario">
+
+                    <div>
+                        <label class="label-campo" for="costo_de_adquisicion">
+                            Costo de adquisición:
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="campo"
+                            id="costo_de_adquisicion"
+                            name="costo_de_adquisicion">
+                    </div>
+
+                    <div>
+                        <label class="label-campo" for="precio_de_venta">
+                            Precio de venta *:
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="campo"
+                            id="precio_de_venta"
+                            name="precio_de_venta"
+                            required>
+                    </div>
+
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+
+                <legend>Datos clínicos</legend>
+
+                <div class="grid-formulario">
+
+                    <div>
+                        <label class="label-campo" for="desparasitacion">
+                            Desparasitación *:
+                        </label>
+
+                        <input
+                            type="date"
+                            class="campo"
+                            id="desparasitacion"
+                            name="desparasitacion"
+                            required>
+                    </div>
+
+                    <div class="campo-completo">
+                        <label class="label-campo" for="vacunas">
+                            Vacunas *:
+                        </label>
+
+                        <textarea
+                            class="campo"
+                            id="vacunas"
+                            name="vacunas"
+                            rows="3"
+                            required></textarea>
+                    </div>
+
+                    <div class="campo-completo">
+                        <label class="label-campo" for="observaciones">
+                            Observaciones *:
+                        </label>
+
+                        <textarea
+                            class="campo"
+                            id="observaciones"
+                            name="observaciones"
+                            rows="3"
+                            required></textarea>
+                    </div>
+
+                </div>
+
+            </fieldset>
+
+            <div class="acciones-formulario">
+        <a class="btn btn-secundario btn-chico" href="adopcion_venta.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
     </form>
   

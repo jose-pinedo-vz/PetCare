@@ -33,7 +33,7 @@ $usuario=$_SESSION['usuario'];
 
 
   <main>
-      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de Citas</a> / Agendar</div>
+      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de citas</a> / Agendar</div>
       <div class="encabezado-pagina">
         <h1>Agendar cita</h1>
       </div>
@@ -58,7 +58,7 @@ $usuario=$_SESSION['usuario'];
 
     <form id="formCita" action="../controllers/citas.php" method="POST">
       <fieldset>
-        <legend>Datos de la Cita</legend>
+        <legend>Datos de la cita</legend>
 
         <div class="grid-formulario">
           <div>
@@ -96,8 +96,13 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <div class="acciones-formulario">
+<<<<<<< HEAD
+        <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cita</button>
+=======
         <a class="btn-secundario" href="citas.php">Cancelar</a>
         <button type="submit" class="btn">Guardar</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
     </form>
   

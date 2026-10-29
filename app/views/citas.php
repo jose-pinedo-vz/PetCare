@@ -50,11 +50,13 @@ if (session_status() === PHP_SESSION_NONE)
       <?php }
     }
   }
+}
 ?>
 
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,6 +65,7 @@ if (session_status() === PHP_SESSION_NONE)
   <script src="js/citas.js"></script>
 
 </head>
+
 <body>
 
   <header>
@@ -70,7 +73,8 @@ if (session_status() === PHP_SESSION_NONE)
   </header>
   <div class="layout">
 
-  <?php $paginaActiva = 'citas'; include __DIR__ . '/layout/sidebar.php'; ?>
+    <?php $paginaActiva = 'citas';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
 
   <main>
@@ -126,10 +130,26 @@ if (session_status() === PHP_SESSION_NONE)
           <?php mostrarProximasCitas(); ?>
         </div>
 
-        <!-- Sección de atendidos-->
-        <div id="seccion_atendidos" class="seccion-panel oculto">
-          <h3>Citas atendidas (pendientes de pago)</h3>
-          <?php mostrarCitasAtendidas(); ?>
+        <div class="contenedor_citas">
+          <div class="boton_control">
+            <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
+            <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
+          </div>
+
+          <div class="panel_contenido">
+            <!-- Sección de espera  -->
+            <div id="seccion_espera" class="seccion-panel">
+              <h3>Citas en espera</h3>
+              <?php mostrarProximasCitas(); ?>
+            </div>
+
+            <!-- Sección de atendidos-->
+            <div id="seccion_atendidos" class="seccion-panel oculto">
+              <h3>Citas atendidas (pendientes de pago)</h3>
+              <?php mostrarCitasAtendidas(); ?>
+            </div>
+
+          </div>
         </div>
 
       </div>
@@ -145,4 +165,5 @@ if (session_status() === PHP_SESSION_NONE)
   </footer>
 
 </body>
+
 </html>

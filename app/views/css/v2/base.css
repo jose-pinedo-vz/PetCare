@@ -52,6 +52,18 @@ form button {
 .btn-chico {
   padding: 5px 10px;
   font-size: 13px;
+  height: auto;
+}
+
+.btn-eliminar,
+.btn-peligro {
+  background-color: #A4452C;
+  color: var(--white);
+}
+
+.btn-eliminar:hover,
+.btn-peligro:hover {
+  background-color: #843620;
 }
 
 .btn-info {
@@ -68,14 +80,6 @@ form button {
 
 .btn-aviso:hover {
   background-color: var(--primary-dark);
-}
-
-.btn-peligro {
-  background-color: #A4452C;
-}
-
-.btn-peligro:hover {
-  background-color: #843620;
 }
 
 .btn-secundario {
@@ -95,9 +99,25 @@ form button {
   background-color: var(--border-light);
 }
 
+.btn.btn-chico.btn-secundario {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.btn:disabled,
+.btn-secundario:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 form a.btn-secundario {
-  height: 37px;
-  line-height: 15px;
+  height: auto;
+  line-height: normal;
+}
+
+form a.btn-secundario.btn-chico {
+  padding: 5px 10px;
+  font-size: 13px;
 }
 
 .campo {

@@ -33,7 +33,7 @@ $usuario=$_SESSION['usuario'];
 
 
   <main>
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Agregar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar cliente</h1>
       </div>
@@ -232,8 +232,13 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <div class="acciones-formulario">
+<<<<<<< HEAD
+        <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cliente</button>
+=======
         <a class="btn-secundario" href="clientes.php">Cancelar</a>
         <button type="submit">Guardar</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
 
     </form>
