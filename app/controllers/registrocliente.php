@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     else
     {
         // Encriptamos la contraseña para mantener la seguridad
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $password_hash = $password;
         
         // Rol predeterminado para nuevos registros y estado activo
         $rol = 'cliente'; 

@@ -22,10 +22,19 @@ include 'layout/encabezado.php';
         </div>
 
         <button type="submit">Ingresar</button>
+        
         <p style="margin-top: 15px;">
             ¿No tienes una cuenta? <a href="registro_cliente.php">Regístrate aquí</a>
         </p>
+        <p style="margin-top: 5px;">
+            <a href="recuperar_contraseña.php">¿Olvidaste tu contraseña?</a>
+        </p>
     </form>
 </main>
-
 <?php include 'layout/pie.php'; ?>
+<!--  
+ALTER TABLE clientes ADD COLUMN token_recuperacion VARCHAR(255) DEFAULT NULL;
+ALTER TABLE clientes ADD COLUMN token_expiracion DATETIME DEFAULT NULL;
+ALTER TABLE empleados ADD COLUMN token_recuperacion VARCHAR(255) DEFAULT NULL;
+ALTER TABLE empleados ADD COLUMN token_expiracion DATETIME DEFAULT NULL;
+-->

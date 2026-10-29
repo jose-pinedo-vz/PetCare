@@ -90,6 +90,76 @@ class UsuariosDB
             $_SESSION['error']="Error al actualizar el usuario: " . $e->getMessage();
         }
     }
+
+    public static function buscarCorreo(string $correo)
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("SELECT id_cliente AS id, nombre, 'cliente' AS tipo FROM clientes WHERE correo = ?
+                                UNION
+                                SELECT id_empleado AS id, nombre, 'empleado' AS tipo FROM empleados WHERE correo = ?");
+        $stmt->execute([$correo,$correo]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function tipoUsuario(string $tipo, string $token, string $expiracion, string $correo)
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        if ($tipo === 'cliente')
+        {
+            $update = $conexion->prepare("UPDATE clientes SET token_recuperacion = ?, token_expiracion = ? WHERE correo = ?");
+        }
+        else
+        {
+            $update = $conexion->prepare("UPDATE empleados SET token_recuperacion = ?, token_expiracion = ? WHERE correo = ?");
+        }
+
+        $update->execute([$token, $expiracion, $correo]);
+        return $update;
+    }
+
+    public static function tipoContraseña(string $tipo,string $token,string $nuevoPassword,string $nombre_usuario)
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        if ($tipo === 'cliente')
+        {
+            $stmt = $conexion->prepare("SELECT id_cliente FROM clientes WHERE token_recuperacion = ? AND token_expiracion > NOW()");
+            $stmt->execute([$token]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($usuario)
+            {
+                $update = $conexion->prepare("UPDATE clientes SET token_recuperacion = NULL, token_expiracion = NULL WHERE id_cliente = ?");
+                $update->execute([$usuario['id_cliente']]);
+                $update = $conexion->prepare("UPDATE usuarios SET contrasena = ? WHERE usuario = ?");
+                $update->execute([$nuevoPassword, $nombre_usuario]);
+            }
+        }
+        else
+        {
+            $stmt = $conexion->prepare("SELECT id_empleado FROM empleados WHERE token_recuperacion = ? AND token_expiracion > NOW()");
+            $stmt->execute([$token]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($usuario)
+            {
+                $update = $conexion->prepare("UPDATE empleados SET token_recuperacion = NULL, token_expiracion = NULL WHERE id_empleado = ?");
+                $update->execute([$usuario['id_empleado']]);
+                $update = $conexion->prepare("UPDATE usuarios SET contrasena = ? WHERE usuario = ?");
+                $update->execute([$nuevoPassword, $nombre_usuario]);
+            }
+        }
+        return $usuario;
+    }
+
+    public static function buscarToken(string $token)
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("SELECT id_cliente AS id, 'cliente' AS tipo FROM clientes WHERE token_recuperacion = ? AND token_expiracion > NOW()
+                                    UNION
+                                    SELECT id_empleado AS id, 'empleado' AS tipo FROM empleados WHERE token_recuperacion = ? AND token_expiracion > NOW()");
+        $stmt->execute([$token, $token]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
 ?>
