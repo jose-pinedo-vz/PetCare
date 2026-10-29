@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../controllers/validar_mascota.php';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -9,6 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'sexo'                   => trim($_POST['sexo'] ?? ''),
         'edad'                   => trim($_POST['edad'] ?? ''),
         'color'                  => trim($_POST['color'] ?? ''),
+        'color_espec'            => trim($_POST['color_espec'] ?? ''), 
         'peso'                   => trim($_POST['peso'] ?? ''),
         'tamanio'                => trim($_POST['tamanio'] ?? ''),
         'fotografia'             => $_FILES['fotografia'] ?? null,
@@ -25,7 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'observaciones'          => trim($_POST['observaciones'] ?? '')
     ];
 
-    validacion($datos, false, 0, '');
+    if (!isset($_POST['Guardar'])) {
+        $_SESSION['old'] = $datos;
+        header("Location: agregar_mascota.php");
+        exit();
+    }else{
+        validacion($datos, false, 0, '');
+    }
 
 } else {
     // Si intentan entrar directo a este archivo sin pasar por el formulario

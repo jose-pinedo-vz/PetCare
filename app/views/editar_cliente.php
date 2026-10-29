@@ -1,34 +1,28 @@
 <?php
-require_once __DIR__ . '/../models/Cliente.php';
-
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$cliente = $id > 0 ? Cliente::obtenerPorId($id) : null;
-
-if (!$cliente)
-{
-    header("Location: clientes.php");
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-
 // Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
 }
-require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles=UsuariosDB::empleados_disponibles();
-$mensaje=$_SESSION['mensaje']??'';
-$error=$_SESSION['error']??'';
-unset($_SESSION['mensaje'],$_SESSION['error']);
-$idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
-if ($idUsuario === false || $idUsuario === null)
+if (!isset($_SESSION['usuario']))
 {
-    header('Location: usuarios.php');
-    exit();
+  header("Location: ../views/login.php");
+  exit();
 }
 $usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
 
+require_once __DIR__ . '/../models/Cliente.php';
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$cliente = $id > 0 ? Cliente::obtenerPorId($id) : null;
+
+if (!$cliente) {
+    header("Location: clientes.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -36,51 +30,36 @@ $usuario=$_SESSION['usuario'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar cliente</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-      <!-- Mostrar nombre del usuario -->
-      <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
-      <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
-      <!-- Mostrar nombre del usuario -->
-    </div>
-  </header>
+  <?php $paginaActiva = 'clientes'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php" class="activo">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
-
-      
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
 
   <main>
-    <h1>Editar cliente (#<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>)</h1>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Editar</div>
+      <div class="encabezado-pagina">
+        <h1>Editar cliente (#<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>)</h1>
+      </div>
+
+      <div class="tarjeta">
+    
 
     <form action="../controllers/guardar_cliente.php" method="POST">
       <input type="hidden" name="id_cliente" value="<?php echo htmlspecialchars((string)$cliente['id_cliente']); ?>">
 
+      <?php if (isset($_SESSION['error'])): ?>
+        <div class="msg-error">
+          <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+        </div>
+      <?php endif; ?>
+
       <fieldset>
         <legend> Datos personales</legend>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="nombre">Nombre:</label>
             <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required 
@@ -119,7 +98,7 @@ $usuario=$_SESSION['usuario'];
 
       <fieldset>
         <legend> Datos de contacto</legend>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="telefono">Teléfono:</label>
             <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required 
@@ -132,7 +111,7 @@ $usuario=$_SESSION['usuario'];
               value="<?php echo htmlspecialchars($cliente['telefono_alternativo'] ?? ''); ?>">
           </div>
 
-          <div style="grid-column: 1 / -1;">
+          <div class="campo-completo">
             <label class="label-campo" for="correo">Correo electrónico:</label>
             <input type="email" class="campo" id="correo" name="correo" maxlength="100" required 
               value="<?php echo htmlspecialchars($cliente['correo']); ?>">
@@ -142,7 +121,7 @@ $usuario=$_SESSION['usuario'];
 
       <fieldset>
         <legend> Dirección / Domicilio</legend>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="calle">Calle:</label>
             <input type="text" class="campo" id="calle" name="calle" maxlength="100" required 
@@ -189,7 +168,7 @@ $usuario=$_SESSION['usuario'];
 
       <fieldset>
         <legend> Contactos de Emergencia</legend>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="grid-formulario">
           <div>
             <label class="label-campo" for="contacto_emergencia">Nombre contacto de emergencia:</label>
             <input type="text" class="campo" id="contacto_emergencia" name="contacto_emergencia" maxlength="100" required 
@@ -202,19 +181,23 @@ $usuario=$_SESSION['usuario'];
               value="<?php echo htmlspecialchars($cliente['telefono_emergencia']); ?>">
           </div>
 
-          <div style="grid-column: 1 / -1;">
+          <div class="campo-completo">
             <label class="label-campo" for="observaciones">Observaciones:</label>
             <textarea class="campo" id="observaciones" name="observaciones" rows="2"><?php echo htmlspecialchars($cliente['observaciones'] ?? ''); ?></textarea>
           </div>
         </div>
       </fieldset>
 
-      <div style="margin-top: 20px;">
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="clientes.php">Cancelar</a>
         <button type="submit" class="btn">Guardar cambios</button>
-        <a class="btn" href="clientes.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
     </form>
-  </main>
+  
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>

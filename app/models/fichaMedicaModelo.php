@@ -50,7 +50,7 @@ class FichaMedica
             return ['exito' => true, 'id' => $datos['id_consulta'], 'mensaje' => 'ficha medica registrada con éxito'];
         //Sisi dice que pos si con true y si no da false y el error
         }catch (Exception $e) {
-            return ['exito' => false, 'id' => null, 'mensaje' => 'No se pudo guardar la ficha'];
+            return ['exito' => false, 'id' => null, 'mensaje' =>  $e->getMessage()];
         }
     }
 
@@ -67,10 +67,26 @@ class FichaMedica
     public function agarraMascotas(int $idCliente): ?array
     {
         $db=ConexionDB::obtenerConexion();
-        $stmt=$db->prepare("SELECT id,nombre From mascotas where id_cliente= :clientesito order by nombre");
+        $stmt=$db->prepare("SELECT id_mascota AS id, nombre From mascotas where id_cliente= :clientesito order by nombre");
         $stmt->execute([':clientesito'=>$idCliente]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $datos;
+    }
+    public function obtenerEmpleadoPorUsuario(int $idUsuario): ?int
+    {
+        $db = ConexionDB::obtenerConexion();
+
+        $stmt = $db->prepare("SELECT empleado_asociado FROM usuarios WHERE id_usuario=:id_usuario");
+
+        $stmt->execute([':id_usuario' => $idUsuario]);
+
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$resultado || $resultado['empleado_asociado'] === null) {
+            return null;
+        }
+
+        return (int)$resultado['empleado_asociado'];
     }
 }

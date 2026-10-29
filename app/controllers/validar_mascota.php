@@ -1,4 +1,5 @@
 <?php
+//Punto de guardado
 
 date_default_timezone_set('America/Mexico_City');
 
@@ -15,7 +16,7 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         $errores[] = "El nombre de la mascota es obligatorio.";
     }else if (strlen($datos['nombre']) > 20) {
         $errores[] = "El nombre no puede tener mas de 20 letras";
-    }else if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+$/', $datos['nombre'])) {
+    }else if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/', $datos['nombre'])) {
         $errores[] = "El nombre no puede contener caracteres especiales.";
     }
 
@@ -58,10 +59,16 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     // color opcional
     if (empty(trim($datos['color']))) {
         $datos['color'] = NULL;
-    }else if (strlen($datos['color']) > 15) {
-        $errores[] = "Elcolor no puede tener mas de 15 letras";
+    }else if (strlen($datos['color']) > 50) {
+        $errores[] = "El color no puede tener mas de 50 letras";
     }else if (preg_match('/\d/', $datos['color'])) {
         $errores[] = "El color no puede contener números.";
+    }else if ($datos['color'] === 'Otro' && empty(trim($datos['color_espec']))) {
+        $errores[] = "Debe especificar el color si selecciona 'Otro'.";
+    } else if ($datos['color'] === 'Otro' && strlen($datos['color_espec']) > 50) {
+        $errores[] = "El color especificado no puede tener más de 50 letras.";
+    } else if ($datos['color'] === 'Otro' && preg_match('/\d/', $datos['color_espec'])) {
+        $errores[] = "El color especificado no puede contener números.";
     }
 
     // Peso obligatorio
@@ -72,6 +79,9 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         $datos['peso'] = (float)$pesoLimpio;
         if ($datos['peso'] <= 0) {
             $errores[] = "El peso debe ser un número mayor a 0 (ejemplo: 5.5).";
+        }
+        if ($datos['peso'] > 100) {
+          $errores[] = "El peso no puede ser mayor a 100 kg.";
         }
     }
     // Tamanio obligatorio
@@ -223,6 +233,9 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
 
     } else {
         require_once __DIR__ . '/../models/Mascota.php';
+        if($datos['color'] === 'Otro') {
+            $datos['color'] = $datos['color_espec'];
+        }
 
         if ($actualizacion == true) {
             $camposEditables = [

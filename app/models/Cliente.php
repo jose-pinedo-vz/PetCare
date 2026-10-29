@@ -141,7 +141,7 @@ class Cliente
             $db = ConexionDB::obtenerConexion();
             $stmt = $db->prepare("UPDATE clientes 
                                   SET esta_activo = 0
-                                  WHERE id_cliente = ? AND esta_activo = 1");
+                                  WHERE id_cliente = ?");
             return $stmt->execute([$id]);
         } catch (Exception $e) {
             return false;

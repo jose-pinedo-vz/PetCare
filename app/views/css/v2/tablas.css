@@ -1,0 +1,92 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  border: none;
+}
+
+.tabla-envoltura {
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+table th {
+  background-color: var(--primary-dark);
+  color: var(--white);
+}
+
+table th, table td {
+  padding: 8px 10px;
+  border: none;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: var(--sidebar-light);
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: var(--white);
+}
+
+table tbody tr:hover {
+  background-color: var(--border-light);
+}
+
+table.tabla-ancha {
+  min-width: 1400px;
+}
+
+table td.acciones {
+  white-space: nowrap;
+}
+
+td .btn {
+  display: inline-block;
+  margin-right: 6px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+td .btn:last-child {
+  margin-right: 0;
+}
+
+.vacio {
+  text-align: center;
+  padding: 25px;
+}
+
+.vacio p {
+  font-size: 16px;
+  color: var(--texto-suave);
+  margin: 0 0 15px;
+}
+
+.barra-acciones {
+  margin-bottom: 20px;
+}
+
+.estado-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.estado-espera {
+  background-color: #F3E3CC;
+  color: #5B3A12;
+}
+
+.estado-atendida {
+  background-color: #E3EBD6;
+  color: #3C5220;
+}
+
+.producto-imagen {
+  width: 100px;
+  height: auto;
+}

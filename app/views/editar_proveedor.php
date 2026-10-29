@@ -1,76 +1,91 @@
 <?php
-// Mostrar nombre del usuario
-if (session_status() === PHP_SESSION_NONE)
-{
+require_once __DIR__ . '/../controllers/proveedor.php';
+require_once __DIR__ . '/../models/proveedores.php';
+
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles=UsuariosDB::empleados_disponibles();
-$mensaje=$_SESSION['mensaje']??'';
-$error=$_SESSION['error']??'';
-unset($_SESSION['mensaje'],$_SESSION['error']);
-$idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
-if ($idUsuario === false || $idUsuario === null)
-{
-    header('Location: usuarios.php');
-    exit();
+
+$errores = $_SESSION['errores'] ?? [];
+unset($_SESSION['errores']);
+
+$idProveedor = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)
+    ?: filter_input(INPUT_POST, 'id_proveedor', FILTER_VALIDATE_INT);
+
+if ($idProveedor === false || $idProveedor === null) {
+    header("Location: proveedores.php");
+    exit;
 }
-$usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $datos = [
+        'razon_social'     => trim($_POST['razon_social'] ?? ''),
+        'nombre_comercial' => trim($_POST['nombre_comercial'] ?? ''),
+        'rfc'              => trim($_POST['rfc'] ?? ''),
+        'telefono'         => trim($_POST['telefono'] ?? ''),
+        'correo'           => trim($_POST['correo'] ?? ''),
+        'domicilio'        => trim($_POST['domicilio'] ?? ''),
+        'ciudad'           => trim($_POST['ciudad'] ?? ''),
+        'estado'           => trim($_POST['estado'] ?? ''),
+        'codigo_postal'    => trim($_POST['codigo_postal'] ?? ''),
+        'condicion_pago'   => trim($_POST['condicion_pago'] ?? ''),
+        'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
+        'observaciones'    => trim($_POST['observaciones'] ?? '')
+    ];
+    actualizar_proveedor($idProveedor, $datos); 
+}
+
+$proveedor = obtenerProveedorPorId($idProveedor);
+
+if (!$proveedor) {
+    header("Location: proveedores.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar proveedores</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
 <body>
 
-    <header>
-        <div class="marca">
-            <img src="./img/logo3.svg" alt="Veterinaria PetCare">
-        </div>
+  <div class="layout">
 
-        <div>
-            <!-- Mostrar nombre del usuario -->
-            <span>Empleado: <?php echo htmlspecialchars($usuario); ?></span>
-            <a href="../controllers/Login.php?action=logout" class="btn-logout">Cerrar Sesión</a>
-            <!-- Mostrar nombre del usuario -->
-        </div>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
-
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de proveedores</a> / Editar</div>
+      <div class="encabezado-pagina">
         <h1>Editar proveedor</h1>
+      </div>
 
-        <form action="guardar_proveedor.php" method="POST">
+      <div class="tarjeta">
+
+        <?php if (!empty($errores)): ?>
+            <div class="alerta-errores">
+              <h4>Por favor corrige los siguientes errores:</h4>
+              <ul>
+                <?php foreach ($errores as $error): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+        <?php endif; ?>
+
+        <form action="editar_proveedor.php" method="POST">
+
+            <input type="hidden" name="id_proveedor" value="<?= (int)$proveedor['id_proveedor'] ?>">
 
             <fieldset>
 
                 <legend>Datos generales</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="razon_social">
@@ -83,12 +98,13 @@ $usuario=$_SESSION['usuario'];
                             id="razon_social"
                             name="razon_social"
                             maxlength="100"
+                            value="<?= htmlspecialchars($proveedor['razon_social']) ?>"
                             required>
                     </div>
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -97,6 +113,7 @@ $usuario=$_SESSION['usuario'];
                             id="nombre_comercial"
                             name="nombre_comercial"
                             maxlength="100"
+                            value="<?= htmlspecialchars($proveedor['nombre_comercial']) ?>"
                             required>
                     </div>
 
@@ -111,6 +128,7 @@ $usuario=$_SESSION['usuario'];
                             id="rfc"
                             name="rfc"
                             maxlength="13"
+                            value="<?= htmlspecialchars($proveedor['rfc']) ?>"
                             required>
                     </div>
 
@@ -122,7 +140,7 @@ $usuario=$_SESSION['usuario'];
 
                 <legend>Datos de contacto</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="telefono">
@@ -135,12 +153,13 @@ $usuario=$_SESSION['usuario'];
                             id="telefono"
                             name="telefono"
                             maxlength="15"
+                            value="<?= htmlspecialchars($proveedor['telefono']) ?>"
                             required>
                     </div>
 
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -149,7 +168,7 @@ $usuario=$_SESSION['usuario'];
                             id="correo"
                             name="correo"
                             maxlength="100"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['correo'] ?? '') ?>">
                     </div>
 
                 </div>
@@ -160,7 +179,7 @@ $usuario=$_SESSION['usuario'];
 
                 <legend>Datos de ubicación</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="domicilio">
@@ -173,7 +192,7 @@ $usuario=$_SESSION['usuario'];
                             id="domicilio"
                             name="domicilio"
                             maxlength="100"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['domicilio'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -187,7 +206,7 @@ $usuario=$_SESSION['usuario'];
                             id="ciudad"
                             name="ciudad"
                             maxlength="60"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['ciudad'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -201,12 +220,12 @@ $usuario=$_SESSION['usuario'];
                             id="estado"
                             name="estado"
                             maxlength="60"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['estado'] ?? '') ?>">
                     </div>
 
                     <div>
                         <label class="label-campo" for="codigo_postal">
-                            Código Postal:
+                            Código postal:
                         </label>
 
                         <input
@@ -215,7 +234,7 @@ $usuario=$_SESSION['usuario'];
                             id="codigo_postal"
                             name="codigo_postal"
                             maxlength="10"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['codigo_postal'] ?? '') ?>">
                     </div>
 
                 </div>
@@ -226,11 +245,11 @@ $usuario=$_SESSION['usuario'];
 
                 <legend>Información comercial</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
-                            Condición de pago:
+                            Condición de pago *:
                         </label>
 
                         <input
@@ -238,7 +257,8 @@ $usuario=$_SESSION['usuario'];
                             class="campo"
                             id="condicion_pago"
                             name="condicion_pago"
-                            maxlength="60">
+                            maxlength="60"
+                            value="<?= htmlspecialchars($proveedor['condicion_pago'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -252,10 +272,11 @@ $usuario=$_SESSION['usuario'];
                             id="tiempo_entrega"
                             name="tiempo_entrega"
                             maxlength="60"
+                            value="<?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?>"
                             required>
                     </div>
 
-                    <div style="grid-column: 1 / -1;">
+                    <div class="campo-completo">
                         <label class="label-campo" for="observaciones">
                             Observaciones:
                         </label>
@@ -265,27 +286,29 @@ $usuario=$_SESSION['usuario'];
                             id="observaciones"
                             name="observaciones"
                             rows="3"
-                            maxlength="255"></textarea>
+                            maxlength="255"><?= htmlspecialchars($proveedor['observaciones'] ?? '') ?></textarea>
                     </div>
 
                 </div>
 
             </fieldset>
 
-            <button type="submit">Guardar</button>
-            <a class="btn" href="proveedores.php">Cancelar</a>
+            <div class="acciones-formulario">
+        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+        <button type="submit">Guardar cambios</button>
+      </div>
 
         </form>
 
+    
+      </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
 
 </body>
 </html>
-<<<<<<< HEAD
-
-=======
->>>>>>> f448cc7c3d556c78a999c97d0d7cd7fdd4892f61
