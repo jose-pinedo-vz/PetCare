@@ -1,103 +1,146 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__ . '/../models/Cliente.php';
 $listaClientes = Cliente::obtenerTodos();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Clientes</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
+
 <body>
 
-  <header>
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
+  <div class="layout">
 
-    <div class="sesion">
-    </div>
-  </header>
+    <?php $paginaActiva = 'clientes';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php" class="activo">Clientes</a></li>
-      <li><a href="empleados.php">Empleados</a></li>
-      <li><a href="proveedores.php">Proveedores</a></li>
 
-      
-      <li><a href="inventario.php">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <h1>Módulo de clientes</h1>
-    <div style="margin-bottom: 20px;">
-      <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
-    </div>
-    
-    <?php 
-    $listaClientes = Cliente::obtenerTodos();
-    if (empty($listaClientes)): ?>
-      <div style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center;">
-        <p style="font-size: 16px; color: #666; margin-bottom: 15px;">No hay clientes registrados en la base de datos.</p>
-        <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
+    <main>
+      <div class="migaja">Gestión de clientes /</div>
+      <div class="encabezado-pagina">
+        <h1>Clientes</h1>
       </div>
-    <?php else: ?>
-      
-      <!-- INICIA CONTENEDOR RESPONSIVE -->
-      <div class="table-responsive">
-        <table border="1" style="width: 100%; border-collapse: collapse; text-align: left; background: #fff;">
-          <thead>
-            <tr style="background: #f5f5f5;">
-              <th style="padding: 10px;">ID</th>
-              <th style="padding: 10px;">Nombre</th>
-              <th style="padding: 10px;">Teléfono</th>
-              <th style="padding: 10px;">Correo</th>
-              <th style="padding: 10px;">Ciudad / Estado</th>
-              <th style="padding: 10px; text-align: center;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($listaClientes as $c): ?>
-              <tr>
-                <td style="padding: 10px;"><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($c['telefono']); ?></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($c['correo']); ?></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-                
-                <!-- Celda de acciones con white-space: nowrap; -->
-                <td style="padding: 10px; text-align: center; white-space: nowrap;">
-                  <a class="btn" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px;">Editar</a>
-                  <a class="btn" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #2196F3;">+ Mascota</a>
-                  <a class="btn" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>" style="padding: 5px 10px; font-size: 13px; background: #ff9800;">+ Cita</a>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div> 
-      <!-- TERMINA CONTENEDOR RESPONSIVE -->
 
-    <?php endif; ?>
-  </main>
+      <div class="tarjeta">
+
+        <div class="barra-acciones-busqueda">
+          <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
+
+          <form class="busqueda-barra" method="get" action="clientes.php" role="search">
+            <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
+            <input class="campo" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+            <button class="btn btn-info" type="submit">Buscar</button>
+            <?php if (!empty($_GET['buscar'])): ?>
+              <a class="btn-secundario" href="clientes.php">Limpiar</a>
+            <?php endif; ?>
+          </form>
+        </div>
+
+        <?php
+        $listaClientes = Cliente::obtenerTodos();
+        if (empty($listaClientes)): ?>
+          <div class="vacio">
+            <p>No hay clientes registrados en la base de datos.</p>
+            <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
+          </div>
+        <?php else: ?>
+
+          <!-- INICIA CONTENEDOR RESPONSIVE -->
+          <div class="tabla-envoltura">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>Correo</th>
+                  <th>Ciudad / Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($listaClientes as $c): ?>
+                  <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($c), ENT_QUOTES) ?>">
+                    <td><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                    <td><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
+                    <td><?php echo htmlspecialchars($c['telefono']); ?></td>
+                    <td><?php echo htmlspecialchars($c['correo']); ?></td>
+                    <td><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
+
+                    <!-- Celda de acciones con white-space: nowrap; -->
+                    <td class="acciones">
+                      <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
+                      <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
+                      <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
+                      <!--<button type="submit" class="btn btn-chico btn-eliminar">Eliminar</button>-->
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+          <!-- TERMINA CONTENEDOR RESPONSIVE -->
+
+        <?php endif; ?>
+
+      </div>
+    </main>
+
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
+  <dialog class="producto-dialog" id="modalDetalle" style="max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2px;">
+    <div class="producto-dialog-encabezado">
+      <h1>Detalle del cliente</h1>
+      <form method="dialog"><button class="producto-dialog-cerrar" aria-label="Cerrar">&times;</button></form>
+    </div>
+
+    <div class="detalle-cuerpo grid-formulario" style="text-align: center;">
+      <div><span class="label-campo">Nombre</span><span data-campo="nombre"></span></div>
+      <div><span class="label-campo">Apellido</span><span data-campo="apellido"></span></div>
+      <div><span class="label-campo">Fecha de nacimiento</span><span data-campo="fecha_nacimiento"></span></div>
+      <div><span class="label-campo">Sexo</span><span data-campo="sexo"></span></div>
+      <div><span class="label-campo">RFC</span><span data-campo="rfc"></span></div>
+      <div><span class="label-campo">Teléfono</span><span data-campo="telefono"></span></div>
+      <div><span class="label-campo">Teléfono alternativo</span><span data-campo="telefono_alternativo"></span></div>
+      <div><span class="label-campo">Correo</span><span data-campo="correo"></span></div>
+      <div class="campo-completo"><span class="label-campo">Calle</span><span data-campo="calle"></span></div>
+      <div><span class="label-campo">Número exterior</span><span data-campo="numero_exterior"></span></div>
+      <div><span class="label-campo">Número interior</span><span data-campo="numero_interior"></span></div>
+      <div><span class="label-campo">Colonia</span><span data-campo="colonia"></span></div>
+      <div><span class="label-campo">Código postal</span><span data-campo="codigo_postal"></span></div>
+      <div><span class="label-campo">Ciudad</span><span data-campo="ciudad"></span></div>
+      <div><span class="label-campo">Estado</span><span data-campo="estado"></span></div>
+      <div><span class="label-campo">Contacto de emergencia</span><span data-campo="contacto_emergencia"></span></div>
+      <div><span class="label-campo">Teléfono de emergencia</span><span data-campo="telefono_emergencia"></span></div>
+      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="observaciones"></span></div>
+    </div>
+  </dialog>
+
+  <script>
+    document.querySelector('tbody').addEventListener('click', (e) => {
+      if (e.target.closest('a, button')) return;
+      const fila = e.target.closest('tr[data-registro]');
+      if (!fila) return;
+
+      const datos = JSON.parse(fila.dataset.registro);
+      document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
+        el.textContent = datos[el.dataset.campo] || '—';
+      });
+      document.getElementById('modalDetalle').showModal();
+    });
+  </script>
+
 </body>
+
 </html>

@@ -1,54 +1,91 @@
+<?php
+require_once __DIR__ . '/../controllers/proveedor.php';
+require_once __DIR__ . '/../models/proveedores.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$errores = $_SESSION['errores'] ?? [];
+unset($_SESSION['errores']);
+
+$idProveedor = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT)
+    ?: filter_input(INPUT_POST, 'id_proveedor', FILTER_VALIDATE_INT);
+
+if ($idProveedor === false || $idProveedor === null) {
+    header("Location: proveedores.php");
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $datos = [
+        'razon_social'     => trim($_POST['razon_social'] ?? ''),
+        'nombre_comercial' => trim($_POST['nombre_comercial'] ?? ''),
+        'rfc'              => trim($_POST['rfc'] ?? ''),
+        'telefono'         => trim($_POST['telefono'] ?? ''),
+        'correo'           => trim($_POST['correo'] ?? ''),
+        'domicilio'        => trim($_POST['domicilio'] ?? ''),
+        'ciudad'           => trim($_POST['ciudad'] ?? ''),
+        'estado'           => trim($_POST['estado'] ?? ''),
+        'codigo_postal'    => trim($_POST['codigo_postal'] ?? ''),
+        'condicion_pago'   => trim($_POST['condicion_pago'] ?? ''),
+        'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
+        'observaciones'    => trim($_POST['observaciones'] ?? '')
+    ];
+    actualizar_proveedor($idProveedor, $datos); 
+}
+
+$proveedor = obtenerProveedorPorId($idProveedor);
+
+if (!$proveedor) {
+    header("Location: proveedores.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar proveedores</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
 <body>
 
-    <header>
-        <div class="marca">
-            <img src="./img/logo3.svg" alt="Veterinaria PetCare">
-        </div>
+  <div class="layout">
 
-        <div>
-            <span>Empleado: Nombre de empleado</span>
-            <a href="#">Cerrar sesión</a>
-        </div>
-    </header>
-
-    <nav>
-        <ul>
-            <li><a href="mascotas.php">Mascotas</a></li>
-            <li><a href="citas.php">Citas</a></li>
-            <li><a href="clientes.php">Clientes</a></li>
-            <li><a href="empleados.php">Empleados</a></li>
-            <li><a href="proveedores.php" class="activo">Proveedores</a></li>
-
-            <li><a href="inventario.php">Inventario</a></li>
-            <li><a href="#" class="deshabilitado">Ventas</a></li>
-            <li><a href="#" class="deshabilitado">Servicios</a></li>
-            <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-            <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-            <li><a href="#" class="deshabilitado">Pagos</a></li>
-            <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-    </nav>
+  <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Editar</div>
+      <div class="encabezado-pagina">
         <h1>Editar proveedor</h1>
+      </div>
 
-        <form action="guardar_proveedor.php" method="POST">
+      <div class="tarjeta">
+
+        <?php if (!empty($errores)): ?>
+            <div class="alerta-errores">
+              <h4>Por favor corrige los siguientes errores:</h4>
+              <ul>
+                <?php foreach ($errores as $error): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+        <?php endif; ?>
+
+        <form action="editar_proveedor.php" method="POST">
+
+            <input type="hidden" name="id_proveedor" value="<?= (int)$proveedor['id_proveedor'] ?>">
 
             <fieldset>
 
                 <legend>Datos generales</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="razon_social">
@@ -61,6 +98,7 @@
                             id="razon_social"
                             name="razon_social"
                             maxlength="100"
+                            value="<?= htmlspecialchars($proveedor['razon_social']) ?>"
                             required>
                     </div>
 
@@ -75,6 +113,7 @@
                             id="nombre_comercial"
                             name="nombre_comercial"
                             maxlength="100"
+                            value="<?= htmlspecialchars($proveedor['nombre_comercial']) ?>"
                             required>
                     </div>
 
@@ -89,6 +128,7 @@
                             id="rfc"
                             name="rfc"
                             maxlength="13"
+                            value="<?= htmlspecialchars($proveedor['rfc']) ?>"
                             required>
                     </div>
 
@@ -100,7 +140,7 @@
 
                 <legend>Datos de contacto</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="telefono">
@@ -113,6 +153,7 @@
                             id="telefono"
                             name="telefono"
                             maxlength="15"
+                            value="<?= htmlspecialchars($proveedor['telefono']) ?>"
                             required>
                     </div>
 
@@ -127,7 +168,7 @@
                             id="correo"
                             name="correo"
                             maxlength="100"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['correo'] ?? '') ?>">
                     </div>
 
                 </div>
@@ -138,7 +179,7 @@
 
                 <legend>Datos de ubicación</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="domicilio">
@@ -151,7 +192,7 @@
                             id="domicilio"
                             name="domicilio"
                             maxlength="100"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['domicilio'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -165,7 +206,7 @@
                             id="ciudad"
                             name="ciudad"
                             maxlength="60"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['ciudad'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -179,7 +220,7 @@
                             id="estado"
                             name="estado"
                             maxlength="60"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['estado'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -193,7 +234,7 @@
                             id="codigo_postal"
                             name="codigo_postal"
                             maxlength="10"
-                            required>
+                            value="<?= htmlspecialchars($proveedor['codigo_postal'] ?? '') ?>">
                     </div>
 
                 </div>
@@ -204,11 +245,11 @@
 
                 <legend>Información comercial</legend>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="grid-formulario">
 
                     <div>
                         <label class="label-campo" for="condicion_pago">
-                            Condición de pago:
+                            Condición de pago *:
                         </label>
 
                         <input
@@ -216,7 +257,8 @@
                             class="campo"
                             id="condicion_pago"
                             name="condicion_pago"
-                            maxlength="60">
+                            maxlength="60"
+                            value="<?= htmlspecialchars($proveedor['condicion_pago'] ?? '') ?>">
                     </div>
 
                     <div>
@@ -230,10 +272,11 @@
                             id="tiempo_entrega"
                             name="tiempo_entrega"
                             maxlength="60"
+                            value="<?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?>"
                             required>
                     </div>
 
-                    <div style="grid-column: 1 / -1;">
+                    <div class="campo-completo">
                         <label class="label-campo" for="observaciones">
                             Observaciones:
                         </label>
@@ -243,23 +286,30 @@
                             id="observaciones"
                             name="observaciones"
                             rows="3"
-                            maxlength="255"></textarea>
+                            maxlength="255"><?= htmlspecialchars($proveedor['observaciones'] ?? '') ?></textarea>
                     </div>
 
                 </div>
 
             </fieldset>
 
-            <button type="submit">Guardar</button>
-            <a class="btn" href="proveedores.php">Cancelar</a>
+            <div class="acciones-formulario">
+        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
+        <button type="submit">Guardar cambios</button>
+      </div>
 
         </form>
 
+    
+      </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
 
 </body>
+
 </html>

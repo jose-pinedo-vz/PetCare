@@ -1,166 +1,192 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Esta vista se carga desde controllers/FichaMedicaController.php,
+// asi que puede que estas variables no existan si se entra directo.
+$mascotas      = $mascotas ?? [];
+$idConsulta    = $idConsulta ?? 0;
+$idVeterinario = $idVeterinario ?? 1;
+
+// Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
+function old(string $clave): string
+{
+    $valor = (string)($_SESSION[$clave] ?? '');
+    unset($_SESSION[$clave]);
+    return htmlspecialchars($valor);
+}
+
+// El controlador usa 'error' (texto) en un lado y 'errores' (arreglo) en otro
+$mensajeError = $_SESSION['error'] ?? null;
+unset($_SESSION['error']);
+$listaErrores = $_SESSION['errores'] ?? [];
+unset($_SESSION['errores']);
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/estilos_base.css">
-    <!-- <link rel="stylesheet" href="css/estilos_ficha.css"> -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Esta vista se muestra desde /controllers/, asi que las rutas relativas
+       (css, imagenes, links del sidebar) se calculan desde /views/ -->
+  <base href="../views/">
+  <title>Veterinaria PetCare - Ficha veterinaria</title>
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
-
 <body>
-  <!-- Todo esto es el menu -->
-    <div class="layout">
-    <aside class="sidebar">
-      <div class="marca">
-        <div class="logo-circulo">
-          <img src="img/logo3.svg" alt="Veterinaria PetCare">
-        </div>
-      </div>
-  
-      <div class="sesion">
-      </div>
 
-      <nav>
-        <ul>
-          <li><a href="mascotas.php">Mascotas</a></li>
-          <li><a href="citas.php" class="activo">Citas</a></li>
-          <li><a href="clientes.php">Clientes</a></li>
-          <li><a href="empleados.php">Empleados</a></li>
+  <div class="layout">
 
-          <li><a href="#" class="deshabilitado">Proveedores</a></li>
-          <li><a href="#" class="deshabilitado">Inventario</a></li>
-          <li><a href="#" class="deshabilitado">Ventas</a></li>
-          <li><a href="#" class="deshabilitado">Servicios</a></li>
-          <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-          <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-          <li><a href="#" class="deshabilitado">Pagos</a></li>
-          <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-        </ul>
-      </nav>
-    </aside>
+  <?php $paginaActiva = 'citas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-    <main>
-      <!-- Para decir de donde era --->
-      <div class="migaja">Mascotas/Consulta veterinaria</div>
+  <main>
+      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de Citas</a> / Ficha veterinaria</div>
       <div class="encabezado-pagina">
-        <h1>Ficha Veterinaria</h1>
+        <h1>Ficha veterinaria</h1>
       </div>
-      
-      <!-- Para mostrar errores-->
-      <?php if (isset($_SESSION['error'])): ?>
-        <div style="background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 6px; border: 1px solid #ffcdd2; margin-bottom: 20px; font-weight: bold;">
-          <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
-        </div>
-      <?php endif; ?>
-      <!-- -->
 
-
-      <!--La tarjetita de la interfaz real del modulo -->
       <div class="tarjeta">
-        <form action="../controllers/FichaMedicaController.php" method="POST">
-          
-          <fieldset>
-            <legend>Datos de la consulta</legend>
-              <div class="grid-formulario">
-                <div>
-                <label>Mascota</label>
 
-                <select name="mascota" id="mascota" required> 
-                    <option value="">Selecciona una mascota</option>
-                    <?php foreach ($mascotas as $m): ?>
-                        <option value="<?= (int)$m['id'] ?>">
-                            <?= htmlspecialchars($m['nombre']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+    <?php if ($mensajeError): ?>
+      <div class="msg-error"><?= htmlspecialchars($mensajeError) ?></div>
+    <?php endif; ?>
 
-              <!--Precio--> 
-                <div style=" display:flex; justify-content:flex-end;">
-                  <label class="label-campo">Costo</label> <!--Decimal(10,2)-->
-                  <input type="number" name="precio" min="1" placeholder="Ingresa el precio" required>
-                </div>
+    <?php if (!empty($listaErrores)): ?>
+      <div class="msg-error">
+        <?php foreach ($listaErrores as $e): ?>
+          <div><?= htmlspecialchars($e) ?></div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
 
-                <!-- Ventana de datos -->
-              
-                <h2>Datos del paciente</h2>
-                  <label>Temperatura</label>
-                  <input type="number" id="temperatura" name="temperatura" min="30" max="45" step="0.1" placeholder="c*" required>
-                  <label>Peso</label>
-                  <input type="number" id="peso" name="peso" min="0.5" max="100" step="0.1" placeholder="kg" required>
-                  <label>Frecuencia Cardiaca</label>
-                  <input type="number" id="frecuenciaC" name="frecuenciaC" placeholder="Frecuencia Cardiaca" required>
-                  <label>Frecuencia Respiratoria</label>
-                  <input type="number" id="frecuenciaR" name="frecuenciaR" placeholder="Frecuencia Respiratoria" required>
-                  <div class="grid-formulario">
-                    <label class="label-campo">Sintomas</label>
-                    <textarea class="campo" name="sintomas" placeholder="Sintomas presentados" rows=15 required></textarea> 
-                  <div>
+    <form action="../controllers/FichaMedicaController.php" method="POST">
+      <input type="hidden" name="id_consulta" value="<?= (int)$idConsulta ?>">
+      <input type="hidden" name="id_veterinario" value="<?= (int)$idVeterinario ?>">
 
-   
-              <!--           VENTANA DE TRATAMIENTOS,MEDICAMENTOS Y DETALLES -->
-              
-                <h2>Detalles del tratamiento del paciente</h2>
-                <div class="grid-formulario">
-                  <label classs="label-campo">Tratamiento</label> 
-                  <textarea class="campo" rows=8 name="tratamiento" placeholder="tratamiento para el paciente" required></textarea>
-                </div>
-                <div class="grid-formulario">
-                  <label classs="label-campo">Medicamentos</label> 
-                  <textarea class="campo" rows=8 name="Medicamento" placeholder="medicamentos recetados" required></textarea>
-                </div>
-                <div class="grid-formulario">
-                  <label classs="label-campo">Dosis</label> 
-                  <textarea class="campo" rows=8 name="Dosis" placeholder="dosis"></textarea>
-                </div>
-                <div class="grid-formulario">
-                  <label classs="label-campo">Indicaciones</label> 
-                  <textarea class="campo" rows=8 name="indicaciones" placeholder="Indicaciones para papa y mama" required></textarea>
-                </div>
-                <div class="grid-formulario">
-                  <label classs="label-campo">Estudios Asociados</label> 
-                  <textarea class="campo" rows=8 name="estudiosA" placeholder="Estudios asociados"></textarea>
-                </div>
-
-              <!--Datos finales de la cita-->
-                <div class="grid-formulario">
-                  <label class="label-campo">Observaciones</label> 
-                  <textarea class="campo" name="observaciones" placeholder="Escriba observaciones" rows=15></textarea>
-                </div>
-                <div class="grid-formulario">
-                  <label class="label-campo">Diagnostico</label> 
-                  <textarea class="campo" name="diagnostico" placeholder="Diagnostico del paciente" rows=15 required></textarea>
-                </div>
-                <div class="grid-formulario">
-                  <label class="label-campo">Proxima Cita</label> <!--Date time-->
-                  <input type="date" id="fecha" name="fecha" min="<?= date('Y-m-d') ?>">
-                </div>
-              </div>
-          </fieldset>
-          
-          <!-- BOtonsitos finales-->
-          <div class="grid-formulario">
-            <div>
-                <button type="submit" class="BtnDerecha">Terminar consulta</button> 
-            </div>         
+      <fieldset>
+        <legend>Datos de la consulta</legend>
+        <div class="grid-formulario">
+          <div>
+            <label class="label-campo" for="mascota">Mascota *:</label>
+            <select class="campo" name="mascota" id="mascota" required>
+              <option value="">Selecciona una mascota</option>
+              <?php foreach ($mascotas as $m): ?>
+                <option value="<?= (int)$m['id'] ?>"><?= htmlspecialchars($m['nombre']) ?></option>
+              <?php endforeach; ?>
+            </select>
           </div>
-        </form>
+
+          <div>
+            <label class="label-campo" for="precio">Costo ($) *:</label>
+            <input type="number" step="0.01" min="1" class="campo" id="precio" name="precio"
+              placeholder="Ingresa el costo" required value="<?= old('oldPrecio') ?>">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Datos del paciente</legend>
+        <div class="grid-formulario">
+          <div>
+            <label class="label-campo" for="temperatura">Temperatura (°C) *:</label>
+            <input type="number" class="campo" id="temperatura" name="temperatura" min="30" max="45" step="0.1"
+              placeholder="Ej. 38.5" required value="<?= old('oldTemperatura') ?>">
+          </div>
+
+          <div>
+            <label class="label-campo" for="peso">Peso (kg) *:</label>
+            <input type="number" class="campo" id="peso" name="peso" min="0.5" max="100" step="0.1"
+              placeholder="Ej. 10.5" required value="<?= old('oldPeso') ?>">
+          </div>
+
+          <div>
+            <label class="label-campo" for="frecuenciaC">Frecuencia cardíaca (lpm) *:</label>
+            <input type="number" class="campo" id="frecuenciaC" name="frecuenciaC"
+              placeholder="Ej. 90" required value="<?= old('oldFrecuenciaC') ?>">
+          </div>
+
+          <div>
+            <label class="label-campo" for="frecuenciaR">Frecuencia respiratoria (rpm) *:</label>
+            <input type="number" class="campo" id="frecuenciaR" name="frecuenciaR"
+              placeholder="Ej. 24" required value="<?= old('oldFrecuenciaR') ?>">
+          </div>
+
+          <div class="campo-completo">
+            <label class="label-campo" for="sintomas">Síntomas presentados *:</label>
+            <textarea class="campo" id="sintomas" name="sintomas" rows="4"
+              placeholder="Describe los síntomas observados" required><?= old('oldSintomas') ?></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Diagnóstico y tratamiento</legend>
+        <div class="grid-formulario">
+          <div class="campo-completo">
+            <label class="label-campo" for="diagnostico">Diagnóstico clínico *:</label>
+            <textarea class="campo" id="diagnostico" name="diagnostico" rows="3"
+              placeholder="Diagnóstico del paciente" required><?= old('oldDiagnostico') ?></textarea>
+          </div>
+
+          <div>
+            <label class="label-campo" for="tratamiento">Tratamiento *:</label>
+            <textarea class="campo" id="tratamiento" name="tratamiento" rows="3"
+              placeholder="Tratamiento prescrito" required><?= old('oldTratamiento') ?></textarea>
+          </div>
+
+          <div>
+            <label class="label-campo" for="Medicamento">Medicamentos *:</label>
+            <textarea class="campo" id="Medicamento" name="Medicamento" rows="3"
+              placeholder="Medicamentos recetados" required><?= old('oldMedicamento') ?></textarea>
+          </div>
+
+          <div>
+            <label class="label-campo" for="Dosis">Dosis:</label>
+            <textarea class="campo" id="Dosis" name="Dosis" rows="3"
+              placeholder="Ej. 1 tableta cada 12 horas"><?= old('oldDosis') ?></textarea>
+          </div>
+
+          <div>
+            <label class="label-campo" for="indicaciones">Indicaciones para el dueño *:</label>
+            <textarea class="campo" id="indicaciones" name="indicaciones" rows="3"
+              placeholder="Cuidados y recomendaciones" required><?= old('oldIndicacion') ?></textarea>
+          </div>
+
+          <div>
+            <label class="label-campo" for="estudiosA">Estudios asociados:</label>
+            <textarea class="campo" id="estudiosA" name="estudiosA" rows="3"
+              placeholder="Rayos X, análisis de sangre, etc."><?= old('oldEstudiosaA') ?></textarea>
+          </div>
+
+          <div>
+            <label class="label-campo" for="fecha">Próxima cita:</label>
+            <input type="date" class="campo" id="fecha" name="fecha"
+              min="<?= date('Y-m-d') ?>" value="<?= old('oldFecha') ?>">
+          </div>
+
+          <div class="campo-completo">
+            <label class="label-campo" for="observaciones">Observaciones:</label>
+            <textarea class="campo" id="observaciones" name="observaciones" rows="3"
+              placeholder="Notas u observaciones adicionales"><?= old('oldObservaciones') ?></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="citas.php">Cancelar</a>
+        <button type="submit" class="btn">Terminar consulta</button>
+      </div>
+    </form>
+
       </div>
     </main>
 
-  <!--Este script me permite abrir los modales, ventanitas emergentes dentro de la misma pagina -->
-  <script>
-    const datos=document.getElementById('datosModal');
-    const tratamiento=document.getElementById('tratamientoModal');
-    document.getElementById('abrirDatos').onclick=()=>datos.showModal();
-    document.getElementById('abrirTratamiento').onclick=()=>tratamiento.showModal();
-    document.getElementById('cerrarDatos').onclick = () => datos.close();
-    document.getElementById('cerrarTratamiento').onclick = () => tratamiento.close();
-  </script>
-  
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
+
 </body>
 </html>

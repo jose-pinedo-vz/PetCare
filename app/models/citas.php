@@ -70,7 +70,7 @@
         public function datosCitas():array
         {
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_cliente, c.fecha, c.motivo_de_consulta, cl.nombre, cl.apellido, c.atendido
+            $query = "SELECT c.id_consulta, c.id_cliente, c.fecha, c.motivo_de_consulta, cl.nombre, cl.apellido, c.atendido
               FROM consulta_veterinaria c
               INNER JOIN clientes cl ON c.id_cliente = cl.id_cliente";
 
@@ -80,6 +80,23 @@
             $datos = $stml->fetchAll(PDO::FETCH_ASSOC);
 
             return $datos;
+        }
+
+        // pasar la consulta de pendiente a realizapa pero pendiente de pago
+        public function pendinteDepago($id) : bool
+        {
+            try
+            {
+                $query = "UPDATE consulta_veterinaria SET atendido = 1 WHERE id_consulta = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id]);
+                return true; 
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
         }
     }
 ?>
