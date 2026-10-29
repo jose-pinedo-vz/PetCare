@@ -63,5 +63,5 @@ $RECYCLE.BIN/
 # ==========================================
 # configuracion para el correo
 # ==========================================
-vendor/
+# vendor/
 config_correo.php
