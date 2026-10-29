@@ -60,7 +60,7 @@
                                     <th>Código</th>
                                     <th>Nombre</th>
                                     <th>Existencia</th>
-                                    
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,7 +79,7 @@
                                     <td>Camas para gato</td>
                                     <td>5</td>
                                 </tr>
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -120,15 +120,9 @@
                     <p><strong>Total:</strong> $150.00</p>
                 </div>
 
-<<<<<<< HEAD
-                <div class="acciones-formulario">
-                    <a class="btn btn-peligro" href="inventario.php">Cancelar orden</a>
-                    <button class="btn btn-success" type="button">Confirmar orden</button>
-=======
                 <div class="orden-compra-acciones">
-                    <button class="btn btn-peligro btn-chico" type="button">Cancelar orden</button>
+                    <a class="btn btn-peligro btn-chico" href="inventario.php">Cancelar orden</a>
                     <button class="btn btn-chico" type="button">Confirmar orden</button>
->>>>>>> 336d7cf7316c880ab48261db11eced93558feab1
                 </div>
 
             </div>

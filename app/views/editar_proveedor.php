@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
         'observaciones'    => trim($_POST['observaciones'] ?? '')
     ];
-    actualizar_proveedor($idProveedor, $datos); 
+    actualizar_proveedor($idProveedor, $datos);
 }
 
 $proveedor = obtenerProveedorPorId($idProveedor);
@@ -294,18 +294,14 @@ if (!$proveedor) {
             </fieldset>
 
             <div class="acciones-formulario">
-<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar</button>
-=======
-        <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-        <button type="submit">Guardar cambios</button>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
+
       </div>
 
         </form>
 
-    
+
       </div>
     </main>
 
