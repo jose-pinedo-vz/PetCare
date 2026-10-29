@@ -1,3 +1,9 @@
+<?php
+require_once __DIR__ . '/../models/Ventas_db.php';
+
+$servicios = Ventas::obtenerServicios(conexionDB::obtenerConexion());
+?>
+
 <dialog class="inventario-dialog producto-dialog servicio-dialog" id="modalBuscarServicio" aria-labelledby="tituloBuscarServicio">
     <div class="producto-dialog-encabezado">
         <h1 id="tituloBuscarServicio">Buscar servicio</h1>
@@ -24,35 +30,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><strong>Consulta veterinaria</strong></td>
-                        <td>Consulta</td>
-                        <td>Revisión general de la mascota</td>
-                        <td>30 min</td>
-                        <td>$320.00</td>
-                        <td><span class="historial-estado pagada">Activo</span></td>
-                        <td><button class="btn btn-info btn-chico" type="button">Agregar</button></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Baño para perro</strong></td>
-                        <td>Estética</td>
-                        <td>Baño y secado</td>
-                        <td>60 min</td>
-                        <td>$250.00</td>
-                        <td><span class="historial-estado pagada">Activo</span></td>
-                        <td><button class="btn btn-info btn-chico" type="button">Agregar</button></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Corte de uñas</strong></td>
-                        <td>Estética</td>
-                        <td>Corte y limado de uñas</td>
-                        <td>15 min</td>
-                        <td>$90.00</td>
-                        <td><span class="historial-estado cancelada">Inactivo</span></td>
-                        <td><button class="btn btn-info btn-chico" type="button" disabled>Agregar</button></td>
-                    </tr>
+                    <?php if (empty($servicios)): ?>
+                        <tr>
+                            <td colspan="7" class="vacio">Escribe para buscar servicios.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($servicios as $s): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars((string)$s['nombre']); ?></td>
+                                <td><?php echo htmlspecialchars($s['categoria'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($s['descripcion']); ?></td>
+                                <td><?php echo htmlspecialchars($s['duracion']); ?></td>
+                                <td>$<?php echo number_format($s['precio'], 2); ?></td>
+                                <td><?php echo htmlspecialchars($s['estado']); ?></td>
+                                <td>
+                                    <a class="btn btn-chico btn-info" href="../controllers/busca_servicio.php?accion=agregar_servicio&nombre=<?php echo urlencode($s['nombre']); ?>&categoria=<?php echo urlencode($s['categoria']); ?>&descripcion=<?php echo urlencode($s['descripcion']); ?>&duracion=<?php echo urlencode($s['duracion']); ?>&precio=<?php echo urlencode($s['precio']); ?>&estado=<?php echo urlencode($s['estado']); ?>">Seleccionar</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
+        <p class="busqueda-mensaje" id="mensajeBusqueda" role="status" aria-live="polite"></p>
     </div>
 </dialog>

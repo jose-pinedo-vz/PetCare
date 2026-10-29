@@ -1,3 +1,16 @@
+<?php
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+    header("Location: ../views/login.php");
+    exit();
+}
+$usuario=$_SESSION['usuario'];
+// Mostrar nombre del usuario
+require_once __DIR__ . '/../controllers/proveedor.php';
+$proveedores = listar_proveedores();
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -10,66 +23,95 @@
 
 <body>
     <div class="layout">
-        <?php $paginaActiva = 'proveedores';
-        include __DIR__ . '/layout/sidebar.php'; ?>
-
+         <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
         <main>
             <div class="migaja">Gestión de proveedores /</div>
             <div class="encabezado-pagina">
-                <h1>Proveedores</h1>
+            <h1>Proveedores</h1>
             </div>
             <div class="tarjeta">
-                <div class="agregar-buscar">
-                    <form method="get" action="proveedores.php" role="search">
-                        <label class="visualmente-oculto" for="buscarProveedor">Buscar proveedor</label>
-                        <input class="campo buscador-inteligente" id="buscarProveedor" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-                        <?php if (!empty($_GET['buscar'])): ?>
-                            <a class="btn btn-secundario btn-chico" href="proveedores.php">Limpiar</a>
-                        <?php endif; ?>
-                    </form>
-
+            <div class="barra-acciones-busqueda">
+                <div class="busqueda-barra" role="search">
+                    <label class="visualmente-oculto" for="buscarProveedor">Buscar proveedor</label>
+                    <input class="campo buscador-inteligente" id="buscarProveedor" type="search" placeholder="Buscar por datos del proveedor..." autocomplete="off">
+                </div>
+                <div class="barra-acciones">
                     <a class="btn" href="agregar_proveedor.php">+ Agregar proveedor</a>
                 </div>
-                <div class="tabla-envoltura">
-                    <table class="tabla-proveedores" border="1">
-                        <thead>
-                            <tr>
-                                <th>ID</th><!-- se queda -->
-                                <th>Razón social</th><!-- se queda -->
-                                
-                                <th>Teléfono</th><!-- se queda -->
-                                <th>Correo</th><!-- se queda -->
-                                <th>Ciudad</th><!-- se queda -->
-                                <th>Estado</th><!-- se queda -->
-                                <th>Tiempo de entrega</th><!-- se queda -->
-                                <th>Acciones</th><!-- se queda -->
+            </div>
+            <div class="tabla-envoltura">
+            <table class="tabla-ancha">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Razón social</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>Tiempo de entrega</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+                <tbody>
+                            <?php if (!empty($proveedores)): ?>
+                                <?php foreach ($proveedores as $proveedor): ?>
+                                    <tr data-proveedor>
+                                        <td><?= htmlspecialchars((string)$proveedor['id_proveedor']) ?></td>
+                                        <td><?= htmlspecialchars((string)$proveedor['razon_social']) ?></td>
+                                        <td><?= htmlspecialchars((string)$proveedor['telefono']) ?></td>
+                                        <td><?= htmlspecialchars((string)($proveedor['correo'] ?? '')) ?></td>
+                                        <td><?= htmlspecialchars((string)($proveedor['ciudad'] ?? '')) ?></td>
+                                        <td><?= htmlspecialchars((string)($proveedor['estado'] ?? '')) ?></td>
+                                        <td><?= htmlspecialchars((string)$proveedor['tiempo_entrega']) ?> días hábiles</td>
+                                        <td class="acciones">
+                                            <a class="btn btn-chico" href="editar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>">Editar</a>
+                                            <a class="btn btn-chico btn-peligro" href="eliminar_proveedor.php?id=<?= (int)$proveedor['id_proveedor'] ?>&razon_social=<?= urlencode($proveedor['razon_social']) ?>">Eliminar</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr><td colspan="8">No hay proveedores registrados.</td></tr>
+                            <?php endif; ?>
+                            <tr id="sinResultadosProveedor" hidden>
+                                <td colspan="8">No hay coincidencias para la búsqueda.</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Proveedor A</td>
-                                <td>555-1234</td>
-                                <td>proveedorA@example.com</td>
-                                <td> Ciudad A</td>
-                                <td>Activo</td>
-                                <td>5 días</td>
-                                <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_proveedor.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-peligro" href="eliminar_proveedor.php?id=1" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    </tbody>
+                </table>
+            </div>
             </div>
         </main>
-
     </div>
 
-    <footer>
-        <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
-    </footer>
-</body>
+  <footer>
+    <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
+  </footer>
+  <script>
+    const buscarProveedor = document.getElementById('buscarProveedor');
+    const cuerpoTablaProveedores = document.querySelector('.tabla-envoltura tbody');
 
+    if (buscarProveedor && cuerpoTablaProveedores) {
+        const filasProveedor = cuerpoTablaProveedores.querySelectorAll('tr[data-proveedor]');
+        const sinResultadosProveedor = document.getElementById('sinResultadosProveedor');
+
+        buscarProveedor.addEventListener('input', () => {
+            const termino = buscarProveedor.value.trim().toLocaleLowerCase();
+            let resultados = 0;
+
+            filasProveedor.forEach((fila) => {
+                const texto = Array.from(fila.cells)
+                    .slice(0, -1)
+                    .map((celda) => celda.textContent)
+                    .join(' ')
+                    .toLocaleLowerCase();
+                const coincide = texto.includes(termino);
+                fila.hidden = !coincide;
+                resultados += coincide ? 1 : 0;
+            });
+
+            sinResultadosProveedor.hidden = filasProveedor.length === 0 || resultados > 0;
+        });
+    }
+  </script>
+</body>
 </html>

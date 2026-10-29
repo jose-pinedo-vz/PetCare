@@ -1,7 +1,21 @@
 <?php
-require_once __DIR__ . '/../models/Cliente.php';
-$listaClientes = Cliente::obtenerTodos();
+  require_once __DIR__ . '/../models/Cliente.php';
+  $listaClientes = Cliente::obtenerTodos();
+  // Mostrar nombre del usuario
+  if (session_status() === PHP_SESSION_NONE)
+  {
+      session_start();
+  }
+  if (!isset($_SESSION['usuario']))
+  {
+    header("Location: ../views/login.php");
+    exit();
+  }
+  $usuario=$_SESSION['usuario'];
+  // Mostrar nombre del usuario
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -16,11 +30,13 @@ $listaClientes = Cliente::obtenerTodos();
 
   <div class="layout">
 
-    <?php $paginaActiva = 'clientes';
-    include __DIR__ . '/layout/sidebar.php'; ?>
+    <?php
+      $paginaActiva = 'clientes';
+      include __DIR__ . '/layout/sidebar.php';
+    ?>
 
 
-    <main>
+  <main>
       <div class="migaja">Gestión de clientes /</div>
       <div class="encabezado-pagina">
         <h1>Clientes</h1>
@@ -28,16 +44,14 @@ $listaClientes = Cliente::obtenerTodos();
 
       <div class="tarjeta">
 
-        <div class="agregar-buscar">
-          <form method="get" action="clientes.php" role="search">
+        <div class="barra-acciones-busqueda">
+          <div class="busqueda-barra" role="search">
             <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
-            <input class="campo buscador-inteligente" id="buscarCliente" name="buscar" type="search" placeholder="Buscar por nombre" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn btn-secundario btn-chico" href="clientes.php">Limpiar</a>
-            <?php endif; ?>
-          </form>
-
-          <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
+            <input class="campo buscador-inteligente" id="buscarCliente" type="search" placeholder="Buscar por datos del cliente..." autocomplete="off">
+          </div>
+          <div class="barra-acciones">
+            <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
+          </div>
         </div>
 
         <?php
@@ -125,17 +139,34 @@ $listaClientes = Cliente::obtenerTodos();
 </dialog>
 
 <script>
-  document.querySelector('tbody').addEventListener('click', (e) => {
-    if (e.target.closest('a, button')) return;
-    const fila = e.target.closest('tr[data-registro]');
-    if (!fila) return;
+  const cuerpoTablaClientes = document.querySelector('.tabla-envoltura tbody');
+  const buscarCliente = document.getElementById('buscarCliente');
 
-    const datos = JSON.parse(fila.dataset.registro);
-    document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
-      el.textContent = datos[el.dataset.campo] || '—';
+  if (cuerpoTablaClientes && buscarCliente) {
+    buscarCliente.addEventListener('input', () => {
+      const termino = buscarCliente.value.trim().toLocaleLowerCase();
+      cuerpoTablaClientes.querySelectorAll('tr[data-registro]').forEach((fila) => {
+        const texto = Array.from(fila.cells)
+          .slice(0, -1)
+          .map((celda) => celda.textContent)
+          .join(' ')
+          .toLocaleLowerCase();
+        fila.hidden = !texto.includes(termino);
+      });
     });
-    document.getElementById('modalDetalle').showModal();
-  });
+
+    cuerpoTablaClientes.addEventListener('click', (e) => {
+      if (e.target.closest('a, button')) return;
+      const fila = e.target.closest('tr[data-registro]');
+      if (!fila) return;
+
+      const datos = JSON.parse(fila.dataset.registro);
+      document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
+        el.textContent = datos[el.dataset.campo] || '—';
+      });
+      document.getElementById('modalDetalle').showModal();
+    });
+  }
 </script>
 
 </body>
