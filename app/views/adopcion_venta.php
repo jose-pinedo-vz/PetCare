@@ -129,15 +129,12 @@ $animales = listar_adopciones_ventas();
                 <h1>Adopción y venta</h1>
             </div>
             <div class="tarjeta">
-<<<<<<< HEAD
                 <div class="barra-acciones-busqueda">
                     <div class="busqueda-barra" role="search">
                         <label class="visualmente-oculto" for="buscarAdopcionVenta">Buscar adopciones o ventas</label>
                         <input class="campo" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
                     </div>
-=======
                 <div class="barra-acciones">
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
                     <a class="btn" href="agregar_adopcion_venta.php">+ Agregar adopción y venta</a>
                 </div>
                 <div class="tabla-envoltura">
@@ -164,81 +161,6 @@ $animales = listar_adopciones_ventas();
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-<<<<<<< HEAD
-                        <tbody id="registrosAdopcionVenta">
-                            <tr>
-                                <td>1</td>
-                                <td>Perro</td>
-                                <td>Labrador</td>
-                                <td>Hembra</td>
-                                <td>2025-03-12</td>
-                                <td>Dorado</td>
-                                <td>18 kg</td>
-                                <td>Dócil, juguetona, sociable con niños</td>
-                                <td>luna.jpg</td>
-                                <td>Rescate</td>
-                                <td>2026-08-02</td>
-                                <td>$0</td>
-                                <td>No aplica (adopción)</td>
-                                <td>Disponible</td>
-                                <td>Rabia, Parvovirus, Moquillo</td>
-                                <td>2026-09-15</td>
-                                <td>Esterilizada</td>
-                                <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Gato</td>
-                                <td>Siamés</td>
-                                <td>Macho</td>
-                                <td>2026-01-20</td>
-                                <td>Crema y café</td>
-                                <td>3.2 kg</td>
-                                <td>Tranquilo, ojos azules</td>
-                                <td>michi.jpg</td>
-                                <td>Criadero autorizado</td>
-                                <td>2026-08-10</td>
-                                <td>$1,200</td>
-                                <td>$2,500</td>
-                                <td>Disponible</td>
-                                <td>Triple felina</td>
-                                <td>2026-09-01</td>
-                                <td>Pelaje en buen estado</td>
-                                <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Perro</td>
-                                <td>Mestizo</td>
-                                <td>Macho</td>
-                                <td>2024-11-05</td>
-                                <td>Café con blanco</td>
-                                <td>14 kg</td>
-                                <td>Activo, aprende rápido</td>
-                                <td>rocky.jpg</td>
-                                <td>Donación</td>
-                                <td>2026-07-28</td>
-                                <td>$0</td>
-                                <td>No aplica (adopción)</td>
-                                <td>En proceso</td>
-                                <td>Rabia, Quíntuple</td>
-                                <td>2026-08-20</td>
-                                <td>Adopción pendiente de firma</td>
-                                <td class="acciones">
-                                    <a class="btn btn-chico" href="editar_adopcion_venta.php?id=1">Editar</a>
-                                    <a class="btn btn-chico btn-peligro" href="eliminar_adopcion_venta.php?id=1">Eliminar</a>
-                                </td>
-                            </tr>
-                            <tr id="sinResultados" hidden>
-                                <td colspan="18">No se encontraron registros.</td>
-                            </tr>
-=======
                         <tbody>
                             <?php if (!empty($animales)): ?>
                                 <?php foreach ($animales as $animal): ?>
@@ -308,7 +230,6 @@ $animales = listar_adopciones_ventas();
                                     <td colspan="18" style="text-align: center;">No hay registros de adopción y venta.</td>
                                 </tr>
                             <?php endif; ?>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
                         </tbody>
                     </table>
                 </div>
@@ -320,7 +241,6 @@ $animales = listar_adopciones_ventas();
         <footer>
             <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
         </footer>
-<<<<<<< HEAD
         <script>
             const buscadorAdopcionVenta = document.getElementById('buscarAdopcionVenta');
             const filasAdopcionVenta = document.querySelectorAll('#registrosAdopcionVenta tr:not(#sinResultados)');
@@ -344,7 +264,6 @@ $animales = listar_adopciones_ventas();
                 mensajeSinResultados.hidden = resultados > 0;
             });
         </script>
-=======
 
     <!-- Modal para ver imagen ampliada / pantalla completa -->
     <div id="modal-visor-imagen" class="modal-visor" role="dialog" aria-modal="true" aria-label="Visor de imagen">
@@ -406,7 +325,6 @@ $animales = listar_adopciones_ventas();
             });
         });
     </script>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
 </body>
 
 </html>                             

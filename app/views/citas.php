@@ -50,7 +50,6 @@ if (session_status() === PHP_SESSION_NONE)
       <?php }
     }
   }
-}
 ?>
 
 
@@ -75,8 +74,6 @@ if (session_status() === PHP_SESSION_NONE)
 
     <?php $paginaActiva = 'citas';
     include __DIR__ . '/layout/sidebar.php'; ?>
-
-
   <main>
       <div class="migaja">Gestión de citas /</div>
       <div class="encabezado-pagina">
@@ -125,10 +122,7 @@ if (session_status() === PHP_SESSION_NONE)
 
       <div class="panel_contenido">
         <!-- Sección de espera  -->
-        <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3>
-          <?php mostrarProximasCitas(); ?>
-        </div>
+        
 
         <div class="contenedor_citas">
           <div class="boton_control">
@@ -136,13 +130,11 @@ if (session_status() === PHP_SESSION_NONE)
             <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
           </div>
 
-          <div class="panel_contenido">
-            <!-- Sección de espera  -->
-            <div id="seccion_espera" class="seccion-panel">
-              <h3>Citas en espera</h3>
-              <?php mostrarProximasCitas(); ?>
-            </div>
-
+          <div id="seccion_espera" class="seccion-panel">
+            <h3>Citas en espera</h3>
+            <?php mostrarProximasCitas(); ?>
+          </div>
+            
             <!-- Sección de atendidos-->
             <div id="seccion_atendidos" class="seccion-panel oculto">
               <h3>Citas atendidas (pendientes de pago)</h3>
