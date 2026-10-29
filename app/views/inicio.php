@@ -87,10 +87,10 @@
           <div class="tarjeta">
             <h2>Accesos rápidos</h2>
             <div class="lista-accesos">
-              <a class="btn" href="agendarCita.php">+ Agendar cita</a>
-              <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
-              <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
-              <a class="btn-secundario" href="inventario.php">Ver inventario</a>
+              <a class="btn btn-chico" href="agendarCita.php">+ Agendar cita</a>
+              <a class="btn btn-chico" href="agregar_mascota.php">+ Agregar mascota</a>
+              <a class="btn btn-chico" href="agregar_cliente.php">+ Agregar cliente</a>
+              <a class="btn btn-secundario btn-chico" href="inventario.php">Ver inventario</a>
             </div>
           </div>
 

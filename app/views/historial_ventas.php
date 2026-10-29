@@ -43,8 +43,8 @@
                     </select>
                 </div>
                 <div class="historial-filtro-acciones">
-                    <button class="btn historial-buscar" type="button"><span aria-hidden="true"></span> Buscar</button>
-                    <button class="btn-secundario historial-limpiar" type="button"><span aria-hidden="true"></span> Limpiar filtros</button>
+                    <button class="btn historial-buscar btn-chico" type="button"><span aria-hidden="true"></span> Buscar</button>
+                    <button class="btn btn-secundario historial-limpiar btn-chico" type="button"><span aria-hidden="true"></span> Limpiar filtros</button>
                 </div>
             </section>
 
@@ -73,10 +73,10 @@
                             <td>$245.00</td>
                             <td>Tarjeta</td>
                             <td><span class="historial-estado pagada">Pagada</span></td>
-                            <td><div class="historial-acciones"><button class="accion-detalles" type="button" aria-label="Ver venta FV-00124">Detalles</button> <!-- este boton deberia abrir una ventana modal con los detalles de la venta, incluyendo productos, cantidades, precios, descuentos, impuestos y total -->
-                            <button class="accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00124">Imprimir ticket</button>
-                            <button class="accion-factura" type="button" aria-label="Generar factura de la venta FV-00124">Generar factura</button>
-                            <button class="accion-cancelar" type="button" aria-label="Cancelar venta FV-00124">Cancelar</button>
+                            <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00124">Detalles</button> <!-- este boton deberia abrir una ventana modal con los detalles de la venta, incluyendo productos, cantidades, precios, descuentos, impuestos y total -->
+                            <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00124">Imprimir ticket</button>
+                            <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00124">Generar factura</button>
+                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Cancelar venta FV-00124">Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -89,10 +89,10 @@
                             <td>$312.50</td>
                             <td>Efectivo</td>
                             <td><span class="historial-estado pagada">Pagada</span></td>
-                            <td><div class="historial-acciones"><button class="accion-detalles" type="button" aria-label="Ver venta FV-00123">Detalles</button>
-                            <button class="accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00123">Imprimir ticket</button>
-                            <button class="accion-factura" type="button" aria-label="Generar factura de la venta FV-00123">Generar factura</button>
-                            <button class="accion-cancelar" type="button" aria-label="Cancelar venta FV-00123">Cancelar</button>
+                            <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00123">Detalles</button>
+                            <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00123">Imprimir ticket</button>
+                            <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00123">Generar factura</button>
+                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Cancelar venta FV-00123">Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -105,10 +105,10 @@
                             <td>$156.00</td>
                             <td>Transferencia</td>
                             <td><span class="historial-estado pendiente">Pendiente</span></td>
-                            <td><div class="historial-acciones"><button class="accion-detalles" type="button" aria-label="Ver venta FV-00122">Detalles</button>
-                            <button class="accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00122" disabled>Imprimir ticket</button>
-                            <button class="accion-factura" type="button" aria-label="Generar factura de la venta FV-00122" disabled>Generar factura</button>
-                            <button class="accion-cancelar" type="button" aria-label="Cancelar venta FV-00122">Cancelar</button>
+                            <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00122">Detalles</button>
+                            <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00122" disabled>Imprimir ticket</button>
+                            <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00122" disabled>Generar factura</button>
+                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Cancelar venta FV-00122">Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -121,10 +121,10 @@
                             <td>$89.90</td>
                             <td>Efectivo</td>
                             <td><span class="historial-estado cancelada">Cancelada</span></td>
-                            <td><div class="historial-acciones"><button class="accion-detalles" type="button" aria-label="Ver venta FV-00121">Detalles</button>
-                            <button class="accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00121" disabled>Imprimir ticket</button>
-                            <button class="accion-factura" type="button" aria-label="Generar factura de la venta FV-00121" disabled>Generar factura</button>
-                            <button class="accion-cancelar" type="button" aria-label="Venta FV-00121 cancelada" disabled>Cancelar</button>
+                            <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00121">Detalles</button>
+                            <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00121" disabled>Imprimir ticket</button>
+                            <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00121" disabled>Generar factura</button>
+                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Venta FV-00121 cancelada" disabled>Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -133,9 +133,9 @@
                 <div class="historial-pie-tabla">
                     <span>Mostrando 1 - 4 de 4 ventas</span>
                     <nav class="historial-paginacion" aria-label="Paginación del historial">
-                        <button type="button" aria-label="Página anterior" disabled>‹</button>
-                        <button class="pagina-activa" type="button" aria-current="page">1</button>
-                        <button type="button" aria-label="Página siguiente" disabled>›</button>
+                        <button type="button" aria-label="Página anterior" disabled class="btn btn-chico">‹</button>
+                        <button class="btn pagina-activa btn-chico" type="button" aria-current="page">1</button>
+                        <button type="button" aria-label="Página siguiente" disabled class="btn btn-chico">›</button>
                     </nav>
                 </div>
             </div>

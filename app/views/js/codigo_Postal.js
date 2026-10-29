@@ -6,6 +6,11 @@ async function codigoPostal(evt)
         body: JSON.stringify({codigo_postal: postal.value })});
     const datos = await respuesta.json();
 
+    if (!datos || datos.length === 0) {
+        alert("Código postal no encontrado.");
+        return; 
+    }
+
     try
     {
         if (datos[0].ciudad === "" || datos[0].ciudad === null)
@@ -29,7 +34,7 @@ async function codigoPostal(evt)
             colonia.appendChild(option);
         }
     }
-    catch
+    catch (error)
     {
         alert("Ingrese un código postal válido");
     }
@@ -67,7 +72,7 @@ async function codigoPostalEmpleados(evt)
             colonia.appendChild(option);
         }
     }
-    catch
+    catch (error)
     {
         alert("Ingrese un código postal válido");
     }
