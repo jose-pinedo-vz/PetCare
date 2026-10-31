@@ -9,5 +9,5 @@ if (!isset($_SESSION['usuario'])) {
 $usuario = $_SESSION['usuario'];
 $rol = $_SESSION['rol'];
 
-// Carga la vista del inicio
-require_once '../views/bienvenido.php';
+// Carga la vista a mascotas
+require_once '../views/mascotas.php';

@@ -1,7 +1,7 @@
 <?php
 function mostrarEncabezado( string $titulo)
 {
-    echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>$titulo</title></head><body>";
+    echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>$titulo</title><link rel='stylesheet' href='../views/css/estilos_base.css'></head><body>";
 }
 
 function mostrarPie()
@@ -23,7 +23,7 @@ function vistaLogin(string $error="")
         <input type="text" name="usuario" required><br><br>
         <label>Contraseña:</label><br>
         <input type="password" name="password" required><br><br>
-        <button type="submit">Ingresar</button>
+        <button type="submit" class="btn btn-chico">Ingresar</button>
     </form>
 
     <?php
@@ -110,7 +110,7 @@ function vistaRegistro(string $mensaje="", string $error="")
             <option value="inactivo">Inactivo</option>
         </select><br><br>
 
-        <button type="submit">Guardar Usuario</button>
+        <button type="submit" class="btn btn-chico">Guardar Usuario</button>
     </form>
 
     <?php

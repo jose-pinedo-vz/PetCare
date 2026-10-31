@@ -81,5 +81,71 @@
 
             return $datos;
         }
+
+        // pasar la consulta de pendiente a realizapa pero pendiente de pago
+        public function pendinteDepago($id) : bool
+        {
+            try
+            {
+                $query = "UPDATE consulta_veterinaria SET atendido = 1 WHERE id_consulta = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id]);
+                return true; 
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+
+        public static function rescatarVeterinarios()
+        {
+            try
+            {
+                $query = "SELECT nombre, horario FROM `empleados` WHERE puesto LIKE 'Veterinario%' AND esta_activo = 1";
+                $db = ConexionDB::obtenerConexion();
+                $stml =$db->prepare($query);$stml->execute();
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+
+        public static function cantidadHorarios($valor)
+        {
+            try
+            {
+                $query = 'SELECT COUNT(id_empleado) AS numEmpleado FROM empleados WHERE puesto LIKE "Veterinario%" AND horario = ? AND esta_activo = 1;';
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$valor]);
+                return (int)$stml->fetchColumn();
+            }
+            catch (Exception $e)
+            {
+                return 0;
+            }
+        }
+
+        // cantidad de citas por fecha
+        public static function cantidadCitasFecha($valor)
+        {
+            try
+            {
+                // Comparamos año, mes, día y hora:minuto, ignorando segundos o microsegundos
+                $query = 'SELECT COUNT(*) AS total_citas FROM consulta_veterinaria WHERE fecha = ?';
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$valor]);
+                return $stml->fetchColumn();
+            }
+            catch (Exception $e)
+            {
+                return 0;
+            }
+        }
     }
 ?>

@@ -1,359 +1,273 @@
+<?php
+require_once __DIR__ . '/../models/Empleados.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$idEmpleado = filter_input(INPUT_GET, 'id_empleado', FILTER_VALIDATE_INT);
+
+if ($idEmpleado === false || $idEmpleado === null) {
+    header('Location: empleados.php');
+    exit();
+}
+
+$empleado = Empleados::obtenerporId($idEmpleado);
+
+if (!$empleado) {
+    header('Location: empleados.php');
+    exit();
+}
+
+// Si no venimos de un error, borra restos de intentos anteriores (por ejemplo de "agregar")
+if (!isset($_SESSION['error'])) {
+    $camposOld = [
+        'oldnombre_empleado', 'oldapellido', 'oldtelefono', 'oldcorreo',
+        'oldcalle', 'oldnumero_exterior', 'oldnumero_interior', 'oldcolonia',
+        'oldciudad', 'oldestado', 'oldcodigo_postal', 'oldpuesto',
+        'oldespecialidad', 'oldnum_cedula_profesional', 'oldFecha_de_contratacion', 'oldhorario'
+    ];
+    foreach ($camposOld as $campo) {
+        unset($_SESSION[$campo]);
+    }
+}
+
+// Valor del formulario: lo escrito antes del error o, si no hay, el de la BD
+function dato(array $empleado, string $campoBD, string $claveSesion): string
+{
+    if (array_key_exists($claveSesion, $_SESSION)) {
+        $valor = $_SESSION[$claveSesion];
+        unset($_SESSION[$claveSesion]);
+    } else {
+        $valor = $empleado[$campoBD] ?? '';
+    }
+    return (string)($valor ?? '');
+}
+
+function e($texto): string
+{
+    return htmlspecialchars((string)$texto);
+}
+
+$nombre      = dato($empleado, 'nombre', 'oldnombre_empleado');
+$apellido    = dato($empleado, 'apellido', 'oldapellido');
+$telefono    = dato($empleado, 'telefono', 'oldtelefono');
+$correo      = dato($empleado, 'correo', 'oldcorreo');
+$calle       = dato($empleado, 'calle', 'oldcalle');
+$numExterior = dato($empleado, 'numero_exterior', 'oldnumero_exterior');
+$numInterior = dato($empleado, 'numero_interior', 'oldnumero_interior');
+$colonia     = dato($empleado, 'colonia', 'oldcolonia');
+$ciudad      = dato($empleado, 'ciudad', 'oldciudad');
+$estado      = dato($empleado, 'estado', 'oldestado');
+$codigoPost  = dato($empleado, 'codigo_postal', 'oldcodigo_postal');
+$especialidad = dato($empleado, 'especialidad', 'oldespecialidad');
+$cedula      = dato($empleado, 'num_cedula_profesional', 'oldnum_cedula_profesional');
+$fecha       = substr(dato($empleado, 'Fecha_de_contratacion', 'oldFecha_de_contratacion'), 0, 10);
+$horario     = dato($empleado, 'horario', 'oldhorario');
+
+// Al agregar se guarda "Veterinario/a"; registros viejos pueden tener "Veterinario".
+// Se normaliza para que el <select> lo preseleccione.
+$puesto = dato($empleado, 'puesto', 'oldpuesto');
+if ($puesto === 'Veterinario') {
+    $puesto = 'Veterinario/a';
+}
+
+$mensajeError = $_SESSION['error'] ?? null;
+unset($_SESSION['error']);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar empleado</title>
-  <link rel="stylesheet" href="css/estilos_base.css">
+  <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/codigo_Postal.js"></script>
 </head>
 <body>
 
-  <header>
+  <div class="layout">
 
-    <div class="marca">
-      <img src="img/logo3.svg" alt="Veterinaria PetCare">
-    </div>
-
-    <div class="sesion">
-      <span>Empleado: Nombre del empleado</span>
-      <a href="#">Cerrar sesión</a>
-    </div>
-
-  </header>
-
-
-  <nav>
-    <ul>
-      <li><a href="mascotas.php">Mascotas</a></li>
-      <li><a href="citas.php">Citas</a></li>
-      <li><a href="clientes.php">Clientes</a></li>
-      <li><a href="empleados.php" class="activo">Empleados</a></li>
-
-      <li><a href="#" class="deshabilitado">Proveedores</a></li>
-      <li><a href="#" class="deshabilitado">Inventario</a></li>
-      <li><a href="#" class="deshabilitado">Ventas</a></li>
-      <li><a href="#" class="deshabilitado">Servicios</a></li>
-      <li><a href="#" class="deshabilitado">Adopción y venta</a></li>
-      <li><a href="#" class="deshabilitado">Veterinaria</a></li>
-      <li><a href="#" class="deshabilitado">Pagos</a></li>
-      <li><a href="#" class="deshabilitado">Pagos con tarjeta</a></li>
-    </ul>
-  </nav>
-
+  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Editar</div>
+      <div class="encabezado-pagina">
+        <h1>Editar empleado</h1>
+      </div>
 
-    <h1>Editar empleado</h1>
+      <div class="tarjeta">
 
+    <?php if ($mensajeError): ?>
+      <div class="msg-error">
+        <?php foreach (explode("\n\n", $mensajeError) as $error): ?>
+          <div>• <?= e($error) ?></div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  
+    <form action="../controllers/guardar_empleado.php" method="POST">
 
-    <form action="guardar_empleado.php" method="POST">
-
-
-      <input
-        type="hidden"
-        id="id_empleado"
-        name="id_empleado"
-        value="1">
+      <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$empleado['id_empleado'] ?>">
 
       <fieldset>
-
         <legend>Datos personales</legend>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-
+        <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="nombre">
-              Nombre:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="nombre"
-              name="nombre"
-              value="Ana"
-              maxlength="20"
-              required>
+            <label class="label-campo" for="nombre">Nombre *:</label>
+            <input type="text" class="campo" id="nombre" name="nombre" minlength="2" maxlength="20" required
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}( [A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y un espacio simple entre palabras (mínimo 2 letras por palabra)"
+              value="<?= e($nombre) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="apellido">
-              Apellido:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="apellido"
-              name="apellido"
-              value="López García"
-              maxlength="40"
-              required>
+            <label class="label-campo" for="apellido">Apellido *:</label>
+            <input type="text" class="campo" id="apellido" name="apellido" minlength="2" maxlength="40" required
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}( [A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y un espacio simple entre palabras (mínimo 2 letras por palabra)"
+              value="<?= e($apellido) ?>">
           </div>
-
         </div>
-
       </fieldset>
 
       <fieldset>
-
         <legend>Datos de contacto</legend>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-
+        <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="telefono">
-              Teléfono:
-            </label>
-
-            <input
-              type="tel"
-              class="campo"
-              id="telefono"
-              name="telefono"
-              value="4921234567"
-              maxlength="15"
-              required>
+            <label class="label-campo" for="telefono">Teléfono *:</label>
+            <input type="tel" class="campo" id="telefono" name="telefono" maxlength="15" required
+              pattern="^[0-9]{10}$|^[0-9]{3}[-\s]?[0-9]{3}[-\s]?[0-9]{4}$"
+              title="10 dígitos numéricos (ej. 3312345678 o 345-103-2345)"
+              value="<?= e($telefono) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="correo">
-              Correo electrónico:
-            </label>
-
-            <input
-              type="email"
-              class="campo"
-              id="correo"
-              name="correo"
-              value="ana.lopez@gmail.com"
-              maxlength="100"
-              required>
+            <label class="label-campo" for="correo">Correo electrónico *:</label>
+            <input type="email" class="campo" id="correo" name="correo" maxlength="100" required
+              value="<?= e($correo) ?>">
           </div>
-
         </div>
-
       </fieldset>
 
-
-      <!-- DOMICILIO -->
-
       <fieldset>
-
         <legend>Domicilio</legend>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-
+        <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="calle">
-              Calle:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="calle"
-              name="calle"
-              value="Hidalgo"
-              maxlength="100"
-              required>
+            <label class="label-campo" for="codigo_postal">Código postal *:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="5" required
+              pattern="^[0-9]{5}$" title="Código postal de exactamente 5 dígitos numéricos"
+              value="<?= e($codigoPost) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="numero_exterior">
-              Número exterior:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="numero_exterior"
-              name="numero_exterior"
-              value="125"
-              maxlength="15"
-              required>
+            <label class="label-campo">&nbsp;</label>
+            <button type="button" class="btn" id="validar_codigo_postal" onclick="codigoPostalEmpleados(event)">Validar código postal</button>
           </div>
 
-
           <div>
-            <label class="label-campo" for="numero_interior">
-              Número interior:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="numero_interior"
-              name="numero_interior"
-              value="2"
-              maxlength="15">
+            <label class="label-campo" for="calle">Calle *:</label>
+            <input type="text" class="campo" id="calle" name="calle" minlength="3" maxlength="100" required
+              title="Debe incluir el nombre de la calle (mínimo 3 caracteres)"
+              value="<?= e($calle) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="colonia">
-              Colonia:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="colonia"
-              name="colonia"
-              value="Centro"
-              maxlength="60"
-              required>
+            <label class="label-campo" for="numero_exterior">Número exterior *:</label>
+            <input type="text" class="campo" id="numero_exterior" name="numero_exterior" maxlength="15" required
+              pattern="^[a-zA-Z0-9\-\/]{1,15}$" title="Solo números, letras y guiones (sin espacios)"
+              value="<?= e($numExterior) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="ciudad">
-              Ciudad:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="ciudad"
-              name="ciudad"
-              value="Zacatecas"
-              maxlength="60"
-              required>
+            <label class="label-campo" for="numero_interior">Número interior:</label>
+            <input type="text" class="campo" id="numero_interior" name="numero_interior" maxlength="15"
+              pattern="^[a-zA-Z0-9\s.\-\/]{1,15}$" title="Número interior válido"
+              value="<?= e($numInterior) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="estado">
-              Estado:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="estado"
-              name="estado"
-              value="Zacatecas"
-              maxlength="60"
-              required>
+            <label class="label-campo" for="colonia">Colonia *:</label>
+            <select class="campo" id="colonia" name="colonia" required>
+              <?php if (!empty($colonia)): ?>
+                <option value="<?= e($colonia) ?>" selected><?= e($colonia) ?></option>
+              <?php else: ?>
+                <option value="">Valide su código postal...</option>
+              <?php endif; ?>
+            </select>
           </div>
 
-
           <div>
-            <label class="label-campo" for="codigo_postal">
-              Código Postal:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="codigo_postal"
-              name="codigo_postal"
-              value="98000"
-              maxlength="10"
-              required>
+            <label class="label-campo" for="ciudad">Ciudad *:</label>
+            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required readonly
+              value="<?= e($ciudad) ?>">
           </div>
 
+          <div>
+            <label class="label-campo" for="estado">Estado *:</label>
+            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required readonly
+              value="<?= e($estado) ?>">
+          </div>
         </div>
-
       </fieldset>
 
       <fieldset>
-
         <legend>Información laboral</legend>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-
+        <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="puesto">
-              Puesto:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="puesto"
-              name="puesto"
-              value="Veterinaria"
-              maxlength="35"
-              required>
+            <label class="label-campo" for="puesto">Puesto *:</label>
+            <select class="campo" id="puesto" name="puesto" required>
+              <option value="">Selecciona un puesto</option>
+              <option value="Gerente"       <?= $puesto === 'Gerente'       ? 'selected' : '' ?>>Gerente</option>
+              <option value="Veterinario/a" <?= $puesto === 'Veterinario/a' ? 'selected' : '' ?>>Veterinario</option>
+              <option value="Vendedor"      <?= $puesto === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
+              <option value="Estilista"     <?= $puesto === 'Estilista'     ? 'selected' : '' ?>>Estilista</option>
+            </select>
           </div>
 
-
           <div>
-            <label class="label-campo" for="especialidad">
-              Especialidad:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="especialidad"
-              name="especialidad"
-              value="Medicina veterinaria"
-              maxlength="50">
+            <label class="label-campo" for="especialidad">Especialidad:</label>
+            <input type="text" class="campo" id="especialidad" name="especialidad" minlength="3" maxlength="50"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
+              title="Solo letras y espacios (sin números ni símbolos especiales)"
+              value="<?= e($especialidad) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="num_cedula_profesional">
-              Cédula profesional:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="num_cedula_profesional"
-              name="num_cedula_profesional"
-              value="VET123456"
-              maxlength="20">
+            <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional:</label>
+            <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" minlength="6" maxlength="8"
+              pattern="^[0-9]{6,8}$" title="Entre 6 y 8 dígitos numéricos"
+              value="<?= e($cedula) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="fecha_de_contratacion">
-              Fecha de contratación:
-            </label>
-
-            <input
-              type="date"
-              class="campo"
-              id="fecha_de_contratacion"
-              name="fecha_de_contratacion"
-              value="2024-02-15">
+            <label class="label-campo" for="Fecha_de_contratacion">Fecha de contratación:</label>
+            <input type="date" class="campo" id="Fecha_de_contratacion" name="Fecha_de_contratacion"
+              max="<?= date('Y-m-d') ?>" value="<?= e($fecha) ?>">
           </div>
 
-
           <div>
-            <label class="label-campo" for="horario">
-              Horario:
-            </label>
-
-            <input
-              type="text"
-              class="campo"
-              id="horario"
-              name="horario"
-              value="08:00 - 16:00"
-              maxlength="20"
-              required>
+            <label class="label-campo" for="horario">Horario *:</label>
+            <select class="campo" id="horario" name="horario" required>
+              <option value="">Selecciona un horario</option>
+              <option value="Matutino"   <?= $horario === 'Matutino'   ? 'selected' : '' ?>>Matutino</option>
+              <option value="Vespertino" <?= $horario === 'Vespertino' ? 'selected' : '' ?>>Vespertino</option>
+            </select>
           </div>
-
         </div>
-
       </fieldset>
 
-      <div style="margin-top: 20px;">
+      <div class="acciones-formulario">
+        <a class="btn-secundario" href="empleados.php">Cancelar</a>
         <button type="submit" class="btn">Guardar cambios</button>
-        <a class="btn" href="empleados.php" style="background: #757575; margin-left: 8px;">Cancelar</a>
       </div>
 
     </form>
 
-  </main>
+      </div>
+    </main>
 
+  </div>
 
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
