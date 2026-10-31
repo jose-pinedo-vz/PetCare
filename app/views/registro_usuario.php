@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles=UsuariosDB::empleados_disponibles();
+$empleados_disponibles = UsuariosDB::empleados_disponibles();
 // Mostrar nombre del usuario
-if (session_status()===PHP_SESSION_NONE)
+if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
 }
@@ -11,10 +11,10 @@ if (!isset($_SESSION['usuario']))
   header("Location: ../views/login.php");
   exit();
 }
-$mensaje=$_SESSION['mensaje']??'';
-$error=$_SESSION['error']??'';
-unset($_SESSION['mensaje'],$_SESSION['error']);
-$usuario=$_SESSION['usuario'];
+$mensaje = $_SESSION['mensaje'] ?? '';
+$error = $_SESSION['error'] ?? '';
+unset($_SESSION['mensaje'], $_SESSION['error']);
+$usuario = $_SESSION['usuario'];
 // Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
@@ -45,7 +45,7 @@ $usuario=$_SESSION['usuario'];
                     <p class='msg-error'><?= htmlspecialchars($error) ?></p>
                 <?php endif; ?>
 
-                <form action="../controllers/Registro.php" method="POST" enctype="multipart/form-data">>
+                <form action="../controllers/Registro.php" method="POST" enctype="multipart/form-data">
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Usuario (Obligatorio):</label>
                         <input type="text" name="nuevo_usuario" class="campo" required>
@@ -78,7 +78,6 @@ $usuario=$_SESSION['usuario'];
                             <option value="admin">Administrador</option>
                             <option value="veterinario">Veterinario</option>
                             <option value="vendedor">Vendedor</option>
-                            <option value="cliente">Cliente</option>
                             <option value="estilista">Estilista</option>
                             <option value="recepcionista">Recepcionista</option>
                             <option value="hotelero">Hotelero</option>

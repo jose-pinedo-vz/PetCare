@@ -28,9 +28,9 @@ function insertar(array $datos) {
 
     $id = IDmascota($conexion);
 
-    $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado';
+    /* $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado'; */
     $restricciones = !empty($datos['restricciones_para_manejo']) ? $datos['restricciones_para_manejo'] : null;
-    $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales';
+    /* $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales'; */
     $fotografia    = !empty($datos['fotografia']) ? $datos['fotografia'] : null;
     $id_veterinario = !empty($datos['id_veterinario']) ? (int)$datos['id_veterinario'] : null;
 
@@ -119,11 +119,10 @@ function obtenerDatosMascotas(): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
         $sql = "SELECT id_mascota, nombre, especie, raza, sexo, edad, color, peso, tamanio, fotografia,
-               id_cliente, id_veterinario, alergias, enfermedades, vacunas,
-               ultima_desparasitacion, observaciones, esta_activo
-        FROM mascotas
-        WHERE esta_activo = 1
-        ORDER BY id_mascota DESC";
+                       id_cliente, id_veterinario, observaciones, esta_activo
+                FROM mascotas
+                WHERE esta_activo = 1
+                ORDER BY id_mascota DESC";
 
         $resultado = $conexion->query($sql);
         if (!$resultado) {
@@ -169,7 +168,6 @@ class Mascota {
     public static function eliminar(int $id): bool {
         return eliminar($id);
     }
-    
 }
 
 if (!class_exists('Mascotas', false)) {

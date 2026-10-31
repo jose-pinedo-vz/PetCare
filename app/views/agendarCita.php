@@ -23,6 +23,7 @@ $usuario=$_SESSION['usuario'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agendar cita</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/agendarCitas.js"></script>
 </head>
 <body>
 
@@ -32,7 +33,7 @@ $usuario=$_SESSION['usuario'];
 
 
   <main>
-      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de Citas</a> / Agendar</div>
+      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de citas</a> / Agendar</div>
       <div class="encabezado-pagina">
         <h1>Agendar cita</h1>
       </div>
@@ -57,7 +58,7 @@ $usuario=$_SESSION['usuario'];
 
     <form id="formCita" action="../controllers/citas.php" method="POST">
       <fieldset>
-        <legend>Datos de la Cita</legend>
+        <legend>Datos de la cita</legend>
 
         <div class="grid-formulario">
           <div>
@@ -69,7 +70,7 @@ $usuario=$_SESSION['usuario'];
 
           <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
-            <input type="date" class="campo" id="fecha" name="fecha" required
+            <input type="date" class="campo" id="fecha" name="fecha" data-fecha="fecha" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
 
@@ -82,12 +83,26 @@ $usuario=$_SESSION['usuario'];
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
 
           </div>
+            
+          <div>
+            <label class="label-campo" for="horarioConsulta">Horario de consulta *:</label>
+
+            <select class="campo" name="horarioConsulta" id="horarioConsulta" required>
+              <option value="">Seleccione una fecha primero</option>
+            </select>
+
+          </div>
         </div>
       </fieldset>
 
       <div class="acciones-formulario">
+<<<<<<< HEAD
+        <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cita</button>
+=======
         <a class="btn-secundario" href="citas.php">Cancelar</a>
         <button type="submit" class="btn">Guardar</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
     </form>
   

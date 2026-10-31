@@ -28,7 +28,7 @@ unset($_SESSION['old']);
 
 
   <main>
-      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de Mascotas</a> / Agregar</div>
+      <div class="migaja"><a href="mascotas.php" class="link-tenue">Gestión de mascotas</a> / Agregar</div>
       <div class="encabezado-pagina">
         <h1>Registrar mascota</h1>
       </div>
@@ -95,7 +95,7 @@ unset($_SESSION['old']);
               </div>
 
               <div>
-                <label class="label-campo" for="color" >Color:</label>
+                <label class="label-campo" for="color" >Color *:</label>
                 <!-- <input type="text" class="campo" id="color" name="color" value=""> -->
                  <select class="campo" id="color" name="color" required onchange="this.form.submit()">
                   <option value="">Seleccionar...</option>
@@ -133,7 +133,7 @@ unset($_SESSION['old']);
               </div>
 
               <div>
-                <label class="label-campo" for="tamanio" >Tamaño:</label>
+                <label class="label-campo" for="tamanio" >Tamaño *:</label>
                 <?php $tam = $old['tamanio'] ?? ''; ?>
                 <select class="campo" id="tamanio" name="tamanio" >
                   <option value="">Seleccionar...</option>
@@ -159,7 +159,7 @@ unset($_SESSION['old']);
               <label class="label-campo" for="fotografia" >Fotografía:</label>
               <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*" >
               <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
-              <p class="nota-campo">Al elegir una foto se abrirá el cuadrado de recorte.</p>
+              <p style="font-size: 0.95rem; color: #90a4ae;"><br>Al elegir una foto se abrirá el cuadrado de recorte.</p>
             </div>
 
             <div id="modal-crop">
@@ -167,8 +167,8 @@ unset($_SESSION['old']);
                 <h3>Recortar foto (cuadrado)</h3>
                 <img id="imagen-a-recortar" alt="Imagen a recortar">
                 <div class="crop-acciones">
-                  <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
-                  <button type="button" id="btn-recortar">Recortar y usar</button>
+                  <button type="button" id="btn-cancelar-crop" class="btn btn-secundario btn-chico">Cancelar</button>
+                  <button type="button" id="btn-recortar" class="btn btn-chico">Recortar y usar</button>
                 </div>
               </div>
             </div>
@@ -180,22 +180,22 @@ unset($_SESSION['old']);
 
             <div class="grid-formulario">
               <div>
-                <label class="label-campo" for="alergias" >Alergias:</label>
+                <label class="label-campo" for="alergias" >Alergias *:</label>
                 <textarea class="campo" id="alergias" name="alergias" rows="2" ><?= htmlspecialchars($old['alergias'] ?? '') ?></textarea>
               </div>
 
               <div>
-                <label class="label-campo" for="enfermedades" >Enfermedades:</label>
+                <label class="label-campo" for="enfermedades" >Enfermedades *:</label>
                 <textarea class="campo" id="enfermedades" name="enfermedades" rows="2" ><?= htmlspecialchars($old['enfermedades'] ?? '') ?></textarea>
               </div>
 
               <div>
-                <label class="label-campo" for="medicamentos" >Medicamentos:</label>
+                <label class="label-campo" for="medicamentos" >Medicamentos *:</label>
                 <textarea class="campo" id="medicamentos" name="medicamentos" rows="2" ><?= htmlspecialchars($old['medicamentos'] ?? '') ?></textarea>
               </div>
 
               <div>
-                <label class="label-campo" for="condiciones_especiales" >Condiciones especiales:</label>
+                <label class="label-campo" for="condiciones_especiales" >Condiciones especiales *:</label>
                 <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2" ><?= htmlspecialchars($old['condiciones_especiales'] ?? '') ?></textarea>
               </div>
 
@@ -205,7 +205,7 @@ unset($_SESSION['old']);
               </div>
 
               <div>
-                <label class="label-campo" for="ultima_desparasitacion" >Última desparasitación:</label>
+                <label class="label-campo" for="ultima_desparasitacion" >Última desparasitación *:</label>
                 <input type="date" class="campo" id="ultima_desparasitacion" name="ultima_desparasitacion" value="<?= htmlspecialchars($old['ultima_desparasitacion'] ?? '') ?>">
               </div>
 
@@ -227,8 +227,13 @@ unset($_SESSION['old']);
           </fieldset>
 
       <div class="acciones-formulario">
+<<<<<<< HEAD
+        <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
+=======
         <a class="btn-secundario" href="mascotas.php">Cancelar</a>
         <button type="submit" name="Guardar">Guardar</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
     </form>
   

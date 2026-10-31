@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once __DIR__ . '/../models/Cliente.php';
@@ -15,6 +16,22 @@ if (!isset($_SESSION['usuario']))
 }
 $usuario=$_SESSION['usuario'];
 // Mostrar nombre del usuario
+=======
+  require_once __DIR__ . '/../models/Cliente.php';
+  $listaClientes = Cliente::obtenerTodos();
+  // Mostrar nombre del usuario
+  if (session_status() === PHP_SESSION_NONE)
+  {
+      session_start();
+  }
+  if (!isset($_SESSION['usuario']))
+  {
+    header("Location: ../views/login.php");
+    exit();
+  }
+  $usuario=$_SESSION['usuario'];
+  // Mostrar nombre del usuario
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -30,11 +47,21 @@ $usuario=$_SESSION['usuario'];
 
   <div class="layout">
 
+<<<<<<< HEAD
     <?php $paginaActiva = 'clientes';
     include __DIR__ . '/layout/sidebar.php'; ?>
 
 
     <main>
+=======
+    <?php 
+      $paginaActiva = 'clientes';
+      include __DIR__ . '/layout/sidebar.php'; 
+    ?>
+
+
+  <main>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
       <div class="migaja">Gestión de clientes /</div>
       <div class="encabezado-pagina">
         <h1>Clientes</h1>
@@ -42,6 +69,7 @@ $usuario=$_SESSION['usuario'];
 
       <div class="tarjeta">
 
+<<<<<<< HEAD
         <div class="barra-acciones-busqueda">
           <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
 
@@ -64,6 +92,18 @@ $usuario=$_SESSION['usuario'];
           </div>
         <?php else: ?>
 
+=======
+
+        <?php
+        $listaClientes = Cliente::obtenerTodos();
+        if (empty($listaClientes)): ?>
+          <div class="vacio">
+            <p>No hay clientes registrados en la base de datos.</p>
+            <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
+          </div>
+        <?php else: ?>
+
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
           <!-- INICIA CONTENEDOR RESPONSIVE -->
           <div class="tabla-envoltura">
             <table>
@@ -91,7 +131,11 @@ $usuario=$_SESSION['usuario'];
                       <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
                       <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
                       <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
+<<<<<<< HEAD
                       <!--<button type="submit" class="btn btn-chico btn-eliminar">Eliminar</button>-->
+=======
+                      <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Eliminar</a>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -111,6 +155,7 @@ $usuario=$_SESSION['usuario'];
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
+<<<<<<< HEAD
   <dialog class="producto-dialog" id="modalDetalle" style="max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2px;">
     <div class="producto-dialog-encabezado">
       <h1>Detalle del cliente</h1>
@@ -152,6 +197,49 @@ $usuario=$_SESSION['usuario'];
       document.getElementById('modalDetalle').showModal();
     });
   </script>
+=======
+  <dialog class="producto-dialog" id="modalDetalle">
+  <div class="producto-dialog-encabezado">
+    <h1>Detalle del cliente</h1>
+    <form method="dialog"><button class="producto-dialog-cerrar" aria-label="Cerrar">&times;</button></form>
+  </div>
+
+  <div class="detalle-cuerpo grid-formulario">
+    <div><span class="label-campo">Nombre</span><span data-campo="nombre"></span></div>
+    <div><span class="label-campo">Apellido</span><span data-campo="apellido"></span></div>
+    <div><span class="label-campo">Fecha de nacimiento</span><span data-campo="fecha_nacimiento"></span></div>
+    <div><span class="label-campo">Sexo</span><span data-campo="sexo"></span></div>
+    <div><span class="label-campo">RFC</span><span data-campo="rfc"></span></div>
+    <div><span class="label-campo">Teléfono</span><span data-campo="telefono"></span></div>
+    <div><span class="label-campo">Teléfono alternativo</span><span data-campo="telefono_alternativo"></span></div>
+    <div><span class="label-campo">Correo</span><span data-campo="correo"></span></div>
+    <div class="campo-completo"><span class="label-campo">Calle</span><span data-campo="calle"></span></div>
+    <div><span class="label-campo">Número exterior</span><span data-campo="numero_exterior"></span></div>
+    <div><span class="label-campo">Número interior</span><span data-campo="numero_interior"></span></div>
+    <div><span class="label-campo">Colonia</span><span data-campo="colonia"></span></div>
+    <div><span class="label-campo">Código postal</span><span data-campo="codigo_postal"></span></div>
+    <div><span class="label-campo">Ciudad</span><span data-campo="ciudad"></span></div>
+    <div><span class="label-campo">Estado</span><span data-campo="estado"></span></div>
+    <div><span class="label-campo">Contacto de emergencia</span><span data-campo="contacto_emergencia"></span></div>
+    <div><span class="label-campo">Teléfono de emergencia</span><span data-campo="telefono_emergencia"></span></div>
+    <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="observaciones"></span></div>
+  </div>
+</dialog>
+
+<script>
+  document.querySelector('tbody').addEventListener('click', (e) => {
+    if (e.target.closest('a, button')) return;
+    const fila = e.target.closest('tr[data-registro]');
+    if (!fila) return;
+
+    const datos = JSON.parse(fila.dataset.registro);
+    document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
+      el.textContent = datos[el.dataset.campo] || '—';
+    });
+    document.getElementById('modalDetalle').showModal();
+  });
+</script>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
 
 </body>
 

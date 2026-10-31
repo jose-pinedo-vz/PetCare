@@ -36,6 +36,7 @@ try {
             'sexo' => trim($_POST['sexo'] ?? ''),
             'edad' => trim($_POST['edad'] ?? ''),
             'color' => trim($_POST['color'] ?? ''),
+            'color_espec' => trim($_POST['color_espec'] ?? ''),
             'peso' => trim($_POST['peso'] ?? ''),
             'tamanio' => trim($_POST['tamanio'] ?? ''),
             'fotografia' => $_FILES['fotografia'] ?? null,

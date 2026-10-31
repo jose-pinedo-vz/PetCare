@@ -22,6 +22,9 @@ include 'layout/encabezado.php';
         </div>
 
         <button type="submit">Ingresar</button>
+        <p style="margin-top: 15px;">
+            ¿No tienes una cuenta? <a href="registro_cliente.php">Regístrate aquí</a>
+        </p>
     </form>
 </main>
 
