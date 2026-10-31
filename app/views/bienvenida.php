@@ -15,7 +15,7 @@ function vistaLogin(string $error="")
     ?>
     <h2>Iniciar Sesión</h2>
 
-    <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>    
+    <?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
 
     <form action="Login.php?action=login" method="POST">
         <input type="hidden" name="action" value="login">
@@ -46,7 +46,7 @@ function vistaBienvenido(string $usuario, string $rol)
             <a href="Login.php?action=registro">► Registrar nuevo Usuario</a><br>
             <a href="Login.php?action=modificar">► Modificar Cliente</a>
         </div>
-    
+
     <?php elseif($rol==='usuario'): ?>
 
         <div style="background-color: #f0f0f0; padding: 15px; margin: 15px 0; border-radius: 5px;">
@@ -73,9 +73,9 @@ function vistaRegistro(string $mensaje="", string $error="")
 
     <?php
 
-        if ($mensaje) echo "<p style='color:green;'>$mensaje</p>"; 
-        if ($error) echo "<p style='color:red;'>$error</p>"; 
-    
+        if ($mensaje) echo "<p style='color:green;'>$mensaje</p>";
+        if ($error) echo "<p style='color:red;'>$error</p>";
+
     ?>
 
     <form action="Login.php?action=registro" method="POST">
@@ -129,9 +129,9 @@ function vistaModificar(string $mensaje="", string $error="")
 
     <?php
 
-        if ($mensaje) echo "<p style='color:green;'>$mensaje</p>"; 
-        if ($error) echo "<p style='color:red;'>$error</p>"; 
-    
+        if ($mensaje) echo "<p style='color:green;'>$mensaje</p>";
+        if ($error) echo "<p style='color:red;'>$error</p>";
+
     ?>
 
     <form action="Login.php?action=modificar" method="POST">
@@ -139,7 +139,7 @@ function vistaModificar(string $mensaje="", string $error="")
 
         <label>Nombre del Cliente:</label><br>
         <input type="text" name="nombre_cliente" required><br><br>
-        
+
     </form>
 
     <?php

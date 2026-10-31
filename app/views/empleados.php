@@ -22,7 +22,8 @@ $empleados = Empleados::Listar_empleados_activos();
     <?php $paginaActiva = 'empleados';
     include __DIR__ . '/layout/sidebar.php'; ?>
 
-  <main>
+
+    <main>
       <div class="migaja">Gestión de empleados /</div>
       <div class="encabezado-pagina">
         <h1>Empleados</h1>
@@ -30,7 +31,8 @@ $empleados = Empleados::Listar_empleados_activos();
 
       <div class="tarjeta">
 
-    <div class="barra-acciones">
+    <div class="agregar-buscar">
+      <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
       <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
     </div>
 
@@ -79,8 +81,8 @@ $empleados = Empleados::Listar_empleados_activos();
           <td><?= htmlspecialchars(substr((string)($e['Fecha_de_contratacion'] ?? ''), 0, 10)) ?></td>
           <td><?= htmlspecialchars($e['horario']) ?></td>
           <td class="acciones">
-            <a class="btn" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
-            <a class="btn btn-peligro" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
+            <a class="btn btn-chico" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
+            <a class="btn btn-peligro btn-chico" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
           </td>
         </tr>
 <?php endforeach; ?>
@@ -97,5 +99,6 @@ $empleados = Empleados::Listar_empleados_activos();
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
+  <script src="js/buscador_inteligente.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Validar si realmente llegaron los datos por la URL (GET)
 if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
     // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
@@ -28,16 +28,16 @@ $apellido_empleado = $_GET['apellido'];
 
 
   <main>
-      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de empleados</a> / Eliminar</div>
+      <div class="migaja"><a href="empleados.php" class="link-tenue">Gestión de Empleados</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar empleado</h1>
       </div>
 
       <div class="tarjeta">
-    
+
 
     <form action="../controllers/eliminar_empleado.php" method="POST">
-  
+
       <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$id_empleado ?>">
 
       <fieldset>
@@ -51,11 +51,11 @@ $apellido_empleado = $_GET['apellido'];
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn">Eliminar</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico btn-peligro">Eliminar empleado</button>
       </div>
     </form>
-  
+
       </div>
     </main>
 
@@ -64,5 +64,6 @@ $apellido_empleado = $_GET['apellido'];
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
 </body>
 </html>

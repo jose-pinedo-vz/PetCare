@@ -21,7 +21,7 @@
     <script src="js/codigo_Postal.js?v=2"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
@@ -128,8 +128,8 @@
                           required>
                     </div>
 
-                    
- 
+
+
                     <div>
                         <label class="label-campo" for="correo">
                             Correo electrónico:
@@ -156,7 +156,7 @@
                     <div>
                         <label class="label-campo" for="codigo_postal">Código postal *:</label>
                         <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
-            
+
                         value="<?php echo htmlspecialchars((string)($old['codigo_postal'] ?? '')); unset($old['CodigoPostal_clientes']); ?>">
                     </div>
 
@@ -212,7 +212,7 @@
 
                     </div>
                 </div>
-            </fieldset>    
+            </fieldset>
 
                 <fieldset>
 
@@ -264,22 +264,10 @@
                 </div>
 
             </fieldset>
-<<<<<<< HEAD
-        <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar</button>
-      </div>
-=======
-
-          <div class="acciones-formulario">
-            <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-            <button type="submit">Guardar</button>
-          </div>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
 
         </form>
 
-    
+
       </div>
     </main>
 

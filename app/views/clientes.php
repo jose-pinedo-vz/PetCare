@@ -1,18 +1,6 @@
 <?php
-  require_once __DIR__ . '/../models/Cliente.php';
-  $listaClientes = Cliente::obtenerTodos();
-  // Mostrar nombre del usuario
-  if (session_status() === PHP_SESSION_NONE)
-  {
-      session_start();
-  }
-  if (!isset($_SESSION['usuario']))
-  {
-    header("Location: ../views/login.php");
-    exit();
-  }
-  $usuario=$_SESSION['usuario'];
-  // Mostrar nombre del usuario
+require_once __DIR__ . '/../models/Cliente.php';
+$listaClientes = Cliente::obtenerTodos();
 ?>
 
 
@@ -30,69 +18,67 @@
 
   <div class="layout">
 
-    <?php 
+    <?php
       $paginaActiva = 'clientes';
-      include __DIR__ . '/layout/sidebar.php'; 
+      include __DIR__ . '/layout/sidebar.php';
     ?>
 
 
-  <main>
+    <main>
       <div class="migaja">Gestión de clientes /</div>
       <div class="encabezado-pagina">
         <h1>Clientes</h1>
       </div>
 
       <div class="tarjeta">
-    
-    <div class="barra-acciones">
+
+    <div class="agregar-buscar">
+      <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
       <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
     </div>
 
+    <?php if (empty($listaClientes)): ?>
+      <div class="vacio">
+        <p>No hay clientes registrados en la base de datos.</p>
+        <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
+      </div>
+    <?php else: ?>
 
-        <?php
-        $listaClientes = Cliente::obtenerTodos();
-        if (empty($listaClientes)): ?>
-          <div class="vacio">
-            <p>No hay clientes registrados en la base de datos.</p>
-            <a class="btn" href="agregar_cliente.php">+ Registrar el primer cliente</a>
-          </div>
-        <?php else: ?>
+      <!-- INICIA CONTENEDOR RESPONSIVE -->
+      <div class="tabla-envoltura">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Ciudad / Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($listaClientes as $c): ?>
+              <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($c, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) ?: '{}', ENT_QUOTES, 'UTF-8') ?>">
+                <td><strong><?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
+                <td><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
+                <td><?php echo htmlspecialchars($c['telefono']); ?></td>
+                <td><?php echo htmlspecialchars($c['correo']); ?></td>
+                <td><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
 
-          <!-- INICIA CONTENEDOR RESPONSIVE -->
-          <div class="tabla-envoltura">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Teléfono</th>
-                  <th>Correo</th>
-                  <th>Ciudad / Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($listaClientes as $c): ?>
-                  <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($c), ENT_QUOTES) ?>">
-                    <td><strong>#<?php echo htmlspecialchars((string)$c['id_cliente']); ?></strong></td>
-                    <td><?php echo htmlspecialchars($c['nombre'] . ' ' . $c['apellido']); ?></td>
-                    <td><?php echo htmlspecialchars($c['telefono']); ?></td>
-                    <td><?php echo htmlspecialchars($c['correo']); ?></td>
-                    <td><?php echo htmlspecialchars($c['ciudad'] . ', ' . $c['estado']); ?></td>
-
-                    <!-- Celda de acciones con white-space: nowrap; -->
-                    <td class="acciones">
-                      <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
-                      <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
-                      <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
-                      <a class="btn btn-chico btn-eliminar btn-peligro" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Eliminar</a>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-          <!-- TERMINA CONTENEDOR RESPONSIVE -->
+                <!-- Celda de acciones con white-space: nowrap; -->
+                <td class="acciones">
+                  <a class="btn btn-chico" href="editar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>">Editar</a>
+                  <a class="btn btn-chico btn-info" href="agregar_mascota.php?id_cliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Mascota</a>
+                  <a class="btn btn-chico btn-aviso" href="agendarCita.php?claveCliente=<?php echo urlencode((string)$c['id_cliente']); ?>">+ Cita</a>
+                  <a class="btn btn-chico btn-peligro" href="eliminar_cliente.php?id=<?php echo urlencode((string)$c['id_cliente']); ?>&nombre=<?php echo urlencode($c['nombre']); ?>&apellido=<?php echo urlencode($c['apellido']); ?>">Eliminar</a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+      <!-- TERMINA CONTENEDOR RESPONSIVE -->
 
         <?php endif; ?>
 
@@ -105,9 +91,10 @@
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
-  <dialog class="producto-dialog" id="modalDetalle">
+  <script src="js/buscador_inteligente.js"></script>
+  <dialog class="producto-dialog" id="modalDetalle" aria-labelledby="tituloDetalleCliente">
   <div class="producto-dialog-encabezado">
-    <h1>Detalle del cliente</h1>
+    <h1 id="tituloDetalleCliente">Detalle del cliente</h1>
     <form method="dialog"><button class="producto-dialog-cerrar" aria-label="Cerrar">&times;</button></form>
   </div>
 
@@ -134,7 +121,7 @@
 </dialog>
 
 <script>
-  document.querySelector('tbody').addEventListener('click', (e) => {
+  document.querySelector('.tabla-envoltura tbody')?.addEventListener('click', (e) => {
     if (e.target.closest('a, button')) return;
     const fila = e.target.closest('tr[data-registro]');
     if (!fila) return;
@@ -146,7 +133,6 @@
     document.getElementById('modalDetalle').showModal();
   });
 </script>
-
 </body>
 
 </html>

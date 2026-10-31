@@ -1,16 +1,7 @@
-<?php
-require_once __DIR__ . '/../models/Cliente.php';
-$listaClientes = Cliente::obtenerTodos();
-// Mostrar nombre del usuario
-session_start();
-if (!isset($_SESSION['usuario']))
-{
-  header("Location: ../views/login.php");
-  exit();
-}
-$usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
+<?php require_once __DIR__ . '/../Models/Productos.php';
+ $productos = Productos::obtenerDatosProductosActivos();
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -56,9 +47,10 @@ $usuario=$_SESSION['usuario'];
           </div>
         </div>
 
-        <div class="inventario-toolbar">
-          <label class="visualmente-oculto" for="buscar-producto">Buscar producto</label>
-          <input id="buscar-producto" type="search" class="campo inventario-buscador" placeholder="Buscar por nombre o código de barras...">
+        <h2 class="subtitulo">Productos</h2>
+
+        <div class="agregar-buscar">
+          <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
           <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 
@@ -67,7 +59,7 @@ $usuario=$_SESSION['usuario'];
             <thead>
               <tr>
                 <th>Imagen</th>
-                <th>Código de barra</th>
+                <th>Codigo</th>
                 <th>Nombre</th>
                 <th>Existencia</th>
                 <th>Precio venta</th>
@@ -75,31 +67,39 @@ $usuario=$_SESSION['usuario'];
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><img class="producto-imagen" src="img/logo.svg" alt="Producto 1"></td>
-                <td>1234567890</td>
-                <td>Pelota</td>
-                <td><span class="estado-chip estado-espera">2 (bajo)</span></td>
-                <td>$30.50</td>
-                <td class="acciones">
-                  <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden</a>
-                  <a class="btn btn-chico" href="editar_producto.php?id=1">Editar</a>
-                  <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=1">Eliminar</a>
-                </td>
-              </tr>
-
-              <tr>
-                <td><img class="producto-imagen" src="img/logo3.svg" alt="Producto 2"></td>
-                <td>2345678901</td>
-                <td>Collar</td>
-                <td><span class="estado-chip estado-atendida">18 (normal)</span></td>
-                <td>$120.00</td>
-                <td class="acciones">
-                  <a class="btn btn-chico btn-info" href="orden_compra.php?id=2">Nueva orden</a>
-                  <a class="btn btn-chico" href="editar_producto.php?id=2">Editar</a>
-                  <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=2">Eliminar</a>
-                </td>
-              </tr>
+              <?php if (!empty($productos)): ?>
+                  <?php foreach ($productos as $producto): ?>
+                      <?php if ($producto['existencia'] <= $producto['existencia_minima']): ?>
+                        <tr>
+                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td><?= $producto['codigo'] ?></td>
+                          <td><?= $producto['nombre'] ?></td>
+                          <td><span class="estado-chip estado-espera"><?= $producto['existencia'] ?> (bajo)</span></td>
+                          <td>$<?= $producto['precio_venta'] ?></td>
+                          <td class="acciones">
+                            <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= $producto['id_producto'] ?>">Nueva orden de compra</a>
+                            <a class="btn btn-chico" href="editar_producto.php?id=<?= $producto['id_producto'] ?>">Editar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= $producto['id_producto'] ?>">Eliminar</a>
+                          </td>
+                        </tr>
+                      <?php else: ?>
+                        <tr>
+                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td><?= $producto['codigo'] ?></td>
+                          <td><?= $producto['nombre'] ?></td>
+                          <td><span class="estado-chip estado-atendida"><?= $producto['existencia'] ?> (normal)</span></td>
+                          <td>$<?= $producto['precio_venta'] ?></td>
+                          <td class="acciones">
+                            <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= (int)$producto['id_producto'] ?>">Nueva orden de compra</a>
+                            <a class="btn btn-chico" href="editar_producto.php?id=<?= (int)$producto['id_producto'] ?>">Editar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= (int)$producto['id_producto'] ?>&nombre=<?= urlencode($producto['nombre']) ?>&imagen=<?= urlencode($producto['imagen']) ?>">Eliminar</a>
+                          </td>
+                        </tr>
+                      <?php endif; ?>
+                  <?php endforeach; ?>
+              <?php else: ?>
+                  <tr><td colspan="6">No hay productos registrados.</td></tr>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
@@ -138,34 +138,18 @@ $usuario=$_SESSION['usuario'];
     </div>
   </dialog>
 
-  <script>
-    const buscadorProductos = document.getElementById('buscar-producto');
-    const filasProductos = [...document.querySelectorAll('tbody tr')];
-    const ventanaAgotados = document.getElementById('ventana-agotados');
+    <script>
+        const ventanaAgotados = document.getElementById('ventana-agotados');
+        document.querySelectorAll('[data-abrir-agotados]').forEach((boton) => {
+            boton.addEventListener('click', () => ventanaAgotados.showModal());
+        });
+        document.getElementById('cerrar-agotados').addEventListener('click', () => ventanaAgotados.close());
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && ventanaAgotados.open) ventanaAgotados.close();
+        });
+    </script>
 
-    buscadorProductos?.addEventListener('input', () => {
-      const consulta = buscadorProductos.value.trim().toLocaleLowerCase('es');
-
-      filasProductos.forEach((fila) => {
-        const coincidencia = fila.textContent.toLocaleLowerCase('es').includes(consulta);
-        fila.hidden = !coincidencia;
-      });
-    });
-
-    document.querySelectorAll('[data-abrir-agotados]').forEach((boton) => {
-      boton.addEventListener('click', () => ventanaAgotados.showModal());
-    });
-
-    document.getElementById('cerrar-agotados').addEventListener('click', () => {
-      ventanaAgotados.close();
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && ventanaAgotados.open) {
-        ventanaAgotados.close();
-      }
-    });
-  </script>
+    <script src="js/buscador_inteligente.js"></script>
 </body>
 
 </html>

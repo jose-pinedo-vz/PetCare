@@ -39,7 +39,7 @@ $usuario=$_SESSION['usuario'];
       </div>
 
       <div class="tarjeta">
-    
+
 
     <form action="../controllers/guardar_cliente.php" method="POST">
 
@@ -58,7 +58,7 @@ $usuario=$_SESSION['usuario'];
             <label class="label-campo" for="nombre">Nombre*:</label>
             <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required placeholder="Ej. Juan Carlos"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldnombre_clientes'] ?? '')); unset($_SESSION['oldnombre_clientes']); ?>">
-            
+
           </div>
 
           <div>
@@ -85,8 +85,8 @@ $usuario=$_SESSION['usuario'];
             </select>
 
             <!-- Para serrar la secion -->
-            <?php 
-            if (isset($_SESSION['oldSexo_clientes'])) 
+            <?php
+            if (isset($_SESSION['oldSexo_clientes']))
             {
               unset($_SESSION['oldSexo_clientes']);
             }
@@ -136,7 +136,7 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="codigo_postal">Código postal:</label>
             <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
- 
+
               value="<?php echo htmlspecialchars((string)($_SESSION['oldCodigoPostal_clientes'] ?? '')); unset($_SESSION['oldCodigoPostal_clientes']); ?>">
           </div>
 
@@ -169,16 +169,16 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="colonia">Colonia*:</label>
             <select class="campo" id="colonia" name="colonia" maxlength="60" required>
-              
-              <?php 
+
+              <?php
               if (isset($_SESSION['oldColonia_clientes']))
-              { 
+              {
                 $dato =  htmlspecialchars((string)($_SESSION['oldColonia_clientes'] ?? ''));
-                unset($_SESSION['oldColonia_clientes']); 
+                unset($_SESSION['oldColonia_clientes']);
 
                 ?>
                 <option value="<?php echo $dato; ?>"><?php echo $dato; ?></option>
-              <?php 
+              <?php
               } else
               { ?>
                 <option value="">Valide su codigo postal...</option>
@@ -232,17 +232,12 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <div class="acciones-formulario">
-<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar cliente</button>
-=======
-        <a class="btn-secundario" href="clientes.php">Cancelar</a>
-        <button type="submit">Guardar</button>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
 
     </form>
-  
+
       </div>
     </main>
 

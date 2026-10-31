@@ -1,16 +1,6 @@
 <?php require_once __DIR__ . '/../controllers/MascotaController.php';
 // Mostrar nombre del usuario
-if (session_status() === PHP_SESSION_NONE)
-{
-    session_start();
-}
-if (!isset($_SESSION['usuario']))
-{
-  header("Location: ../views/login.php");
-  exit();
-}
-$usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -29,7 +19,7 @@ $usuario=$_SESSION['usuario'];
   <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
 
-  <main>
+    <main>
       <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>
@@ -37,55 +27,44 @@ $usuario=$_SESSION['usuario'];
 
       <div class="tarjeta">
 
-        <div class="barra-acciones-busqueda">
-          <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
-            <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
-            <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn btn-secundario btn-chico" href="mascotas.php">Limpiar</a>
-            <?php endif; ?>
-          </form>
+    <div class="agregar-buscar">
+      <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
+      <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+    </div>
+    <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
+    <div class="tabla-envoltura">
 
-          <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
-        </div>
-        <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
-        <div class="tabla-envoltura">
-
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Especie</th>
-                <th>Raza</th>
-                <th>Sexo</th>
-                <th>Edad</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php if (!empty($mascotas)): ?>
-                <?php foreach ($mascotas as $mascota): ?>
-                  <tr class="fila-clic" data-registro="<?= htmlspecialchars(json_encode($mascota), ENT_QUOTES) ?>">
-                    <td><?= htmlspecialchars($mascota['nombre']) ?></td>
-                    <td><?= htmlspecialchars($mascota['especie']) ?></td>
-                    <td><?= htmlspecialchars($mascota['raza']) ?></td>
-                    <td><?= htmlspecialchars($mascota['sexo']) ?></td>
-                    <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
-                    <td class="acciones">
-                      <a class="btn btn-chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
-                      <a class="btn btn-peligro btn-chico" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              <?php else: ?>
-                <tr>
-                  <td colspan="6">No hay mascotas registradas.</td>
-                </tr>
-              <?php endif; ?>
-            </tbody>
-          </table>
-
-        </div> <!-- AQUÍ TERMINA EL CONTENEDOR RESPONSIVE -->
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Especie</th>
+          <th>Raza</th>
+          <th>Sexo</th>
+          <th>Fecha de nacimiento</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if (!empty($mascotas)): ?>
+          <?php foreach ($mascotas as $mascota): ?>
+            <tr>
+              <td><?= htmlspecialchars($mascota['nombre']) ?></td>
+              <td><?= htmlspecialchars($mascota['especie']) ?></td>
+              <td><?= htmlspecialchars($mascota['raza']) ?></td>
+              <td><?= htmlspecialchars($mascota['sexo']) ?></td>
+              <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
+              <td class="acciones">
+                <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
+                <a class="btn btn-peligro" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <tr><td colspan="6">No hay mascotas registradas.</td></tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
 
       </div>
     </main>
@@ -95,6 +74,8 @@ $usuario=$_SESSION['usuario'];
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <script src="js/buscador_inteligente.js"></script>
 
   <!--ventana modal-->
   <dialog class="producto-dialog" id="modalDetalle">
