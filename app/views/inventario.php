@@ -1,5 +1,12 @@
-<?php require_once __DIR__ . '/../Models/Productos.php';
- $productos = Productos::obtenerDatosProductosActivos();
+
+<?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+/* require_once __DIR__ . '/../Models/Productos.php'; */
+require_once __DIR__ . "/../models/Productos.php";
+$productos = Productos::obtenerDatosProductosActivos();
 ?>
 
 <!DOCTYPE html>
@@ -13,6 +20,7 @@
 </head>
 
 <body>
+
   <div class="layout">
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
