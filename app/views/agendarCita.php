@@ -69,6 +69,13 @@ $usuario=$_SESSION['usuario'];
           </div>
 
           <div>
+            <label class="label-campo" for="fecha">Mascota *:</label>
+            <select class="campo" name="mascota" id="mascota" required>
+              <option value="">Ingresa la clave del duenio primero</option>
+            </select>
+          </div>
+
+          <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="fecha" name="fecha" data-fecha="fecha" required
 
@@ -76,33 +83,54 @@ $usuario=$_SESSION['usuario'];
 
           </div>
 
+          <div>
+            <label class="label-campo" for="fecha">Duración estimada (minutos) *:</label>
+            <input type="number" class="campo" id="fecha" name="fecha" data-fecha="fecha" required placeholder="Ej. 50"
+
+              value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
+
+          </div>
+
+          <div>
+            <label class="label-campo" for="fecha">Servicio *:</label>
+            <select class="campo" name="servicio" id="servicio" required>
+              <option value="">Corte de uñas</option>
+              <option value="">estética</option>
+              <option value="">Consulta veterinaria</option>
+            </select>
+          </div>
+
           <div class="campo-completo">
-            <label class="label-campo" for="motivoConsulta">Motivo de consulta *:</label>
+            <label class="label-campo" for="motivoConsulta">Motivo de consulta u observación *:</label>
             <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
 
+          </div>
+
+          <div>
+            <label class="label-campo" for="responsable">Responsable *:</label>
+            <select class="campo" name="responsable" id="responsable" required>
+              <option value="">Responsable</option>
+            </select>
           </div>
             
           <div>
             <label class="label-campo" for="horarioConsulta">Horario de consulta *:</label>
 
             <select class="campo" name="horarioConsulta" id="horarioConsulta" required>
-              <option value="">Seleccione una fecha primero</option>
+              <option value="">Seleccione una fecha y responsable primero</option>
             </select>
-
           </div>
+
+          
+
         </div>
       </fieldset>
 
       <div class="acciones-formulario">
-<<<<<<< HEAD
-        <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar cita</button>
-=======
         <a class="btn-secundario" href="citas.php">Cancelar</a>
         <button type="submit" class="btn">Guardar</button>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
     </form>
   

@@ -70,11 +70,7 @@ function estraerDatosConsultas():array
     {
         $resultados[] =
         [
-<<<<<<< HEAD
-            'id' => $cita['id_consulta'],
-=======
             'id_consulta' => (int)$cita['id_consulta'],
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
             'nombre' => $cita['nombre'].' '.$cita['apellido'],
             'fecha' => $cita['fecha'],
             'motivo' => $cita['motivo_de_consulta'],
@@ -153,8 +149,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");
     }
 
-<<<<<<< HEAD
-=======
 
     // validacion de fecha
     $objetoHora = DateTime::createFromFormat('g:i A', $orararioConsulta);
@@ -163,16 +157,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
     // insertar la cita
     $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fechaHoraFinal, $motivoConsulta);
     if (!$seInserto)
     {
         errorSession("Hubo un error al registrar la cita en la base de datos.");
     }
-<<<<<<< HEAD
-    
-=======
 
     // insercin de la cita
     // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
@@ -180,7 +170,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     // {
     //     errorSession("Hubo un error en la insercino de los datos.");
     // }
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");
@@ -198,13 +187,11 @@ if ($accion === 'horario' || $accion === 'orario')
 function horarios()
 {
     $fechaSeleccionada = $_GET['fecha'] ?? '';
-
     $Horarios = [];
-
     $entradaMatutino = 9;
-    $salidaMatutino = 15;
-    $entradaVespertino = 15;
-    $salidaVespertino = 20;
+    $salidaMatutino = 2;
+    $entradaVespertino = 16;
+    $salidaVespertino = 19;
     $horasPorConsulta = 1;
 
     // echo "la fecha es" . $fechaSeleccionada;
@@ -251,4 +238,22 @@ function horarios()
     echo json_encode($Horarios);   
     exit();
 }
+
+
+$accion = $_GET['accion'];
+if ($accion === "mostrarMascota")
+{
+    mostrarMascotas();
+}
+
+function mostrarMascotas()
+{
+    $id_cliente = $_GET['id_cliente'];
+    $mascotas =  ConexionesClientes::consultaMascota($id_cliente);
+
+    echo json_encode($mascotas);
+    exit();
+}
 ?>
+
+

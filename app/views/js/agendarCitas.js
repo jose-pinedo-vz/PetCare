@@ -46,21 +46,82 @@ document.addEventListener("DOMContentLoaded", async function()
                     option.textContent = "No hay horarios disponibles para esta fecha";
                     selectHorarios.appendChild(option);
                 }
-            } catch (error) {
+            } catch (error) 
+            {
                 selectHorarios.innerHTML = '<option value="">Error al cargar los horarios</option>';
             }
         };
 
-        fecha.addEventListener('input', (evento) => {
+        fecha.addEventListener('input', (evento) => 
+        {
             actualizarHorarios(evento.target.value.trim());
         });
 
-        fecha.addEventListener('change', (evento) => {
+        fecha.addEventListener('change', (evento) => 
+        {
             actualizarHorarios(evento.target.value.trim());
         });
 
-        if (fecha.value) {
+        if (fecha.value) 
+        {
             actualizarHorarios(fecha.value.trim());
         }
+    }
+});
+
+// const cliente = document.getElementById('claveCliente');
+// console.log("¿Qué encontró el DOM?:", cliente);
+
+
+document.addEventListener("DOMContentLoaded", async function()
+{
+
+    const cliente = document.getElementById('claveCliente');
+    //console.log("¿Qué encontró el DOM?:", cliente);
+
+    if (cliente)
+    {
+        
+        const elegir_mascota = async (mostrarMascotas) =>
+        {
+            console.log("se ejecuta");
+            const mascota = document.getElementById("mascota");
+            
+            if (!mostrarMascotas) {
+                mascota.innerHTML = '<option value="">Seleccione un cliente primero</option>';
+                return;
+            }
+
+            let datos = [];
+            
+            try
+            {
+                const respuesta = await fetch(`../controllers/citas.php?accion=mostrarMascota&id_cliente=${encodeURIComponent(mostrarMascotas)}`, {
+                    method: "GET"
+                });
+                datos = await respuesta.json();
+
+                console.log(datos);
+            }
+            catch (error) 
+            {
+                console.log(error)
+                mascota.innerHTML = '<option value="">Error al cargar las mascotas</option>';
+            }
+
+            mascota.innerHTML = "";
+            for (const item of datos)
+            {
+                const option = document.createElement("option");
+                option.value = item.nombre;
+                option.textContent = item.nombre;
+                mascota.appendChild(option);
+            }
+        }
+        cliente.addEventListener('input', (event) => 
+        {
+            
+            elegir_mascota(event.target.value.trim());
+        });
     }
 });

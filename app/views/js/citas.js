@@ -63,12 +63,6 @@ function mostrarSeccion(tipo, evt)
 }
 
 
-<<<<<<< HEAD
-function mostrarFechasDeCitas()
-{
-    
-}
-=======
 
 // busqueda por dias 
 document.addEventListener('DOMContentLoaded', function() 
@@ -180,4 +174,3 @@ document.addEventListener('DOMContentLoaded', function()
 
 
 
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f

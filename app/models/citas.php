@@ -105,7 +105,8 @@
             {
                 $query = "SELECT nombre, horario FROM `empleados` WHERE puesto LIKE 'Veterinario%' AND esta_activo = 1";
                 $db = ConexionDB::obtenerConexion();
-                $stml =$db->prepare($query);$stml->execute();
+                $stml =$db->prepare($query);
+                $stml->execute();
                 return $stml->fetchAll(PDO::FETCH_ASSOC);
             }
             catch (Exception $e)
@@ -145,6 +146,23 @@
             catch (Exception $e)
             {
                 return 0;
+            }
+        }
+
+        // mostrar mascotas de un usuario
+        public static function consultaMascota($id_cliente)
+        {
+            try
+            {
+                $query = "SELECT nombre FROM mascotas WHERE id_cliente = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id_cliente]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Exception $e)
+            {
+                return [];
             }
         }
     }

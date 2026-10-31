@@ -18,17 +18,21 @@ if (session_status() === PHP_SESSION_NONE)
     {
       if ($d['atendido'] === 0)
       {?>
-<<<<<<< HEAD
-        <div class="Card_cita">
-          <p><strong class="oculto"><?php echo $d['id']; ?></strong></p>
-=======
-        <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
-          <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
-          <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
-          <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
-          <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
-        </div>
+        <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+          <td><?php echo $d['nombre']; ?> </td>
+          <td><?php echo $d['fecha']; ?> </td>
+
+          <td><?php echo "<br>".$d['motivo']; ?></td>
+
+          <td>
+            <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
+            <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Cancelar</a>
+            <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
+            <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">No asistio</a>
+
+          </td>
+
+        </tr>
       <?php }
     }
   }
@@ -46,12 +50,7 @@ if (session_status() === PHP_SESSION_NONE)
     {
       if ($d['atendido'] === 1)
       {?>
-<<<<<<< HEAD
-        <div class="Card_cita">
-          <p><strong class="oculto"><?php echo $d['id']; ?></strong></p>
-=======
         <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>">
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
           <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
           <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
           <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
@@ -133,42 +132,6 @@ if (session_status() === PHP_SESSION_NONE)
 
       <div class="panel_contenido">
         <!-- Sección de espera  -->
-<<<<<<< HEAD
-        <div id="seccion_espera" class="seccion-panel">
-          <h3>Citas en espera</h3> 
-          <div id="FiltroCitas">
-              <h4>Filtrado</h4>
-              <select id="filtro_espera" name="filtro_espera">
-                <option value="Todos">Todos</option>
-                <option value="Hoy">Hoy</option>
-                <option value="Semana">Semana</option>
-                <option value="Mes">Mes</option>
-              </select>
-          </div>
-          <hr>
-          
-          <?php mostrarProximasCitas(); ?>
-        </div>
-
-        <!-- Sección de atendidos-->
-        <div id="seccion_atendidos" class="seccion-panel oculto">
-          <h3>Citas atendidas</h3>
-          <div id="filtrado_atendidos"></div>
-          <div id="FiltroCitas">
-              <h4>Filtrado</h4>
-              <select id="filtro_espera" name="filtro_espera">
-                <option value="Todos">Todos</option>
-                <option value="Hoy">Hoy</option>
-                <option value="SemanaPasada">Semana pasada</option>
-                <option value="MesPasado">Mes pasado</option>
-              </select>
-          </div>
-          <hr>
-
-          <?php mostrarCitasAtendidas(); ?>
-        </div>
-         
-=======
         
 
         <div class="contenedor_citas">
@@ -179,7 +142,22 @@ if (session_status() === PHP_SESSION_NONE)
 
           <div id="seccion_espera" class="seccion-panel">
             <h3>Citas en espera</h3>
-            <?php mostrarProximasCitas(); ?>
+            <div class="tabla-envoltura"> 
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nombre del dueño:</th>
+                    <th>Fecha:</th>
+                    <th>Motivo de consulta:</th>
+                    <th>Servicio:</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php mostrarProximasCitas(); ?>
+                </tbody>
+              </table>
+            </div>
+            
           </div>
             
             <!-- Sección de atendidos-->
@@ -191,7 +169,6 @@ if (session_status() === PHP_SESSION_NONE)
           </div>
         </div>
 
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
       </div>
     </div>
   
