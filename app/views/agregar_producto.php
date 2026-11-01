@@ -116,15 +116,15 @@
             <h3>Recortar foto (cuadrado)</h3>
             <img id="imagen-a-recortar" alt="Imagen a recortar">
             <div class="crop-acciones">
-              <button type="button" id="btn-cancelar-crop" class="btn-secundario">Cancelar</button>
-              <button type="button" id="btn-recortar">Recortar y usar</button>
+              <button type="button" id="btn-cancelar-crop" class="btn btn-secundario btn-chico">Cancelar</button>
+              <button type="button" id="btn-recortar" class="btn btn-chico">Recortar y usar</button>
             </div>
           </div>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Precios e inventario</legend>
+        <legend>Precios e Inventario</legend>
 
         <div class="grid-formulario">
           <div>
@@ -150,7 +150,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="existencia">Existencia (stock):</label>
+            <label class="label-campo" for="existencia">Existencia (Stock):</label>
             <input 
             type="number" 
             step="0.01" 
@@ -197,7 +197,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>Logística y almacén</legend>
+        <legend>Logística y Almacén</legend>
 
         <div class="grid-formulario">
           <div>
@@ -212,7 +212,7 @@
           </div>
 
           <div>
-            <label class="label-campo" for="ubicacion">Ubicación / estante:</label>
+            <label class="label-campo" for="ubicacion">Ubicación / Estante:</label>
             <input 
              type="text" 
              class="campo" 
@@ -242,8 +242,8 @@
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="inventario.php">Cancelar</a>
-        <button type="submit">Guardar</button>
+        <a class="btn btn-secundario btn-chico" href="inventario.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
     </form>
   

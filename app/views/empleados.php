@@ -7,17 +7,20 @@ $empleados = Empleados::Listar_empleados_activos();
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Empleados</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
+
 <body>
 
   <div class="layout">
 
-  <?php $paginaActiva = 'empleados'; include __DIR__ . '/layout/sidebar.php'; ?>
+    <?php $paginaActiva = 'empleados';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
       <div class="migaja">Gestión de empleados /</div>

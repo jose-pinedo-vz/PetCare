@@ -22,7 +22,7 @@
                     <section class="tarjeta corte-panel" aria-labelledby="tituloNuevoCorte">
                         <div class="corte-panel-titulo">
                             <h2 id="tituloNuevoCorte">Nuevo corte de caja</h2>
-                            <a class="btn-secundario corte-volver" href="Ventas.php">Regresar a venta</a>
+                            <a class="btn btn-secundario corte-volver btn-chico" href="Ventas.php">Regresar a venta</a>
                         </div>
 
                         <form class="corte-formulario">
@@ -64,7 +64,7 @@
                                 </div>
                             </div>
 
-                            <button class="btn corte-generar" type="button">Generar corte</button>
+                            <button class="btn corte-generar btn-chico" type="button">Generar corte</button>
                         </form>
                     </section>
 
@@ -87,25 +87,25 @@
                                         <td>Diario</td>
                                         <td>15/10/2026</td>
                                         <td><span class="corte-estado cerrado">Cerrado</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="corte-accion" type="button" aria-label="Ver corte diario del 15/10/2026">Ver</button><button class="corte-accion" type="button" aria-label="Descargar corte en PDF del 15/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
+                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte diario del 15/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 15/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
                                     </tr>
                                     <tr>
                                         <td>Diario</td>
                                         <td>14/10/2026</td>
                                         <td><span class="corte-estado cerrado">Cerrado</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="corte-accion" type="button" aria-label="Ver corte diario del 14/10/2026">Ver</button><button class="corte-accion" type="button" aria-label="Descargar corte en PDF del 14/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
+                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte diario del 14/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 14/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
                                     </tr>
                                     <tr>
                                         <td>Mensual</td>
                                         <td>01/10/2026</td>
                                         <td><span class="corte-estado cerrado">Cerrado</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="corte-accion" type="button" aria-label="Ver corte mensual del 01/10/2026">Ver</button><button class="corte-accion" type="button" aria-label="Descargar corte en PDF del 01/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
+                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte mensual del 01/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 01/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
                                     </tr>
                                     <tr>
                                         <td>Diario</td>
                                         <td>13/10/2026</td>
                                         <td><span class="corte-estado abierto">Abierto</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="corte-accion" type="button" aria-label="Ver corte diario del 13/10/2026">Ver</button><button class="corte-accion" type="button" aria-label="Descargar corte en PDF del 13/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
+                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte diario del 13/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 13/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -124,7 +124,7 @@
                                     <span aria-hidden="true">$</span>
                                     <label class="visualmente-oculto" for="efectivoContado">Cantidad de efectivo contado</label>
                                     <input class="campo" id="efectivoContado" type="number" min="0" step="0.01" disabled>
-                                    <button class="btn-secundario" type="button" disabled>Confirmar</button>
+                                    <button class="btn btn-secundario btn-chico" type="button" disabled>Confirmar</button>
                                 </div>
                             </article>
                             <article class="corte-metrica">
@@ -200,8 +200,8 @@
                         </div>
 
                         <div class="corte-acciones">
-                            <button class="btn corte-cerrar" type="button" disabled>Cerrar corte</button>
-                            <button class="btn-secundario" type="button" disabled>Descargar corte en PDF</button>
+                            <button class="btn corte-cerrar btn-chico" type="button" disabled>Cerrar corte</button>
+                            <button class="btn btn-secundario btn-chico" type="button" disabled>Descargar corte en PDF</button>
                         </div>
                     </section>
                 </div>

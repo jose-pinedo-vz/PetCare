@@ -43,7 +43,7 @@ unset($_SESSION['error']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agregar empleado</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/codigo_Postal.js"></script>
+  <script src="js/codigo_Postal.js?v=2"></script>
 </head>
 <body>
 
@@ -217,8 +217,8 @@ unset($_SESSION['error']);
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Regresar</a>
-        <button type="submit" class="btn">Guardar</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Regresar</a>
+        <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
 
     </form>

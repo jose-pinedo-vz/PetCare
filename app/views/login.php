@@ -5,13 +5,11 @@ include 'layout/encabezado.php';
 
 <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 120px); padding: 20px; position: relative;">
     
-    <!-- Contenedor visual del logo de fondo (puedes ajustar el tamaño y opacidad a tu gusto) -->
     <div style="text-align: center; margin-bottom: 25px; opacity: 0.85;">
         <img src="../views/img/logo3.svg" alt="Veterinaria PetCare" style="max-width: 180px; height: auto; display: block; margin: 0 auto 10px;">
         <strong style="font-size: 24px; color: var(--primary-dark);">PetCare</strong>
     </div>
 
-    <!-- Tarjeta del Formulario de Login -->
     <div class="tarjeta" style="width: 100%; max-width: 420px; background-color: var(--card); box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
         <h2 style="margin-bottom: 20px; text-align: center; font-size: 20px;">Iniciar sesión</h2>
 

@@ -22,7 +22,7 @@ $usuario=$_SESSION['usuario'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Registrar cliente</title>
-  <script src="js/codigo_Postal.js"></script>
+  <script src="js/codigo_Postal.js?v=2"></script>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
@@ -232,8 +232,13 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <div class="acciones-formulario">
+<<<<<<< HEAD
+        <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cliente</button>
+=======
         <a class="btn-secundario" href="clientes.php">Cancelar</a>
         <button type="submit">Guardar</button>
+>>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
 
     </form>

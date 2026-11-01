@@ -129,6 +129,11 @@ $animales = listar_adopciones_ventas();
                 <h1>Adopción y venta</h1>
             </div>
             <div class="tarjeta">
+                <div class="barra-acciones-busqueda">
+                    <div class="busqueda-barra" role="search">
+                        <label class="visualmente-oculto" for="buscarAdopcionVenta">Buscar adopciones o ventas</label>
+                        <input class="campo" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
+                    </div>
                 <div class="barra-acciones">
                     <a class="btn" href="agregar_adopcion_venta.php">+ Agregar adopción y venta</a>
                 </div>
@@ -236,6 +241,29 @@ $animales = listar_adopciones_ventas();
         <footer>
             <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
         </footer>
+        <script>
+            const buscadorAdopcionVenta = document.getElementById('buscarAdopcionVenta');
+            const filasAdopcionVenta = document.querySelectorAll('#registrosAdopcionVenta tr:not(#sinResultados)');
+            const mensajeSinResultados = document.getElementById('sinResultados');
+
+            buscadorAdopcionVenta.addEventListener('input', () => {
+                const termino = buscadorAdopcionVenta.value.trim().toLocaleLowerCase();
+                let resultados = 0;
+
+                filasAdopcionVenta.forEach((fila) => {
+                    const texto = Array.from(fila.cells)
+                        .slice(0, -1)
+                        .map((celda) => celda.textContent)
+                        .join(' ')
+                        .toLocaleLowerCase();
+                    const coincide = texto.includes(termino);
+                    fila.hidden = !coincide;
+                    resultados += coincide ? 1 : 0;
+                });
+
+                mensajeSinResultados.hidden = resultados > 0;
+            });
+        </script>
 
     <!-- Modal para ver imagen ampliada / pantalla completa -->
     <div id="modal-visor-imagen" class="modal-visor" role="dialog" aria-modal="true" aria-label="Visor de imagen">
