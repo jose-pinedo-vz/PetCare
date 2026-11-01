@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // Esta vista se carga desde controllers/FichaMedicaController.php,
 // asi que puede que estas variables no existan si se entra directo.
 $mascotas      = $mascotas ?? [];
+$veterinarios  = $veterinarios ?? [];
 $idConsulta    = $idConsulta ?? 0;
 $idVeterinario = $idVeterinario ?? 1;
 
@@ -23,6 +24,10 @@ unset($_SESSION['error']);
 $listaErrores = $_SESSION['errores'] ?? [];
 unset($_SESSION['errores']);
 $mascotaVieja = old('oldMascota');
+$veterinarioViejo = old('oldid_veterinario');
+if ($veterinarioViejo === '' && $idVeterinario > 0) {
+    $veterinarioViejo = (string)$idVeterinario;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -63,7 +68,7 @@ $mascotaVieja = old('oldMascota');
 
     <form action="../controllers/FichaMedicaController.php" method="POST">
       <input type="hidden" name="id_consulta" value="<?= (int)$idConsulta ?>">
-      <input type="hidden" name="id_veterinario" value="<?= (int)$idVeterinario ?>">
+
 
       <fieldset>
         <legend>Datos de la consulta</legend>
@@ -74,6 +79,16 @@ $mascotaVieja = old('oldMascota');
               <option value="">Selecciona una mascota</option>
               <?php foreach ($mascotas as $m): ?>
                 <option value="<?= (int)$m['id'] ?>" <?= ((string)$m['id'] === (string)$mascotaVieja) ? 'selected' : '' ?>><?= htmlspecialchars($m['nombre']) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div>
+            <label class="label-campo" for="id_veterinario">Veterinario *:</label>
+            <select class="campo" name="id_veterinario" id="id_veterinario" required>
+              <option value="">Selecciona un veterinario</option>
+              <?php foreach ($veterinarios as $v): ?>
+                <option value="<?= (int)$v['id'] ?>" <?= ((string)$v['id'] === (string)$veterinarioViejo) ? 'selected' : '' ?>><?= htmlspecialchars($v['nombre']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>

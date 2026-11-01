@@ -56,7 +56,7 @@ class ConexionDB
     }
     public static function buscarUsuarioPorNombre(PDO $conexion, string $usuario)
     {
-        $base=$conexion ->prepare("SELECT id_usuario, contrasena, rol, estado FROM usuarios WHERE usuario = ?");
+        $base=$conexion ->prepare("SELECT id_usuario, contrasena, rol, estado, empleado_asociado FROM usuarios WHERE usuario = ?");
         $base->execute([$usuario]);
         return $base->fetch(PDO::FETCH_ASSOC);
     }

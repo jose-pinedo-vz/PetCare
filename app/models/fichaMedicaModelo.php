@@ -50,7 +50,7 @@ class FichaMedica
             return ['exito' => true, 'id' => $datos['id_consulta'], 'mensaje' => 'ficha medica registrada con éxito'];
         //Sisi dice que pos si con true y si no da false y el error
         }catch (Exception $e) {
-            return ['exito' => false, 'id' => null, 'mensaje' => 'No se pudo guardar la ficha'];
+            return ['exito' => false, 'id' => null, 'mensaje' => $e->getMessage()];
         }
     }
 
@@ -72,5 +72,52 @@ class FichaMedica
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $datos;
+    }
+
+    public function obtenerVeterinarios(): array
+    {
+        $db = ConexionDB::obtenerConexion();
+        $stmt = $db->query("SELECT id_empleado AS id, CONCAT(nombre, ' ', apellido) AS nombre FROM empleados WHERE puesto LIKE '%Veterinario%' AND esta_activo = 1 ORDER BY nombre ASC");
+        $vets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($vets)) {
+            $stmt = $db->query("SELECT id_empleado AS id, CONCAT(nombre, ' ', apellido) AS nombre FROM empleados WHERE puesto LIKE '%Veterinario%' ORDER BY nombre ASC");
+            $vets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if (empty($vets)) {
+            $stmt = $db->query("SELECT id_empleado AS id, CONCAT(nombre, ' ', apellido) AS nombre FROM empleados ORDER BY nombre ASC");
+            $vets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $vets ?: [];
+    }
+
+    public function existeVeterinario(int $idVeterinario): bool
+    {
+        $db = ConexionDB::obtenerConexion();
+        $stmt = $db->prepare("SELECT 1 FROM empleados WHERE id_empleado = :id");
+        $stmt->execute([':id' => $idVeterinario]);
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function obtenerEmpleadoDeUsuario(int $idUsuario): int
+    {
+        if ($idUsuario > 0) {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT empleado_asociado FROM usuarios WHERE id_usuario = :id");
+            $stmt->execute([':id' => $idUsuario]);
+            $empleado = $stmt->fetchColumn();
+            if ($empleado && (int)$empleado > 0) {
+                return (int)$empleado;
+            }
+        }
+
+        $vets = $this->obtenerVeterinarios();
+        if (!empty($vets)) {
+            return (int)$vets[0]['id'];
+        }
+
+        return 1;
     }
 }

@@ -10,10 +10,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
-$idVeterinario = (int)($_SESSION['id_usuario'] ?? 1);
+$ficha = new FichaMedica();
+$idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
+$idVeterinario = $ficha->obtenerEmpleadoDeUsuario($idUsuario);
 $idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
 
-$ficha=new FichaMedica();
+
 
 function errorSession(string $error, int $idConsulta = 0) : void
 {
@@ -87,6 +89,7 @@ $idCliente=(int)$Datosconsulta['id_cliente'];
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $mascotas = $ficha->agarraMascotas($idCliente);
+    $veterinarios = $ficha->obtenerVeterinarios();
     require __DIR__ . '/../views/FichaMedica.php';   // la vista usa $mascotas e $idConsulta
     exit();
 }
@@ -125,6 +128,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     // Validar veterinario
     if ($veterinario === '' || !ctype_digit($veterinario) || (int)$veterinario <= 0) {
         $errores[] = "Debe estar asignado a un veterinario válido.";
+    } elseif (!$ficha->existeVeterinario((int)$veterinario)) {
+        $errores[] = "El veterinario seleccionado no es válido o no existe en el sistema.";
     }
 
     // Validar mascota perteneciente al cliente
