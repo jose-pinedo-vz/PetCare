@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db   = 'banco_emisor';
+$db   = 'petcare';
 $user = 'root';
 $pass = '';
 
