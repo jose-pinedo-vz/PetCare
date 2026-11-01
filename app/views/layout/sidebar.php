@@ -12,6 +12,7 @@ $sbModulos = [
     'ventas'        => ['Ventas',            'ventas.php'],
     'servicios'     => ['Servicios',         'servicios.php'],
     'adopcion'      => ['Adopción y venta',  'adopcion_venta.php'],
+    'hotel'      => ['Hotel',  'hotel.php'],
     'veterinaria'   => ['Veterinaria',       null],
     'pagos'         => ['Pagos',             null],
     'pagos_tarjeta' => ['Pagos con tarjeta', null],
