@@ -73,9 +73,10 @@ document.addEventListener("DOMContentLoaded", async function()
 // console.log("¿Qué encontró el DOM?:", cliente);
 
 
+
+// mostrar las mascotas de cada cliente en el select de mascotas
 document.addEventListener("DOMContentLoaded", async function()
 {
-
     const cliente = document.getElementById('claveCliente');
     //console.log("¿Qué encontró el DOM?:", cliente);
 
@@ -84,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async function()
         
         const elegir_mascota = async (mostrarMascotas) =>
         {
-            console.log("se ejecuta");
+            //console.log("se ejecuta");
             const mascota = document.getElementById("mascota");
             
             if (!mostrarMascotas) {
@@ -105,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async function()
             }
             catch (error) 
             {
-                console.log(error)
+                // console.log(error)
                 mascota.innerHTML = '<option value="">Error al cargar las mascotas</option>';
             }
 
@@ -123,5 +124,44 @@ document.addEventListener("DOMContentLoaded", async function()
             
             elegir_mascota(event.target.value.trim());
         });
+    }
+});
+
+
+
+// mostrar todos los servicios en el select de servicios
+document.addEventListener("DOMContentLoaded", async function()
+{
+    console.log("se ejecuta");
+    const servicio = document.getElementById('servicio');
+
+    if (servicio)
+    {
+        const mas_servicios = async (masServicios) =>
+        {
+            let datos = [];
+
+            try
+            {
+                const respuesta = await fetch('../controllers/citas.php?accion=mostrarServicio',
+                    {method: "GET"
+                });
+                
+                datos = await respuesta.json();
+
+                for (const item of datos)
+                {
+                    const option = document.createElement("option");
+                    option.value = item.nombre;
+                    option.textContent = item.nombre;
+                    servicio.appendChild(option);
+                }
+            }
+            catch (error)
+            {
+
+            }
+        }
+        mas_servicios();
     }
 });

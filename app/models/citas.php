@@ -9,16 +9,16 @@
     require_once 'conexion_db.php';
 
     // nueva base de datos instalada
-    class ConexionesClientes 
+    class ConexionesClientes
     {
         public function consultarIdCliente(int $clave):bool
         {
             // resivido una clave de un supuesto usuario consulto a la base de datos esa misma clave.
 
-            // si la base de datos me retornauna tupla bacia o nula entonces ese usuario no existe, lo que quiere 
+            // si la base de datos me retornauna tupla bacia o nula entonces ese usuario no existe, lo que quiere
             // deceir que no tiene permiso para hacer una consulta
-            
-            // retorno true o false segun se el caso 
+
+            // retorno true o false segun se el caso
 
             try
             {
@@ -33,11 +33,11 @@
                 {
                     return true;
                 }
-                else 
+                else
                 {
                     return false;
-                }    
-                
+                }
+
             }
             catch (Exception $e)
             {
@@ -61,7 +61,7 @@
             catch (Exception $e)
             {
                throw new Exception("Error al consultar los productos".$e->getMessage());
-               return false; 
+               return false;
             }
         }
 
@@ -91,7 +91,7 @@
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id]);
-                return true; 
+                return true;
             }
             catch (Exception $e)
             {
@@ -158,6 +158,23 @@
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id_cliente]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Exception $e)
+            {
+                return [];
+
+            }
+        }
+
+        public static function mostrarServicios()
+        {
+            try
+            {
+                $query = "SELECT nombre FROM servicios WHERE estado = 1";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([]);
                 return $stml->fetchAll(PDO::FETCH_ASSOC);
             }
             catch (Exception $e)

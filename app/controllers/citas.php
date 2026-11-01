@@ -240,7 +240,7 @@ function horarios()
 }
 
 
-$accion = $_GET['accion'];
+$accion = $_GET['accion'] ?? '';
 if ($accion === "mostrarMascota")
 {
     mostrarMascotas();
@@ -254,6 +254,20 @@ function mostrarMascotas()
     echo json_encode($mascotas);
     exit();
 }
+
+$accion = $_GET['accion'];
+if ($accion === "mostrarServicio")
+{
+    mostrarServicios();
+}
+
+function mostrarServicios()
+{
+    $servicios = ConexionesClientes::mostrarServicios();
+    echo json_encode($servicios);
+    exit();
+}
 ?>
+
 
 
