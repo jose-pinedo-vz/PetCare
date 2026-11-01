@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
 require_once '../../PHPMailer/src/Exception.php';
 require_once '../../PHPMailer/src/PHPMailer.php';
 require_once '../../PHPMailer/src/SMTP.php';
@@ -7,11 +11,12 @@ use PHPMailer\PHPMailer\Exception;
 
 require_once __DIR__ . '/../models/usuarios_db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
+    {
     $correo = trim($_POST['correo'] ?? '');
 
     if (empty($correo)) {
-        $error = "Por favor, ingresa tu correo electrónico.";
+        $_SESSION['error'] = "Por favor, ingresa tu correo electrónico.";
         include '../views/recuperar_contraseña.php';
         exit();
     }
@@ -34,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $mail = new PHPMailer(true);
 
-        try {
+        try
+        {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';             
             $mail->SMTPAuth   = true;                         
@@ -42,28 +48,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->Password   = 'yqrf wjql wfed bvqm';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
             $mail->Port       = 587;    
-
-            $mail->SMTPOptions = array('ssl' => array('verify_peer' => false,
-                                                    'verify_peer_name' => false,
-                                                    'allow_self_signed' => true));
-
+            $mail->SMTPOptions = array('ssl' => array('verify_peer' => false,'verify_peer_name' => false,'allow_self_signed' => true));
             $mail->setFrom('veterinariapetcare8@gmail.com', 'Soporte PetCare');   // CONTRASEÑA DEL CORREO: contrasenapetcare (Y usa mi numero)
             $mail->addAddress($correo, $usuario['nombre']);
-
-            // Contenido
             $mail->isHTML(true);
             $mail->Subject = 'Recuperación de contraseña - PetCare';
             $mail->Body    = "Hola, <b>" . htmlspecialchars($usuario['nombre']) . "</b>.<br>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para cambiarla (expira en 1 hora):<br><br><a href='" . $enlace . "'>" . $enlace . "</a>";
             $mail->CharSet = 'UTF-8';
 
             $mail->send();
-            $mensaje = "Se han enviado las instrucciones a tu correo electrónico.";
-        } catch (Exception $e) {
-            $error = "No se pudo enviar el correo. Error: {$mail->ErrorInfo}";
+            $_SESSION['mensaje'] = "Se han enviado las instrucciones a tu correo electrónico.";
+        } 
+        catch (Exception $e)
+        {
+            $_SESSION['error'] = "No se pudo enviar el correo. Error: {$mail->ErrorInfo}";
         }
-    } else {
-        $error = "El correo electrónico no está registrado.";
+    }
+    else
+    {
+        $_SESSION['error'] = "El correo electrónico no está registrado.";    
     }
 
-    include '../views/recuperar_contraseña.php';
+    header("Location: ../views/recuperar_contraseña.php");
+    exit();
 }

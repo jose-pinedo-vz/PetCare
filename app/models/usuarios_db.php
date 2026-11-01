@@ -160,6 +160,14 @@ class UsuariosDB
         $stmt->execute([$token, $token]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public static function obtenerUsuario(string $usuario)
+    {
+        $conexion=ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("SELECT usuario FROM usuarios WHERE usuario = ?");
+        $stmt->execute([$usuario]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 
 ?>

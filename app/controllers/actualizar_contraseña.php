@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE)
+{
+    session_start();
+}
 require_once __DIR__ . '/../models/usuarios_db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -9,19 +13,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($token) || empty($nuevoPassword) || empty($tipo) || empty($nombre_usuario))
     {
-        echo "Faltan datos obligatorios.";
+        $_SESSION['error']= "Faltan datos obligatorios.";
+        header("Location: ../views/restablecer_contraseña.php?token=" . urlencode($token));
         exit();
     }
 
-    $usuario= UsuariosDB::tipoContraseña( $tipo, $token, $nuevoPassword, $nombre_usuario);
+    $usuario = UsuariosDB::obtenerUsuario($nombre_usuario);
+    if (!$usuario)
+    {
+        $_SESSION['error'] = "Usuario no encontrado.";
+        header("Location: ../views/restablecer_contraseña.php?token=" . urlencode($token));
+        exit();
+    }
+    
+    $val_usuario = UsuariosDB::tipoContraseña($tipo, $token, $nuevoPassword, $nombre_usuario);
 
-    if (isset($usuario) && $usuario)
+    if ($val_usuario)
     {
         header("Location: ../views/login.php?exito=password_actualizado");
         exit();
     }
     else
     {
-        echo "El enlace es inválido o ha expirado.";
+        $_SESSION['error'] = "El enlace es inválido o ha expirado.";
+        header("Location: ../views/restablecer_contraseña.php?token=" . urlencode($token));
+        exit();
     }
 }
