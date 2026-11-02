@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
  
@@ -25,32 +24,89 @@
                 <h2>Servicios disponibles</h2>
                 <div class="inventario-resumen">
  
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=1">
-                        <h3>Baño</h3>
-                        <p>Estética · 60 min · $150.00</p>
-                    </a>
- 
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=2">
-                        <h3>Corte de pelo</h3>
-                        <p>Estética · 90 min · $250.00</p>
-                    </a>
- 
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=3">
-                        <h3>Corte de uñas</h3>
-                        <p>Estética · 20 min · $60.00</p>
-                    </a>
- 
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=4">
-                        <h3>Desparasitación</h3>
-                        <p>Salud · 30 min · $120.00</p>
-                    </a>
+                    <div class="inventario-tarjeta">
+                        <span class="servicio-estado activo">Activo</span>
+                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=1">Baño</a></h3>
+                        <p>Estética · 60 min</p>
+                        <p class="servicio-precio">$150.00</p>
+                        <div class="servicio-acciones">
+                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=1">Editar</a>
+                            <form action="cambiar_estado_servicio.php" method="POST">
+                                <input type="hidden" name="id_servicio" value="1">
+                                <input type="hidden" name="accion" value="desactivar">
+                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
+                            </form>
+                        </div>
+                    </div>
  
                     <div class="inventario-tarjeta">
+                        <span class="servicio-estado activo">Activo</span>
+                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=2">Corte de pelo</a></h3>
+                        <p>Estética · 90 min</p>
+                        <p class="servicio-precio">$250.00</p>
+                        <div class="servicio-acciones">
+                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=2">Editar</a>
+                            <form action="cambiar_estado_servicio.php" method="POST">
+                                <input type="hidden" name="id_servicio" value="2">
+                                <input type="hidden" name="accion" value="desactivar">
+                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
+                            </form>
+                        </div>
+                    </div>
+ 
+                    <div class="inventario-tarjeta">
+                        <span class="servicio-estado activo">Activo</span>
+                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=3">Corte de uñas</a></h3>
+                        <p>Estética · 20 min</p>
+                        <p class="servicio-precio">$60.00</p>
+                        <div class="servicio-acciones">
+                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=3">Editar</a>
+                            <form action="cambiar_estado_servicio.php" method="POST">
+                                <input type="hidden" name="id_servicio" value="3">
+                                <input type="hidden" name="accion" value="desactivar">
+                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
+                            </form>
+                        </div>
+                    </div>
+ 
+                    <div class="inventario-tarjeta">
+                        <span class="servicio-estado activo">Activo</span>
+                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=4">Desparasitación</a></h3>
+                        <p>Salud · 30 min</p>
+                        <p class="servicio-precio">$120.00</p>
+                        <div class="servicio-acciones">
+                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=4">Editar</a>
+                            <form action="cambiar_estado_servicio.php" method="POST">
+                                <input type="hidden" name="id_servicio" value="4">
+                                <input type="hidden" name="accion" value="desactivar">
+                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
+                            </form>
+                        </div>
+                    </div>
+ 
+                    <div class="inventario-tarjeta servicio-inactivo">
+                        <span class="servicio-estado inactivo">Inactivo</span>
+                        <h3>Baño medicado</h3>
+                        <p>Salud · 75 min</p>
+                        <p class="servicio-precio">$320.00</p>
+                        <div class="servicio-acciones">
+                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=5">Editar</a>
+                            <form action="cambiar_estado_servicio.php" method="POST">
+                                <input type="hidden" name="id_servicio" value="5">
+                                <input type="hidden" name="accion" value="activar">
+                                <button type="submit" class="btn btn-chico btn-activar">Activar</button>
+                            </form>
+                        </div>
+                    </div>
+ 
+                    <div class="inventario-tarjeta servicio-nuevo">
                         <h3>Nuevo servicio</h3>
                         <p>Agrega otro servicio al catálogo</p>
                         <a class="btn inventario-btn-contactar btn-chico" href="agregar_servicio.php">+ Agregar servicio</a>
                     </div>
                 </div>
+ 
+                <p class="servicio-nota">Los servicios no se borran; se desactivan para conservar el historial. Solo el administrador puede editarlos.</p>
  
                 <div style="margin-top: 24px;">
                     <h2>Historial de servicios</h2>
@@ -66,7 +122,6 @@
                             <option value="Cancelada">Cancelada</option>
                             <option value="No asistió">No asistió</option>
                         </select>
-                        <button type="submit" class="btn btn-chico">Filtrar</button>
                     </form>
  
                     <div class="tabla-envoltura">
@@ -161,4 +216,3 @@
 </body>
  
 </html>
- 
