@@ -102,14 +102,31 @@ function errorSession(string $error)
 
 if ($_SERVER["REQUEST_METHOD"] === "POST")
 {
-    $claveCliente = trim($_POST['claveCliente'] ?? '');
-    $fecha = trim($_POST['fecha'] ?? '');
-    $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
+    // LÍNEA DE DEPURACIÓN TEMPORAL:
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
+    exit(); // Detiene la ejecución aquí para ver qué datos llegaron realmente del formulario
 
-    $orararioConsulta = trim($_POST['horarioConsulta'] ?? $_POST['orararioConsulta'] ?? ''); 
+    
+    // datos 
+    $claveCliente = trim($_POST['claveCliente'] ?? '');
+    $mascota = trim($_POST['mascota'] ?? '');
+    $fecha = trim($_POST['fecha'] ?? '');
+    $duracion = trim($_POST['duracion'] ?? '');
+    $servicio = trim($_POST['servicio'] ?? '');
+    $motivoConsulta = trim($_POST['motivoConsulta'] ?? '');
+    $responsable = trim($_POST['responsable'] ?? '');
+    $horarioConsulta = trim($_POST['horarioConsulta'] ?? '');
+    //$orararioConsulta = trim($_POST['horarioConsulta'] ?? $_POST['orararioConsulta'] ?? ''); 
 
     // validar campos obligatorios
-    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "" || $orararioConsulta === "")
+    if ($claveCliente === "" || $fecha === "" || $motivoConsulta === "" || $horarioConsulta === "")
+    {
+        errorSession("Todos los campos marcados con asterisco son obligatorios.");
+    }
+
+    if ($mascota === "" || $duracion === "" || $servicio === "" || $responsable === "" || $horarioConsulta === "")
     {
         errorSession("Todos los campos marcados con asterisco son obligatorios.");
     }
@@ -151,14 +168,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
 
     // validacion de fecha
-    $objetoHora = DateTime::createFromFormat('g:i A', $orararioConsulta);
+    $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
     $horaLimpia = $objetoHora->format('H:i:s');
     $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
     // insertar la cita
-    $seInserto = $consultasCitas->insertarCita((int)$claveCliente, $fechaHoraFinal, $motivoConsulta);
+    $seInserto = $consultasCitas->insertarCita((int)$claveCliente,(int)$mascota,(int)$servicio, (int) $responsable, "pendiente",(int) $duracion, $motivoConsulta, "sin atender", $fechaHoraFinal,  $motivoConsulta,(string) 0);
     if (!$seInserto)
     {
         errorSession("Hubo un error al registrar la cita en la base de datos.");
@@ -187,51 +204,45 @@ if ($accion === 'horario' || $accion === 'orario')
 function horarios()
 {
     $fechaSeleccionada = $_GET['fecha'] ?? '';
+    $empleado = $_GET['empleado'] ?? '';
     $Horarios = [];
     $entradaMatutino = 9;
-    $salidaMatutino = 2;
+    $salidaMatutino = 13;
     $entradaVespertino = 16;
-    $salidaVespertino = 19;
+    $salidaVespertino = 18;
     $horasPorConsulta = 1;
 
     // echo "la fecha es" . $fechaSeleccionada;
 
-    $Veterinarios = ConexionesClientes::rescatarVeterinarios();
+    // $Veterinarios = ConexionesClientes::rescatarVeterinarios();
     //$Veterinarios = ConexionesClientes::rescatarVeterinarios();
+    $Veterinarios = true;
 
     if ($Veterinarios)
     {
         // cantidad de veterinarios por turno
-        $cantMatutino = ConexionesClientes::cantidadHorarios("Matutino");
-        $cantVespertino = ConexionesClientes::cantidadHorarios("Vespertino");
+        // $cantMatutino = ConexionesClientes::cantidadHorarios("Matutino");
+        // $cantVespertino = ConexionesClientes::cantidadHorarios("Vespertino");
 
-        if ($cantMatutino > 0)
+        
+        for($i = $entradaMatutino; $i<= $salidaMatutino; $i++)
         {
-            for($i = $entradaMatutino; $i<= $salidaMatutino; $i++)
-            {
-                    $entrada = $i . ":00:00";
-                    $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
+            $entrada = $i . ":00:00";
+            $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
 
-                    //distincion por fehca
-                    $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'));
-
-                    //echo $cantidadCitasPorFecha . "<br>";
-
-                    if ($cantidadCitasPorFecha < $cantMatutino) $Horarios[] = $dateTime->format('g:i A');
-            }
+            //distincion por fecha
+            $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'), $empleado);
+            if ($cantidadCitasPorFecha === 0) $Horarios[] = $dateTime->format('g:i A');
         }
+        
 
-        if ($cantVespertino > 0)
+        for($i = $entradaVespertino; $i<= $salidaVespertino; $i++)
         {
-            for($i = $entradaVespertino; $i<= $salidaVespertino; $i++)
-            {
-                $entrada = $i . ":00:00";
-                $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
-                
-
-                $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'));
-                if ($cantidadCitasPorFecha < $cantVespertino) $Horarios[] = $dateTime->format('g:i A');
-            }
+            $entrada = $i . ":00:00";
+            $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
+            
+            $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'), $empleado);
+            if ($cantidadCitasPorFecha === 0) $Horarios[] = $dateTime->format('g:i A');
         }
     }
 
@@ -240,12 +251,14 @@ function horarios()
 }
 
 
+
+// mostrar mascotas segun el cliente que se inserto
+
 $accion = $_GET['accion'] ?? '';
 if ($accion === "mostrarMascota")
 {
     mostrarMascotas();
 }
-
 function mostrarMascotas()
 {
     $id_cliente = $_GET['id_cliente'];
@@ -255,7 +268,9 @@ function mostrarMascotas()
     exit();
 }
 
-$accion = $_GET['accion'];
+
+// mostrar servicio existente
+$accion = $_GET['accion'] ?? '';
 if ($accion === "mostrarServicio")
 {
     mostrarServicios();
@@ -267,6 +282,21 @@ function mostrarServicios()
     echo json_encode($servicios);
     exit();
 }
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === "mostrarResponsable")
+{
+    mostrarResponsable();
+}
+function mostrarResponsable()
+{
+    $servicio = $_GET['servicio'];
+    $responsables = ConexionesClientes::mostrarServiciosPorServicio($servicio);
+
+    echo json_encode($responsables);
+    exit();
+    }
 ?>
 
 

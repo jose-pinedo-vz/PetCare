@@ -39,7 +39,7 @@ $usuario=$_SESSION['usuario'];
       </div>
 
       <div class="tarjeta">
-    
+
 
 
     <!-- mensaje en caso de algun error o mostrar informaicon nesesaria -->
@@ -71,7 +71,7 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="fecha">Mascota *:</label>
             <select class="campo" name="mascota" id="mascota" required>
-              <option value="">Ingresa la clave del duenio primero</option>
+              <option value="">Ingresa la clave del dueño primero</option>
             </select>
           </div>
 
@@ -84,19 +84,15 @@ $usuario=$_SESSION['usuario'];
           </div>
 
           <div>
-            <label class="label-campo" for="fecha">Duración estimada (minutos) *:</label>
-            <input type="number" class="campo" id="fecha" name="fecha" data-fecha="fecha" required placeholder="Ej. 50"
-
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
+            <label class="label-campo" for="Duración">Duración estimada (minutos) *:</label>
+            <input type="number" class="campo" id="duracion" name="duracion" required placeholder="Ej. 60">
 
           </div>
 
           <div>
             <label class="label-campo" for="fecha">Servicio *:</label>
             <select class="campo" name="servicio" id="servicio" required>
-              <option value="">Corte de uñas</option>
-              <option value="">estética</option>
-              <option value="">Consulta veterinaria</option>
+              <option value="">Seleccione un servicio</option>
             </select>
           </div>
 
@@ -111,10 +107,10 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="responsable">Responsable *:</label>
             <select class="campo" name="responsable" id="responsable" required>
-              <option value="">Responsable</option>
+              <option value="">Seleccione un responsable</option>
             </select>
           </div>
-            
+
           <div>
             <label class="label-campo" for="horarioConsulta">Horario de consulta *:</label>
 
@@ -123,7 +119,7 @@ $usuario=$_SESSION['usuario'];
             </select>
           </div>
 
-          
+
 
         </div>
       </fieldset>
@@ -133,7 +129,7 @@ $usuario=$_SESSION['usuario'];
         <button type="submit" class="btn">Guardar</button>
       </div>
     </form>
-  
+
       </div>
     </main>
 

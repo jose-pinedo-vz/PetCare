@@ -48,20 +48,36 @@
 
 
         // insercino natural a la base de datos
-        public function insertarCita(int $clave_cliente,string $fecha,string $motivo):bool
+        public function insertarCita(int $clave_cliente,int $mascota, int $servicio, int $empleado, string $estado_cita, 
+                int $duracion_estimada, string $observaciones, string $estado, string $fecha, string $motivo, string $atendido): bool
         {
             try
             {
-                $query = "INSERT INTO consulta_veterinaria (id_cliente, fecha, motivo_de_consulta, estado_de_pago) VALUES (?, ?, ?, ?)";
+                // 11 columnas y exactamente 11 signos de interrogación (?)
+                $query = "INSERT INTO citas (cliente, mascota, servicio, empleado, estado_cita, duracion_estimada, observacion, estado, fecha, motivo_consulta, atendido) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
-                $stml->execute([$clave_cliente, $fecha, $motivo, "Pendiente"]);
+                $stml->execute([
+                    $clave_cliente,     
+                    $mascota,           
+                    $servicio,         
+                    $empleado,          
+                    $estado_cita,       
+                    $duracion_estimada,
+                    $observaciones,     
+                    $estado,            
+                    $fecha,             
+                    $motivo,            
+                    $atendido           
+                ]);
                 return true;
             }
             catch (Exception $e)
             {
-               throw new Exception("Error al consultar los productos".$e->getMessage());
-               return false;
+            throw new Exception("Error al insertar la cita: ".$e->getMessage());
+            return false;
             }
         }
 
@@ -70,13 +86,13 @@
         public function datosCitas():array
         {
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_consulta, c.id_cliente, c.fecha, c.motivo_de_consulta, cl.nombre, cl.apellido, c.atendido
-              FROM consulta_veterinaria c
-              INNER JOIN clientes cl ON c.id_cliente = cl.id_cliente";
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.motivo_consulta, cl.nombre, cl.apellido, c.atendido
+              FROM citas c
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
-            $stml->execute();
+            $stml->execute([]);
             $datos = $stml->fetchAll(PDO::FETCH_ASSOC);
 
             return $datos;
@@ -87,7 +103,7 @@
         {
             try
             {
-                $query = "UPDATE consulta_veterinaria SET atendido = 1 WHERE id_consulta = ?";
+                $query = "UPDATE citas SET atendido = 1 WHERE id_cita = ?";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id]);
@@ -115,21 +131,21 @@
             }
         }
 
-        public static function cantidadHorarios($valor)
-        {
-            try
-            {
-                $query = 'SELECT COUNT(id_empleado) AS numEmpleado FROM empleados WHERE puesto LIKE "Veterinario%" AND horario = ? AND esta_activo = 1;';
-                $db = ConexionDB::obtenerConexion();
-                $stml = $db->prepare($query);
-                $stml->execute([$valor]);
-                return (int)$stml->fetchColumn();
-            }
-            catch (Exception $e)
-            {
-                return 0;
-            }
-        }
+        // public static function cantidadHorarios($valor, $empleado)
+        // {
+        //     try
+        //     {
+        //         $query = 'SELECT COUNT(id_empleado) AS numEmpleado FROM empleados WHERE puesto LIKE "Veterinario%" AND esta_activo = 1;';
+        //         $db = ConexionDB::obtenerConexion();
+        //         $stml = $db->prepare($query);
+        //         $stml->execute([$valor]);
+        //         return (int)$stml->fetchColumn();
+        //     }
+        //     catch (Exception $e)
+        //     {
+        //         return 0;
+        //     }
+        // }
 
         // cantidad de citas por fecha
         public static function cantidadCitasFecha($valor)
@@ -154,7 +170,7 @@
         {
             try
             {
-                $query = "SELECT nombre FROM mascotas WHERE id_cliente = ?";
+                $query = "SELECT id_mascota, nombre FROM mascotas WHERE id_cliente = ? AND esta_activo = 0";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id_cliente]);
@@ -167,20 +183,54 @@
             }
         }
 
-        public static function mostrarServicios()
+        public static function mostrarServiciosPorServicio($id_servicio)
         {
             try
             {
-                $query = "SELECT nombre FROM servicios WHERE estado = 1";
+                $query = "SELECT empleados.id_empleado, CONCAT(empleados.nombre, ' ', empleados.apellido) AS nombre 
+                  FROM empleados 
+                  INNER JOIN servicios ON empleados.puesto = servicios.categoria 
+                  WHERE servicios.id_servicio = ? AND servicios.estado = 1 AND empleados.esta_activo = 1";
+                  
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
-                $stml->execute([]);
+                $stml->execute([$id_servicio]);
                 return $stml->fetchAll(PDO::FETCH_ASSOC);
             }
             catch (Exception $e)
             {
                 return [];
             }
+        }
+
+        public static function mostrarServicios()
+        {
+            try
+            {
+                $query = "SELECT id_servicio, nombre FROM servicios WHERE estado = 1";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+
+            }
+            catch (Exception $e)
+            {
+                return [];
+            }
+        }
+
+        public static function contarHorarios($fecha, $empleado)
+        {
+            $query = "SELECT COUNT(id_cita)
+                    FROM citas
+                    WHERE fecha = ? AND empleado = ?  
+                    ";
+
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$fecha, $empleado]);
+            return (int)$stml->fetchColumn();
         }
     }
 ?>
