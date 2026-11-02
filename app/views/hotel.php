@@ -25,7 +25,7 @@
                 <div class="barra-acciones-busqueda">
                     <h2>Disponibilidad de jaulas</h2>
                     <div class="barra-acciones">
-            <a class="btn" href="">+ Nueva reservación</a>
+            <a class="btn" href="reservacion_hotel.php">+ Nueva reservación</a>
           </div>
                 </div>
                 <div class="inventario-resumen">
