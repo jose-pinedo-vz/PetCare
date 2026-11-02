@@ -1,3 +1,22 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {die('No se recibieron datos de una venta.');}
+
+$id_cliente = !empty($_POST['id_cliente']) ? (int)$_POST['id_cliente'] : null;
+
+$productos_json = $_POST['productos_json'] ?? '[]';
+$servicios_json = $_POST['servicios_json'] ?? '[]';
+
+$productos = json_decode($productos_json, true);
+$servicios = json_decode($servicios_json, true);
+
+if (!is_array($productos)) {$productos = [];}
+if (!is_array($servicios)) {$servicios = [];}
+
+$subtotal = isset($_POST['subtotal']) ? (float)$_POST['subtotal'] : 0;
+$iva = isset($_POST['iva']) ? (float)$_POST['iva'] : 0;
+$total = isset($_POST['total']) ? (float)$_POST['total'] : 0;
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,18 +33,34 @@
       <div class="card summary-card">
         <h3>Resumen de Pago</h3>
         <hr class="divider">
-        <div class="summary-item">
-          <span>Consulta Médica General</span>
-          <span>$350.00 MXN</span>
-        </div>
-        <div class="summary-item">
-          <span>Desparasitante Canino</span>
-          <span>$155.00 MXN</span>
-        </div>
-        <div class="summary-total">
-          <span>Total a Pagar:</span>
-          <span class="total-amount">$505.00 MXN</span>
-        </div>
+          <?php foreach ($productos as $producto): ?>
+          <div class="summary-item">
+            <span>
+              <?php echo htmlspecialchars($servicio['nombre'] ?? 'Producto') ?>
+              <?php if (($producto['cantidad'] ?? 1) > 1): ?>
+                x<?php echo (int)$producto['cantidad'] ?>
+              <?php endif; ?>
+            </span>
+            <span>
+              $<?php echo number_format((($producto['precio'] ?? 0) * ($producto['cantidad'] ?? 1))- ($producto['descuento'] ?? 0),2) ?> MXN
+            </span>
+          </div>
+          <?php endforeach; ?>
+          <?php foreach ($servicios as $servicio): ?>
+            <div class="summary-item">
+              <span>
+                <?php echo htmlspecialchars($servicio['nombre'] ?? 'Servicio') ?>
+              </span>
+              <span>$<?php echo number_format((($servicio['precio'] ?? 0) * ($servicio['cantidad'] ?? 1))- ($servicio['descuento'] ?? 0),2) ?> MXN
+              </span>
+            </div>
+          <?php endforeach; ?>
+      </div>
+      <div class="summary-total">
+        <span>Total a Pagar:</span>
+        <span class="total-amount">
+          $<?php echo number_format($total, 2) ?> MXN
+        </span>
       </div>
       <!-- Resumen -->        <!-- Se llenaran con la venta realizada -->
 
@@ -69,6 +104,7 @@
 
       <!-- Formulario -->
       <form id="payment-form">
+        <input type="hidden" name="monto" value="<?php echo $total ?>">
         <div class="form-group">
           <label for="card_name">Nombre del Titular</label>
           <input type="text" id="card_name" name="card_name" placeholder="" required>
