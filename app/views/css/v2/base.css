@@ -272,6 +272,18 @@ legend {
     box-sizing: border-box;
 }
 
+.lista-resultados li {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.lista-resultados li:hover {
+    background-color: #007BFF;
+    color: white;
+}
+
 #lista_proveedores {
     position: absolute;       
     top: 100%;               

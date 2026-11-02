@@ -1,3 +1,50 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/../models/Lotes.php';
+$productos = Lotes::obtenerProductosActivosConProveedor();
+$lotes = Lotes::obtenerLotes();
+
+$erroresLote = $_SESSION['errores'] ?? [];
+$loteAnterior = $_SESSION['old'] ?? [];
+$abrirFormularioLote = !empty($_SESSION['abrir_formulario_lote']);
+unset(
+    $_SESSION['errores'],
+    $_SESSION['old'],
+    $_SESSION['abrir_formulario_lote']
+);
+
+$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+$productoAnterior = null;
+foreach ($productos as $producto) {
+	if ((string) $producto['id_producto'] === (string) ($loteAnterior['id_producto'] ?? '')) {
+		$productoAnterior = $producto;
+		break;
+	}
+}
+
+date_default_timezone_set('America/Mexico_City');
+$hoy = new DateTimeImmutable('today');
+$lotes_registrados = 0;
+$por_caducar = 0;
+$unidad_lotes = 0;
+$lotes_vencidos = 0;
+foreach ($lotes as $lote){
+    $fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
+    $diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
+    
+	if ($diasRestantes < 0) {
+        $lotes_vencidos++;
+    }else if ($diasRestantes <= 15) {
+        $por_caducar++;
+    }
+	$lotes_registrados++;
+	$unidad_lotes = $unidad_lotes + (int)$lote['cantidad'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -28,19 +75,19 @@
 				<div class="lotes-resumen" aria-label="Resumen de lotes">
 					<div class="lote-resumen-tarjeta">
 						<span>Lotes registrados</span>
-						<strong id="total-lotes">3</strong>
+						<strong id="total-lotes"><?=$lotes_registrados?></strong>
 					</div>
 					<div class="lote-resumen-tarjeta">
-						<span>Por caducar (60 días)</span>
-						<strong id="lotes-proximos">1</strong>
+						<span>Por caducar (15 días)</span>
+						<strong id="lotes-proximos"><?=$por_caducar?></strong>
 					</div>
 					<div class="lote-resumen-tarjeta">
 						<span>Lotes vencidos</span>
-						<strong id="lotes-vencidos">1</strong>
+						<strong id="lotes-vencidos"><?=$lotes_vencidos?></strong>
 					</div>
 					<div class="lote-resumen-tarjeta">
 						<span>Unidades en lotes</span>
-						<strong id="unidades-lotes">42</strong>
+						<strong id="unidades-lotes"><?=$unidad_lotes?></strong>
 					</div>
 				</div>
 
@@ -57,73 +104,75 @@
 					<button class="btn btn-chico" id="abrir-formulario-lote" type="button">+ Registrar lote</button>
 				</div>
 
+				<?php
+					date_default_timezone_set('America/Mexico_City');
+					$hoy = new DateTimeImmutable('today');
+				?>
+
 				<div class="lotes-grid" id="lista-lotes">
-					<article class="lote-tarjeta" data-lote data-estado="proximo">
-						<header class="lote-encabezado">
-							<div class="lote-identidad">
-								<span class="lote-etiqueta">Lote</span>
-								<h2 data-lote-id>LOT-2026-014</h2>
-							</div>
-							<span class="lote-estado proximo" data-lote-estado>Por caducar</span>
-						</header>
-						<dl class="lote-detalles">
-							<div><dt>ID producto</dt><dd data-lote-producto>1 · Pelota</dd></div>
-							<div><dt>Proveedor</dt><dd>Distribuidora Canina</dd></div>
-							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2026-11-20</dd></div>
-							<div><dt>Precio de compra</dt><dd data-lote-precio>$18.50</dd></div>
-							<div><dt>Ubicación</dt><dd data-lote-ubicacion>A-01</dd></div>
-						</dl>
-						<div class="lote-cantidad">
-							<span>Cantidad disponible</span>
-							<strong data-lote-cantidad>24</strong>
-						</div>
-					</article>
 
-					<article class="lote-tarjeta" data-lote data-estado="vigente">
-						<header class="lote-encabezado">
-							<div class="lote-identidad">
-								<span class="lote-etiqueta">Lote</span>
-								<h2 data-lote-id>LOT-2026-018</h2>
-							</div>
-							<span class="lote-estado vigente" data-lote-estado>Vigente</span>
-						</header>
-						<dl class="lote-detalles">
-							<div><dt>ID producto</dt><dd data-lote-producto>2 · Collar</dd></div>
-							<div><dt>Proveedor</dt><dd>Pet Supplies MX</dd></div>
-							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2027-06-15</dd></div>
-							<div><dt>Precio de compra</dt><dd data-lote-precio>$72.00</dd></div>
-							<div><dt>Ubicación</dt><dd data-lote-ubicacion>B-03</dd></div>
-						</dl>
-						<div class="lote-cantidad">
-							<span>Cantidad disponible</span>
-							<strong data-lote-cantidad>18</strong>
-						</div>
-					</article>
+					<?php foreach ($lotes as $lote):
+        				$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
+        				$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
 
-					<article class="lote-tarjeta" data-lote data-estado="vencido">
-						<header class="lote-encabezado">
-							<div class="lote-identidad">
-								<span class="lote-etiqueta">Lote</span>
-								<h2 data-lote-id>LOT-2025-009</h2>
-							</div>
-							<span class="lote-estado vencido" data-lote-estado>Vencido</span>
-						</header>
-						<dl class="lote-detalles">
-							<div><dt>ID producto</dt><dd data-lote-producto>1 · Pelota</dd></div>
-							<div><dt>Proveedor</dt><dd>Distribuidora Canina</dd></div>
-							<div><dt>Fecha de caducidad</dt><dd data-lote-fecha>2026-10-10</dd></div>
-							<div><dt>Precio de compra</dt><dd data-lote-precio>$15.00</dd></div>
-							<div><dt>Ubicación</dt><dd data-lote-ubicacion>A-02</dd></div>
-						</dl>
-						<div class="lote-cantidad">
-							<span>Cantidad disponible</span>
-							<strong data-lote-cantidad>0</strong>
-						</div>
-					</article>
+        				if ($diasRestantes < 0) {
+        				    $estado = 'vencido';
+        				    $textoEstado = 'Vencido';
+        				} elseif ($diasRestantes <= 15) {
+        				    $estado = 'proximo';
+        				    $textoEstado = 'Por caducar';
+        				} else {
+        				    $estado = 'vigente';
+        				    $textoEstado = 'Vigente';
+        				}
+
+        				$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+    				?>
+
+						<article class="lote-tarjeta" data-lote data-estado="<?= $estado ?>">
+    			    	    <header class="lote-encabezado">
+    			    	        <div class="lote-identidad">
+    			    	            <span class="lote-etiqueta">Lote</span>
+    			    	            <h2><?= $escapar($lote['lote']) ?></h2>
+    			    	        </div>
+    			    	        <span class="lote-estado <?= $estado ?>">
+    			    	            <?= $textoEstado ?>
+    			    	        </span>
+    			    	    </header>
+
+    			    	    <dl class="lote-detalles">
+    			    	        <div>
+    			    	            <dt>Producto</dt>
+    			    	            <dd><?= $escapar($lote['id_producto']) ?> ·
+    			    	                <?= $escapar($lote['nombre_producto']) ?></dd>
+    			    	        </div>
+    			    	        <div>
+    			    	            <dt>Proveedor</dt>
+    			    	            <dd><?= $escapar($lote['proveedor']) ?></dd>
+    			    	        </div>
+    			    	        <div>
+    			    	            <dt>Fecha de caducidad</dt>
+    			    	            <dd><?= $escapar($fechaCaducidad->format('Y-m-d')) ?></dd>
+    			    	        </div>
+    			    	        <div>
+    			    	            <dt>Precio de compra</dt>
+    			    	            <dd>$<?= number_format((float) $lote['precio_compra'], 2) ?></dd>
+    			    	        </div>
+    			    	        <div>
+    			    	            <dt>Ubicación</dt>
+    			    	            <dd><?= $escapar($lote['ubicacion']) ?></dd>
+    			    	        </div>
+    			    	    </dl>
+
+    			    	    <div class="lote-cantidad">
+    			    	        <span>Cantidad disponible</span>
+    			    	        <strong><?= $escapar($lote['cantidad']) ?></strong>
+    			    	    </div>
+    			    	</article>
+    				<?php endforeach; ?>
 				</div>
 
 				<p class="lotes-sin-resultados" id="sin-lotes" hidden>No hay lotes que coincidan con la búsqueda.</p>
-				<p class="nota-campo">El registro de lotes se conectará desde el backend.</p>
 			</section>
 		</main>
 	</div>
@@ -132,51 +181,77 @@
 		<p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
 	</footer>
 
-	<dialog class="lote-dialog" id="dialogo-lote" aria-labelledby="titulo-dialogo-lote">
+	<dialog class="lote-dialog" id="dialogo-lote" aria-labelledby="titulo-dialogo-lote" data-abrir="<?= $abrirFormularioLote ? '1' : '0' ?>">
 		<h2 id="titulo-dialogo-lote">Registrar lote</h2>
-		<form id="formulario-lote">
+		<?php if (!empty($erroresLote)): ?>
+			<div class="msg-error">
+				<h4>Por favor corrige los siguientes errores:</h4>
+				<ul>
+					<?php foreach ($erroresLote as $error): ?>
+						<li><?= $escapar($error) ?></li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		<?php endif; ?>
+		<form id="formulario-lote" action="../controllers/lotes.php" method="post" novalidate>
 			<div class="lote-formulario">
 				<div class="lote-campo">
 					<label for="lote-id">Código de lote</label>
-					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" required>
+					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" value="<?= $escapar($loteAnterior['lote'] ?? '') ?>" required>
 				</div>
-				<div class="lote-campo">
+				<div class="lote-campo contenedor-buscador">
 					<label for="lote-producto">Producto</label>
-					<select class="campo" id="lote-producto" name="producto" required>
-						<option value="">Selecciona un producto</option>
-						<option value="1">1 · Pelota</option>
-						<option value="2">2 · Collar</option>
-					</select>
+					<input
+						class="campo"
+						id="lote-producto"
+						type="text"
+						autocomplete="off"
+						placeholder="Seleccionar producto..."
+						value="<?= $productoAnterior ? $escapar('Id: ' . $productoAnterior['id_producto'] . ' - ' . $productoAnterior['codigo'] . ' - ' . $productoAnterior['nombre']) : '' ?>"
+						required
+					>
+					<input
+						id="lote-producto-id"
+						name="id_producto"
+						type="hidden"
+						value="<?= $escapar($loteAnterior['id_producto'] ?? '') ?>"
+					>
+					<ul id="lista_productos_lote" class="lista-resultados">
+						<?php foreach ($productos as $producto): ?>
+							<li
+								data-id="<?= (int) $producto['id_producto'] ?>"
+								data-proveedor="<?= $escapar($producto['proveedor']) ?>"
+							>
+								<?= $escapar('Id: ' . $producto['id_producto'] . ' - ' . $producto['codigo'] . ' - ' . $producto['nombre']) ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
 				</div>
 				<div class="lote-campo">
 					<label for="lote-proveedor">Proveedor</label>
-					<select class="campo" id="lote-proveedor" name="proveedor" required>
-						<option value="">Selecciona un proveedor</option>
-						<option value="Distribuidora Canina">Distribuidora Canina</option>
-						<option value="Pet Supplies MX">Pet Supplies MX</option>
-						<option value="Mascota Feliz">Mascota Feliz</option>
-					</select>
+					<input class="campo" id="lote-proveedor" type="text" value="" readonly aria-describedby="ayuda-proveedor-lote">
+					<small id="ayuda-proveedor-lote">Se obtiene del producto seleccionado.</small>
 				</div>
 				<div class="lote-campo">
 					<label for="lote-caducidad">Fecha de caducidad</label>
-					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" required>
+					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" value="<?= $escapar($loteAnterior['fecha_caducidad'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">
 					<label for="lote-precio">Precio de compra</label>
-					<input class="campo" id="lote-precio" name="precio_compra" type="number" min="0" step="0.01" required>
+					<input class="campo" id="lote-precio" name="precio_compra" type="number" min="0.01" step="0.01" value="<?= $escapar($loteAnterior['precio_compra'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">
 					<label for="lote-ubicacion">Ubicación</label>
-					<input class="campo" id="lote-ubicacion" name="ubicacion" type="text" maxlength="20" required>
+					<input class="campo" id="lote-ubicacion" name="ubicacion" type="text" maxlength="20" value="<?= $escapar($loteAnterior['ubicacion'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">
 					<label for="lote-cantidad">Cantidad</label>
-					<input class="campo" id="lote-cantidad" name="cantidad" type="number" min="0" step="1" required>
+					<input class="campo" id="lote-cantidad" name="cantidad" type="number" min="0" step="1" value="<?= $escapar($loteAnterior['cantidad'] ?? '') ?>" required>
 				</div>
 			</div>
 			<div class="lote-dialog-acciones">
 				<button class="btn btn-secundario btn-chico" id="cerrar-dialogo-lote" type="button">Cancelar</button>
-				<button class="btn btn-chico" type="button">Registrar lote</button>
+				<button class="btn btn-chico" type="submit">Registrar lote</button>
 			</div>
 		</form>
 	</dialog>
@@ -186,7 +261,6 @@
 		const filtroLote = document.getElementById('filtro-lote-estado');
 		const listaLotes = document.getElementById('lista-lotes');
 		const mensajeSinLotes = document.getElementById('sin-lotes');
-		const dialogoLote = document.getElementById('dialogo-lote');
 
 		function filtrarLotes() {
 			const consulta = buscarLote.value.trim().toLocaleLowerCase('es');
@@ -205,10 +279,9 @@
 
 		buscarLote.addEventListener('input', filtrarLotes);
 		filtroLote.addEventListener('change', filtrarLotes);
-
-		document.getElementById('abrir-formulario-lote').addEventListener('click', () => dialogoLote.showModal());
-		document.getElementById('cerrar-dialogo-lote').addEventListener('click', () => dialogoLote.close());
+		filtrarLotes();
 	</script>
+	<script src="js/lotes.js" defer></script>
 </body>
 
 </html>
