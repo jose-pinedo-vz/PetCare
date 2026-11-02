@@ -193,8 +193,6 @@ function obtenerProductoPorId(int $id): ?array {
     }
 }
 
-
-
 function ActualizarProducto(array $datos, $id){
     try{
         $conexion = ConexionDB::obtenerConexion();

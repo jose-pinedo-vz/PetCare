@@ -1,3 +1,20 @@
+<?php
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
+    require_once __DIR__ . "/../models/Productos.php";
+
+    $productoSeleccionado = null;
+
+    if (isset($_GET['id'])) {
+        if ($_GET['id'] != "") {
+            $id_producto = (int) $_GET['id'];
+            $productoSeleccionado = Productos::obtenerProductoPorId($id_producto);
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -22,7 +39,15 @@
                 <h2 class="subtitulo">Detalles de la orden</h2>
 
                 <div class="orden-compra-detalles">
-                    <p><strong>Proveedor:</strong> Nombre del proveedor</p>
+                    <p><strong>Proveedor:</strong> 
+                        <?php 
+                            if ($productoSeleccionado != null && isset($productoSeleccionado['id_proveedor'])) {
+                                echo htmlspecialchars($productoSeleccionado['id_proveedor']);
+                            } else {
+                                echo "Sin proveedor asignado";
+                            }
+                        ?>
+                    </p>
                 </div>
 
                 <section class="orden-compra-seccion" aria-labelledby="titulo-sugeridos">
@@ -100,15 +125,33 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php
+                                    if ($productoSeleccionado != null) {
+                                        $imagen = htmlspecialchars($productoSeleccionado['imagen']);
+                                        $codigo = htmlspecialchars($productoSeleccionado['codigo']);
+                                        $nombre = htmlspecialchars($productoSeleccionado['nombre']);
+                                        $existencia = htmlspecialchars($productoSeleccionado['existencia']);
+                                ?>  
                                 <!-- Selección de ejemplo: editar precio y cantidad; los controles son solo interfaz y no calculan ni guardan datos. -->
                                 <tr>
-                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
-                                    <td>ALI-001</td>
-                                    <td>Alimento para perro adulto</td>
-                                    <td>10 kg</td>
+                                    <td><img class="producto-imagen "src="../../<?php echo $imagen; ?>" alt="<?php echo $nombre; ?>"></td>
+                                    <td><?php echo $codigo; ?></td>
+                                    <td><?php echo $nombre; ?></td>
+                                    <td><?php echo $existencia; ?> unidades</td>
                                     <td><input type="number" min="1" value="2"></td>
-                                    <td class="acciones"><button class="btn btn-chico btn-peligro" type="button" aria-label="Eliminar Alimento para perro adulto">Eliminar</button></td>
+                                    <td class="acciones">
+                                        <a class="btn btn-chico btn-peligro" href="orden_compra.php">Eliminar</a>
+                                    </td>
                                 </tr>
+                                <?php 
+                                    } else {
+                                ?>
+                                    <tr>
+                                        <td colspan="6">No hay ningun producto seleccionado para esta orden</td>
+                                    </tr>
+                                <?php
+                                    }
+                                ?>
                             </tbody>
                         </table>
                     </div>
