@@ -83,7 +83,7 @@ if ($Datosconsulta===null){
     header("Location: ../views/citas.php");
     exit();
 }
-$idCliente=(int)$Datosconsulta['id_cliente'];
+$idCliente=(int)$Datosconsulta['cliente'];
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $mascotas = $ficha->agarraMascotas($idCliente);

@@ -57,7 +57,7 @@ class FichaMedica
     public function datosConsulta(int $idConsulta): ?array
     {
         $db=ConexionDB::obtenerConexion();
-        $stmt=$db->prepare("SELECT id_consulta,id_cliente from consulta_veterinaria where id_consulta= :consulta and atendido = 0");
+        $stmt=$db->prepare("SELECT id_cita,cliente from citas where id_cita= :consulta and atendido = 0");
         $stmt->execute([':consulta'=>$idConsulta]);
         $datos=$stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 

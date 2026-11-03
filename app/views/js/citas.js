@@ -174,3 +174,58 @@ document.addEventListener('DOMContentLoaded', function()
 
 
 
+async function cancelarCita(idCita, event)
+{
+    const bolean = mostrarModalEliminar();
+    if (bolean === false)
+    {
+        const main = document.getElementById('mainAOcultar');
+        const ocultar = document.getElementById('contenedor-modal');
+        return;
+    }
+
+    const main = document.getElementById('mainAOcultar');
+    const ocultar = document.getElementById('contenedor-modal');
+
+    ocultar.classList.add('oculto');
+    main.classList.remove('oculto');
+
+    event.preventDefault();
+    console.log("Se resivio el valor", idCita)
+
+    const respuesta = await fetch(`../controllers/citas.php?accion=cancelarCita&id_cita=${encodeURIComponent(idCita)}`, {
+        method: "GET"
+    });
+}
+
+
+function mostrarModalEliminar() {
+    const contenedor = document.getElementById('contenedor-modal');
+    const main = document.getElementById('mainAOcultar');
+
+    main.classList.add('oculto');
+    //main.classList.remove("oculto");
+
+    function retornarTrue() { return true;}
+    function retornarFalse() { return false;}
+
+
+    const htmlContenido = `
+        <div class="tarjeta">
+            <fieldset>
+                <p>
+                    ¿Está seguro de que desea cancelar esta cita ?
+                    Esta acción no se puede deshacer.
+                </p>
+            </fieldset>
+            <div class="acciones-formulario">
+                <button type="button" class="btn-secundario" onclick="retornarFalse()">Cancelar</button>
+                <button type="submit" class="btn" onclick="retornarTrue()">Cancelar</button>
+            </div>
+        </div>
+    `;
+    contenedor.innerHTML = htmlContenido;
+
+    //main.classList.add('oculto');
+    
+}

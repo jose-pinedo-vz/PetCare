@@ -60,7 +60,7 @@ function consultarFechas(string $fecha):array
 }
 
 // intermediario entre front y base de datos
-function estraerDatosConsultas():array
+function estraerDatosConsultas(): array
 {
     $resultados = [];
     $consultasCitas = new ConexionesClientes();
@@ -68,13 +68,12 @@ function estraerDatosConsultas():array
 
     foreach ($datos as $cita)
     {
-        $resultados[] =
-        [
-            'id_consulta' => (int)$cita['id_consulta'],
-            'nombre' => $cita['nombre'].' '.$cita['apellido'],
-            'fecha' => $cita['fecha'],
-            'motivo' => $cita['motivo_de_consulta'],
-            'atendido' => $cita['atendido']
+        $resultados[] = [
+            'id_consulta' => (int)$cita['id_cita'],         
+            'nombre'      => $cita['nombre'] . ' ' . $cita['apellido'],
+            'fecha'       => $cita['fecha'],
+            'motivo'      => $cita['observacion'],           
+            'atendido'    => (int)$cita['atendido']         
         ];
     }
     return $resultados;
@@ -103,10 +102,10 @@ function errorSession(string $error)
 if ($_SERVER["REQUEST_METHOD"] === "POST")
 {
     // LÍNEA DE DEPURACIÓN TEMPORAL:
-    echo "<pre>";
-    print_r($_POST);
-    echo "</pre>";
-    exit(); // Detiene la ejecución aquí para ver qué datos llegaron realmente del formulario
+    // echo "<pre>";
+    // print_r($_POST);
+    // echo "</pre>";
+    // exit(); // Detiene la ejecución aquí para ver qué datos llegaron realmente del formulario
 
     
     // datos 
@@ -297,7 +296,28 @@ function mostrarResponsable()
     echo json_encode($responsables);
     exit();
     }
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === "cancelarCita")
+{
+    cancelarCita();
+}
+
+function cancelarCita()
+{
+    $idCita = $_GET['id_cita'];
+    $res = ConexionesClientes::cancelarCita($idCita);
+
+    echo json_encode($res);
+    exit();
+}
+
+
+
+
 ?>
+
+
 
 
 

@@ -86,7 +86,7 @@
         public function datosCitas():array
         {
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.motivo_consulta, cl.nombre, cl.apellido, c.atendido
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido
               FROM citas c
               INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
 
@@ -231,6 +231,26 @@
             $stml = $db->prepare($query);
             $stml->execute([$fecha, $empleado]);
             return (int)$stml->fetchColumn();
+        }
+
+        public static function cancelarCita($id_cita)
+        {
+            try
+            {
+                $query = "UPDATE citas 
+                        SET estado_cita = 'cancelada'
+                        WHERE id_cita = ?";
+
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id_cita]);
+                $stml->fetchColumn();
+                return true;
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
         }
     }
 ?>
