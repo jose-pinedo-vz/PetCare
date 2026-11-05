@@ -203,7 +203,7 @@
           <div class="fila"><span>Anticipo (10%)</span><span>—</span></div>
           <span class="nota-campo" style="margin:12px 0 14px;">El anticipo asegura la cita y se cobra por separado de la pensión del hotel.</span>
           <!-- enlazar con la pantalla de cobro/pago cuando exista -->
-          <a class="btn" style="display:block;text-align:center;" href="pagos.php">Cobrar anticipo</a>
+          <a class="btn" style="display:block;text-align:center;" href="Ventas.php#pagos">Cobrar anticipo</a>
         </aside>
       </div>
     </main>

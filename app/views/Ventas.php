@@ -11,12 +11,18 @@
         <?php $paginaActiva = 'ventas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
         <main>
-            <div class="migaja">Punto de venta /</div>
+            <div class="migaja">Ventas y pagos /</div>
             <header class="encabezado-pagina">
-                <h1>Punto de venta</h1>
+                <h1>Ventas y pagos</h1>
                 <div class="venta-cajero">Cajero: <strong>Nombre de empleado</strong> | Turno: Matutino</div>
             </header>
 
+            <nav class="inventario-pestanas" aria-label="Secciones de ventas y pagos">
+                <a href="#ventas" class="activa" id="pestanaVentas" aria-controls="panel-ventas" aria-current="page">1. Punto de venta</a>
+                <a href="#pagos" id="pestanaPagos" aria-controls="panel-pagos">2. Pagos de servicios</a>
+            </nav>
+
+            <section id="panel-ventas" class="ventas-panel" aria-labelledby="pestanaVentas">
             <div class="venta-contenedor">
                 <section class="tarjeta venta-carrito" aria-labelledby="titulo-carrito">
                     <h2 id="titulo-carrito">Productos de la venta</h2>
@@ -95,6 +101,120 @@
                     </section>
                 </div>
             </div>
+            </section>
+
+            <section id="panel-pagos" class="ventas-panel" aria-labelledby="pestanaPagos" hidden>
+                <div class="inventario-resumen pagos-resumen" aria-label="Resumen de pagos pendientes">
+                    <article class="inventario-tarjeta">
+                        <h3>Servicios por cobrar</h3>
+                        <p id="pagosPendientesConteo">4</p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Saldo pendiente</h3>
+                        <p id="pagosPendientesTotal">$2,480.00</p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Con abonos</h3>
+                        <p id="pagosConAbonoConteo">2</p>
+                    </article>
+                </div>
+
+                <section class="tarjeta" aria-labelledby="tituloPagosPendientes">
+                    <div class="pagos-encabezado">
+                        <div>
+                            <h2 id="tituloPagosPendientes">Pagos pendientes de servicios</h2>
+                            <p>Consulta, hotel y estética en una sola lista de cobranza.</p>
+                        </div>
+                    </div>
+                    <div class="pagos-filtros">
+                        <div>
+                            <label class="label-campo" for="buscarPagoServicio">Buscar</label>
+                            <input class="campo" id="buscarPagoServicio" type="search" placeholder="Folio, cliente, mascota o servicio">
+                        </div>
+                        <div>
+                            <label class="label-campo" for="filtroTipoServicio">Tipo de servicio</label>
+                            <select class="campo" id="filtroTipoServicio">
+                                <option value="">Todos los servicios</option>
+                                <option value="hotel">Hotel</option>
+                                <option value="bano">Baño</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label-campo" for="filtroEstadoPago">Estado del pago</label>
+                            <select class="campo" id="filtroEstadoPago">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="parcial">Abono parcial</option>
+                                <option value="pagado">Pagado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tabla-envoltura pagos-tabla-envoltura">
+                        <table class="pagos-tabla">
+                            <thead>
+                                <tr>
+                                    <th>Folio</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente / mascota</th>
+                                    <th>Servicio</th>
+                                    <th>Total</th>
+                                    <th>Abonado</th>
+                                    <th>Saldo</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPagosPendientes">
+                                <tr data-tipo="veterinaria" data-fecha="2026-11-04" data-total="650" data-pagado="0" data-saldo="650">
+                                    <td><strong>CV-104</strong></td>
+                                    <td>04/11/2026</td>
+                                    <td>Ana Ruiz<small>Luna · Perro</small></td>
+                                    <td>Consulta veterinaria</td>
+                                    <td>$650.00</td>
+                                    <td class="pago-abonado">$0.00</td>
+                                    <td class="pago-saldo"><strong>$650.00</strong></td>
+                                    <td class="pago-estado"><span class="historial-estado pendiente">Pendiente</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-registrar-pago>Registrar pago</button></td>
+                                </tr>
+                                <tr data-tipo="hotel" data-fecha="2026-11-02" data-total="1600" data-pagado="500" data-saldo="1100">
+                                    <td><strong>HT-028</strong></td>
+                                    <td>02/11/2026</td>
+                                    <td>Mario Santos<small>Max · Perro</small></td>
+                                    <td>Hotel · 4 noches</td>
+                                    <td>$1,600.00</td>
+                                    <td class="pago-abonado">$500.00</td>
+                                    <td class="pago-saldo"><strong>$1,100.00</strong></td>
+                                    <td class="pago-estado"><span class="historial-estado parcial">Abono parcial</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-registrar-pago>Registrar pago</button></td>
+                                </tr>
+                                <tr data-tipo="bano" data-fecha="2026-11-04" data-total="450" data-pagado="0" data-saldo="450">
+                                    <td><strong>ES-091</strong></td>
+                                    <td>04/11/2026</td>
+                                    <td>Daniela Herrera<small>Nala · Perro</small></td>
+                                    <td>Baño medicado</td>
+                                    <td>$450.00</td>
+                                    <td class="pago-abonado">$0.00</td>
+                                    <td class="pago-saldo"><strong>$450.00</strong></td>
+                                    <td class="pago-estado"><span class="historial-estado pendiente">Pendiente</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-registrar-pago>Registrar pago</button></td>
+                                </tr>
+                                <tr data-tipo="corte" data-fecha="2026-11-03" data-total="380" data-pagado="100" data-saldo="280">
+                                    <td><strong>ES-092</strong></td>
+                                    <td>03/11/2026</td>
+                                    <td>Pedro Gómez<small>Toby · Schnauzer</small></td>
+                                    <td>Corte de pelo</td>
+                                    <td>$380.00</td>
+                                    <td class="pago-abonado">$100.00</td>
+                                    <td class="pago-saldo"><strong>$280.00</strong></td>
+                                    <td class="pago-estado"><span class="historial-estado parcial">Abono parcial</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-registrar-pago>Registrar pago</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="mensajePagoServicio" class="venta-mensaje" role="status" aria-live="polite"></p>
+                </section>
+            </section>
         </main>
     </div>
     <?php include __DIR__ . '/buscar_productos.php'; ?>
@@ -109,8 +229,8 @@
             </form>
         </div>
         <div class="resultado-contenido">
-            <p class="resultado-mensaje">La venta se marcó como pagada.</p>
-            <div class="venta-total">Total cobrado: <strong>$23.20 MXN</strong></div>
+            <p class="resultado-mensaje">Simulación frontend: el cobro no se procesó ni se guardó.</p>
+            <div class="venta-total">Total de la venta: <strong id="totalVentaDemostracion">$23.20 MXN</strong></div>
             <p class="resultado-factura" id="mensajeFactura" role="status" hidden></p>
             <div class="venta-carrito-acciones">
                 <button class="btn btn-secundario btn-chico" id="btnImprimirTicket" type="button">Imprimir ticket</button>
@@ -150,6 +270,39 @@
         const modalPagarVenta = document.getElementById('modalPagarVenta');
         const modalPagoConfirmado = document.getElementById('modalPagoConfirmado');
         const modalDatosFactura = document.getElementById('modalDatosFactura');
+        const botonConfirmarPago = document.getElementById('btnConfirmarPago');
+        const inputMontoRecibido = document.getElementById('montoRecibido');
+        const inputMontoAbono = document.getElementById('montoAbonoServicio');
+        const metodosPago = [...document.querySelectorAll('[data-metodo-pago]')];
+        const detallesTarjeta = document.getElementById('detallesTarjeta');
+        const detallesTransferencia = document.getElementById('detallesTransferencia');
+        const filasResumenPago = document.getElementById('tablaResumenPago').querySelector('tbody');
+        const resumenVentaOriginal = filasResumenPago.innerHTML;
+        const numeroTarjeta = document.getElementById('numeroTarjeta');
+        const nombreTarjeta = document.getElementById('nombreTarjeta');
+        const vencimientoTarjeta = document.getElementById('vencimientoTarjeta');
+        const cvvTarjeta = document.getElementById('cvvTarjeta');
+        let metodoPagoActual = 'Efectivo';
+        let contextoPago = { tipo: 'venta', total: 23.20, fila: null };
+
+        const pestanasVentas = [
+            { enlace: document.getElementById('pestanaVentas'), panel: document.getElementById('panel-ventas') },
+            { enlace: document.getElementById('pestanaPagos'), panel: document.getElementById('panel-pagos') }
+        ];
+
+        function activarPestana() {
+            const pagosActivos = window.location.hash === '#pagos';
+            pestanasVentas.forEach(({ enlace, panel }, indice) => {
+                const activa = (indice === 1) === pagosActivos;
+                enlace.classList.toggle('activa', activa);
+                if (activa) enlace.setAttribute('aria-current', 'page');
+                else enlace.removeAttribute('aria-current');
+                panel.hidden = !activa;
+            });
+        }
+
+        window.addEventListener('hashchange', activarPestana);
+        activarPestana();
 
         botonBuscarProducto.addEventListener('click', () => {
             modalBuscarProducto.showModal();
@@ -159,8 +312,190 @@
             modalBuscarServicio.showModal();
         });
 
-        botonCobrar.addEventListener('click', () => {
+        function obtenerMontoVenta() {
+            const texto = document.getElementById('lblTotal').textContent;
+            return Number(texto.replace(/[^\d.-]/g, ''));
+        }
+
+        function establecerResumenPago({ tipo, total, fila }) {
+            const esServicio = tipo === 'servicio';
+            const etiquetaTotal = esServicio ? 'Saldo pendiente' : 'Total';
+            document.getElementById('tituloPagarVenta').textContent = esServicio ? 'Pagar servicio' : 'Pagar venta';
+            document.getElementById('etiquetaResumenPago').textContent = esServicio ? 'Resumen del servicio' : 'Resumen de la venta';
+            document.getElementById('etiquetaTotalPago').textContent = etiquetaTotal;
+            document.getElementById('totalPago').textContent = moneda.format(total);
+            document.getElementById('montoTotalPago').innerHTML = `${moneda.format(total)} <small>MXN</small>`;
+            document.getElementById('filaIvaPago').hidden = esServicio;
+            document.getElementById('filaSubtotalPago').hidden = esServicio;
+            document.getElementById('tablaResumenPago').hidden = esServicio;
+            document.getElementById('campoAbonoServicio').hidden = !esServicio;
+            document.getElementById('campoEfectivo').hidden = esServicio;
+            document.getElementById('etiquetaMontoTotal').textContent = esServicio ? 'Saldo pendiente' : 'Total a pagar';
+            document.getElementById('notaMetodoPago').textContent = esServicio
+                ? 'Puedes abonar una parte o liquidar el saldo. El registro es solo una demostración frontend.'
+                : 'El monto recibido debe cubrir el total de la venta.';
+            document.getElementById('etiquetaCambio').hidden = esServicio;
+            document.getElementById('cambioPago').hidden = esServicio;
+
+            if (esServicio) {
+                const nombreServicio = fila.cells[3].textContent.trim();
+                const folio = fila.cells[0].textContent.trim();
+                const clienteMascota = fila.cells[2].textContent.trim();
+                filasResumenPago.replaceChildren();
+                const renglon = document.createElement('tr');
+                const detalle = document.createElement('td');
+                detalle.textContent = `${folio} · ${nombreServicio} · ${clienteMascota}`;
+                const cantidad = document.createElement('td');
+                cantidad.textContent = '1';
+                const precio = document.createElement('td');
+                precio.textContent = moneda.format(total);
+                const subtotal = document.createElement('td');
+                subtotal.textContent = moneda.format(total);
+                renglon.append(detalle, cantidad, precio, subtotal);
+                filasResumenPago.append(renglon);
+                document.getElementById('saldoServicioPago').innerHTML = `${moneda.format(total)} <small>MXN</small>`;
+                inputMontoAbono.max = total.toFixed(2);
+                inputMontoAbono.value = total.toFixed(2);
+                inputMontoAbono.required = true;
+                botonConfirmarPago.textContent = 'Aplicar abono de demostración';
+            } else {
+                filasResumenPago.innerHTML = resumenVentaOriginal;
+                inputMontoRecibido.value = total.toFixed(2);
+                document.getElementById('subtotalPago').textContent = document.getElementById('lblSubtotal').textContent;
+                document.getElementById('ivaPago').textContent = document.getElementById('lblIva').textContent;
+                inputMontoAbono.required = false;
+                botonConfirmarPago.textContent = 'Confirmar pago';
+            }
+
+            contextoPago = { tipo, total, fila };
+            actualizarCambio();
+        }
+
+        function actualizarCambio() {
+            if (contextoPago.tipo !== 'venta' || metodoPagoActual !== 'Efectivo') {
+                document.getElementById('cambioPago').innerHTML = '$0.00 <small>MXN</small>';
+                return;
+            }
+            const recibido = Number(inputMontoRecibido.value);
+            const cambio = Number.isFinite(recibido) ? Math.max(0, recibido - contextoPago.total) : 0;
+            document.getElementById('cambioPago').innerHTML = `${moneda.format(cambio)} <small>MXN</small>`;
+        }
+
+        function seleccionarMetodoPago(metodo) {
+            metodoPagoActual = metodo;
+            metodosPago.forEach((boton) => {
+                const seleccionado = boton.dataset.metodoPago === metodo;
+                boton.classList.toggle('seleccionado', seleccionado);
+                boton.setAttribute('aria-pressed', String(seleccionado));
+            });
+
+            const esEfectivo = metodo === 'Efectivo';
+            const esTarjeta = metodo === 'Tarjeta';
+            const esTransferencia = metodo === 'Transferencia';
+            document.getElementById('campoEfectivo').hidden = contextoPago.tipo === 'servicio' || !esEfectivo;
+            document.getElementById('campoAbonoServicio').hidden = contextoPago.tipo !== 'servicio';
+            document.getElementById('etiquetaCambio').hidden = contextoPago.tipo === 'servicio' || !esEfectivo;
+            document.getElementById('cambioPago').hidden = contextoPago.tipo === 'servicio' || !esEfectivo;
+            detallesTarjeta.hidden = !esTarjeta;
+            detallesTransferencia.hidden = !esTransferencia;
+            [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta].forEach((campo) => {
+                campo.required = esTarjeta;
+            });
+            document.getElementById('notaMetodoPago').textContent = contextoPago.tipo === 'servicio'
+                ? 'Puedes abonar una parte o liquidar el saldo. El registro es solo una demostración frontend.'
+                : esEfectivo
+                    ? 'El monto recibido debe cubrir el total de la venta.'
+                    : esTarjeta
+                        ? 'Captura los datos para preparar la futura integración con la pasarela bancaria.'
+                        : 'La referencia de transferencia es opcional; la validación bancaria se conectará después.';
+            actualizarCambio();
+        }
+
+        function abrirModalPagoVenta() {
+            establecerResumenPago({ tipo: 'venta', total: obtenerMontoVenta(), fila: null });
+            seleccionarMetodoPago('Efectivo');
             modalPagarVenta.showModal();
+        }
+
+        botonCobrar.addEventListener('click', abrirModalPagoVenta);
+        inputMontoRecibido.addEventListener('input', actualizarCambio);
+        metodosPago.forEach((boton) => {
+            boton.addEventListener('click', () => seleccionarMetodoPago(boton.dataset.metodoPago));
+        });
+
+        [numeroTarjeta, cvvTarjeta].forEach((campo) => {
+            campo.addEventListener('input', () => campo.value = campo.value.replace(/\D/g, ''));
+        });
+
+        numeroTarjeta.addEventListener('input', () => {
+            const digitos = numeroTarjeta.value.replace(/\D/g, '').slice(0, 19);
+            numeroTarjeta.value = digitos.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+            const cantidadDigitos = digitos.length;
+            numeroTarjeta.setCustomValidity(cantidadDigitos >= 13 && cantidadDigitos <= 19 ? '' : 'Ingresa entre 13 y 19 dígitos.');
+        });
+
+        document.getElementById('vencimientoTarjeta').min = new Date().toISOString().slice(0, 7);
+
+        function limpiarDatosTarjeta() {
+            [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta].forEach((campo) => {
+                campo.value = '';
+                campo.required = false;
+                campo.setCustomValidity('');
+            });
+            document.getElementById('referenciaTransferencia').value = '';
+            seleccionarMetodoPago('Efectivo');
+        }
+
+        document.getElementById('cerrarModalPago').addEventListener('click', () => modalPagarVenta.close());
+        document.getElementById('cancelarPago').addEventListener('click', () => modalPagarVenta.close());
+        modalPagarVenta.addEventListener('close', limpiarDatosTarjeta);
+
+        botonConfirmarPago.addEventListener('click', () => {
+            const esServicio = contextoPago.tipo === 'servicio';
+            const importe = esServicio ? Number(inputMontoAbono.value) : contextoPago.total;
+
+            if (!Number.isFinite(importe) || importe <= 0 ||
+                (esServicio && importe > contextoPago.total) ||
+                (!esServicio && metodoPagoActual === 'Efectivo' && Number(inputMontoRecibido.value) < contextoPago.total)) {
+                (esServicio ? inputMontoAbono : inputMontoRecibido).setCustomValidity(
+                    esServicio
+                        ? 'El abono debe ser mayor a cero y no superar el saldo pendiente.'
+                        : 'El monto recibido debe cubrir el total de la venta.'
+                );
+                (esServicio ? inputMontoAbono : inputMontoRecibido).reportValidity();
+                (esServicio ? inputMontoAbono : inputMontoRecibido).setCustomValidity('');
+                return;
+            }
+
+            if (metodoPagoActual === 'Tarjeta') {
+                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
+                    .every((campo) => campo.reportValidity());
+                if (!tarjetaValida) return;
+            }
+
+            if (esServicio) {
+                const fila = contextoPago.fila;
+                const nuevoAbonado = Number(fila.dataset.pagado) + importe;
+                const nuevoSaldo = Math.max(0, Number(fila.dataset.saldo) - importe);
+                fila.dataset.pagado = nuevoAbonado.toFixed(2);
+                fila.dataset.saldo = nuevoSaldo.toFixed(2);
+                fila.querySelector('.pago-abonado').textContent = moneda.format(nuevoAbonado);
+                fila.querySelector('.pago-saldo').replaceChildren(document.createElement('strong'));
+                fila.querySelector('.pago-saldo strong').textContent = moneda.format(nuevoSaldo);
+                fila.querySelector('.pago-estado').innerHTML = nuevoSaldo === 0
+                    ? '<span class="historial-estado pagada">Pagado</span>'
+                    : '<span class="historial-estado parcial">Abono parcial</span>';
+                fila.querySelector('[data-registrar-pago]').disabled = nuevoSaldo === 0;
+                document.getElementById('mensajePagoServicio').textContent =
+                    `Abono de ${moneda.format(importe)} con ${metodoPagoActual} aplicado solo en esta demostración; no se guardó ni se contactó al banco.`;
+                actualizarResumenPagos();
+                modalPagarVenta.close();
+                return;
+            }
+
+            document.getElementById('totalVentaDemostracion').textContent = moneda.format(contextoPago.total);
+            modalPagarVenta.close();
+            modalPagoConfirmado.showModal();
         });
 
         document.getElementById('btnGenerarFactura').addEventListener('click', () => {
@@ -184,6 +519,27 @@
 
         document.getElementById('btnNuevaVentaConfirmada').addEventListener('click', () => {
             window.location.reload();
+        });
+
+        const moneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+        const filasPagoServicio = [...document.querySelectorAll('#tablaPagosPendientes tr')];
+
+        function actualizarResumenPagos() {
+            const pendientes = filasPagoServicio.filter((fila) => Number(fila.dataset.saldo) > 0);
+            const conAbono = pendientes.filter((fila) => Number(fila.dataset.pagado) > 0);
+            const saldoTotal = pendientes.reduce((total, fila) => total + Number(fila.dataset.saldo), 0);
+            document.getElementById('pagosPendientesConteo').textContent = String(pendientes.length);
+            document.getElementById('pagosPendientesTotal').textContent = moneda.format(saldoTotal);
+            document.getElementById('pagosConAbonoConteo').textContent = String(conAbono.length);
+        }
+
+        filasPagoServicio.forEach((fila) => {
+            fila.querySelector('[data-registrar-pago]').addEventListener('click', () => {
+                const saldo = Number(fila.dataset.saldo);
+                establecerResumenPago({ tipo: 'servicio', total: saldo, fila });
+                seleccionarMetodoPago('Efectivo');
+                modalPagarVenta.showModal();
+            });
         });
     </script>
 </body>

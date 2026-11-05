@@ -1147,6 +1147,16 @@
   width: min(1080px, calc(100% - 32px));
 }
 
+.pago-dialog,
+.resultado-dialog,
+.factura-dialog {
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .pago-dialog-encabezado {
   padding: 14px 22px;
 }
@@ -1269,6 +1279,7 @@
 .pago-metodo {
   position: relative;
   display: flex;
+  width: 100%;
   min-height: 98px;
   flex-direction: column;
   align-items: center;
@@ -1278,7 +1289,14 @@
   border: 1px solid var(--border-light);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.65);
+  color: var(--primary-dark);
+  font-family: inherit;
   text-align: center;
+  cursor: pointer;
+}
+
+.pago-dialog [hidden] {
+  display: none !important;
 }
 
 .pago-metodo.seleccionado {
@@ -1397,6 +1415,53 @@
   font-size: 11px;
 }
 
+.pago-detalles-metodo {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.pago-detalles-metodo h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.pago-detalles-metodo p {
+  margin: 0 0 12px;
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+.pago-detalles-metodo label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.pago-detalles-metodo > .campo {
+  width: 100%;
+}
+
+.pago-tarjeta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pago-campo-completo {
+  grid-column: 1 / -1;
+}
+
+.pago-campo-completo small {
+  display: block;
+  margin-top: 5px;
+  color: var(--texto-suave);
+  font-size: 11px;
+}
+
 .pago-acciones {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1471,6 +1536,14 @@
   }
 
   .pago-nota {
+    grid-column: auto;
+  }
+
+  .pago-tarjeta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pago-campo-completo {
     grid-column: auto;
   }
 
@@ -1679,6 +1752,95 @@
   text-decoration: none;
 }
 
+.pagos-resumen .inventario-tarjeta p {
+  margin: 0;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.pagos-encabezado {
+  margin-bottom: 16px;
+}
+
+.pagos-encabezado h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.pagos-encabezado p {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.pagos-filtros {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.4fr) repeat(2, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.pagos-filtros .label-campo {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.pagos-filtros .campo {
+  width: 100%;
+}
+
+.pagos-tabla {
+  min-width: 930px;
+}
+
+.pagos-tabla td small {
+  display: block;
+  margin-top: 4px;
+  color: var(--texto-suave);
+}
+
+.pagos-tabla td:nth-child(5),
+.pagos-tabla td:nth-child(6),
+.pagos-tabla td:nth-child(7) {
+  white-space: nowrap;
+}
+
+.pagos-tabla td:last-child .btn {
+  white-space: nowrap;
+}
+
+.historial-estado.parcial {
+  background: #e8eddf;
+  color: #3c5220;
+}
+
+.pago-servicio-formulario {
+  display: grid;
+  gap: 10px;
+  padding: 20px 22px;
+}
+
+.pago-servicio-formulario > p:first-child {
+  margin: 0 0 4px;
+  font-weight: bold;
+}
+
+.pago-servicio-formulario .label-campo {
+  margin-bottom: -6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.pago-servicio-formulario .pago-nota {
+  margin: 4px 0 0;
+}
+
+.ventas-panel[hidden] {
+  display: none;
+}
+
 /* Responsive exclusivo del punto de venta Ventas.php. */
 .venta-acciones .btn:disabled,
 .venta-dialog-acciones .btn:disabled {
@@ -1697,6 +1859,10 @@
 }
 
 @media (max-width: 768px) {
+  .pagos-filtros {
+    grid-template-columns: 1fr;
+  }
+
   .venta-contenedor {
     grid-template-columns: 1fr;
   }
