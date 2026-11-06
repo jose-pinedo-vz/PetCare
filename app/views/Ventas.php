@@ -20,6 +20,7 @@
             <nav class="inventario-pestanas" aria-label="Secciones de ventas y pagos">
                 <a href="#ventas" class="activa" id="pestanaVentas" aria-controls="panel-ventas" aria-current="page">1. Punto de venta</a>
                 <a href="#pagos" id="pestanaPagos" aria-controls="panel-pagos">2. Pagos de servicios</a>
+                <a href="#pagos-empleados" id="pestanaPagosEmpleados" aria-controls="panel-pagos-empleados">3. Pagos a empleados</a>
             </nav>
 
             <section id="panel-ventas" class="ventas-panel" aria-labelledby="pestanaVentas">
@@ -215,6 +216,101 @@
                     <p id="mensajePagoServicio" class="venta-mensaje" role="status" aria-live="polite"></p>
                 </section>
             </section>
+
+            <section id="panel-pagos-empleados" class="ventas-panel" aria-labelledby="pestanaPagosEmpleados" hidden>
+                <div class="inventario-resumen pagos-resumen nomina-resumen" aria-label="Resumen de pagos a empleados">
+                    <article class="inventario-tarjeta">
+                        <h3>Efectivo disponible en caja</h3>
+                        <p id="saldoCajaEmpleados">$800.00</p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Nómina pendiente</h3>
+                        <p id="nominaPendienteTotal">$3,500.00</p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Empleados pagados</h3>
+                        <p id="empleadosPagadosConteo">0 de 3</p>
+                    </article>
+                </div>
+
+                <section class="tarjeta" aria-labelledby="tituloPagosEmpleados">
+                    <div class="pagos-encabezado nomina-encabezado">
+                        <div>
+                            <h2 id="tituloPagosEmpleados">Pagos a empleados</h2>
+                            <p>Los pagos se cubren completos y exclusivamente en efectivo, descontando el importe de caja.</p>
+                        </div>
+                        <button class="btn btn-secundario btn-chico" id="btnAbonarCaja" type="button">Abonar a caja</button>
+                    </div>
+                    <p class="nomina-nota">Demostración frontend: el saldo y los movimientos son de ejemplo. En producción, el permiso para abonar a caja debe limitarse al administrador.</p>
+                    <div class="tabla-envoltura pagos-tabla-envoltura">
+                        <table class="pagos-tabla nomina-tabla">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Puesto</th>
+                                    <th>Periodo</th>
+                                    <th>Pago pendiente</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPagosEmpleados">
+                                <tr data-empleado="María López" data-pago="500" data-estado="pendiente">
+                                    <td><strong>María López</strong></td>
+                                    <td>Recepcionista</td>
+                                    <td>Octubre 2026</td>
+                                    <td>$500.00</td>
+                                    <td class="nomina-estado"><span class="historial-estado pendiente">Pendiente</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-pagar-empleado>Pagar en efectivo</button></td>
+                                </tr>
+                                <tr data-empleado="Carlos Méndez" data-pago="1200" data-estado="pendiente">
+                                    <td><strong>Carlos Méndez</strong></td>
+                                    <td>Estilista</td>
+                                    <td>Octubre 2026</td>
+                                    <td>$1,200.00</td>
+                                    <td class="nomina-estado"><span class="historial-estado pendiente">Pendiente</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-pagar-empleado>Pagar en efectivo</button></td>
+                                </tr>
+                                <tr data-empleado="Luis Ramírez" data-pago="1800" data-estado="pendiente">
+                                    <td><strong>Luis Ramírez</strong></td>
+                                    <td>Veterinario</td>
+                                    <td>Octubre 2026</td>
+                                    <td>$1,800.00</td>
+                                    <td class="nomina-estado"><span class="historial-estado pendiente">Pendiente</span></td>
+                                    <td><button class="btn btn-info btn-chico" type="button" data-pagar-empleado>Pagar en efectivo</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="mensajePagoEmpleado" class="venta-mensaje" role="status" aria-live="polite"></p>
+                </section>
+
+                <section class="tarjeta nomina-movimientos" aria-labelledby="tituloMovimientosCaja">
+                    <div class="pagos-encabezado">
+                        <div>
+                            <h2 id="tituloMovimientosCaja">Movimientos de caja</h2>
+                            <p>Abonos y pagos registrados en esta demostración.</p>
+                        </div>
+                    </div>
+                    <div class="tabla-envoltura">
+                        <table class="pagos-tabla movimientos-caja-tabla">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th>Movimiento</th>
+                                    <th>Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaMovimientosCaja">
+                                <tr id="sinMovimientosCaja">
+                                    <td colspan="4">Aún no hay movimientos en esta demostración.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
         </main>
     </div>
     <?php include __DIR__ . '/buscar_productos.php'; ?>
@@ -261,6 +357,38 @@
             </div>
         </form>
     </dialog>
+    <dialog class="inventario-dialog producto-dialog pago-empleado-dialog" id="modalConfirmarPagoEmpleado" aria-labelledby="tituloConfirmarPagoEmpleado">
+        <div class="producto-dialog-encabezado pago-dialog-encabezado">
+            <h1 id="tituloConfirmarPagoEmpleado">Confirmar pago a empleado</h1>
+            <button class="producto-dialog-cerrar" id="cerrarConfirmarPagoEmpleado" type="button" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="pago-empleado-contenido">
+            <p id="resumenPagoEmpleado"></p>
+            <p class="pago-nota">Este pago se descontará del efectivo disponible en caja. No se aceptan otros métodos de pago.</p>
+            <div class="pago-acciones">
+                <button class="btn btn-secundario btn-chico" id="cancelarPagoEmpleado" type="button">Cancelar</button>
+                <button class="btn btn-chico" id="confirmarPagoEmpleado" type="button">Confirmar pago en efectivo</button>
+            </div>
+        </div>
+    </dialog>
+    <dialog class="inventario-dialog producto-dialog pago-empleado-dialog" id="modalAbonoCaja" aria-labelledby="tituloAbonoCaja">
+        <div class="producto-dialog-encabezado pago-dialog-encabezado">
+            <h1 id="tituloAbonoCaja">Abonar efectivo a caja</h1>
+            <button class="producto-dialog-cerrar" id="cerrarAbonoCaja" type="button" aria-label="Cerrar">&times;</button>
+        </div>
+        <form class="pago-servicio-formulario" id="formAbonoCaja">
+            <p id="notaAbonoCaja">Registra un ingreso manual de efectivo a caja.</p>
+            <label class="label-campo" for="montoAbonoCaja">Monto del abono</label>
+            <input class="campo" id="montoAbonoCaja" name="monto" type="number" min="0.01" step="0.01" inputmode="decimal" required>
+            <label class="label-campo" for="conceptoAbonoCaja">Concepto</label>
+            <input class="campo" id="conceptoAbonoCaja" name="concepto" type="text" maxlength="100" value="Abono administrativo" required>
+            <p class="pago-nota">En esta maqueta, este ingreso solo se simula; no se guarda ni modifica una caja real. En producción, solo el administrador debe tener este permiso.</p>
+            <div class="pago-acciones">
+                <button class="btn btn-secundario btn-chico" id="cancelarAbonoCaja" type="button">Cancelar</button>
+                <button class="btn btn-chico" type="submit">Registrar abono en efectivo</button>
+            </div>
+        </form>
+    </dialog>
     <script>
         const botonBuscarProducto = document.getElementById('btnBuscarProducto');
         const modalBuscarProducto = document.getElementById('modalBuscarProducto');
@@ -287,13 +415,18 @@
 
         const pestanasVentas = [
             { enlace: document.getElementById('pestanaVentas'), panel: document.getElementById('panel-ventas') },
-            { enlace: document.getElementById('pestanaPagos'), panel: document.getElementById('panel-pagos') }
+            { enlace: document.getElementById('pestanaPagos'), panel: document.getElementById('panel-pagos') },
+            { enlace: document.getElementById('pestanaPagosEmpleados'), panel: document.getElementById('panel-pagos-empleados') }
         ];
 
         function activarPestana() {
-            const pagosActivos = window.location.hash === '#pagos';
+            const indiceActivo = window.location.hash === '#pagos-empleados'
+                ? 2
+                : window.location.hash === '#pagos'
+                    ? 1
+                    : 0;
             pestanasVentas.forEach(({ enlace, panel }, indice) => {
-                const activa = (indice === 1) === pagosActivos;
+                const activa = indice === indiceActivo;
                 enlace.classList.toggle('activa', activa);
                 if (activa) enlace.setAttribute('aria-current', 'page');
                 else enlace.removeAttribute('aria-current');
@@ -541,6 +674,132 @@
                 modalPagarVenta.showModal();
             });
         });
+
+        const filasPagoEmpleado = [...document.querySelectorAll('#tablaPagosEmpleados tr')];
+        const modalConfirmarPagoEmpleado = document.getElementById('modalConfirmarPagoEmpleado');
+        const modalAbonoCaja = document.getElementById('modalAbonoCaja');
+        const inputAbonoCaja = document.getElementById('montoAbonoCaja');
+        const monedaCaja = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+        let saldoCajaEmpleados = 800;
+        let empleadoPagoSeleccionado = null;
+
+        function obtenerPendienteNomina() {
+            return filasPagoEmpleado
+                .filter((fila) => fila.dataset.estado === 'pendiente')
+                .reduce((total, fila) => total + Number(fila.dataset.pago), 0);
+        }
+
+        function actualizarResumenEmpleados() {
+            const pagados = filasPagoEmpleado.filter((fila) => fila.dataset.estado === 'pagado').length;
+            document.getElementById('saldoCajaEmpleados').textContent = monedaCaja.format(saldoCajaEmpleados);
+            document.getElementById('nominaPendienteTotal').textContent = monedaCaja.format(obtenerPendienteNomina());
+            document.getElementById('empleadosPagadosConteo').textContent = `${pagados} de ${filasPagoEmpleado.length}`;
+        }
+
+        function registrarMovimientoCaja(concepto, tipo, importe) {
+            const tabla = document.getElementById('tablaMovimientosCaja');
+            document.getElementById('sinMovimientosCaja')?.remove();
+
+            const fila = document.createElement('tr');
+            const fecha = document.createElement('td');
+            fecha.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short' }).format(new Date());
+            const detalle = document.createElement('td');
+            detalle.textContent = concepto;
+            const movimiento = document.createElement('td');
+            movimiento.textContent = tipo;
+            const monto = document.createElement('td');
+            monto.textContent = `${tipo === 'Salida' ? '-' : '+'}${monedaCaja.format(importe)}`;
+            fila.append(fecha, detalle, movimiento, monto);
+            tabla.prepend(fila);
+        }
+
+        function abrirConfirmacionPagoEmpleado(fila) {
+            empleadoPagoSeleccionado = fila;
+            const monto = Number(fila.dataset.pago);
+            if (monto > saldoCajaEmpleados) {
+                const faltante = monto - saldoCajaEmpleados;
+                document.getElementById('mensajePagoEmpleado').textContent =
+                    `No hay efectivo suficiente para pagar a ${fila.dataset.empleado}. Faltan ${monedaCaja.format(faltante)}; se requiere un abono a caja del administrador.`;
+                inputAbonoCaja.value = faltante.toFixed(2);
+                document.getElementById('notaAbonoCaja').textContent =
+                    `El pago de ${fila.dataset.empleado} requiere ${monedaCaja.format(monto)}; hay ${monedaCaja.format(saldoCajaEmpleados)} en caja. Abona al menos ${monedaCaja.format(faltante)} para continuar.`;
+                modalAbonoCaja.showModal();
+                return;
+            }
+
+            document.getElementById('mensajePagoEmpleado').textContent = '';
+            document.getElementById('resumenPagoEmpleado').textContent =
+                `¿Confirmas el pago en efectivo de ${monedaCaja.format(monto)} a ${fila.dataset.empleado}?`;
+            modalConfirmarPagoEmpleado.showModal();
+        }
+
+        filasPagoEmpleado.forEach((fila) => {
+            fila.querySelector('[data-pagar-empleado]').addEventListener('click', () => abrirConfirmacionPagoEmpleado(fila));
+        });
+
+        document.getElementById('btnAbonarCaja').addEventListener('click', () => {
+            empleadoPagoSeleccionado = null;
+            inputAbonoCaja.value = '';
+            document.getElementById('notaAbonoCaja').textContent = 'Registra un ingreso manual de efectivo a caja.';
+            document.getElementById('formAbonoCaja').reset();
+            modalAbonoCaja.showModal();
+        });
+
+        document.getElementById('formAbonoCaja').addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            const importe = Number(inputAbonoCaja.value);
+            if (!Number.isFinite(importe) || importe <= 0) {
+                inputAbonoCaja.setCustomValidity('Ingresa un abono mayor que cero.');
+                inputAbonoCaja.reportValidity();
+                inputAbonoCaja.setCustomValidity('');
+                return;
+            }
+
+            const concepto = document.getElementById('conceptoAbonoCaja').value.trim();
+            if (!concepto) {
+                document.getElementById('conceptoAbonoCaja').reportValidity();
+                return;
+            }
+
+            saldoCajaEmpleados += importe;
+            registrarMovimientoCaja(concepto, 'Entrada', importe);
+            actualizarResumenEmpleados();
+            document.getElementById('mensajePagoEmpleado').textContent =
+                `Abono de ${monedaCaja.format(importe)} registrado en caja solo para esta demostración.`;
+            modalAbonoCaja.close();
+
+            if (empleadoPagoSeleccionado) {
+                abrirConfirmacionPagoEmpleado(empleadoPagoSeleccionado);
+            }
+        });
+
+        document.getElementById('confirmarPagoEmpleado').addEventListener('click', () => {
+            if (!empleadoPagoSeleccionado) return;
+            const importe = Number(empleadoPagoSeleccionado.dataset.pago);
+            if (importe > saldoCajaEmpleados) {
+                modalConfirmarPagoEmpleado.close();
+                abrirConfirmacionPagoEmpleado(empleadoPagoSeleccionado);
+                return;
+            }
+
+            const nombre = empleadoPagoSeleccionado.dataset.empleado;
+            saldoCajaEmpleados -= importe;
+            empleadoPagoSeleccionado.dataset.estado = 'pagado';
+            empleadoPagoSeleccionado.querySelector('.nomina-estado').innerHTML =
+                '<span class="historial-estado pagada">Pagado</span>';
+            empleadoPagoSeleccionado.querySelector('[data-pagar-empleado]').disabled = true;
+            registrarMovimientoCaja(`Pago a empleado: ${nombre}`, 'Salida', importe);
+            actualizarResumenEmpleados();
+            document.getElementById('mensajePagoEmpleado').textContent =
+                `Pago en efectivo de ${monedaCaja.format(importe)} a ${nombre} aplicado solo en esta demostración; no se guardó.`;
+            empleadoPagoSeleccionado = null;
+            modalConfirmarPagoEmpleado.close();
+        });
+
+        document.getElementById('cerrarConfirmarPagoEmpleado').addEventListener('click', () => modalConfirmarPagoEmpleado.close());
+        document.getElementById('cancelarPagoEmpleado').addEventListener('click', () => modalConfirmarPagoEmpleado.close());
+        document.getElementById('cerrarAbonoCaja').addEventListener('click', () => modalAbonoCaja.close());
+        document.getElementById('cancelarAbonoCaja').addEventListener('click', () => modalAbonoCaja.close());
     </script>
 </body>
 </html>

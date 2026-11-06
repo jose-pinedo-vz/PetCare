@@ -1773,6 +1773,19 @@
   font-size: 13px;
 }
 
+.nomina-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nomina-nota {
+  margin: -4px 0 16px;
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
 .pagos-filtros {
   display: grid;
   grid-template-columns: minmax(200px, 1.4fr) repeat(2, minmax(160px, 1fr));
@@ -1793,6 +1806,14 @@
 
 .pagos-tabla {
   min-width: 930px;
+}
+
+.nomina-tabla {
+  min-width: 780px;
+}
+
+.movimientos-caja-tabla {
+  min-width: 620px;
 }
 
 .pagos-tabla td small {
@@ -1837,6 +1858,23 @@
   margin: 4px 0 0;
 }
 
+.pago-empleado-dialog {
+  width: min(520px, calc(100% - 32px));
+}
+
+.pago-empleado-contenido {
+  padding: 20px 22px;
+}
+
+.pago-empleado-contenido > p:first-child {
+  margin: 0 0 10px;
+  font-weight: bold;
+}
+
+.pago-empleado-contenido .pago-acciones {
+  margin-top: 20px;
+}
+
 .ventas-panel[hidden] {
   display: none;
 }
@@ -1861,6 +1899,15 @@
 @media (max-width: 768px) {
   .pagos-filtros {
     grid-template-columns: 1fr;
+  }
+
+  .nomina-encabezado {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nomina-encabezado > .btn {
+    width: 100%;
   }
 
   .venta-contenedor {
