@@ -13,7 +13,6 @@ unset($_SESSION['error'], $_SESSION['mensaje']);
 <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 120px); padding: 20px;">
     <div style="text-align: center; margin-bottom: 20px;">
         <img src="../views/img/logo3.svg" alt="Veterinaria PetCare" style="max-width: 150px; height: auto; display: block; margin: 0 auto 8px;">
-        <strong style="font-size: 22px; color: var(--primary-dark);">PetCare</strong>
     </div>
     <div class="tarjeta" style="width: 100%; max-width: 420px; background-color: var(--card); box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
         <h2 style="margin-bottom: 8px; text-align: center; font-size: 20px;">Recuperar contraseña</h2>

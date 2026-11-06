@@ -7,7 +7,6 @@ include 'layout/encabezado.php';
     
     <div style="text-align: center; margin-bottom: 25px; opacity: 0.85;">
         <img src="../views/img/logo3.svg" alt="Veterinaria PetCare" style="max-width: 180px; height: auto; display: block; margin: 0 auto 10px;">
-        <strong style="font-size: 24px; color: var(--primary-dark);">PetCare</strong>
     </div>
 
     <div class="tarjeta" style="width: 100%; max-width: 420px; background-color: var(--card); box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
