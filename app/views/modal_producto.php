@@ -38,7 +38,7 @@ require_once __DIR__ . '/../models/Ventas_db.php';
                                 <td>$<?php echo number_format($p['precio_venta'], 2); ?></td>
                                 <td><?php echo $p['existencia']; ?></td>
                                 <td>
-                                    <a class="btn" href="Venta.php?accion=agregar&codigo=<?php echo urlencode($p['codigo']); ?>&nombre=<?php echo urlencode($p['nombre']); ?>&precio_venta=<?php echo urlencode($p['precio_venta']); ?>&existencia=<?php echo urlencode($p['existencia']); ?>">Seleccionar</a>
+                                    <a class="btn btn-chico btn-info" href="Venta.php?accion=agregar&codigo=<?php echo urlencode($p['codigo']); ?>&nombre=<?php echo urlencode($p['nombre']); ?>&precio_venta=<?php echo urlencode($p['precio_venta']); ?>&existencia=<?php echo urlencode($p['existencia']); ?>">Seleccionar</a>
                                 </td>
                             </tr>
                             <?php

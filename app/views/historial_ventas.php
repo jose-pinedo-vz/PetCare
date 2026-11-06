@@ -14,7 +14,7 @@
             <div class="migaja">Punto de venta </div>
             <div class="encabezado-pagina">
                 <h1>Historial de ventas</h1>
-                <a class="btn-secundario" href="../views/Venta.php">&larr; Regresar a ventas</a>
+                <a class="btn-secundario" href="Ventas.php">&larr; Regresar a ventas</a>
             </div>
 
             <section class="historial-filtros" aria-label="Filtros del historial de ventas">
@@ -22,7 +22,7 @@
                     <label for="buscarVenta">Buscar folio, cliente o empleado</label>
                     <div class="historial-control-icono">
                         <span aria-hidden="true">⌕</span>
-                        <input class="campo" id="buscarVenta" type="search" placeholder="Ej. F00123, Juan Pérez, Ana López...">
+                        <input class="campo buscador-inteligente" id="buscarVenta" type="search" placeholder="Ej. F00123, Juan Pérez, Ana López...">
                     </div>
                 </div>
                 <div class="historial-filtro">
