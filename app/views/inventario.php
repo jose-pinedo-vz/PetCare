@@ -1,5 +1,25 @@
-<?php require_once __DIR__ . '/../Models/Productos.php';
- $productos = Productos::obtenerDatosProductosActivos();
+<?php
+require_once __DIR__ . '/../Models/Productos.php';
+require_once __DIR__ . '/../models/conexion_db.php';
+
+$productos = Productos::obtenerDatosProductosActivos();
+$productosEnRiesgo = array_values(array_filter(
+  $productos,
+  static fn ($producto): bool => (int) $producto['existencia'] <= (int) $producto['existencia_minima']
+));
+$movimientosHoy = null;
+
+try {
+  $conexion = ConexionDB::obtenerConexion();
+  $consultaMovimientos = $conexion->query(
+    "SELECT COUNT(*) FROM movimientos_inventario WHERE DATE(fecha) = CURDATE()"
+  );
+  $movimientosHoy = (int) $consultaMovimientos->fetchColumn();
+} catch (Throwable $e) {
+  error_log('Error al consultar movimientos de inventario del día: ' . $e->getMessage());
+}
+
+$escaparInventario = static fn ($valor): string => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 ?>
 
 <!DOCTYPE html>
@@ -32,18 +52,18 @@
         <div class="inventario-resumen">
           <div class="inventario-tarjeta">
             <h3>Riesgo de desabasto</h3>
-            <p>3 productos</p>
+            <p><?= count($productosEnRiesgo) ?> productos</p>
             <button class="btn inventario-btn-contactar btn-chico" type="button" data-abrir-agotados>Detalles</button>
           </div>
 
           <div class="inventario-tarjeta">
             <h3>Total catálogo</h3>
-            <p>128 productos</p>
+            <p><?= count($productos) ?> productos</p>
           </div>
 
           <div class="inventario-tarjeta">
             <h3>Movimientos hoy</h3>
-            <p>14 registros</p>
+            <p><?= $movimientosHoy === null ? 'No disponible' : $movimientosHoy . ' registros' ?></p>
           </div>
         </div>
 
@@ -123,13 +143,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Pelota</td>
-            <td>2 (bajo)</td>
-            <td class="acciones">
-              <a class="btn btn-chico btn-info" href="orden_compra.php?id=1">Nueva orden</a>
-            </td>
-          </tr>
+          <?php if ($productosEnRiesgo !== []): ?>
+            <?php foreach ($productosEnRiesgo as $productoRiesgo): ?>
+              <tr>
+                <td><?= $escaparInventario($productoRiesgo['nombre']) ?></td>
+                <td><?= (int) $productoRiesgo['existencia'] ?> (bajo)</td>
+                <td class="acciones">
+                  <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= (int) $productoRiesgo['id_producto'] ?>">Nueva orden</a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="3">No hay productos con riesgo de desabasto.</td>
+            </tr>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
