@@ -14,7 +14,7 @@
 
         <nav>
             <a href="inicio.php">Inicio</a>
-            <a href="mis_mascotas.php" class="activo">Mis mascotas</a>
+            <a href="mis_mascotas.php" aria-current="page">Mis mascotas</a>
             <a href="mis_citas.php">Mis citas</a>
             <a href="servicios.php">Servicios</a>
             <a href="nuestro_equipo.php">Nuestro equipo</a>
@@ -72,7 +72,6 @@
                 <div>
                     <label for="edad">Edad (años) *</label>
                     <input type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" required>
-                    <small>Si no la sabes, pon una edad aproximada.</small>
                 </div>
 
                 <div>
@@ -106,23 +105,10 @@
                     </select>
                 </div>
 
-                <div>
-                    <label for="alergias">Alergias o cuidados especiales</label>
-                    <textarea id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"></textarea>
-                </div>
             </div>
-
-            <fieldset>
-                <legend>Historial médico</legend>
-
                 <div>
-                    <label for="enfermedades">Enfermedades</label>
-                    <textarea id="enfermedades" name="enfermedades" rows="3"></textarea>
-                </div>
-
-                <div>
-                    <label for="medicamentos">Medicamentos</label>
-                    <textarea id="medicamentos" name="medicamentos" rows="3"></textarea>
+                    <label for="alergias">Alergias o cuidados</label>
+                    <textarea id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"></textarea>
                 </div>
 
                 <div>
@@ -130,26 +116,6 @@
                     <textarea id="condiciones_especiales" name="condiciones_especiales" rows="3"></textarea>
                 </div>
 
-                <div>
-                    <label for="restricciones_para_manejo">Restricciones para manejo</label>
-                    <textarea id="restricciones_para_manejo" name="restricciones_para_manejo" rows="3"></textarea>
-                </div>
-
-                <div>
-                    <label for="vacunas">Vacunas</label>
-                    <textarea id="vacunas" name="vacunas" rows="3"></textarea>
-                </div>
-
-                <div>
-                    <label for="ultima_desparasitacion">Última desparasitación</label>
-                    <input type="date" id="ultima_desparasitacion" name="ultima_desparasitacion">
-                </div>
-
-                <div>
-                    <label for="observaciones">Observaciones</label>
-                    <textarea id="observaciones" name="observaciones" rows="3"></textarea>
-                </div>
-            </fieldset>
 
             <div>
                 <button type="submit">Guardar mascota</button>
