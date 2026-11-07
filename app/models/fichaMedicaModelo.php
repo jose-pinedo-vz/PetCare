@@ -81,8 +81,12 @@ class FichaMedica
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
             return [];
+
         }
+
     }
+
+        
 
     public function datosConsulta(int $idConsulta): ?array
     {
@@ -150,4 +154,25 @@ class FichaMedica
 
         return 1;
     }
+
+
+
+    public function obtenerEmpleadoPorUsuario(int $idUsuario): ?int
+    {
+        $db = ConexionDB::obtenerConexion();
+
+        $stmt = $db->prepare("SELECT empleado_asociado FROM usuarios WHERE id_usuario=:id_usuario");
+
+        $stmt->execute([':id_usuario' => $idUsuario]);
+
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$resultado || $resultado['empleado_asociado'] === null) {
+            return null;
+        }
+
+        return (int)$resultado['empleado_asociado'];
+    }
+
 }
+

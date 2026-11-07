@@ -16,8 +16,6 @@ $idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
 $idVeterinario = $ficha->obtenerEmpleadoDeUsuario($idUsuario);
 $idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
 
-
-
 function errorSession(string $error, int $idConsulta = 0) : void
 {
     $_SESSION['error'] = $error;

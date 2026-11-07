@@ -25,7 +25,7 @@ if ($action==='logout')
 
 if (isset($_SESSION['usuario']))
 {
-    header("Location: ../views/clientes.php");
+    header("Location: ../views/inicio.php");
     exit();
 }
  
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
                 $_SESSION['empleado_asociado']=$datosUsuario['empleado_asociado'] ?? null;
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
-                header("Location: ../views/clientes.php");
+                header("Location: ../views/inicio.php");
                 exit();
             }
             else

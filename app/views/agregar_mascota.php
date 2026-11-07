@@ -112,7 +112,7 @@ unset($_SESSION['old']);
                   <option value="Blanco y gris" <?= ($old['color'] ?? '') === 'Blanco y gris' ? 'selected' : '' ?>>Blanco y gris</option>
                   <option value="Verde y amarillo" <?= ($old['color'] ?? '') === 'Verde y amarillo' ? 'selected' : '' ?>>Verde y amarillo</option>
                   <option value="Blanco, amarillo y negro" <?= ($old['color'] ?? '') === 'Blanco, amarillo y negro' ? 'selected' : '' ?>>Blanco, amarillo y negro</option>
-                  <option value="Otro" <?= ($old['color'] ?? '') === 'Otro' ? 'selected' : '' ?>>Otro (Especificar)</option>
+                  <option value="Otro" <?= ($old['color'] ?? '') === 'Otro' ? 'selected' : '' ?>>Otro (especificar)</option>
                 </select>
               </div>
 

@@ -75,7 +75,7 @@
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -132,7 +132,7 @@
  
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -236,7 +236,7 @@
 
                     <div>
                         <label class="label-campo" for="tiempo_entrega">
-                            Tiempo de entrega (Días) *:
+                            Tiempo de entrega (días) *:
                         </label>
 
                         <input

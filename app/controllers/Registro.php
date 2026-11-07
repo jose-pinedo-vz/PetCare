@@ -74,11 +74,12 @@ if (session_status() === PHP_SESSION_NONE)
 }
 if (!empty($mensaje))
 {
-    $_SESSION['mensaje'] = $mensaje;
+    header("Location: ../views/usuarios.php");
+    exit();
 }
 if (!empty($error))
 {
     $_SESSION['error'] = $error;
+    header("Location: ../views/registro_usuario.php");
+    exit();
 }
-header("Location: ../views/usuarios.php");
-exit();

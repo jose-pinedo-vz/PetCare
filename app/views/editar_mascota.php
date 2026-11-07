@@ -169,7 +169,7 @@ if ($especieActual !== '' && !in_array($especieActual, $especiesLista, true)) {
               <?php foreach ($coloresLista as $opcionColor): ?>
                 <option value="<?= htmlspecialchars($opcionColor) ?>" <?= $colorActual === $opcionColor ? 'selected' : '' ?>><?= htmlspecialchars($opcionColor) ?></option>
               <?php endforeach; ?>
-              <option value="Otro" <?= $colorActual === 'Otro' ? 'selected' : '' ?>>Otro (Especificar)</option>
+              <option value="Otro" <?= $colorActual === 'Otro' ? 'selected' : '' ?>>Otro (especificar)</option>
             </select>
           </div>
           

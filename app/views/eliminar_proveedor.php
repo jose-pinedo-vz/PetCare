@@ -39,7 +39,7 @@ $razon_social = $_GET['razon_social'];
   <?php $paginaActiva = 'proveedores'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de Proveedores</a> / Eliminar</div>
+      <div class="migaja"><a href="proveedores.php" class="link-tenue">Gestión de proveedores</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar proveedor</h1>
       </div>
