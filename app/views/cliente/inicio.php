@@ -13,7 +13,7 @@
         </div>
 
         <nav>
-            <a href="inicio.php" aria-current="page">Inicio</a>
+            <a href="inicio.php" class="activo">Inicio</a>
             <a href="mis_mascotas.php">Mis mascotas</a>
             <a href="mis_citas.php">Mis citas</a>
             <a href="servicios.php">Servicios</a>

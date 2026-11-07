@@ -14,7 +14,7 @@
 
         <nav>
             <a href="inicio.php">Inicio</a>
-            <a href="mis_mascotas.php">Mis mascotas</a>
+            <a href="mis_mascotas.php" class="activo">Mis mascotas</a>
             <a href="mis_citas.php">Mis citas</a>
             <a href="servicios.php">Servicios</a>
             <a href="nuestro_equipo.php">Nuestro equipo</a>
