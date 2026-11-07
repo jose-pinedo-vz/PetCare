@@ -22,7 +22,6 @@ if (session_status() === PHP_SESSION_NONE)
           <td><?php echo $d['nombre']; ?> </td>
           <td><?php echo $d['fecha']; ?> </td>
           <td><?php echo $d['motivo']; ?></td>
-
           <td>
             <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
             <a class="btn" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>

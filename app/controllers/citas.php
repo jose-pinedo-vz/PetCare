@@ -4,60 +4,12 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/citas.php';
-session_start();
+// session_start();
 
-
-function consultarFechas(string $fecha):array
-{
-    $datos = [];
-
-    echo "llego " . $fecha;
-    return [];
-
-    if ("hoy" === $fecha)
-    {
-
-    }
-    else if ("semana" === $fecha)
-    {
-
-    }
-    else if ("mes" === $fecha)
-    {
-
-    }
-    else if ("todos" === $fecha)
-    {
-        $datos = estraerDatosConsultas();
-    }
-    else if ("SemanaPasada" === $fecha)
-    {
-
-    }
-    else if ("MesPasado" === $fecha)
-    {
-
-    }
-    else
-    {
-        return [];
-    }
-
-    foreach ($datos as $citas)
-    {
-        $resultados[] =
-        [
-            'id' => $citas['id_cita'],
-            'nombre' => $citas['nombre'],
-            'fecha' => $citas['fecha'],
-            'motivo' => $citas['motivo'],
-            'atendido' => $citas['atendido']
-        ];
-    }
-
-    return $resultados ?? [];
-        
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
 
 // intermediario entre front y base de datos
 function estraerDatosConsultas(): array
@@ -80,13 +32,6 @@ function estraerDatosConsultas(): array
 }
 
 
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-
-
 function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
@@ -94,6 +39,11 @@ function errorSession(string $error)
     $_SESSION['oldClave'] = $_POST['claveCliente'];
     $_SESSION['oldFecha'] = $_POST['fecha'];
     $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
+    $_SESSION['oldHorario'] = $_POST['horarioConsulta'];
+    $_SESSION['oldMascota'] = $_POST['mascota'];
+    $_SESSION['oldDuracion'] = $_POST['duracion'];
+    $_SESSION['oldServicio'] = $_POST['servicio'];
+    $_SESSION['oldResponsable'] = $_POST['responsable'];
 
     header("Location: ../views/agendarCita.php");
     exit();
@@ -312,7 +262,23 @@ function cancelarCita()
     exit();
 }
 
+function consultarServicio(int $idServicio)
+{
+    $servicio = ConexionesClientes::consultarServicio($idServicio);
+    return $servicio;
+}
 
+function consultarResponsable(int $idResponsable)
+{
+    $responsable = ConexionesClientes::consultarResponsable($idResponsable);
+    return $responsable;
+}
+
+function consultarMascota(int $idMascota)
+{
+    $mascota = ConexionesClientes::consultarMascota($idMascota);
+    return $mascota;
+}
 
 
 ?>

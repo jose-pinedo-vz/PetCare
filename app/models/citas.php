@@ -237,5 +237,32 @@
                 return false;
             }
         }
+
+        public static function consultarServicio(int $idServicio)
+        {
+            $query = "SELECT nombre FROM servicios WHERE id_servicio = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$idServicio]);
+            return $stml->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public static function consultarResponsable(int $idResponsable)
+        {
+            $query = "SELECT nombre, apellido FROM empleados WHERE id_empleado = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$idResponsable]);
+            return $stml->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public static function consultarMascota(int $idMascota)
+        {
+            $query = "SELECT nombre FROM mascotas WHERE id_mascota = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$idMascota]);
+            return $stml->fetch(PDO::FETCH_ASSOC);
+        }
     }
 ?>

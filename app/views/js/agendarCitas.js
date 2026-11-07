@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async function()
 
         fecha.addEventListener('input', actualizarHorarios);
         fecha.addEventListener('change', actualizarHorarios);
-        
+
         responsable.addEventListener('input', actualizarHorarios);
         responsable.addEventListener('change', actualizarHorarios);
     }
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async function()
 // mostrar todos los servicios en el select de servicios
 document.addEventListener("DOMContentLoaded", async function()
 {
-    console.log("se ejecuta");
+    //console.log("se ejecuta");
     const servicio = document.getElementById('servicio');
 
     if (servicio)
