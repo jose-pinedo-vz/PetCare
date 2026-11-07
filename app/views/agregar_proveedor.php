@@ -264,18 +264,10 @@
                 </div>
 
             </fieldset>
-<<<<<<< HEAD
         <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar</button>
-      </div>
-=======
-
-          <div class="acciones-formulario">
-            <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-            <button type="submit">Guardar</button>
-          </div>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
+          <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
+          <button type="submit" class="btn btn-chico">Guardar</button>
+        </div>
 
         </form>
 

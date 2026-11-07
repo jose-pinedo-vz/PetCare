@@ -69,8 +69,9 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
 
         <h2 class="subtitulo">Productos</h2>
 
-        <div class="agregar-buscar">
-          <input type="text" class="campo buscador-inteligente" placeholder="Buscar...">
+        <div class="inventario-toolbar agregar-buscar">
+          <label class="visualmente-oculto" for="buscar-producto">Buscar producto</label>
+          <input id="buscar-producto" type="search" class="campo inventario-buscador buscador-inteligente" placeholder="Buscar por nombre o código de barras...">
           <a class="btn" href="agregar_producto.php">+ Agregar producto</a>
         </div>
 

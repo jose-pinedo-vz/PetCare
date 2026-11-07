@@ -13,7 +13,7 @@ $productos = Ventas::obtenerProductos(conexionDB::obtenerConexion());
 
     <div class="busqueda-productos">
         <label class="visualmente-oculto" for="buscarProducto">Nombre o código del producto</label>
-        <input class="campo" id="buscarProducto" type="search" placeholder="Escribe el nombre o código del producto..." autocomplete="off" autofocus>
+        <input class="campo buscador-inteligente" id="buscarProducto" type="search" placeholder="Escribe el nombre o código del producto..." autocomplete="off" autofocus>
 
         <div class="tabla-envoltura busqueda-tabla">
             <table>
@@ -35,7 +35,7 @@ $productos = Ventas::obtenerProductos(conexionDB::obtenerConexion());
                             <td><?php echo htmlspecialchars($p['precio_venta']); ?></td>
                             <td><?php echo htmlspecialchars($p['existencia']); ?></td>
                             <td>
-                                <a class="btn" href="../controllers/busca_producto.php?accion=agregar&codigo=<?php echo urlencode($p['codigo']); ?>&nombre=<?php echo urlencode($p['nombre']); ?>&precio=<?php echo urlencode($p['precio_venta']); ?>&existencia=<?php echo urlencode($p['existencia']); ?>">Seleccionar</a>
+                                <a class="btn btn-chico btn-info" href="../controllers/busca_producto.php?accion=agregar&codigo=<?php echo urlencode($p['codigo']); ?>&nombre=<?php echo urlencode($p['nombre']); ?>&precio=<?php echo urlencode($p['precio_venta']); ?>&existencia=<?php echo urlencode($p['existencia']); ?>">Seleccionar</a>
                             </td> 
                         </tr>
                     <?php endforeach; ?>

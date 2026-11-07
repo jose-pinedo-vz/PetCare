@@ -30,10 +30,17 @@ $empleados = Empleados::Listar_empleados_activos();
 
       <div class="tarjeta">
 
-    <div class="barra-acciones">
-      <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
-    </div>
+        <div class="barra-acciones-busqueda">
+          <div class="busqueda-barra" role="search">
+            <label class="visualmente-oculto" for="buscarEmpleado">Buscar empleado</label>
+            <input class="campo buscador-inteligente" id="buscarEmpleado" type="search" placeholder="Buscar..." autocomplete="off">
+          </div>
+          <div class="barra-acciones">
+            <a class="btn" href="agregar_empleado.php">+ Agregar empleado</a>
+          </div>
+        </div>
 
+    <!-- Esta tabla omite intencionalmente la dirección; sincroniza sus columnas con Listar_empleados_activos(). -->
     <div class="tabla-envoltura">
     <table class="tabla-ancha">
       <thead>
@@ -43,13 +50,6 @@ $empleados = Empleados::Listar_empleados_activos();
           <th>Apellido</th>
           <th>Teléfono</th>
           <th>Correo</th>
-          <th>Calle</th>
-          <th>Número exterior</th>
-          <th>Número interior</th>
-          <th>Colonia</th>
-          <th>Ciudad</th>
-          <th>Estado</th>
-          <th>Código postal</th>
           <th>Puesto</th>
           <th>Especialidad</th>
           <th>Cédula profesional</th>
@@ -66,21 +66,14 @@ $empleados = Empleados::Listar_empleados_activos();
           <td><?= htmlspecialchars($e['apellido']) ?></td>
           <td><?= htmlspecialchars($e['telefono']) ?></td>
           <td><?= htmlspecialchars($e['correo']) ?></td>
-          <td><?= htmlspecialchars($e['calle']) ?></td>
-          <td><?= htmlspecialchars($e['numero_exterior']) ?></td>
-          <td><?= htmlspecialchars($e['numero_interior'] ?? '') ?></td>
-          <td><?= htmlspecialchars($e['colonia']) ?></td>
-          <td><?= htmlspecialchars($e['ciudad']) ?></td>
-          <td><?= htmlspecialchars($e['estado']) ?></td>
-          <td><?= htmlspecialchars($e['codigo_postal']) ?></td>
           <td><?= htmlspecialchars($e['puesto']) ?></td>
           <td><?= htmlspecialchars($e['especialidad'] ?? '') ?></td>
           <td><?= htmlspecialchars((string)($e['num_cedula_profesional'] ?? '')) ?></td>
           <td><?= htmlspecialchars(substr((string)($e['Fecha_de_contratacion'] ?? ''), 0, 10)) ?></td>
           <td><?= htmlspecialchars($e['horario']) ?></td>
           <td class="acciones">
-            <a class="btn" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
-            <a class="btn btn-peligro" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
+            <a class="btn btn-chico" href="editar_empleado.php?id_empleado=<?= (int)$e['id_empleado'] ?>">Editar</a>
+            <a class="btn btn-chico btn-peligro" href="eliminar_empleado.php?id=<?= (int)$e['id_empleado'] ?>&nombre=<?= urlencode($e['nombre']) ?>&apellido=<?= urlencode($e['apellido']) ?>">Eliminar</a>
           </td>
         </tr>
 <?php endforeach; ?>
@@ -97,5 +90,24 @@ $empleados = Empleados::Listar_empleados_activos();
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
 
+  <script>
+    const buscarEmpleado = document.getElementById('buscarEmpleado');
+    const tablaEmpleados = document.querySelector('.tabla-envoltura tbody');
+
+    if (buscarEmpleado && tablaEmpleados) {
+      buscarEmpleado.addEventListener('input', () => {
+        const termino = buscarEmpleado.value.trim().toLocaleLowerCase();
+        // Filtra las columnas visibles, excluyendo Acciones; la dirección no forma parte del listado.
+        tablaEmpleados.querySelectorAll('tr').forEach((fila) => {
+          const texto = Array.from(fila.cells)
+            .slice(0, -1)
+            .map((celda) => celda.textContent)
+            .join(' ')
+            .toLocaleLowerCase();
+          fila.hidden = !texto.includes(termino);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
