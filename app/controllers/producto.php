@@ -11,22 +11,24 @@ function validar_datos(array $datos) {
     // El codigo es obligatorio
     if (empty($datos['codigo'])) {
         $errores[] = "El codigo es obligatorio.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['codigo'])) {
-        $errores[] = "El codigo debe incluir letras, no solo números.";
+    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['codigo'])) {
+        $errores[] = "El código debe contener al menos una letra, un número y sin caracteres especiales.";
     }
 
     //El codigo de barra es obligatorio
-    if (empty($datos['codigo_barra'])) {
-        $errores[] = "El codigo de barra es obligatorio.";
-    }else if(!(int)$datos['codigo_barra']){
-        $errores[] = "El codigo de barra debe ser un valor numerico.";
-    }
+    //if (empty($datos['codigo_barra'])) {
+    //    $errores[] = "El codigo de barra es obligatorio.";
+    //}else if(!(int)$datos['codigo_barra']){
+    //    $errores[] = "El codigo de barra debe ser un valor numerico.";
+    //}
 
     //El nombre es obligatorio
     if (empty($datos['nombre'])) {
         $errores[] = "El nombre es obligatorio.";
     }else if (strlen($datos['nombre']) > 50) {
         $errores[] = "El nombre no puede tener mas de 50 letras";
+    }else if (is_numeric($datos['nombre'])) {
+        $errores[] = "El nombre no puede ser solo números.";
     }
 
     //El id_categoria es obligatorio
@@ -92,6 +94,8 @@ function validar_datos(array $datos) {
         list(,$digitosDecimales) = explode('.', $datos['precio_compra'] . '.');
         if (strlen($digitosDecimales) > 2) {
             $errores[] = "El precio de compra no puede tener más de 2 decimales.";
+        }else if ((float)$datos['precio_compra'] < 0) {
+            $errores[] = "El precio de compra debe ser un valor mayor a 0.";
         }
     }
 
@@ -106,6 +110,10 @@ function validar_datos(array $datos) {
         list(,$digitosDecimales) = explode('.', $datos['precio_venta'] . '.');
         if (strlen($digitosDecimales) > 2) {
             $errores[] = "El precio de venta no puede tener más de 2 decimales.";
+        }else if ((float)$datos['precio_venta'] < 0) {
+            $errores[] = "El precio de venta debe ser un valor mayor a 0.";
+        }else if ((float)$datos['precio_venta'] < (float)$datos['precio_compra']) {
+            $errores[] = "El precio de venta no puede ser menor al precio de compra.";
         }
     }
     //La existencia es obligatorio
@@ -176,8 +184,8 @@ function validar_datos(array $datos) {
         $errores[] = "El lote es obligatorio.";
     }else if (strlen($datos['lote']) > 20) {
         $errores[] = "El lote no puede tener mas de 20 caracteres.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['lote'])) {
-        $errores[] = "El lote debe incluir letras, no solo números.";
+    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['lote'])) {
+        $errores[] = "El lote debe contener al menos una letra, un número y sin caracteres especiales.";
     }
 
     //La ubicacion es obligatorio
@@ -185,30 +193,19 @@ function validar_datos(array $datos) {
         $errores[] = "La ubicacion es obligatoria.";
     }else if (strlen($datos['ubicacion']) > 20) {
         $errores[] = "La ubicacion no puede tener mas de 20 caracteres.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['ubicacion'])) {
-        $errores[] = "La ubicacion debe incluir letras, no solo números.";
+    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['ubicacion'])) {
+        $errores[] = "La ubicacion debe contener al menos una letra, un número y sin caracteres especiales.";
     }
 
-    //La imagen es obligatorio
-    if (empty($datos['imagen'])) {
-        $errores[] = "La imagen es obligatoria.";
-    }else if (strlen($datos['imagen']) > 50) {
-        $errores[] = "La imagen no puede tener mas de 50 caracteres.";
+    //El estado es obligatorio
+    if (!isset($datos['estado'])) {
+        $errores[] = "El estado es obligatorio.";
     }else{
-        require_once __DIR__ . '/../controllers/ImagenController.php';
-
-        $resultadoImagen = null;
-        $foto = $datos['fotografia'];
-
-        if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
-            $resultadoImagen = ImagenController::subir($foto);
-            if ($resultadoImagen['exito']) {
-                $datos['fotografia'] = $resultadoImagen['ruta'];
-            } else {
-                $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
-            }
-        }
+        $estado = $datos['estado'];
+        $datos['estado'] = (int)$estado;
     }
+
+    
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
@@ -220,25 +217,57 @@ function validar_datos(array $datos) {
 
     } else {
         require_once __DIR__ . '/../models/Productos.php';
-        $advert = Productos::insertarProducto($datos);
+        //La imagen es obligatorio
+        if (empty($datos['imagen'])) {
+            $errores[] = "La imagen es obligatoria.";
+        }else{
+            require_once __DIR__ . '/../controllers/ImagenController.php';
 
-        if (is_array($advert) && count($advert) > 0) {
-            if ($advert[0] === "Error ID") {
-                $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
-            } else if($advert[0] === "Error al aguardar") {
-                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+            $resultadoImagen = null;
+            $foto = $datos['imagen'];
+
+            if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+                $resultadoImagen = ImagenController::subir($foto);
+                if ($resultadoImagen['exito']) {
+                    $datos['imagen'] = $resultadoImagen['ruta'];
+
+                    if (strlen($datos['imagen']) > 50) {
+                        $errores[] = "La imagen no puede tener mas de 50 caracteres.";
+                    }
+                } else {
+                    $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
+                }
             }
-            $_SESSION['old'] = $datos;
+        }
+
+        if (count($errores) > 0) {
+            // se muestra errores de que campos no se llenaron
+            $_SESSION['errores'] = $errores;
+            $_SESSION['old']     = $datos;
 
             header("Location: ../views/agregar_producto.php");
             exit;
-        } else {
-            // Éxito: redirige a la lista de productos
-            header('Location: ../views/inventario.php');
-            exit;
-        }
+        }else{
+            $advert = Productos::insertarProducto($datos);
+
+            if (is_array($advert) && count($advert) > 0) {
+                if ($advert[0] === "Error ID") {
+                    $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
+                } else if($advert[0] === "Error al aguardar") {
+                    $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+                }
+                $_SESSION['old'] = $datos;
+
+                header("Location: ../views/agregar_producto.php");
+                exit;
+            } else {
+                // Éxito: redirige a la lista de productos
+                header('Location: ../views/inventario.php');
+                exit;
+            }
 
 
+    }
     }
 
 }
