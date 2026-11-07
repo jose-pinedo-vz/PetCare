@@ -79,6 +79,8 @@
         $cant = $_SESSION['orden_cantidades'][$id_prod] ?? 1;
         $total += Productos::obtenerPrecioCompra((int) $id_prod) * $cant;
     }
+
+    $existencia_Minima = Productos::obtenerExistenciaMinima($id_proveedor);
 ?>
 
 <!DOCTYPE html>
@@ -124,25 +126,22 @@
 
                 <section class="orden-compra-seccion" aria-labelledby="titulo-sugeridos">
                     <h2 id="titulo-sugeridos" class="subtitulo">Productos sugeridos</h2>
-                    <p class="orden-compra-ayuda">Productos con existencias bajas y productos agregados directamente a esta solicitud.</p>
-                    <!-- Datos de ejemplo: mostrar aquí sugerencias de bajo stock y productos solicitados manualmente. -->
+                    <p class="orden-compra-ayuda">Productos con existencias bajas generales</p>
                     <div class="orden-compra-sugerencias">
-                        <article class="orden-compra-sugerencia">
-                            <div>
-                                <span class="orden-compra-etiqueta">Stock bajo</span>
-                                <h3>Alimento para perro adulto</h3>
-                                <p>Código: ALI-001 · Existencia: 3 kg · Mínimo: 10 kg</p>
-                            </div>
-                            <button class="btn btn-chico" type="button">Agregar</button>
-                        </article>
-                        <article class="orden-compra-sugerencia">
-                            <div>
-                                <span class="orden-compra-etiqueta orden-compra-etiqueta-solicitado">Solicitud directa</span>
-                                <h3>Guantes de exploración</h3>
-                                <p>Código: MED-014 · Existencia: 24 piezas</p>
-                            </div>
-                            <button class="btn btn-chico" type="button">Agregar</button>
-                        </article>
+                        <?php if (count($existencia_Minima) > 0) { ?>
+                            <?php foreach ($existencia_Minima as $exis_mini) { ?>
+                                <article class="orden-compra-sugerencia">
+                                    <div>
+                                        <span class="orden-compra-etiqueta">Stock bajo</span>
+                                        <h3> <?php echo htmlspecialchars($exis_mini['nombre']); ?> </h3>
+                                        <p> Codigo: <?php echo htmlspecialchars($exis_mini['codigo']); ?> · Existencia: <?php echo htmlspecialchars($exis_mini['existencia']); ?> <?php echo htmlspecialchars($exis_mini['unidad_medida']) ?>; · Minimo: <?php echo htmlspecialchars($exis_mini['existencia_minima']) ?>  <?php echo htmlspecialchars($exis_mini['unidad_medida']); ?></p>
+                                    </div>
+                                    <a class="btn btn-chico" href= "orden_compra.php?proveedor=<?php echo $id_proveedor; ?>&id=<?php echo (int) $exis_mini['id_producto']; ?>">Agregar</a>
+                                </article>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <p> No hay productos con stock bajo en este momento </p>
+                        <?php } ?>
                     </div>
                 </section>
 
@@ -230,7 +229,6 @@
                 <div class="orden-compra-detalles">
                     <p><strong>Fecha de emisión:</strong> <?php echo $fechaEmision; ?></p>
                     <p><strong>Fecha de entrega:</strong> <?php echo $fechaEntrega; ?></p>
-                    <p><strong>Total:</strong> <?php echo number_format($total, 2); ?></p>
                 </div>
 
                 <div class="orden-compra-acciones">

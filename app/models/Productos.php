@@ -271,6 +271,31 @@ function obtenerPrecioCompra(int $id_producto): float {
     }
 }
 
+function obtenerExistenciaMinima(int $id_proveedor): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT id_producto, nombre, codigo, existencia, existencia_minima, unidad_medida
+            FROM productos
+            WHERE id_proveedor = ? AND existencia <= existencia_minima
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_proveedor]);
+
+        $resultado = $consulta -> fetchAll(PDO::FETCH_ASSOC);
+
+        if ($resultado) {
+            return $resultado;
+        } else {
+            return [];
+        }
+
+    } catch (Exception $error) {
+        error_log("Error en obtener la existencia minima de un producto " . $error -> getMessage());
+        return [];
+    }
+}
+
 function ActualizarProducto(array $datos, $id){
     try{
         $conexion = ConexionDB::obtenerConexion();
@@ -365,6 +390,9 @@ class Productos {
         return obtenerTiempoEntregaProveedor($id);
     }
 
+    public static function obtenerExistenciaMinima(int $id_proveedor) : array {
+        return obtenerExistenciaMinima($id_proveedor);
+    }
 
     public static function obtenerPrecioCompra(int $id_producto): float {
         return obtenerPrecioCompra($id_producto);
