@@ -25,7 +25,7 @@ function estraerDatosConsultas(): array
             'nombre'      => $cita['nombre'] . ' ' . $cita['apellido'],
             'fecha'       => $cita['fecha'],
             'motivo'      => $cita['observacion'],           
-            'atendido'    => (int)$cita['atendido']         
+            'estado_cita'    => $cita['estado_cita']         
         ];
     }
     return $resultados;
@@ -152,6 +152,17 @@ if ($accion === 'horario' || $accion === 'orario')
 
 function horarios()
 {
+    // primero, tengo que encontrar la fomra de contjltar la cita, responsable y horario
+    // despues saco el horario
+    // lo agrego a una lista y eso ya esta, despues tengo que asegurarme de si ese dia ahay citas
+    // ocultar al ahora a la que hay citas
+
+    // una ves logrado eso, tengo que agregar una opcion para sumarle el tiempo
+     // de demora a esa hora empesada, y el proximo horario a mostrar
+    // sera cuando el termine, por ejempllo, cita a las 11 duracion de 40 minutos, proximo horario
+    // a las 11:40, y el proximo de ese que saa a las 12, pero si yo agarro 11:40
+    // con media hora entonces seria 12:30. sera complicado, espero terminarlo en esta tarde
+
     $fechaSeleccionada = $_GET['fecha'] ?? '';
     $empleado = $_GET['empleado'] ?? '';
     $Horarios = [];
@@ -169,11 +180,6 @@ function horarios()
 
     if ($Veterinarios)
     {
-        // cantidad de veterinarios por turno
-        // $cantMatutino = ConexionesClientes::cantidadHorarios("Matutino");
-        // $cantVespertino = ConexionesClientes::cantidadHorarios("Vespertino");
-
-        
         for($i = $entradaMatutino; $i<= $salidaMatutino; $i++)
         {
             $entrada = $i . ":00:00";

@@ -86,10 +86,9 @@
         public function datosCitas():array
         {
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita
               FROM citas c
-              INNER JOIN clientes cl ON c.cliente = cl.id_cliente
-              WHERE c.estado_cita != 'cancelada'";
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);

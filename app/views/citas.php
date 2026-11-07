@@ -16,17 +16,18 @@ if (session_status() === PHP_SESSION_NONE)
     // echo $datos[0]['atendido'];
     foreach ($datos as $d)
     {
-      if ($d['atendido'] === 0)
+      $estadocita = trim($d['estado_cita'] ?? '');
+      if ($estadocita == "pendiente")
       {?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
           <td><?php echo $d['nombre']; ?> </td>
           <td><?php echo $d['fecha']; ?> </td>
           <td><?php echo $d['motivo']; ?></td>
           <td>
-            <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
-            <a class="btn" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
-            <a class="btn">Reprogramar</a>
-            <a class="btn" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
+            <a class="btn btn-chico" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
+            <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
+            <a class="btn btn-chico btn-aviso">Reprogramar</a>
+            <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
 
           </td>
 
@@ -44,16 +45,22 @@ if (session_status() === PHP_SESSION_NONE)
   {
     $datos = estraerDatosConsultas();
 
-    foreach($datos as $d)
+    foreach ($datos as $d)
     {
-      if ($d['atendido'] === 1)
+      $estadocita = trim($d['estado_cita'] ?? '');
+      if ($estadocita == "atendida")
       {?>
-        <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>">
-          <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
-          <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
-          <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
-          <button class="btn" type="button">Pagar</button>
-        </div>
+        <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+          <td><?php echo $d['nombre']; ?> </td>
+          <td><?php echo $d['fecha']; ?> </td>
+          <td><?php echo $d['motivo']; ?></td>
+          <td>
+            
+            
+            <a class="btn">Pagar</a>
+          </td>
+
+        </tr>
       <?php }
     }
   }
@@ -69,7 +76,6 @@ if (session_status() === PHP_SESSION_NONE)
   <title>Veterinaria PetCare - Citas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
   <script src="js/citas.js"></script>
-
 </head>
 
 <body>
@@ -102,10 +108,10 @@ if (session_status() === PHP_SESSION_NONE)
       
 
       <div class="contenedor_citas">
-        <div class="boton_control">
+        <!-- <div class="boton_control">
           <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
           <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
-        </div>
+        </div> -->
         <div></div>
 
         <style>
@@ -167,7 +173,21 @@ if (session_status() === PHP_SESSION_NONE)
               <!-- Sección de atendidos-->
               <div id="seccion_atendidos" class="seccion-panel oculto">
                 <h3>Citas atendidas (pendientes de pago)</h3>
-                <?php mostrarCitasAtendidas(); ?>
+                <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarCitasAtendidas(); ?>
+                  </tbody>
+                </table>
+              </div>
               </div>
 
             </div>

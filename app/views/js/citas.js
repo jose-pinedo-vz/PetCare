@@ -13,8 +13,6 @@ function mostrarNombre(nombre,tarjetas)
             tarjetas.forEach(tarjeta =>
                 {
                     const nombreDuenio = tarjeta.getAttribute('data-nombre');
-
-
                     if (nombreDuenio && nombreDuenio.toLowerCase().includes(valor))
                     {
                         tarjeta.classList.remove("oculto");
@@ -36,7 +34,8 @@ function mostrarNombre(nombre,tarjetas)
 document.addEventListener('DOMContentLoaded', function()
 {
     const nombre = document.getElementById('buscarNombre');
-    const tarjetas = document.querySelectorAll('.Card_cita');
+    //const tarjetas = document.querySelectorAll('.Card_cita');
+    const tarjetas = document.querySelectorAll('.Card_cita, tr[data-fecha]');
 
     mostrarNombre(nombre, tarjetas)
 });
@@ -75,8 +74,7 @@ document.addEventListener('DOMContentLoaded', function()
         {
             evento.target.value.toLowerCase().trim();
             // const valor = document.getElementById('fecha');
-            const tarjetas = document.querySelectorAll('.Card_cita');
-
+            const tarjetas = document.querySelectorAll('.Card_cita, tr[data-fecha]');
             const option = evento.target.value;
 
             switch (option) 
@@ -102,8 +100,6 @@ document.addEventListener('DOMContentLoaded', function()
                         }
                     );
                     break;
-
-
                 case 'semana':
                     const curr = new Date();
                     const primerDia = new Date(curr.setDate(curr.getDate() - curr.getDay() + (curr.getDay() === 0 ? -6 : 1)));
@@ -134,9 +130,6 @@ document.addEventListener('DOMContentLoaded', function()
                         }
                     });
                     break;
-
-
-
                 case 'mes':
                     const fechaActual = new Date();
                     const anio = fechaActual.getFullYear();
@@ -156,9 +149,6 @@ document.addEventListener('DOMContentLoaded', function()
                         }
                     });
                     break;
-
-
-                    
                 case 'todos':
                     tarjetas.forEach(tarjeta => {
                         tarjeta.classList.remove("oculto");
