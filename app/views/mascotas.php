@@ -26,7 +26,9 @@ $usuario=$_SESSION['usuario'];
 <body>
 
   <div class="layout">
-  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
+
+    <?php $paginaActiva = 'mascotas';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
 
   <main>
@@ -97,13 +99,13 @@ $usuario=$_SESSION['usuario'];
   </footer>
 
   <!--ventana modal-->
-  <dialog class="producto-dialog" id="modalDetalle">
+  <dialog class="producto-dialog" id="modalDetalle" style="max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2px;">
     <div class="producto-dialog-encabezado">
       <h1>Detalle de la mascota</h1>
       <form method="dialog"><button class="producto-dialog-cerrar" aria-label="cerrar">&times;</button></form>
     </div>
 
-    <div class="detalle-cuerpo grid-formulario">
+    <div class="detalle-cuerpo grid-formulario" style="text-align: center;">
       <div><span class="label-campo">Nombre</span><span data-campo="nombre"></span></div>
       <div><span class="label-campo">Especie</span><span data-campo="especie"></span></div>
       <div><span class="label-campo">Raza</span><span data-campo="raza"></span></div>

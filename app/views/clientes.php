@@ -14,8 +14,6 @@
   $usuario=$_SESSION['usuario'];
   // Mostrar nombre del usuario
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -43,10 +41,6 @@
       </div>
 
       <div class="tarjeta">
-    
-    <div class="barra-acciones">
-      <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
-    </div>
 
 
         <?php
