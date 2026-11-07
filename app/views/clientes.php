@@ -14,8 +14,6 @@
   $usuario=$_SESSION['usuario'];
   // Mostrar nombre del usuario
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 

@@ -26,10 +26,12 @@ $usuario=$_SESSION['usuario'];
 <body>
 
   <div class="layout">
-  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
+    <?php $paginaActiva = 'mascotas';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
+ 
       <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>
@@ -37,16 +39,17 @@ $usuario=$_SESSION['usuario'];
 
       <div class="tarjeta">
 
-        <div class="agregar-buscar">
-          <form method="get" action="mascotas.php" role="search">
-            <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
-            <input class="campo buscador-inteligente" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn btn-secundario btn-chico" href="mascotas.php">Limpiar</a>
-            <?php endif; ?>
-          </form>
+             <div class="barra-acciones-busqueda">
+             <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
+               <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
+               <input class="campo buscador-inteligente" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+               <?php if (!empty($_GET['buscar'])): ?>
+                 <a class="btn btn-secundario btn-chico" href="mascotas.php">Limpiar</a>
+               <?php endif; ?>
+             </form>
 
-          <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+             <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+ 
         </div>
         <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
         <div class="tabla-envoltura">
@@ -72,8 +75,10 @@ $usuario=$_SESSION['usuario'];
                     <td><?= htmlspecialchars($mascota['sexo']) ?></td>
                     <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
                     <td class="acciones">
+
                       <a class="btn btn-chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
                       <a class="btn btn-peligro btn-chico" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+ 
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -97,13 +102,16 @@ $usuario=$_SESSION['usuario'];
   </footer>
 
   <!--ventana modal-->
+
   <dialog class="producto-dialog" id="modalDetalle">
+ 
     <div class="producto-dialog-encabezado">
       <h1>Detalle de la mascota</h1>
       <form method="dialog"><button class="producto-dialog-cerrar" aria-label="cerrar">&times;</button></form>
     </div>
 
     <div class="detalle-cuerpo grid-formulario">
+ 
       <div><span class="label-campo">Nombre</span><span data-campo="nombre"></span></div>
       <div><span class="label-campo">Especie</span><span data-campo="especie"></span></div>
       <div><span class="label-campo">Raza</span><span data-campo="raza"></span></div>
@@ -115,16 +123,17 @@ $usuario=$_SESSION['usuario'];
       <div class="campo-completo"><span class="label-campo">Alergias</span><span data-campo="alergias"></span></div>
       <div class="campo-completo"><span class="label-campo">Enfermedades</span><span data-campo="enfermedades"></span></div>
       <div class="campo-completo"><span class="label-campo">Vacunas</span><span data-campo="vacunas"></span></div>
-      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="alergias"></span></div>
+      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="observaciones"></span></div>
+ 
     </div>
   </dialog>
 
 
   <script>
     document.querySelector('tbody').addEventListener('click', (e) => {
-      if(e.target.closest('a, button')) return;
+      if (e.target.closest('a, button')) return;
       const fila = e.target.closest('tr[data-registro]');
-      if(!fila) return;
+      if (!fila) return;
 
       const datos = JSON.parse(fila.dataset.registro);
       document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
