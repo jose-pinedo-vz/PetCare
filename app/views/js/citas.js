@@ -176,56 +176,38 @@ document.addEventListener('DOMContentLoaded', function()
 
 async function cancelarCita(idCita, event)
 {
-    const bolean = mostrarModalEliminar();
-    if (bolean === false)
-    {
-        const main = document.getElementById('mainAOcultar');
-        const ocultar = document.getElementById('contenedor-modal');
-        return;
-    }
-
-    const main = document.getElementById('mainAOcultar');
-    const ocultar = document.getElementById('contenedor-modal');
-
-    ocultar.classList.add('oculto');
-    main.classList.remove('oculto');
-
     event.preventDefault();
-    console.log("Se resivio el valor", idCita)
-
-    const respuesta = await fetch(`../controllers/citas.php?accion=cancelarCita&id_cita=${encodeURIComponent(idCita)}`, {
-        method: "GET"
-    });
+    mostrarModalCancelarCita(idCita);
 }
 
-
-function mostrarModalEliminar() {
+function mostrarModalCancelarCita(idCita) 
+{
     const contenedor = document.getElementById('contenedor-modal');
     const main = document.getElementById('mainAOcultar');
 
     main.classList.add('oculto');
-    //main.classList.remove("oculto");
-
-    function retornarTrue() { return true;}
-    function retornarFalse() { return false;}
-
-
-    const htmlContenido = `
+    contenedor.innerHTML = `
         <div class="tarjeta">
             <fieldset>
                 <p>
-                    ¿Está seguro de que desea cancelar esta cita ?
+                    ¿Está seguro de que desea cancelar esta cita? 
                     Esta acción no se puede deshacer.
                 </p>
             </fieldset>
             <div class="acciones-formulario">
-                <button type="button" class="btn-secundario" onclick="retornarFalse()">Cancelar</button>
-                <button type="submit" class="btn" onclick="retornarTrue()">Cancelar</button>
+                <button type="button" class="btn-secundario" onclick="window.location.reload()">Regresar</button>
+                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Contirunar</button>
             </div>
         </div>
     `;
-    contenedor.innerHTML = htmlContenido;
+}
 
-    //main.classList.add('oculto');
+async function ejecutarFetchCancelacion(idCita) {
+    const respuesta = await fetch(`../controllers/citas.php?accion=cancelarCita&id_cita=${encodeURIComponent(idCita)}`, {
+        method: "GET"
+    });
     
+    if (respuesta.ok) {
+        window.location.reload();
+    }
 }

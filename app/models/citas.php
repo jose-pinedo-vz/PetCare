@@ -88,7 +88,8 @@
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
             $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido
               FROM citas c
-              INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente
+              WHERE c.estado_cita != 'cancelada'";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
@@ -130,22 +131,6 @@
                 return false;
             }
         }
-
-        // public static function cantidadHorarios($valor, $empleado)
-        // {
-        //     try
-        //     {
-        //         $query = 'SELECT COUNT(id_empleado) AS numEmpleado FROM empleados WHERE puesto LIKE "Veterinario%" AND esta_activo = 1;';
-        //         $db = ConexionDB::obtenerConexion();
-        //         $stml = $db->prepare($query);
-        //         $stml->execute([$valor]);
-        //         return (int)$stml->fetchColumn();
-        //     }
-        //     catch (Exception $e)
-        //     {
-        //         return 0;
-        //     }
-        // }
 
         // cantidad de citas por fecha
         public static function cantidadCitasFecha($valor)
