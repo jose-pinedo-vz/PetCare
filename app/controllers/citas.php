@@ -149,7 +149,6 @@ if ($accion === 'horario' || $accion === 'orario')
 {
     horarios();
 }
-
 function horarios()
 {
     // primero, tengo que encontrar la fomra de contjltar la cita, responsable y horario

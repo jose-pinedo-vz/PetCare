@@ -137,7 +137,7 @@
             try
             {
                 // Comparamos año, mes, día y hora:minuto, ignorando segundos o microsegundos
-                $query = 'SELECT COUNT(*) AS total_citas FROM consulta_veterinaria WHERE fecha = ?';
+                $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ?';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$valor]);
