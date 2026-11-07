@@ -26,10 +26,16 @@ $usuario=$_SESSION['usuario'];
 <body>
 
   <div class="layout">
-  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
+
+    <?php $paginaActiva = 'mascotas';
+    include __DIR__ . '/layout/sidebar.php'; ?>
 
 
+<<<<<<< HEAD
+    <main>
+=======
   <main>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
       <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>
@@ -38,6 +44,18 @@ $usuario=$_SESSION['usuario'];
       <div class="tarjeta">
 
         <div class="barra-acciones-busqueda">
+<<<<<<< HEAD
+          <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+
+          <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
+            <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
+            <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+            <button class="btn btn-info" type="submit">Buscar</button>
+            <?php if (!empty($_GET['buscar'])): ?>
+              <a class="btn-secundario" href="mascotas.php">Limpiar</a>
+            <?php endif; ?>
+          </form>
+=======
           <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
             <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
             <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
@@ -47,6 +65,7 @@ $usuario=$_SESSION['usuario'];
           </form>
 
           <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
         </div>
         <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
         <div class="tabla-envoltura">
@@ -72,8 +91,13 @@ $usuario=$_SESSION['usuario'];
                     <td><?= htmlspecialchars($mascota['sexo']) ?></td>
                     <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
                     <td class="acciones">
+<<<<<<< HEAD
+                      <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
+                      <a class="btn btn-peligro" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+=======
                       <a class="btn btn-chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
                       <a class="btn btn-peligro btn-chico" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -97,13 +121,21 @@ $usuario=$_SESSION['usuario'];
   </footer>
 
   <!--ventana modal-->
+<<<<<<< HEAD
+  <dialog class="producto-dialog" id="modalDetalle" style="max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2px;">
+=======
   <dialog class="producto-dialog" id="modalDetalle">
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
     <div class="producto-dialog-encabezado">
       <h1>Detalle de la mascota</h1>
       <form method="dialog"><button class="producto-dialog-cerrar" aria-label="cerrar">&times;</button></form>
     </div>
 
+<<<<<<< HEAD
+    <div class="detalle-cuerpo grid-formulario" style="text-align: center;">
+=======
     <div class="detalle-cuerpo grid-formulario">
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
       <div><span class="label-campo">Nombre</span><span data-campo="nombre"></span></div>
       <div><span class="label-campo">Especie</span><span data-campo="especie"></span></div>
       <div><span class="label-campo">Raza</span><span data-campo="raza"></span></div>
@@ -115,16 +147,26 @@ $usuario=$_SESSION['usuario'];
       <div class="campo-completo"><span class="label-campo">Alergias</span><span data-campo="alergias"></span></div>
       <div class="campo-completo"><span class="label-campo">Enfermedades</span><span data-campo="enfermedades"></span></div>
       <div class="campo-completo"><span class="label-campo">Vacunas</span><span data-campo="vacunas"></span></div>
+<<<<<<< HEAD
+      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="observaciones"></span></div>
+=======
       <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="alergias"></span></div>
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
     </div>
   </dialog>
 
 
   <script>
     document.querySelector('tbody').addEventListener('click', (e) => {
+<<<<<<< HEAD
+      if (e.target.closest('a, button')) return;
+      const fila = e.target.closest('tr[data-registro]');
+      if (!fila) return;
+=======
       if(e.target.closest('a, button')) return;
       const fila = e.target.closest('tr[data-registro]');
       if(!fila) return;
+>>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
 
       const datos = JSON.parse(fila.dataset.registro);
       document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
