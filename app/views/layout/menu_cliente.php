@@ -9,7 +9,7 @@ $mcModulos = [
     'mascotas'  => ['Mis mascotas',   'mis_mascotas.php', true],
     'citas'     => ['Mis citas',      'mis_citas.php',    true],
     'servicios' => ['Servicios',      'servicios.php',    false],
-    'equipo'    => ['Nuestro equipo', 'equipo.php',       false],
+    'equipo'    => ['Nuestro equipo', 'nuestro_equipo.php',       false],
 ];
 
 function mcEsc(string $texto): string {

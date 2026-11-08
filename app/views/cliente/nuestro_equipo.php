@@ -1,90 +1,77 @@
+<?php
+session_start();
+$paginaActiva = 'equipo';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestro equipo</title>
+    <link rel="stylesheet" href="../css/v2/cliente.css">
 </head>
 <body>
-    <header>
+    <?php include __DIR__ . '/../layout/menu_cliente.php'; ?>
+
+    <main class="contenedor">
         <div>
-            <span>🐾</span>
-            <span>PetCare</span>
+            <h1 class="titulo-pagina">Nuestro equipo</h1>
+            <p class="subtitulo-pagina">Las personas que cuidan a tu mascota en PetCare.</p>
         </div>
 
-        <nav>
-            <a href="inicio.php">Inicio</a>
-            <a href="mis_mascotas.php">Mis mascotas</a>
-            <a href="mis_citas.php">Mis citas</a>
-            <a href="servicios.php">Servicios</a>
-            <a href="nuestro_equipo.php" class="activo">Nuestro equipo</a>
+        <nav class="pestanas">
+            <a class="pestanas__opcion" href="nuestro_equipo.php" class="es-activo">Todos</a>
+            <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=veterinarios">Veterinarios</a>
+            <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=estilistas">Estilistas</a>
+            <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=hotel">Hotel</a>
         </nav>
 
-        <div>
-            <span>Hola, María</span>
-            <a href="salir.php">Salir</a>
-        </div>
-    </header>
+        <section class="rejilla-tarjetas">
 
-    <main>
-        <div>
-            <h1>Nuestro equipo</h1>
-            <p>Las personas que cuidan a tu mascota en PetCare.</p>
-        </div>
-
-        <nav>
-            <a href="nuestro_equipo.php" class="activo">Todos</a>
-            <a href="nuestro_equipo.php?tipo=veterinarios">Veterinarios</a>
-            <a href="nuestro_equipo.php?tipo=estilistas">Estilistas</a>
-            <a href="nuestro_equipo.php?tipo=hotel">Hotel</a>
-        </nav>
-
-        <section>
-
-            <article>
-                <div>Foto</div>
-                <h2>Dra. Pérez</h2>
-                <span>Veterinaria</span>
-                <p>[Especialidad]</p>
-                <p>[Certificaciones]</p>
+            <article class="tarjeta tarjeta-empleado">
+                <div class="foto-marcador foto-marcador--avatar">Foto</div>
+                <h2 class="tarjeta-empleado__nombre">Dra. Pérez</h2>
+                <span class="tarjeta-empleado__puesto">Veterinaria</span>
+                <p class="tarjeta-empleado__detalle">[Especialidad]</p>
+                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
             </article>
 
-            <article>
-                <div>Foto</div>
-                <h2>Dr. Ramírez</h2>
-                <span>Veterinario</span>
-                <p>[Especialidad]</p>
-                <p>[Certificaciones]</p>
+            <article class="tarjeta tarjeta-empleado">
+                <div class="foto-marcador foto-marcador--avatar">Foto</div>
+                <h2 class="tarjeta-empleado__nombre">Dr. Ramírez</h2>
+                <span class="tarjeta-empleado__puesto">Veterinario</span>
+                <p class="tarjeta-empleado__detalle">[Especialidad]</p>
+                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
             </article>
 
-            <article>
-                <div>Foto</div>
-                <h2>Ana Torres</h2>
-                <span>Estilista</span>
-                <p>[Años de experiencia]</p>
-                <p>[Certificaciones]</p>
+            <article class="tarjeta tarjeta-empleado">
+                <div class="foto-marcador foto-marcador--avatar">Foto</div>
+                <h2 class="tarjeta-empleado__nombre">Ana Torres</h2>
+                <span class="tarjeta-empleado__puesto">Estilista</span>
+                <p class="tarjeta-empleado__detalle">[Años de experiencia]</p>
+                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
             </article>
 
-            <article>
-                <div>Foto</div>
-                <h2>Luis Medina</h2>
-                <span>Estilista</span>
-                <p>[Años de experiencia]</p>
-                <p>[Certificaciones]</p>
+            <article class="tarjeta tarjeta-empleado">
+                <div class="foto-marcador foto-marcador--avatar">Foto</div>
+                <h2 class="tarjeta-empleado__nombre">Luis Medina</h2>
+                <span class="tarjeta-empleado__puesto">Estilista</span>
+                <p class="tarjeta-empleado__detalle">[Años de experiencia]</p>
+                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
             </article>
 
-            <article>
-                <div>Foto</div>
-                <h2>[Nombre]</h2>
-                <span>Encargado del hotel</span>
-                <p>[Descripción breve]</p>
+            <article class="tarjeta tarjeta-empleado">
+                <div class="foto-marcador foto-marcador--avatar">Foto</div>
+                <h2 class="tarjeta-empleado__nombre">[Nombre]</h2>
+                <span class="tarjeta-empleado__puesto">Encargado del hotel</span>
+                <p class="tarjeta-empleado__detalle">[Descripción breve]</p>
             </article>
 
         </section>
 
     </main>
 
-    <footer>
+    <footer class=pie-pagina>
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
 </body>
