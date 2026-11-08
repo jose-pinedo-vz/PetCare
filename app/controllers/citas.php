@@ -179,24 +179,58 @@ function horarios()
 
     if ($Veterinarios)
     {
-        for($i = $entradaMatutino; $i<= $salidaMatutino; $i++)
+        $currentMatutino = DateTime::createFromFormat('H:i:s', '09:00:00');
+        $limiteMatutino = DateTime::createFromFormat('H:i:s', '13:00:00');
+        while ($currentMatutino < $limiteMatutino)
         {
-            $entrada = $i . ":00:00";
-            $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
+            $fechaHoraActual = $fechaSeleccionada . " " . $currentMatutino->format('H:i:s');
+            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
 
-            //distincion por fecha
-            $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'), $empleado);
-            if ($cantidadCitasPorFecha === 0) $Horarios[] = $dateTime->format('g:i A');
+            if ($cantidadCitasPorFecha > 0)
+            {
+                $duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+                $currentMatutino->modify("+{$duracionMinutos} minutes");
+            }
+            else
+            {
+                $Horarios[] = $currentMatutino->format('g:i A');
+                if ((int)$currentMatutino->format('i') > 0) {
+                    $currentMatutino->setTime((int)$currentMatutino->format('H'), 0, 0);
+                    $currentMatutino->modify('+1 hour');
+                } else {
+                    $currentMatutino->modify('+1 hour');
+                }
+            }
         }
-        
 
-        for($i = $entradaVespertino; $i<= $salidaVespertino; $i++)
+
+
+        $currentVespertino = DateTime::createFromFormat('H:i:s', '16:00:00');
+        $limiteVespertino = DateTime::createFromFormat('H:i:s', '18:00:00');
+        while ($currentVespertino < $limiteVespertino)
         {
-            $entrada = $i . ":00:00";
-            $dateTime = DateTime::createFromFormat('H:i:s', $entrada);
-            
-            $cantidadCitasPorFecha =  ConexionesClientes::cantidadCitasFecha($fechaSeleccionada . " " . $dateTime->format('H:i:s'), $empleado);
-            if ($cantidadCitasPorFecha === 0) $Horarios[] = $dateTime->format('g:i A');
+            $fechaHoraActual = $fechaSeleccionada . " " . $currentVespertino->format('H:i:s');
+            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+
+            if ($cantidadCitasPorFecha > 0)
+            {
+                $duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+                
+                $currentVespertino->modify("+{$duracionMinutos} minutes");
+            }
+            else
+            {
+                $Horarios[] = $currentVespertino->format('g:i A');
+                
+                if ((int)$currentVespertino->format('i') > 0) {
+                    $currentVespertino->setTime((int)$currentVespertino->format('H'), 0, 0);
+                    $currentVespertino->modify('+1 hour');
+                } else {
+                    $currentVespertino->modify('+1 hour');
+                }
+            }
         }
     }
 

@@ -137,10 +137,26 @@
             try
             {
                 // Comparamos año, mes, día y hora:minuto, ignorando segundos o microsegundos
-                $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ?';
+                $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND estado_cita = "pendiente"';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$valor]);
+                return $stml->fetchColumn();
+            }
+            catch (Exception $e)
+            {
+                return 0;
+            }
+        }
+
+        public static function duracionCita($fecha)
+        {
+            try
+            {
+                $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND estado_cita = 'pendiente'";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$fecha]);
                 return $stml->fetchColumn();
             }
             catch (Exception $e)
