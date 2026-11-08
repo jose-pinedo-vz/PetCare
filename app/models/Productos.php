@@ -298,7 +298,7 @@ function obtenerExistenciaMinima(int $id_proveedor): array {
         $sql = "
             SELECT id_producto, nombre, codigo, existencia, existencia_minima, unidad_medida
             FROM productos
-            WHERE id_proveedor = ? AND existencia <= existencia_minima
+            WHERE id_proveedor = ? AND existencia <= existencia_minima AND estado = 1
         ";
         $consulta = $conexion -> prepare($sql);
         $consulta -> execute([$id_proveedor]);
