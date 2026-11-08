@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../models/Servicios.php';
+$servicios = Servicios::obtenerTodos();
+?>
 <!DOCTYPE html>
 <html lang="es">
  
@@ -24,80 +28,29 @@
                 <h2>Servicios disponibles</h2>
                 <div class="inventario-resumen">
  
-                    <div class="inventario-tarjeta">
-                        <span class="servicio-estado activo">Activo</span>
-                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=1">Baño</a></h3>
-                        <p>Estética · 60 min</p>
-                        <p class="servicio-precio">$150.00</p>
-                        <div class="servicio-acciones">
-                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=1">Editar</a>
-                            <form action="cambiar_estado_servicio.php" method="POST">
-                                <input type="hidden" name="id_servicio" value="1">
-                                <input type="hidden" name="accion" value="desactivar">
-                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
-                            </form>
-                        </div>
-                    </div>
- 
-                    <div class="inventario-tarjeta">
-                        <span class="servicio-estado activo">Activo</span>
-                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=2">Corte de pelo</a></h3>
-                        <p>Estética · 90 min</p>
-                        <p class="servicio-precio">$250.00</p>
-                        <div class="servicio-acciones">
-                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=2">Editar</a>
-                            <form action="cambiar_estado_servicio.php" method="POST">
-                                <input type="hidden" name="id_servicio" value="2">
-                                <input type="hidden" name="accion" value="desactivar">
-                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
-                            </form>
-                        </div>
-                    </div>
- 
-                    <div class="inventario-tarjeta">
-                        <span class="servicio-estado activo">Activo</span>
-                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=3">Corte de uñas</a></h3>
-                        <p>Estética · 20 min</p>
-                        <p class="servicio-precio">$60.00</p>
-                        <div class="servicio-acciones">
-                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=3">Editar</a>
-                            <form action="cambiar_estado_servicio.php" method="POST">
-                                <input type="hidden" name="id_servicio" value="3">
-                                <input type="hidden" name="accion" value="desactivar">
-                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
-                            </form>
-                        </div>
-                    </div>
- 
-                    <div class="inventario-tarjeta">
-                        <span class="servicio-estado activo">Activo</span>
-                        <h3><a class="servicio-link" href="agendarCita.php?id_servicio=4">Desparasitación</a></h3>
-                        <p>Salud · 30 min</p>
-                        <p class="servicio-precio">$120.00</p>
-                        <div class="servicio-acciones">
-                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=4">Editar</a>
-                            <form action="cambiar_estado_servicio.php" method="POST">
-                                <input type="hidden" name="id_servicio" value="4">
-                                <input type="hidden" name="accion" value="desactivar">
-                                <button type="submit" class="btn btn-chico btn-peligro">Desactivar</button>
-                            </form>
-                        </div>
-                    </div>
- 
-                    <div class="inventario-tarjeta servicio-inactivo">
-                        <span class="servicio-estado inactivo">Inactivo</span>
-                        <h3>Baño medicado</h3>
-                        <p>Salud · 75 min</p>
-                        <p class="servicio-precio">$320.00</p>
-                        <div class="servicio-acciones">
-                            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=5">Editar</a>
-                            <form action="cambiar_estado_servicio.php" method="POST">
-                                <input type="hidden" name="id_servicio" value="5">
-                                <input type="hidden" name="accion" value="activar">
-                                <button type="submit" class="btn btn-chico btn-activar">Activar</button>
-                            </form>
-                        </div>
-                    </div>
+                   <?php foreach ($servicios as $s): ?>
+    <?php $activo = ((int)$s['estado'] === 1); ?>
+    <div class="inventario-tarjeta<?= $activo ? '' : ' servicio-inactivo' ?>">
+        <span class="servicio-estado <?= $activo ? 'activo' : 'inactivo' ?>"><?= $activo ? 'Activo' : 'Inactivo' ?></span>
+        <h3>
+            <?php if ($activo): ?>
+                <a class="servicio-link" href="agendarCita.php?id_servicio=<?= (int)$s['id_servicio'] ?>"><?= htmlspecialchars($s['nombre']) ?></a>
+            <?php else: ?>
+                <?= htmlspecialchars($s['nombre']) ?>
+            <?php endif; ?>
+        </h3>
+        <p><?= htmlspecialchars($s['categoria']) ?> · <?= (int)$s['duracion'] ?> min</p>
+        <p class="servicio-precio">$<?= number_format((float)$s['precio'], 2) ?></p>
+        <div class="servicio-acciones">
+            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=<?= (int)$s['id_servicio'] ?>">Editar</a>
+            <form action="cambiar_estado_servicio.php" method="POST">
+                <input type="hidden" name="id_servicio" value="<?= (int)$s['id_servicio'] ?>">
+                <input type="hidden" name="accion" value="<?= $activo ? 'desactivar' : 'activar' ?>">
+                <button type="submit" class="btn btn-chico <?= $activo ? 'btn-peligro' : 'btn-activar' ?>"><?= $activo ? 'Desactivar' : 'Activar' ?></button>
+            </form>
+        </div>
+    </div>
+<?php endforeach; ?>
  
                     <div class="inventario-tarjeta servicio-nuevo">
                         <h3>Nuevo servicio</h3>
