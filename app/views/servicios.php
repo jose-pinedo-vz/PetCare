@@ -1,6 +1,12 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/../models/Servicios.php';
 $servicios = Servicios::obtenerTodos();
+// Lee y limpia el error de sesion
+$error = $_SESSION['error'] ?? '';
+unset($_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +30,9 @@ $servicios = Servicios::obtenerTodos();
             </div>
  
             <div class="tarjeta">
- 
+                 <?php if ($error !== ''): ?>
+                    <div class="msg-error"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
                 <h2>Servicios disponibles</h2>
                 <div class="inventario-resumen">
  
@@ -43,7 +51,7 @@ $servicios = Servicios::obtenerTodos();
         <p class="servicio-precio">$<?= number_format((float)$s['precio'], 2) ?></p>
         <div class="servicio-acciones">
             <a class="btn btn-chico" href="editar_servicio.php?id_servicio=<?= (int)$s['id_servicio'] ?>">Editar</a>
-            <form action="cambiar_estado_servicio.php" method="POST">
+            <form action="../controllers/guardar_servicio.php" method="POST">
                 <input type="hidden" name="id_servicio" value="<?= (int)$s['id_servicio'] ?>">
                 <input type="hidden" name="accion" value="<?= $activo ? 'desactivar' : 'activar' ?>">
                 <button type="submit" class="btn btn-chico <?= $activo ? 'btn-peligro' : 'btn-activar' ?>"><?= $activo ? 'Desactivar' : 'Activar' ?></button>

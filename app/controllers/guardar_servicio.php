@@ -34,6 +34,23 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
+// Activar o desactivar (viene de la lista de servicios)
+$accion = $_POST['accion'] ?? '';
+if ($accion !== '') {
+    $idEstado = (int)($_POST['id_servicio'] ?? 0);
+
+    if ($idEstado <= 0 || Servicios::obtenerPorId($idEstado) === null) {
+        $_SESSION['error'] = "El servicio no existe.";
+    } elseif (!in_array($accion, ['activar', 'desactivar'], true)) {
+        $_SESSION['error'] = "La accion no es valida.";
+    } elseif (!Servicios::cambiarEstado($idEstado, $accion === 'activar' ? 1 : 0)) {
+        $_SESSION['error'] = "No se pudo cambiar el estado del servicio.";
+    }
+
+    header("Location: ../views/servicios.php");
+    exit();
+}
+
 // Si trae id es editar, si no es agregar
 $id_servicio  = (int)($_POST['id_servicio'] ?? 0);
 $nombre       = trim($_POST['nombre'] ?? '');

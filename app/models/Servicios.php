@@ -111,5 +111,20 @@ class Servicios
             return ['exito' => false, 'mensaje' => 'No se pudo actualizar el servicio'];
         }
     }
+        // Activa (1) o desactiva (0) un servicio
+    public static function cambiarEstado(int $id, int $estado): bool
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("UPDATE servicios SET estado = :estado WHERE id_servicio = :id");
+            $stmt->bindValue(':estado', $estado, PDO::PARAM_INT);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return true;
+        } catch (Exception $e) {
+            error_log("Error en Servicios::cambiarEstado: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
