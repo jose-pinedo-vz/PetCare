@@ -4,6 +4,7 @@
 
     session_start();
     require_once __DIR__ . "/../models/Productos.php";
+    require_once __DIR__ . "/../controllers/validar_orden_compra.php";
 
     $productoSeleccionado = null;
     $id_proveedor = null;
@@ -42,12 +43,27 @@
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cantidad'])) {
+        $cantidadesNuevas = [];
         foreach ($_POST['cantidad'] as $id => $cant) {
             $id = (int) $id;
             if (isset($_SESSION['orden_productos'][$id])) {
-                $_SESSION['orden_cantidades'][$id] = max(1, (int) $cant);
+                $cantidadesNuevas[$id] = max(1, (int) $cant);
             }
         }
+
+        $propuestas = $cantidadesNuevas + ($_SESSION['orden_cantidades'] ?? []);
+        $errores = validarCantidadesOrdenCompra($_SESSION['orden_productos'] ?? [], $propuestas);
+
+        foreach ($cantidadesNuevas as $id => $cant) {
+            if (!isset($errores[$id])) {
+                $_SESSION['orden_cantidades'][$id] = $cant;
+            }
+        }
+
+        if (count($errores) > 0) {
+            $_SESSION['error_orden'] = implode("\n\n", $errores);
+        }
+
         header("Location: orden_compra.php?proveedor=" . $id_proveedor);
         exit;
     }
@@ -56,7 +72,8 @@
         $id_prod = $productoSeleccionado['id_producto'];
         $_SESSION['orden_productos'][$id_prod] = $productoSeleccionado;
         if (!isset($_SESSION['orden_cantidades'][$id_prod])) {
-            $_SESSION['orden_cantidades'][$id_prod] = 1;
+            $limites = limitePedido($productoSeleccionado);
+            $_SESSION['orden_cantidades'][$id_prod] = max(1, min($limites['minimo'], $limites['maximo']));
         }
         header("Location:orden_compra.php?proveedor=" . $id_proveedor);
         exit;
@@ -81,6 +98,9 @@
     }
 
     $existencia_Minima = Productos::obtenerExistenciaMinima($id_proveedor);
+
+    $mensajeError = $_SESSION['error_orden'] ?? null;
+    unset($_SESSION['error_orden']);
 ?>
 
 <!DOCTYPE html>
@@ -105,6 +125,14 @@
 
             <div class="tarjeta">
                 <h2 class="subtitulo">Detalles de la orden</h2>
+
+                <?php if ($mensajeError) { ?>
+                    <div class="msg-error"> 
+                        <?php foreach (explode("\n\n", $mensajeError) as $error) { ?>
+                            <div>• <?php echo htmlspecialchars($error); ?></div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
 
                 <div class="orden-compra-detalles">
                     <p><strong>Proveedor:</strong>
@@ -183,7 +211,7 @@
 
                 <section class="orden-compra-seccion" aria-labelledby="titulo-productos-seleccionados">
                     <h2 id="titulo-productos-seleccionados" class="subtitulo">Productos seleccionados para la orden</h2>
-                    <form method="post" action="orden_compra.php?proveedor=<?php echo $id_proveedor; ?>">
+                    <form id="form-orden" method="post" action="orden_compra.php?proveedor=<?php echo $id_proveedor; ?>">
                         <div class="tabla-envoltura">
                             <table class="orden-compra-tabla-seleccionados">
                                 <thead>
