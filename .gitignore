@@ -65,4 +65,4 @@ $RECYCLE.BIN/
 # Para que los demas puedan ejecutar la libreria tienen que poner en la terminar teniendo abierto la ruta de Petcare esto:
 # "composer install"
 vendor/
-
+config_correo.php
