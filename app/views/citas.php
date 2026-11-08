@@ -26,7 +26,7 @@ if (session_status() === PHP_SESSION_NONE)
           <td>
             <a class="btn btn-chico" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
-            <a class="btn btn-chico btn-aviso">Reprogramar</a>
+            <a class="btn btn-chico btn-aviso btn-chico" href="reprogramar_cita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
 
           </td>
