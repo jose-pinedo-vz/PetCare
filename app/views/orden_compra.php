@@ -233,7 +233,12 @@
 
                 <div class="orden-compra-acciones">
                     <a class="btn btn-peligro btn-chico" href="orden_compra.php?proveedor=<?php echo $id_proveedor; ?>&cancelar=1">Cancelar orden</a>
-                    <a class= "btn btn-chico" href="../controllers/pdf_ordencompra.php" target="_blank" rel="noopener">Confirmar orden</a>
+
+                    <?php if (count($productosOrden) > 0 ) { ?>
+                        <form method= "POST" action= "../controllers/enviar_correo.php" style= "display:inline">
+                            <button class= "btn btn-chico" type= "submit">Confirmar orden</button>
+                        </form> 
+                    <?php } ?>
                 </div>
 
             </div>

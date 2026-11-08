@@ -212,6 +212,27 @@ function obtenerNombreProveedor(int $id): ?string {
     }
 }
 
+function obtenerCorreoProveedor(int $id): ?string {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT correo
+            FROM proveedores
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+
+        $correo = $consulta -> fetchColumn();
+
+        return $correo !== false ? $correo : null;
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el correo del proveedor " . $error -> getMessage());
+        return null;
+    }
+}
+
 function obtenerProductosPorProveedor(int $id_proveedor): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
@@ -247,7 +268,7 @@ function obtenerTiempoEntregaProveedor(int $id): int {
 
         return $dias !== false ? (int) $dias : 0;
     } catch (Exception $error) {
-        error_log("Error al obtener los dias de entrega " . $erro -> getMessage());
+        error_log("Error al obtener los dias de entrega " . $error -> getMessage());
         return 0;
     }
 }
@@ -380,6 +401,10 @@ class Productos {
 
     public static function obtenerNombreProveedor(int $id): ?string {
         return obtenerNombreProveedor($id);
+    }
+
+    public static function obtenerCorreoProveedor(int $id): ?string {
+        return obtenerCorreoProveedor($id);
     }
 
     public static function obtenerProductosPorProveedor(int $id_proveedor): array {
