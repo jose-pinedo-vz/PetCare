@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../Models/Productos.php';
+/* require_once __DIR__ . '/../Models/Productos.php'; */
+require_once __DIR__ . '/../models/Productos.php';
 require_once __DIR__ . '/../models/conexion_db.php';
 
 $productos = Productos::obtenerDatosProductosActivos();
