@@ -94,7 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $horario = trim($_POST['horario'] ?? '');
 
     // VALIDACION REGEX
-    $patronNombre = '/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u';
+    /* $patronNombre = '/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u'; */
+    $patronNombre = '/^(?:[\p{L}]{2,}\.?|[\p{L}]\.)(?: (?:[\p{L}]{2,}\.?|[\p{L}]\.))*$/u';
 
     $patronCiudadEstado = '/^[\p{L}]{2,}(?:[\s.\'-][\p{L}]{2,})*$/u';
 

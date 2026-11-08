@@ -34,6 +34,7 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
 </head>
 
 <body>
+
   <div class="layout">
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 

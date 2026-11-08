@@ -245,6 +245,7 @@ $animales = listar_adopciones_ventas();
         <footer>
             <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
         </footer>
+<<<<<<< HEAD
         <script>
             const buscadorAdopcionVenta = document.getElementById('buscarAdopcionVenta');
             const filasAdopcionVenta = document.querySelectorAll('#registrosAdopcionVenta tbody tr[data-registro]');
@@ -329,6 +330,8 @@ $animales = listar_adopciones_ventas();
             });
         });
     </script>
+=======
+>>>>>>> 983cad84b137fb01067af0bf333174bba9f0047b
 </body>
 
 </html>

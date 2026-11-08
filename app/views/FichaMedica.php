@@ -42,7 +42,7 @@ $mascotaVieja = old('oldMascota');
   <?php $paginaActiva = 'citas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
   <main>
-      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de Citas</a> / Ficha veterinaria</div>
+      <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de citas</a> / ficha veterinaria</div>
       <div class="encabezado-pagina">
         <h1>Ficha veterinaria</h1>
       </div>

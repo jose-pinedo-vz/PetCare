@@ -29,12 +29,12 @@ $imagen = $_GET['imagen'];
   <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de Inventario</a> / Eliminar</div>
+      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar producto</h1>
       </div>
       <form action="../controllers/eliminar_producto.php" method="POST">
-  
+
       <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_producto ?>">
 
       <div class="tarjeta">

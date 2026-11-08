@@ -34,6 +34,7 @@ function resivirCodigoPostal()
 
 function validar_datos($datos){
     require_once __DIR__ . '/../models/proveedores.php';
+    require_once __DIR__ . '/validar_rfc.php';
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -64,8 +65,13 @@ function validar_datos($datos){
         $errores[] = "El RFC es obligatoria.";
     }else if (strlen($datos['rfc']) > 13) {
         $errores[] = "El RFC no puede tener mas de 13 letras.";
-    }else if (existeRfc($datos['rfc'])) {
-        $errores[] = "El RFC ya existe en la base de datos.";
+    }else {
+        $erroresRfc = validarRfc($datos['rfc']);
+        if (!empty($erroresRfc)) {
+            $errores = array_merge($errores, $erroresRfc);
+        }else if (existeRfc($datos['rfc'])) {
+            $errores[] = "El RFC ya existe en la base de datos.";
+        }
     }
 
     // El telefono es obligatorio

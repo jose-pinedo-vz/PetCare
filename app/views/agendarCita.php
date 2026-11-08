@@ -39,7 +39,7 @@ $usuario=$_SESSION['usuario'];
       </div>
 
       <div class="tarjeta">
-    
+
 
 
     <!-- mensaje en caso de algun error o mostrar informaicon nesesaria -->
@@ -83,7 +83,7 @@ $usuario=$_SESSION['usuario'];
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
 
           </div>
-            
+
           <div>
             <label class="label-campo" for="horarioConsulta">Horario de consulta *:</label>
 
@@ -100,7 +100,7 @@ $usuario=$_SESSION['usuario'];
         <button type="submit" class="btn btn-chico">Guardar cita</button>
       </div>
     </form>
-  
+
       </div>
     </main>
 
