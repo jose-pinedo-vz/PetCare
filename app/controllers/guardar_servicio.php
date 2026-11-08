@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Guarda el error y lo escrito, y regresa al formulario
+// Guarda el error y lo escrito, y regresa al formulario (agregar o editar)
 function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
@@ -17,6 +17,13 @@ function errorSession(string $error)
     $_SESSION['oldEmpleado_servicios'] = $_POST['id_empleados'] ?? '';
     $_SESSION['oldEstado_servicios'] = $_POST['estado'] ?? '';
     $_SESSION['oldDescripcion_servicios'] = $_POST['descripcion'] ?? '';
+
+    $idServicio = (int)($_POST['id_servicio'] ?? 0);
+
+    if ($idServicio > 0) {
+        header("Location: ../views/editar_servicio.php?id_servicio=" . $idServicio);
+        exit();
+    }
     header("Location: ../views/agregar_servicio.php");
     exit();
 }
@@ -27,6 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
+// Si trae id es editar, si no es agregar
+$id_servicio  = (int)($_POST['id_servicio'] ?? 0);
 $nombre       = trim($_POST['nombre'] ?? '');
 $categoria    = trim($_POST['categoria'] ?? '');
 $duracion     = trim($_POST['duracion'] ?? '');
@@ -35,12 +44,18 @@ $id_empleados = trim($_POST['id_empleados'] ?? '');
 $estado       = trim($_POST['estado'] ?? '');
 $descripcion  = trim($_POST['descripcion'] ?? '');
 
+// Si es editar, el servicio debe existir
+if ($id_servicio > 0 && Servicios::obtenerPorId($id_servicio) === null) {
+    header("Location: ../views/servicios.php");
+    exit();
+}
+
 // Validaciones
 if ($nombre === '') {
     errorSession("El nombre del servicio es obligatorio.");
 } elseif (mb_strlen($nombre) > 50) {
     errorSession("El nombre no puede pasar de 50 caracteres.");
-} elseif (Servicios::existeNombre($nombre)) {
+} elseif (Servicios::existeNombre($nombre, $id_servicio)) {
     errorSession("Ya existe un servicio con ese nombre.");
 }
 
@@ -74,7 +89,11 @@ $datos = [
     'estado'       => (int)$estado
 ];
 
-$res = Servicios::insertar($datos);
+if ($id_servicio > 0) {
+    $res = Servicios::actualizar($id_servicio, $datos);
+} else {
+    $res = Servicios::insertar($datos);
+}
 
 if ($res['exito']) {
     // Limpia lo guardado en sesion

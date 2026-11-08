@@ -67,5 +67,49 @@ class Servicios
             return ['exito' => false, 'mensaje' => 'No se pudo guardar el servicio'];
         }
     }
+        // Trae un servicio por su id
+    public static function obtenerPorId(int $id): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT id_servicio, nombre, categoria, descripcion, duracion,
+                                         precio, id_empleados, estado + 0 AS estado
+                                  FROM servicios
+                                  WHERE id_servicio = ?");
+            $stmt->execute([$id]);
+            $servicio = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $servicio ?: null;
+        } catch (Exception $e) {
+            error_log("Error en Servicios::obtenerPorId: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Actualiza un servicio existente
+    public static function actualizar(int $id, array $datos): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $sql = "UPDATE servicios SET
+                        nombre = :nombre, categoria = :categoria, descripcion = :descripcion,
+                        duracion = :duracion, precio = :precio,
+                        id_empleados = :id_empleados, estado = :estado
+                    WHERE id_servicio = :id";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':nombre', $datos['nombre'], PDO::PARAM_STR);
+            $stmt->bindValue(':categoria', $datos['categoria'], PDO::PARAM_STR);
+            $stmt->bindValue(':descripcion', $datos['descripcion'], PDO::PARAM_STR);
+            $stmt->bindValue(':duracion', $datos['duracion'], PDO::PARAM_INT);
+            $stmt->bindValue(':precio', $datos['precio'], PDO::PARAM_STR);
+            $stmt->bindValue(':id_empleados', $datos['id_empleados'], PDO::PARAM_INT);
+            $stmt->bindValue(':estado', $datos['estado'], PDO::PARAM_INT);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return ['exito' => true, 'mensaje' => 'Servicio actualizado', 'id' => $id];
+        } catch (Exception $e) {
+            error_log("Error en Servicios::actualizar: " . $e->getMessage());
+            return ['exito' => false, 'mensaje' => 'No se pudo actualizar el servicio'];
+        }
+    }
 }
 ?>
