@@ -1,7 +1,7 @@
 <?php
 /* require_once __DIR__ . '/../Models/Productos.php'; */
 require_once __DIR__ . '/../models/Productos.php';
-require_once __DIR__ . '/../models/conexion_db.php';
+require_once __DIR__ . '/../models/Movimientos.php';
 
 $productos = Productos::obtenerDatosProductosActivos();
 $productosEnRiesgo = array_values(array_filter(
@@ -10,15 +10,7 @@ $productosEnRiesgo = array_values(array_filter(
 ));
 $movimientosHoy = null;
 
-try {
-  $conexion = ConexionDB::obtenerConexion();
-  $consultaMovimientos = $conexion->query(
-    "SELECT COUNT(*) FROM movimientos_inventario WHERE DATE(fecha) = CURDATE()"
-  );
-  $movimientosHoy = (int) $consultaMovimientos->fetchColumn();
-} catch (Throwable $e) {
-  error_log('Error al consultar movimientos de inventario del día: ' . $e->getMessage());
-}
+$movimientosHoy = Movimientos::movimientosHoy();
 
 $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 ?>
