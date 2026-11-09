@@ -5,9 +5,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Esta vista se carga desde controllers/FichaMedicaController.php,
 // asi que puede que estas variables no existan si se entra directo.
-$mascotas      = $mascotas ?? [];
-$idConsulta    = $idConsulta ?? 0;
-$idVeterinario = $idVeterinario ?? 1;
+$mascotas             = $mascotas ?? [];
+$veterinarios         = $veterinarios ?? [];
+$idConsulta           = $idConsulta ?? 0;
+$idVeterinario        = $idVeterinario ?? 1;
+$radiografiasPrevias  = $radiografiasPrevias ?? [];
 
 // Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
 function old(string $clave): string
@@ -23,6 +25,10 @@ unset($_SESSION['error']);
 $listaErrores = $_SESSION['errores'] ?? [];
 unset($_SESSION['errores']);
 $mascotaVieja = old('oldMascota');
+$veterinarioViejo = old('oldid_veterinario');
+if ($veterinarioViejo === '' && $idVeterinario > 0) {
+    $veterinarioViejo = (string)$idVeterinario;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -34,6 +40,7 @@ $mascotaVieja = old('oldMascota');
   <base href="../views/">
   <title>Veterinaria PetCare - Ficha veterinaria</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 </head>
 <body>
 
@@ -61,9 +68,8 @@ $mascotaVieja = old('oldMascota');
       </div>
     <?php endif; ?>
 
-    <form action="../controllers/FichaMedicaController.php" method="POST">
+    <form action="../controllers/FichaMedicaController.php" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="id_consulta" value="<?= (int)$idConsulta ?>">
-      <input type="hidden" name="id_veterinario" value="<?= (int)$idVeterinario ?>">
 
       <fieldset>
         <legend>Datos de la consulta</legend>
@@ -74,6 +80,16 @@ $mascotaVieja = old('oldMascota');
               <option value="">Selecciona una mascota</option>
               <?php foreach ($mascotas as $m): ?>
                 <option value="<?= (int)$m['id'] ?>" <?= ((string)$m['id'] === (string)$mascotaVieja) ? 'selected' : '' ?>><?= htmlspecialchars($m['nombre']) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <div>
+            <label class="label-campo" for="id_veterinario">Veterinario *:</label>
+            <select class="campo" name="id_veterinario" id="id_veterinario" required>
+              <option value="">Selecciona un veterinario</option>
+              <?php foreach ($veterinarios as $v): ?>
+                <option value="<?= (int)$v['id'] ?>" <?= ((string)$v['id'] === (string)$veterinarioViejo) ? 'selected' : '' ?>><?= htmlspecialchars($v['nombre']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -166,6 +182,31 @@ $mascotaVieja = old('oldMascota');
               min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+2 years')) ?>" value="<?= old('oldFecha') ?>">
           </div>
 
+          <div class="campo-completo campo-completo-sep">
+            <label class="label-campo" for="radiografias">Radiografías / Estudios de imagen:</label>
+            <input type="file" class="campo" id="radiografias" name="radiografias[]" accept="image/*" multiple>
+            <p style="font-size: 0.95rem; color: #90a4ae; margin-top: 6px;">
+              Puedes seleccionar una o varias imágenes. Se abrirá el recortador para ajustar cada una antes de guardar.
+            </p>
+            <div id="contenedor-previews-radiografias" style="display: none; flex-wrap: wrap; gap: 12px; margin-top: 12px;"></div>
+          </div>
+
+          <?php if (!empty($radiografiasPrevias)): ?>
+            <div class="campo-completo" style="margin-top: 10px;">
+              <label class="label-campo">Radiografías registradas previamente en esta consulta:</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+                <?php foreach ($radiografiasPrevias as $rx): ?>
+                  <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px; text-align: center;">
+                    <a href="../../<?= htmlspecialchars($rx['ruta']) ?>" target="_blank" title="Ver imagen completa">
+                      <img src="../../<?= htmlspecialchars($rx['ruta']) ?>" alt="Radiografía" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; display: block;">
+                    </a>
+                    <span style="font-size: 0.72rem; color: #90a4ae; display: block; margin-top: 4px;"><?= htmlspecialchars(substr($rx['fecha_subida'] ?? '', 0, 10)) ?></span>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          <?php endif; ?>
+
           <div class="campo-completo">
             <label class="label-campo" for="observaciones">Observaciones:</label>
             <textarea class="campo" id="observaciones" name="observaciones" rows="3" maxlength="1000"
@@ -173,6 +214,17 @@ $mascotaVieja = old('oldMascota');
           </div>
         </div>
       </fieldset>
+
+      <div id="modal-crop">
+        <div class="caja">
+          <h3 id="crop-titulo" style="color: #1e293b; margin-top: 0;">Recortar radiografía</h3>
+          <img id="imagen-a-recortar" alt="Imagen a recortar">
+          <div class="crop-acciones">
+            <button type="button" id="btn-cancelar-crop" class="btn btn-secundario btn-chico">Omitir / Cancelar</button>
+            <button type="button" id="btn-recortar" class="btn btn-chico">Recortar y usar</button>
+          </div>
+        </div>
+      </div>
 
       <div class="acciones-formulario">
         <a class="btn-secundario" href="citas.php">Cancelar</a>
@@ -188,6 +240,9 @@ $mascotaVieja = old('oldMascota');
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  <script src="js/crop-radiografias.js"></script>
 
 </body>
 </html>

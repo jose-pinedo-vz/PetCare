@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
                 session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);
                 $_SESSION['id_usuario']=$datosUsuario['id_usuario'];
+                $_SESSION['empleado_asociado']=$datosUsuario['empleado_asociado'] ?? null;
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
                 header("Location: ../views/inicio.php");

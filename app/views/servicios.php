@@ -1,4 +1,13 @@
-
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../models/Servicios.php';
+$servicios = Servicios::obtenerTodos();
+// Lee y limpia el error de sesion
+$error = $_SESSION['error'] ?? '';
+unset($_SESSION['error']);
+?>
 <!DOCTYPE html>
 <html lang="es">
  
@@ -21,36 +30,44 @@
             </div>
  
             <div class="tarjeta">
- 
+                 <?php if ($error !== ''): ?>
+                    <div class="msg-error"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
                 <h2>Servicios disponibles</h2>
                 <div class="inventario-resumen">
  
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=1">
-                        <h3>Baño</h3>
-                        <p>Estética · 60 min · $150.00</p>
-                    </a>
+                   <?php foreach ($servicios as $s): ?>
+    <?php $activo = ((int)$s['estado'] === 1); ?>
+    <div class="inventario-tarjeta<?= $activo ? '' : ' servicio-inactivo' ?>">
+        <span class="servicio-estado <?= $activo ? 'activo' : 'inactivo' ?>"><?= $activo ? 'Activo' : 'Inactivo' ?></span>
+        <h3>
+            <?php if ($activo): ?>
+                <a class="servicio-link" href="agendarCita.php?id_servicio=<?= (int)$s['id_servicio'] ?>"><?= htmlspecialchars($s['nombre']) ?></a>
+            <?php else: ?>
+                <?= htmlspecialchars($s['nombre']) ?>
+            <?php endif; ?>
+        </h3>
+        <p><?= htmlspecialchars($s['categoria']) ?> · <?= (int)$s['duracion'] ?> min</p>
+        <p class="servicio-precio">$<?= number_format((float)$s['precio'], 2) ?></p>
+        <div class="servicio-acciones">
+            <a class="btn btn-chico" href="editar_servicio.php?id_servicio=<?= (int)$s['id_servicio'] ?>">Editar</a>
+            <form action="../controllers/guardar_servicio.php" method="POST">
+                <input type="hidden" name="id_servicio" value="<?= (int)$s['id_servicio'] ?>">
+                <input type="hidden" name="accion" value="<?= $activo ? 'desactivar' : 'activar' ?>">
+                <button type="submit" class="btn btn-chico <?= $activo ? 'btn-peligro' : 'btn-activar' ?>"><?= $activo ? 'Desactivar' : 'Activar' ?></button>
+            </form>
+        </div>
+    </div>
+<?php endforeach; ?>
  
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=2">
-                        <h3>Corte de pelo</h3>
-                        <p>Estética · 90 min · $250.00</p>
-                    </a>
- 
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=3">
-                        <h3>Corte de uñas</h3>
-                        <p>Estética · 20 min · $60.00</p>
-                    </a>
- 
-                    <a class="inventario-tarjeta" href="agendarCita.php?id_servicio=4">
-                        <h3>Desparasitación</h3>
-                        <p>Salud · 30 min · $120.00</p>
-                    </a>
- 
-                    <div class="inventario-tarjeta">
+                    <div class="inventario-tarjeta servicio-nuevo">
                         <h3>Nuevo servicio</h3>
                         <p>Agrega otro servicio al catálogo</p>
                         <a class="btn inventario-btn-contactar btn-chico" href="agregar_servicio.php">+ Agregar servicio</a>
                     </div>
                 </div>
+ 
+                <p class="servicio-nota">Los servicios no se borran; se desactivan para conservar el historial. Solo el administrador puede editarlos.</p>
  
                 <div style="margin-top: 24px;">
                     <h2>Historial de servicios</h2>
@@ -66,7 +83,6 @@
                             <option value="Cancelada">Cancelada</option>
                             <option value="No asistió">No asistió</option>
                         </select>
-                        <button type="submit" class="btn btn-chico">Filtrar</button>
                     </form>
  
                     <div class="tabla-envoltura">
@@ -161,4 +177,3 @@
 </body>
  
 </html>
- 

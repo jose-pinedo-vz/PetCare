@@ -36,7 +36,7 @@ $total = isset($_POST['total']) ? (float)$_POST['total'] : 0;
           <?php foreach ($productos as $producto): ?>
           <div class="summary-item">
             <span>
-              <?php echo htmlspecialchars($servicio['nombre'] ?? 'Producto') ?>
+              <?php echo htmlspecialchars($producto['nombre'] ?? 'Producto') ?>
               <?php if (($producto['cantidad'] ?? 1) > 1): ?>
                 x<?php echo (int)$producto['cantidad'] ?>
               <?php endif; ?>

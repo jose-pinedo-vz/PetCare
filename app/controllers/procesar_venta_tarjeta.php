@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $cliente_id = !empty($_POST['id_cliente']) ? (int)$_POST['id_cliente'] : null;
 $productos_json = $_POST['productos_json'] ?? '[]';
-$servicios_json = $_POST['servicios_json'] ?? '[]'
+$servicios_json = $_POST['servicios_json'] ?? '[]';
 $productos = json_decode($productos_json, true);
 $servicios = json_decode($servicios_json, true);
 

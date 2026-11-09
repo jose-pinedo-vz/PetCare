@@ -96,13 +96,8 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <div class="acciones-formulario">
-<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar cita</button>
-=======
-        <a class="btn-secundario" href="citas.php">Cancelar</a>
-        <button type="submit" class="btn">Guardar</button>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
     </form>
   

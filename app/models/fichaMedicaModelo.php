@@ -46,13 +46,47 @@ class FichaMedica
                 ':proxima_cita'            => $datos['proxima_cita'],
                 ':observaciones'           => $datos['observaciones'],
                 ':costo'                   => $datos['costo'],
-                ]);
-            return ['exito' => true, 'id' => $datos['id_consulta'], 'mensaje' => 'ficha medica registrada con éxito'];
+            ]);
+            $idFicha = (int)$db->lastInsertId();
+            return ['exito' => true, 'id' => $datos['id_consulta'], 'id_ficha' => $idFicha, 'mensaje' => 'ficha medica registrada con éxito'];
         //Sisi dice que pos si con true y si no da false y el error
         }catch (Exception $e) {
-            return ['exito' => false, 'id' => null, 'mensaje' =>  $e->getMessage()];
+            return ['exito' => false, 'id' => null, 'mensaje' => $e->getMessage()];
         }
     }
+
+    public function guardarRadiografia(int $idConsulta, ?int $idFicha, ?int $idMascota, string $ruta): bool
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("INSERT INTO radiografias (id_consulta, id_ficha, id_mascota, ruta, fecha_subida) VALUES (:id_consulta, :id_ficha, :id_mascota, :ruta, NOW())");
+            return $stmt->execute([
+                ':id_consulta' => $idConsulta,
+                ':id_ficha'    => $idFicha,
+                ':id_mascota'  => $idMascota,
+                ':ruta'        => $ruta
+            ]);
+        } catch (Exception $e) {
+            error_log("Error al guardar radiografía en BD: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function obtenerRadiografias(int $idConsulta): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT * FROM radiografias WHERE id_consulta = :id ORDER BY id_radiografia ASC");
+            $stmt->execute([':id' => $idConsulta]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            return [];
+
+        }
+
+    }
+
+        
 
     public function datosConsulta(int $idConsulta): ?array
     {
@@ -73,6 +107,56 @@ class FichaMedica
 
         return $datos;
     }
+
+    public function obtenerVeterinarios(): array
+    {
+        $db = ConexionDB::obtenerConexion();
+        $stmt = $db->query("SELECT id_empleado AS id, CONCAT(nombre, ' ', apellido) AS nombre FROM empleados WHERE puesto LIKE '%Veterinario%' AND esta_activo = 1 ORDER BY nombre ASC");
+        $vets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($vets)) {
+            $stmt = $db->query("SELECT id_empleado AS id, CONCAT(nombre, ' ', apellido) AS nombre FROM empleados WHERE puesto LIKE '%Veterinario%' ORDER BY nombre ASC");
+            $vets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if (empty($vets)) {
+            $stmt = $db->query("SELECT id_empleado AS id, CONCAT(nombre, ' ', apellido) AS nombre FROM empleados ORDER BY nombre ASC");
+            $vets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $vets ?: [];
+    }
+
+    public function existeVeterinario(int $idVeterinario): bool
+    {
+        $db = ConexionDB::obtenerConexion();
+        $stmt = $db->prepare("SELECT 1 FROM empleados WHERE id_empleado = :id");
+        $stmt->execute([':id' => $idVeterinario]);
+        return (bool)$stmt->fetchColumn();
+    }
+
+    public function obtenerEmpleadoDeUsuario(int $idUsuario): int
+    {
+        if ($idUsuario > 0) {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT empleado_asociado FROM usuarios WHERE id_usuario = :id");
+            $stmt->execute([':id' => $idUsuario]);
+            $empleado = $stmt->fetchColumn();
+            if ($empleado && (int)$empleado > 0) {
+                return (int)$empleado;
+            }
+        }
+
+        $vets = $this->obtenerVeterinarios();
+        if (!empty($vets)) {
+            return (int)$vets[0]['id'];
+        }
+
+        return 1;
+    }
+
+
+
     public function obtenerEmpleadoPorUsuario(int $idUsuario): ?int
     {
         $db = ConexionDB::obtenerConexion();
@@ -89,4 +173,6 @@ class FichaMedica
 
         return (int)$resultado['empleado_asociado'];
     }
+
 }
+

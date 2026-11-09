@@ -227,13 +227,8 @@ unset($_SESSION['old']);
           </fieldset>
 
       <div class="acciones-formulario">
-<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="mascotas.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar</button>
-=======
-        <a class="btn-secundario" href="mascotas.php">Cancelar</a>
-        <button type="submit" name="Guardar">Guardar</button>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
+        <button type="submit" name="Guardar" class="btn btn-chico">Guardar</button>
       </div>
     </form>
   

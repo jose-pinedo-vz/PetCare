@@ -85,7 +85,7 @@ $subtotalMostrar = isset($subtotalGeneral) ? $subtotalGeneral : 0;
                                                 
                                                 <td>$<?php echo number_format($subtotalFila, 2); ?></td>
                                                 <td class="acciones">
-                                                    <a class="btn btn-peligro" href="Venta.php?accion=eliminar&index=<?php echo $index; ?>">Eliminar</a>
+                                                    <a class="btn btn-chico btn-peligro" href="Venta.php?accion=eliminar&index=<?php echo $index; ?>">Eliminar</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
