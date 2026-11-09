@@ -283,6 +283,12 @@ a {
     color: var(--color-texto-secundario);
 }
 
+.migas-de-pan {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--color-texto-suave);
+}
+
 .migas-de-pan a {
     text-decoration: underline;
 }
@@ -389,6 +395,10 @@ a {
     gap: 6px;
 }
 
+.campo--ancho-completo {
+    flex-basis: 100%;
+}
+
 .campo__etiqueta {
     font-size: 14px;
     font-weight: 700;
@@ -399,7 +409,7 @@ a {
     min-height: 46px;
     padding: 10px 16px;
     border: 2px solid var(--color-borde);
-    border-radius: var(--color-blanco-campo);
+    border-radius: var(--radio-campo);
     background: var(--color-blanco-campo);
     font: 600 15px var(--fuente-principal);
     color: var(--color-cafe-oscuro);

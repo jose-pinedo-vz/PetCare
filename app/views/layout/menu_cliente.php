@@ -46,8 +46,8 @@ function mcEsc(string $texto): string {
           <span class="barra-navegacion__saludo">Hola, <?= mcEsc($mcCliente) ?></span>
           <a class="boton boton--contorno-claro boton--chico" href="cerrar_sesion.php">Salir</a>
 <?php else: ?>
-          <a class="boton boton--contorno-claro boton--chico" href="acceso.php">Iniciar sesión</a>
-          <a class="boton boton--secundario boton--chico" href="acceso.php#crear-cuenta">Crear cuenta</a>
+          <a class="boton boton--contorno-claro boton--chico" href="iniciar_sesion.php">Iniciar sesión</a>
+          <a class="boton boton--secundario boton--chico" href="crear_cuenta.php">Crear cuenta</a>
 <?php endif; ?>
         </div>
       </div>

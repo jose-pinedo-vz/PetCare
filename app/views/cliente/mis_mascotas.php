@@ -15,10 +15,10 @@ $paginaActiva = 'mascotas';
 
     <main class="contenedor">
 
-            <div>
-                <h1 class="titulo-pagina">Mis mascotas</h1>
-                <p class="subtitulo-pagina">Aquí están las mascotas que has registrado.</p>
-            </div>
+        <div>
+            <h1 class="titulo-pagina">Mis mascotas</h1>
+            <p class="subtitulo-pagina">Aquí están las mascotas que has registrado.</p>
+        </div>
 
         <div class="rejilla-tarjetas">
 
@@ -27,7 +27,9 @@ $paginaActiva = 'mascotas';
                 <h3 class="tarjeta-mascota__nombre">Luna</h3>
                 <p class="tarjeta-mascota__dato">Perro · Labrador · Hembra</p>
                 <p class="tarjeta-mascota__dato">3 años · 24 kg</p>
-                <span class="etiqueta etiqueta--exito">Vacunas al día</span>
+                <div class="grupo-etiquetas">
+                    <span class="etiqueta etiqueta--exito">Vacunas al día</span>
+                </div>
                 <div class="grupo-botones grupo-botones--compacto">
                     <a class="boton boton--chico" href="agendarCita.php?id_mascota=1">Agendar cita</a>
                     <a class="boton boton--contorno boton--chico" href="editar_mascota.php?id_mascota=1">Editar</a>
@@ -39,7 +41,9 @@ $paginaActiva = 'mascotas';
                 <h3 class="tarjeta-mascota__nombre">Michi</h3>
                 <p class="tarjeta-mascota__dato">Gato · Siamés · Macho</p>
                 <p class="tarjeta-mascota__dato">1 año · 4 kg</p>
-                <span class="etiqueta">Sin vacunas registradas</span>
+                <div class="grupo-etiquetas">
+                    <span class="etiqueta">Sin vacunas registradas</span>
+                </div>
                 <div class="grupo-botones grupo-botones--compacto">
                     <a class="boton boton--chico" href="agendarCita.php?id_mascota=2">Agendar cita</a>
                     <a class="boton boton--contorno boton--chico" href="editar_mascota.php?id_mascota=2">Editar</a>
@@ -49,7 +53,7 @@ $paginaActiva = 'mascotas';
             <a class="tarjeta-agregar" href="registrar_mascota.php">
                 <span class="tarjeta-agregar__icono">+</span>
                 <h3 class="tarjeta-agregar__titulo">Registrar otra mascota</h3>
-                <p class="tarjeta-agregar__titulo">Solo necesitamos sus datos básicos.</p>
+                <p class="tarjeta-agregar__texto">Solo necesitamos sus datos básicos.</p>
             </a>
 
         </div>

@@ -20,7 +20,7 @@ $paginaActiva = 'equipo';
         </div>
 
         <nav class="pestanas">
-            <a class="pestanas__opcion" href="nuestro_equipo.php" class="es-activo">Todos</a>
+            <a class="pestanas__opcion es-activo" href="nuestro_equipo.php">Todos</a>
             <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=veterinarios">Veterinarios</a>
             <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=estilistas">Estilistas</a>
             <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=hotel">Hotel</a>
@@ -71,7 +71,7 @@ $paginaActiva = 'equipo';
 
     </main>
 
-    <footer class=pie-pagina>
+    <footer class="pie-pagina">
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
 </body>
