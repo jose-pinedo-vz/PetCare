@@ -86,7 +86,7 @@
         public function datosCitas():array
         {
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio
               FROM citas c
               INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
 
@@ -278,6 +278,31 @@
             $stml = $db->prepare($query);
             $stml->execute([$idMascota]);
             return $stml->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public static function obtenerResponsable(int $cita)
+        {
+            $query = "SELECT empleado FROM citas WHERE id_cita = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$cita]);
+            return $stml->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public static function actualizarCita(int $Idcita, string $fecha)
+        {
+            try
+            {
+                $query = "UPDATE citas SET fecha = ? WHERE id_cita = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stmt = $db->prepare($query);
+                $nuevaFechaHora = $nuevaFecha . ' ' . $nuevoHorario;
+                $stmt->execute([$nuevaFechaHora, $idConsulta]);
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
         }
     }
 ?>

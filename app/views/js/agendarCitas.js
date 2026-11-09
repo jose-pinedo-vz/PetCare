@@ -214,3 +214,81 @@ document.addEventListener("DOMContentLoaded", async function()
 
     }
 });
+
+
+
+
+
+
+// reprogramar horarios 
+
+
+document.addEventListener("DOMContentLoaded", async function()
+{
+    const fecha = document.getElementById('reprogramar_fecha');
+    const responsable = document.getElementById('responsable_reprogramar');
+
+    //responsable_reprogramar
+    
+
+    if (fecha && responsable)
+    {
+        const actualizarHorarios = async () =>
+        {
+            const fechaVal = fecha.value.trim();
+            const respVal = responsable.value.trim();
+
+
+            const selectHorarios = document.getElementById("reprogramarHorario");
+            if (!selectHorarios) return;
+
+            if (!fechaVal) {
+                selectHorarios.innerHTML = '<option value="">Seleccione una fecha primero</option>';
+                return;
+            }
+
+            selectHorarios.innerHTML = '<option value="">Cargando horarios...</option>';
+
+            try {
+                const respuesta = await fetch(`../controllers/citas.php?accion=horario&fecha=${encodeURIComponent(fechaVal)}&responsable=${encodeURIComponent(respVal)}`, {
+                    method: "GET"
+                });
+                const datos = await respuesta.json();
+
+                selectHorarios.innerHTML = "";
+
+                if (Array.isArray(datos) && datos.length > 0)
+                {
+                    const optionDefault = document.createElement("option");
+                    optionDefault.value = "";
+                    optionDefault.textContent = "Seleccione un horario";
+                    selectHorarios.appendChild(optionDefault);
+
+                    for (const horarioTexto of datos)
+                    {
+                        const option = document.createElement("option");
+                        option.value = horarioTexto;
+                        option.textContent = horarioTexto;
+                        selectHorarios.appendChild(option);
+                    }
+                }
+                else
+                {
+                    const option = document.createElement("option");
+                    option.value = "";
+                    option.textContent = "No hay horarios disponibles para esta fecha";
+                    selectHorarios.appendChild(option);
+                }
+            } catch (error)
+            {
+                selectHorarios.innerHTML = '<option value="">Error al cargar los horarios</option>';
+            }
+        };
+
+        fecha.addEventListener('input', actualizarHorarios);
+        fecha.addEventListener('change', actualizarHorarios);
+
+        // responsable.addEventListener('input', actualizarHorarios);
+        // responsable.addEventListener('change', actualizarHorarios);
+    }
+});

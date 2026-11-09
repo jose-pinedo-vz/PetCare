@@ -23,6 +23,11 @@ if (session_status() === PHP_SESSION_NONE)
           <td><?php echo $d['nombre']; ?> </td>
           <td><?php echo $d['fecha']; ?> </td>
           <td><?php echo $d['motivo']; ?></td>
+          <td><?php 
+            $serv = consultarServicio($d['servicio']);
+            echo htmlspecialchars($serv['nombre'] ?? 'Sin servicio'); 
+          ?></td>
+
           <td>
             <a class="btn btn-chico" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
@@ -160,6 +165,7 @@ if (session_status() === PHP_SESSION_NONE)
                       <th>Fecha:</th>
                       <th>Motivo de consulta:</th>
                       <th>Servicio:</th>
+                      <th>Acciones:</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -181,6 +187,7 @@ if (session_status() === PHP_SESSION_NONE)
                       <th>Fecha:</th>
                       <th>Motivo de consulta:</th>
                       <th>Servicio:</th>
+                      <th>Acciones:</th>
                     </tr>
                   </thead>
                   <tbody>
