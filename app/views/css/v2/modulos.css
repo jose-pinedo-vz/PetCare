@@ -219,7 +219,7 @@
   font-size: 18px;
 }
 
-.inventario-toolbar {
+.agregar-buscar {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -227,12 +227,7 @@
   margin-bottom: 20px;
 }
 
-.inventario-tabla th,
-.inventario-tabla td {
-  text-align: center;
-}
-
-.inventario-buscador {
+.buscador-inteligente {
   flex: 1;
   min-width: 260px;
 }
