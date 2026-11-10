@@ -801,5 +801,6 @@
         document.getElementById('cerrarAbonoCaja').addEventListener('click', () => modalAbonoCaja.close());
         document.getElementById('cancelarAbonoCaja').addEventListener('click', () => modalAbonoCaja.close());
     </script>
+    <script src="js/ventas.js"></script>
 </body>
 </html>

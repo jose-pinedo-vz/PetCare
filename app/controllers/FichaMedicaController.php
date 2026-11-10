@@ -5,15 +5,16 @@ date_default_timezone_set('America/Mexico_City');
 require_once __DIR__ . '/../models/fichaMedicaModelo.php';
 
 require_once __DIR__ . '/../models/citas.php';
+require_once __DIR__ . '/../controllers/ImagenController.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 };
 
-$idVeterinario = (int)($_SESSION['id_usuario'] ?? 1);
+$ficha = new FichaMedica();
+$idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
+$idVeterinario = $ficha->obtenerEmpleadoDeUsuario($idUsuario);
 $idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
-
-$ficha=new FichaMedica();
 
 function errorSession(string $error, int $idConsulta = 0) : void
 {
@@ -87,6 +88,8 @@ $idCliente=(int)$Datosconsulta['id_cliente'];
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $mascotas = $ficha->agarraMascotas($idCliente);
+    $veterinarios = $ficha->obtenerVeterinarios();
+    $radiografiasPrevias = $ficha->obtenerRadiografias($idConsulta);
     require __DIR__ . '/../views/FichaMedica.php';   // la vista usa $mascotas e $idConsulta
     exit();
 }
@@ -125,6 +128,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     // Validar veterinario
     if ($veterinario === '' || !ctype_digit($veterinario) || (int)$veterinario <= 0) {
         $errores[] = "Debe estar asignado a un veterinario válido.";
+    } elseif (!$ficha->existeVeterinario((int)$veterinario)) {
+        $errores[] = "El veterinario seleccionado no es válido o no existe en el sistema.";
     }
 
     // Validar mascota perteneciente al cliente
@@ -253,6 +258,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         }
     }
 
+    // Validar imágenes de radiografías (opcionales)
+    $archivosRadiografias = [];
+    if (isset($_FILES['radiografias'])) {
+        $archivosRadiografias = ImagenController::normalizarArchivosMultiples($_FILES['radiografias']);
+    }
+
+    $tiposPermitidosImg = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    $maxSizeImg = 10485760 / 2; // 5 MB
+
+    foreach ($archivosRadiografias as $archivoRx) {
+        if ($archivoRx['error'] !== UPLOAD_ERR_OK) {
+            $errores[] = "Error al transferir la radiografía '{$archivoRx['name']}' (código: {$archivoRx['error']}).";
+            continue;
+        }
+        if ($archivoRx['size'] > $maxSizeImg) {
+            $errores[] = "La radiografía '{$archivoRx['name']}' excede el límite de 5 MB.";
+            continue;
+        }
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $tipoMime = finfo_file($finfo, $archivoRx['tmp_name']);
+        finfo_close($finfo);
+        if (!in_array($tipoMime, $tiposPermitidosImg, true)) {
+            $errores[] = "El archivo '{$archivoRx['name']}' no es un formato de imagen permitido (solo JPG, PNG, WEBP o GIF).";
+        }
+    }
+
     if (count($errores) > 0) {
         guardarErroresYSesion($errores, $idConsulta);
     }
@@ -284,6 +315,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         guardarErroresYSesion(["No se logró guardar la ficha médica en la base de datos: " . ($resultado['mensaje'] ?? '')], $idConsulta);
     }
 
+    $idFicha = $resultado['id_ficha'] ?? null;
+
+    // Subir y registrar las imágenes de radiografías
+    foreach ($archivosRadiografias as $archivoRx) {
+        $subida = ImagenController::subir($archivoRx, 'radiografias', 'rx_');
+        if ($subida['exito']) {
+            $ficha->guardarRadiografia((int)$consulta, $idFicha, (int)$mascota, $subida['ruta']);
+        } else {
+            error_log("Error al subir radiografía: " . $subida['mensaje']);
+        }
+    }
+
     actualzarCita($idConsulta);
 
     header("Location: ../views/citas.php?exito=1");
@@ -297,14 +340,3 @@ function actualzarCita(int $idCita)
     $res = $contulta->pendinteDepago($idConsulta);
 }
 ?>
-
-<!-- Session ayuda a crear sesiones en lo que el cliente permanece en una pagina web
-
-Lo que mas me intereso es el uso de $_SESSION que es una variable global que se usa
-siempre que se este dentro de la sesion, funciona como un array $_SESSION[Usuario]="Tal"
-Esto hace que si lo defino en la pagina de login y lo necesito en la pagina de mascotas 
-pueda usarlo sin problema porque esta guardado en la misma sesion, una vez no lo necesite se
-puede borrar todo con session_destroy(); o se podria borrar solo una variable con
-unset($_SESSION["valor1"]);-->
-
-<!-- _POST() Sirve para enviar variables unicamente entre 2 paginas, solo eso -->
