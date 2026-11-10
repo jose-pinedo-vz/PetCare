@@ -37,20 +37,20 @@ function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
 
-    $_SESSION['oldClave'] = $_POST['claveCliente'];
-    $_SESSION['oldFecha'] = $_POST['fecha'];
-    $_SESSION['oldMotivo'] = $_POST['motivoConsulta'];
-    $_SESSION['oldHorario'] = $_POST['horarioConsulta'];
-    $_SESSION['oldMascota'] = $_POST['mascota'];
-    $_SESSION['oldDuracion'] = $_POST['duracion'];
-    $_SESSION['oldServicio'] = $_POST['servicio'];
-    $_SESSION['oldResponsable'] = $_POST['responsable'];
+    $_SESSION['oldClave'] = $_POST['claveCliente'] ?? '';
+    $_SESSION['oldFecha'] = $_POST['fecha'] ?? '';
+    $_SESSION['oldMotivo'] = $_POST['motivoConsulta'] ?? '';
+    $_SESSION['oldHorario'] = $_POST['horarioConsulta'] ?? '';
+    $_SESSION['oldMascota'] = $_POST['mascota'] ?? '';
+    $_SESSION['oldDuracion'] = $_POST['duracion'] ?? '';
+    $_SESSION['oldServicio'] = $_POST['servicio'] ?? '';
+    $_SESSION['oldResponsable'] = $_POST['responsable'] ?? '';
 
     header("Location: ../views/agendarCita.php");
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST")
+if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agendar_cita'))
 {
     // LÍNEA DE DEPURACIÓN TEMPORAL:
     // echo "<pre>";
@@ -278,14 +278,21 @@ if ($accion === "mostrarResponsable")
 {
     mostrarResponsable();
 }
+
+// editar para mostrar servicio
+
 function mostrarResponsable()
 {
     $servicio = $_GET['servicio'];
+    // if ($servicio === 'Estética') $equivalente = 'Veterinario';
+    // if ($servicio === 'Salud') $equivalente = 'Estilista';
+
+
     $responsables = ConexionesClientes::mostrarServiciosPorServicio($servicio);
 
     echo json_encode($responsables);
     exit();
-    }
+}
 
 $accion = $_GET['accion'] ?? '';
 if ($accion === "cancelarCita")
@@ -342,24 +349,22 @@ function erroresDeReprogramarCitas(string $error, $nuevaFecha, $responsable, $nu
 {
     $_SESSION['error'] = $error;
 
-    $_SESSION['oldClave'] = $nuevaFecha;
-    $_SESSION['oldClave'] = $responsable;
-    $_SESSION['oldClave'] = $nuevoHorario;
+    $_SESSION['oldFecha'] = $nuevaFecha;
+    $_SESSION['oldResponsable'] = $responsable;
+    $_SESSION['oldHorario'] = $nuevoHorario;
 
     header("Location: ../views/reprogramar_cita.php?id_consulta=" . $idConsulta);
     exit();
 }
 
-
-
-
 function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorario)
 {
-    
-    if (empty($idConsulta) || empty($nuevaFecha) || empty($responsable) || empty($nuevoHorario)) 
+    // validaciones 
+    if ($idConsulta === '' || $nuevaFecha === '' || $responsable === '' || $nuevoHorario === '')
     {
-        erroresDeReprogramarCitas("Todos los parámetros son obligatorios.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+        erroresDeReprogramarCitas("Todos los campos son obligatorios.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
+
     $objetoHora = DateTime::createFromFormat('g:i A', $nuevoHorario);
     if (!$objetoHora) 
     {
@@ -372,20 +377,22 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
         erroresDeReprogramarCitas("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
 
+    // juntar fecha con horas 
     $horaLimpia = $objetoHora->format('H:i:s');
     $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;
-
     $fecha = $horaLimpia . " " . $nuevaFecha;
+
+    // actualizar en base de datos
     $resultado = ConexionesClientes::actualizarCita((int)$idConsulta, (string)$fechaHoraFinal);
 
     if (!$resultado) 
     {
         erroresDeReprogramarCitas("Error al actualizar la cita en la base de datos.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
+    header("Location: ../views/citas.php");
+    exit();
 }
 
-
-?>
 
 
 

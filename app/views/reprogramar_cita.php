@@ -1,12 +1,9 @@
 <?php  require_once __DIR__ . '/../controllers/citas.php';
-if (session_status() === PHP_SESSION_NONE)
-{
-  session_start();
-}
+  if (session_status() === PHP_SESSION_NONE)
+  {
+    session_start();
+  }
 
-?>
-
-<?php
     function responsable()
     {
         $idConsulta = $_GET['id_consulta'] ?? null;
@@ -18,23 +15,15 @@ if (session_status() === PHP_SESSION_NONE)
             echo '<option value="">Sin responsable asignado</option>';
         }
     }
-?>
 
-<?php
-  if (isset($_GET['accion']) && $_GET['accion'] === 'guardar_reprogramacion') {
-    
-
+  if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'guardar_reprogramacion')) {
+  
     $idConsulta = $_POST['id_consulta'] ?? null;
     $nuevaFecha = $_POST['reprogramar_fecha'] ?? null;
     $responsable = $_POST['responsable_reprogramar'] ?? null;
     $nuevoHorario = $_POST['reprogramarHorario'] ?? null;
-
     actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorario);
-
   }
-
-
-
 ?>
 
 
@@ -78,8 +67,8 @@ if (session_status() === PHP_SESSION_NONE)
           </div>
         <?php endif; ?>
 
-        <form action="../controllers/citas.php?accion=guardar_reprogramacion" method="POST">
-
+      <form action="reprogramar_cita.php?id_consulta=<?php echo htmlspecialchars($_GET['id_consulta'] ?? ''); ?>&accion=guardar_reprogramacion" method="POST">
+          <input type="hidden" name="id_consulta" value="<?php echo htmlspecialchars($_GET['id_consulta'] ?? ''); ?>">
         <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="reprogramar_fecha" name="reprogramar_fecha" data-fecha="reprogramar_fecha" required
@@ -89,7 +78,21 @@ if (session_status() === PHP_SESSION_NONE)
         <div>
             <label class="label-campo" for="responsable">Responsable *:</label>
             <select class="campo" name="responsable_reprogramar" id="responsable_reprogramar" required>
-              <?php responsable(); ?>
+              
+
+              <?php 
+                $valorOldResponsable = $_SESSION['oldResponsable'] ?? '';
+                
+
+                if (!empty($valorOldResponsable))
+                { ?> 
+                  <option value="<?php echo htmlspecialchars((int)$valorOldResponsable); ?>" selected>
+                    <?php echo htmlspecialchars((string)$valorOldResponsable); ?>
+                  </option>
+                <?php } 
+                else 
+                  { responsable(); } 
+                ?>
             </select>
           </div>
 

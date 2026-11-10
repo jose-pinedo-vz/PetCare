@@ -43,7 +43,8 @@ $usuario=$_SESSION['usuario'];
     <?php endif; ?>
 
 
-    <form id="formCita" action="../controllers/citas.php" method="POST">
+    <!-- <form id="formCita" action="../controllers/citas.php" method="POST"> -->
+    <form action="../controllers/citas.php?accion=agendar_cita" method="POST">
       <fieldset>
         <legend>Datos de la cita</legend>
 

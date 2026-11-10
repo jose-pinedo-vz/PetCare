@@ -296,8 +296,7 @@
                 $query = "UPDATE citas SET fecha = ? WHERE id_cita = ?";
                 $db = ConexionDB::obtenerConexion();
                 $stmt = $db->prepare($query);
-                $nuevaFechaHora = $nuevaFecha . ' ' . $nuevoHorario;
-                $stmt->execute([$nuevaFechaHora, $idConsulta]);
+                return $stmt->execute([$fecha, $Idcita]);
             }
             catch (Exception $e)
             {

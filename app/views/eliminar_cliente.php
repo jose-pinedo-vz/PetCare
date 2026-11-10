@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Validar si realmente llegaron los datos por la URL (GET)
 if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
     // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
@@ -32,7 +32,7 @@ $apellido_cliente = $_GET['apellido'];
 
   <main>
 
-      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de clientes</a> / Eliminar</div>
+      <div class="migaja"><a href="clientes.php" class="link-tenue">Gestión de Clientes</a> / Eliminar</div>
 
     <h1>Eliminar cliente</h1>
 
