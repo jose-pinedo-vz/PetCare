@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
         'observaciones'    => trim($_POST['observaciones'] ?? '')
     ];
-    actualizar_proveedor($idProveedor, $datos); 
+    actualizar_proveedor($idProveedor, $datos);
 }
 
 $proveedor = obtenerProveedorPorId($idProveedor);
@@ -300,7 +300,7 @@ if (!$proveedor) {
 
         </form>
 
-    
+
       </div>
     </main>
 

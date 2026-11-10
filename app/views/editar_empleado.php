@@ -105,7 +105,7 @@ unset($_SESSION['error']);
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
-  
+
     <form action="../controllers/guardar_empleado.php" method="POST">
 
       <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$empleado['id_empleado'] ?>">
