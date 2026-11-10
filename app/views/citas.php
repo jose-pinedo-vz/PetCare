@@ -81,19 +81,12 @@ if (session_status() === PHP_SESSION_NONE)
       </div>
 
       <div class="tarjeta">
-    
+
     <div class="barra-acciones">
       <a class="btn" href="agendarCita.php">+ Agendar cita</a>
     </div>
 
-    
-
     <div class="contenedor_citas">
-      <div class="boton_control">
-        <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
-        <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
-      </div>
-
       <style>
         .contenedor-busqueda {
           display: flex;
@@ -110,7 +103,7 @@ if (session_status() === PHP_SESSION_NONE)
 
       <div class="contenedor-busqueda">
         <h3>Buscar</h3>
-        <input type="text" class="campo" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez">
+        <input type="text" class="campo buscador-inteligente" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez">
         <select class="select" id="fecha">
           <option value="todos">Todas</option>
           <option value="hoy">Hoy</option>
@@ -118,11 +111,11 @@ if (session_status() === PHP_SESSION_NONE)
           <option value="mes">Este mes</option>
         </select>
     </div>
-      
+
 
       <div class="panel_contenido">
         <!-- Sección de espera  -->
-        
+
 
         <div class="contenedor_citas">
           <div class="boton_control">
@@ -134,7 +127,7 @@ if (session_status() === PHP_SESSION_NONE)
             <h3>Citas en espera</h3>
             <?php mostrarProximasCitas(); ?>
           </div>
-            
+
             <!-- Sección de atendidos-->
             <div id="seccion_atendidos" class="seccion-panel oculto">
               <h3>Citas atendidas (pendientes de pago)</h3>
@@ -146,7 +139,7 @@ if (session_status() === PHP_SESSION_NONE)
 
       </div>
     </div>
-  
+
       </div>
     </main>
 

@@ -130,7 +130,7 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <fieldset>
-        <legend> Dirección / Domicilio</legend>
+        <legend> Dirección / domicilio</legend>
         <div class="grid-formulario">
 
           <div>
@@ -232,13 +232,8 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <div class="acciones-formulario">
-<<<<<<< HEAD
         <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar cliente</button>
-=======
-        <a class="btn-secundario" href="clientes.php">Cancelar</a>
-        <button type="submit">Guardar</button>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
       </div>
 
     </form>

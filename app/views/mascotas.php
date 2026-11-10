@@ -26,16 +26,10 @@ $usuario=$_SESSION['usuario'];
 <body>
 
   <div class="layout">
-
-    <?php $paginaActiva = 'mascotas';
-    include __DIR__ . '/layout/sidebar.php'; ?>
+  <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
 
-<<<<<<< HEAD
-    <main>
-=======
   <main>
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
       <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
         <h1>Mascotas</h1>
@@ -43,29 +37,16 @@ $usuario=$_SESSION['usuario'];
 
       <div class="tarjeta">
 
-        <div class="barra-acciones-busqueda">
-<<<<<<< HEAD
-          <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
-
-          <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
+        <div class="agregar-buscar">
+          <form method="get" action="mascotas.php" role="search">
             <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
-            <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
-            <button class="btn btn-info" type="submit">Buscar</button>
-            <?php if (!empty($_GET['buscar'])): ?>
-              <a class="btn-secundario" href="mascotas.php">Limpiar</a>
-            <?php endif; ?>
-          </form>
-=======
-          <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
-            <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
-            <input class="campo" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
+            <input class="campo buscador-inteligente" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
             <?php if (!empty($_GET['buscar'])): ?>
               <a class="btn btn-secundario btn-chico" href="mascotas.php">Limpiar</a>
             <?php endif; ?>
           </form>
 
           <a class="btn" href="agregar_mascota.php">+ Agregar mascota</a>
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
         </div>
         <!-- AQUÍ INICIA EL CONTENEDOR RESPONSIVE -->
         <div class="tabla-envoltura">
@@ -91,13 +72,8 @@ $usuario=$_SESSION['usuario'];
                     <td><?= htmlspecialchars($mascota['sexo']) ?></td>
                     <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
                     <td class="acciones">
-<<<<<<< HEAD
-                      <a class="btn" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
-                      <a class="btn btn-peligro" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
-=======
                       <a class="btn btn-chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
                       <a class="btn btn-peligro btn-chico" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>
->>>>>>> 1f31248d0ec9714e337c31c813569688230ad94f
                     </td>
                   </tr>
                 <?php endforeach; ?>

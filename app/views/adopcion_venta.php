@@ -132,15 +132,16 @@ $animales = listar_adopciones_ventas();
                 <div class="barra-acciones-busqueda">
                     <div class="busqueda-barra" role="search">
                         <label class="visualmente-oculto" for="buscarAdopcionVenta">Buscar adopciones o ventas</label>
-                        <input class="campo" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
+                        <input class="campo buscador-inteligente" id="buscarAdopcionVenta" type="search" placeholder="Buscar por especie, raza o estado..." autocomplete="off">
                     </div>
                 <div class="barra-acciones">
                     <a class="btn" href="agregar_adopcion_venta.php">+ Agregar adopción y venta</a>
                 </div>
+                </div>
                 <div class="tabla-envoltura">
-                    <table border="1">
+                    <table id="registrosAdopcionVenta" border="1">
                         <thead>
-                            <tr>
+                            <tr data-registro>
                                 <th>ID</th>
                                 <th>Especie</th>
                                 <th>Raza</th>
@@ -214,13 +215,13 @@ $animales = listar_adopciones_ventas();
                                         <td><?= htmlspecialchars(substr((string)$animal['desparasitacion'], 0, 10)) ?></td>
                                         <td><?= htmlspecialchars((string)$animal['observaciones']) ?></td>
                                         <td>
-                                            <a class="btn" href="../views/editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
+                                            <a class="btn btn-chico" href="../views/editar_adopcion_venta.php?id=<?= $animal['id_animal'] ?>">Editar</a>
                                             <form action="../controllers/procesar_venta_adopcion.php" method="POST" style="display:inline;" onsubmit="return confirm('¿Deseas confirmar la transacción de este animal?');">
                                                 <input type="hidden" name="id_animal" value="<?= $animal['id_animal'] ?>">
                                                 <input type="hidden" name="precio_de_venta" value="<?= $animal['precio_de_venta'] ?>">
                                                 <input type="hidden" name="especie" value="<?= htmlspecialchars((string)($animal['especie'] ?? '-')) ?>">
                                                 <input type="hidden" name="raza" value="<?= htmlspecialchars((string)($animal['raza'] ?? '-')) ?>">
-                                                <button type="submit" class="btn-secundario">Vender</button>
+                                                <button type="submit" class="btn btn-chico btn-secundario">Vender</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -230,6 +231,9 @@ $animales = listar_adopciones_ventas();
                                     <td colspan="18" style="text-align: center;">No hay registros de adopción y venta.</td>
                                 </tr>
                             <?php endif; ?>
+                            <tr id="sinResultados" hidden>
+                                <td colspan="18" style="text-align: center;">No hay coincidencias para la búsqueda.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -243,7 +247,7 @@ $animales = listar_adopciones_ventas();
         </footer>
         <script>
             const buscadorAdopcionVenta = document.getElementById('buscarAdopcionVenta');
-            const filasAdopcionVenta = document.querySelectorAll('#registrosAdopcionVenta tr:not(#sinResultados)');
+            const filasAdopcionVenta = document.querySelectorAll('#registrosAdopcionVenta tbody tr[data-registro]');
             const mensajeSinResultados = document.getElementById('sinResultados');
 
             buscadorAdopcionVenta.addEventListener('input', () => {
@@ -261,7 +265,7 @@ $animales = listar_adopciones_ventas();
                     resultados += coincide ? 1 : 0;
                 });
 
-                mensajeSinResultados.hidden = resultados > 0;
+                mensajeSinResultados.hidden = filasAdopcionVenta.length === 0 || resultados > 0;
             });
         </script>
 
@@ -327,4 +331,4 @@ $animales = listar_adopciones_ventas();
     </script>
 </body>
 
-</html>                             
+</html>

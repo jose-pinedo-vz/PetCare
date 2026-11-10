@@ -75,7 +75,7 @@
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -132,7 +132,7 @@
  
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -236,7 +236,7 @@
 
                     <div>
                         <label class="label-campo" for="tiempo_entrega">
-                            Tiempo de entrega (Días) *:
+                            Tiempo de entrega (días) *:
                         </label>
 
                         <input
@@ -264,18 +264,10 @@
                 </div>
 
             </fieldset>
-<<<<<<< HEAD
         <div class="acciones-formulario">
-        <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
-        <button type="submit" class="btn btn-chico">Guardar</button>
-      </div>
-=======
-
-          <div class="acciones-formulario">
-            <a class="btn-secundario" href="proveedores.php">Cancelar</a>
-            <button type="submit">Guardar</button>
-          </div>
->>>>>>> c86ed63934a26c7e68b08838998072db02aa8825
+          <a class="btn btn-secundario btn-chico" href="proveedores.php">Cancelar</a>
+          <button type="submit" class="btn btn-chico">Guardar</button>
+        </div>
 
         </form>
 
