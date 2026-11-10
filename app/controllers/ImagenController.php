@@ -13,7 +13,7 @@ class ImagenController
 
     private static int $tamanioMaximo = 10485760/2; // 5 MB 
 
-    public static function subir(?array $archivo): array
+    public static function subir(?array $archivo, string $subdirectorio = 'mascotas', string $prefijo = 'pet_'): array
     {
         if (!$archivo || empty($archivo['name']) || $archivo['error'] === UPLOAD_ERR_NO_FILE) {
             return [
@@ -57,12 +57,15 @@ class ImagenController
 
         $extension = self::$tiposPermitidos[$tipoMime];
 
-        if (!is_dir(self::$directorioBase)) {
-            mkdir(self::$directorioBase, 0755, true);
+        $subLimpio = trim(str_replace(['..', '\\'], ['', '/'], $subdirectorio), '/');
+        $directorioDestino = __DIR__ . '/../../uploads/' . $subLimpio . '/';
+
+        if (!is_dir($directorioDestino)) {
+            mkdir($directorioDestino, 0755, true);
         }
 
-        $nombreUnico = uniqid('pet_', true) . '.' . $extension;
-        $rutaDestinoFisica = self::$directorioBase . $nombreUnico;
+        $nombreUnico = uniqid($prefijo, true) . '.' . $extension;
+        $rutaDestinoFisica = $directorioDestino . $nombreUnico;
 
         if (!move_uploaded_file($archivo['tmp_name'], $rutaDestinoFisica)) {
             return [
@@ -73,7 +76,7 @@ class ImagenController
             ];
         }
 
-        $rutaRelativaBD = 'uploads/mascotas/' . $nombreUnico;
+        $rutaRelativaBD = 'uploads/' . $subLimpio . '/' . $nombreUnico;
 
         return [
             'exito' => true,
@@ -81,5 +84,33 @@ class ImagenController
             'ruta' => $rutaRelativaBD,
             'nombre_archivo' => $nombreUnico
         ];
+    }
+
+    public static function normalizarArchivosMultiples(?array $filesArray): array
+    {
+        $normalizados = [];
+        if (!$filesArray || !isset($filesArray['name'])) {
+            return $normalizados;
+        }
+
+        if (is_array($filesArray['name'])) {
+            $total = count($filesArray['name']);
+            for ($i = 0; $i < $total; $i++) {
+                if (($filesArray['error'][$i] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                    continue;
+                }
+                $normalizados[] = [
+                    'name'     => $filesArray['name'][$i],
+                    'type'     => $filesArray['type'][$i] ?? '',
+                    'tmp_name' => $filesArray['tmp_name'][$i],
+                    'error'    => $filesArray['error'][$i],
+                    'size'     => $filesArray['size'][$i] ?? 0,
+                ];
+            }
+        } elseif (($filesArray['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            $normalizados[] = $filesArray;
+        }
+
+        return $normalizados;
     }
 }

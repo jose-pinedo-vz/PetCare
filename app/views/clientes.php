@@ -14,6 +14,8 @@
   $usuario=$_SESSION['usuario'];
   // Mostrar nombre del usuario
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -28,9 +30,9 @@
 
   <div class="layout">
 
-    <?php 
+    <?php
       $paginaActiva = 'clientes';
-      include __DIR__ . '/layout/sidebar.php'; 
+      include __DIR__ . '/layout/sidebar.php';
     ?>
 
 
@@ -42,6 +44,15 @@
 
       <div class="tarjeta">
 
+        <div class="barra-acciones-busqueda">
+          <div class="busqueda-barra" role="search">
+            <label class="visualmente-oculto" for="buscarCliente">Buscar cliente</label>
+            <input class="campo buscador-inteligente" id="buscarCliente" type="search" placeholder="Buscar por datos del cliente..." autocomplete="off">
+          </div>
+          <div class="barra-acciones">
+            <a class="btn" href="agregar_cliente.php">+ Agregar cliente</a>
+          </div>
+        </div>
 
         <?php
         $listaClientes = Cliente::obtenerTodos();
@@ -128,17 +139,34 @@
 </dialog>
 
 <script>
-  document.querySelector('tbody').addEventListener('click', (e) => {
-    if (e.target.closest('a, button')) return;
-    const fila = e.target.closest('tr[data-registro]');
-    if (!fila) return;
+  const cuerpoTablaClientes = document.querySelector('.tabla-envoltura tbody');
+  const buscarCliente = document.getElementById('buscarCliente');
 
-    const datos = JSON.parse(fila.dataset.registro);
-    document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
-      el.textContent = datos[el.dataset.campo] || '—';
+  if (cuerpoTablaClientes && buscarCliente) {
+    buscarCliente.addEventListener('input', () => {
+      const termino = buscarCliente.value.trim().toLocaleLowerCase();
+      cuerpoTablaClientes.querySelectorAll('tr[data-registro]').forEach((fila) => {
+        const texto = Array.from(fila.cells)
+          .slice(0, -1)
+          .map((celda) => celda.textContent)
+          .join(' ')
+          .toLocaleLowerCase();
+        fila.hidden = !texto.includes(termino);
+      });
     });
-    document.getElementById('modalDetalle').showModal();
-  });
+
+    cuerpoTablaClientes.addEventListener('click', (e) => {
+      if (e.target.closest('a, button')) return;
+      const fila = e.target.closest('tr[data-registro]');
+      if (!fila) return;
+
+      const datos = JSON.parse(fila.dataset.registro);
+      document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {
+        el.textContent = datos[el.dataset.campo] || '—';
+      });
+      document.getElementById('modalDetalle').showModal();
+    });
+  }
 </script>
 
 </body>

@@ -73,8 +73,8 @@ $usuario=$_SESSION['usuario'];
 
                     <!-- Celda de acciones con white-space: nowrap; -->
                     <td style="padding: 10px; text-align: center; white-space: nowrap;">
-                      <a class="btn" href="editar_usuarios.php?id_usuario=<?= $u['id_usuario'] ?>">Editar</a>
-                      <a class="btn" href="../controllers/eliminar_usuario.php?id=<?= $u['id_usuario'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">Eliminar</a>
+                      <a class="btn btn-chico" href="editar_usuarios.php?id_usuario=<?= $u['id_usuario'] ?>">Editar</a>
+                      <a class="btn btn-chico btn-peligro" href="../controllers/eliminar_usuario.php?id=<?= $u['id_usuario'] ?>" style="margin-left: 6px;" onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">Eliminar</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>

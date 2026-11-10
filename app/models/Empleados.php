@@ -236,8 +236,11 @@ class Empleados {
     public static function Listar_empleados_activos() : array {
         $conexion = ConexionDB::obtenerConexion();
 
+        // Mantener esta proyección alineada con las columnas visibles de app/views/empleados.php.
+        // La dirección se conserva para las pantallas de alta y edición, pero no se lista aquí.
         $consulta_sql = "
-            SELECT *
+            SELECT id_empleado, nombre, apellido, telefono, correo, puesto, especialidad,
+                   num_cedula_profesional, Fecha_de_contratacion, horario
             FROM empleados
             WHERE esta_activo = 1
             ORDER BY id_empleado

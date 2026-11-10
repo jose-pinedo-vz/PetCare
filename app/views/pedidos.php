@@ -28,7 +28,7 @@
 			<section id="pedidos" aria-label="Pedidos pendientes">
 				<div class="inventario-pedidos-toolbar">
 					<label class="visualmente-oculto" for="buscar-pedido">Buscar pedidos</label>
-					<input id="buscar-pedido" class="campo" type="search" placeholder="Buscar por proveedor, ID pedido...">
+					<input id="buscar-pedido" class="campo buscador-inteligente" type="search" placeholder="Buscar por proveedor, ID pedido...">
 					<label class="visualmente-oculto" for="filtro-estado-pedido">Filtrar pedidos por estado</label>
 					<select id="filtro-estado-pedido" class="campo pedidos-filtro-estado">
 						<option value="">Todos los estados</option>

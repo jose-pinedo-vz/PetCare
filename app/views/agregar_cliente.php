@@ -130,7 +130,7 @@ $usuario=$_SESSION['usuario'];
       </fieldset>
 
       <fieldset>
-        <legend> Dirección / Domicilio</legend>
+        <legend> Dirección / domicilio</legend>
         <div class="grid-formulario">
 
           <div>
