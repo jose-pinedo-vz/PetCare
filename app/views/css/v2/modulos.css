@@ -251,6 +251,368 @@
   text-align: right;
 }
 
+.movimientos-encabezado,
+.movimientos-lista-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.movimientos-encabezado .subtitulo,
+.movimientos-lista-encabezado h3 {
+  margin: 0;
+}
+
+.movimientos-descripcion {
+  margin: 6px 0 0;
+  color: var(--texto-suave);
+}
+
+.movimientos-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.movimientos-toolbar .movimientos-buscador {
+  flex: 1;
+  min-width: 180px;
+}
+
+.movimientos-toolbar .movimientos-filtro-tipo {
+  flex: 0 0 190px;
+  width: 190px;
+}
+
+.movimientos-toolbar .movimientos-filtro-fecha {
+  flex: 0 1 155px;
+  min-width: 130px;
+}
+
+.movimientos-lista-encabezado {
+  margin-top: 24px;
+}
+
+.movimientos-lista-encabezado p,
+.movimientos-lista-encabezado span {
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.movimientos-lista-encabezado p {
+  margin: 5px 0 0;
+}
+
+.movimientos-lista-encabezado > span {
+  white-space: nowrap;
+}
+
+.movimientos-lista {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.movimiento-tarjeta {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--white);
+  box-shadow: 0 2px 6px rgba(73, 49, 23, 0.08);
+}
+
+.movimiento-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+}
+
+.movimiento-icono {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.movimiento-icono-entrada {
+  background: #e5eee0;
+  color: #3b6335;
+}
+
+.movimiento-icono-salida {
+  background: #fae8e5;
+  color: #a33b2c;
+}
+
+.movimiento-icono-ajuste {
+  background: #fff3d5;
+  color: #80520b;
+}
+
+.movimiento-identidad {
+  min-width: 0;
+}
+
+.movimiento-etiqueta,
+.movimiento-producto > span,
+.movimiento-datos span {
+  color: var(--texto-suave);
+  font-size: 11px;
+}
+
+.movimiento-etiqueta {
+  display: block;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.movimiento-identidad h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.movimiento-tipo {
+  margin-left: auto;
+  padding: 5px 9px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.movimiento-tipo-entrada {
+  background: #e5eee0;
+  color: #3b6335;
+}
+
+.movimiento-tipo-salida {
+  background: #fae8e5;
+  color: #a33b2c;
+}
+
+.movimiento-tipo-ajuste {
+  background: #fff3d5;
+  color: #80520b;
+}
+
+.movimiento-producto {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.movimiento-producto strong {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.movimiento-datos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 10px;
+  padding-top: 12px;
+}
+
+.movimiento-datos > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.movimiento-datos strong {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.movimiento-cantidad-entrada {
+  color: #3b6335;
+  font-weight: bold !important;
+}
+
+.movimiento-cantidad-salida,
+.movimiento-cantidad-ajuste {
+  color: #a33b2c;
+  font-weight: bold !important;
+}
+
+.movimiento-observaciones {
+  grid-column: 1 / -1;
+  padding-top: 10px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.movimiento-paginacion {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+  color: var(--texto-suave);
+  font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  .movimientos-lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .movimientos-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .movimientos-toolbar .movimientos-buscador {
+    flex-basis: 100%;
+  }
+
+  .movimientos-toolbar .movimientos-filtro-tipo,
+  .movimientos-toolbar .movimientos-filtro-fecha {
+    flex: 1 1 145px;
+  }
+}
+
+@media (max-width: 560px) {
+  .movimientos-encabezado,
+  .movimientos-lista-encabezado {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .movimientos-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .movimientos-toolbar .campo,
+  .movimientos-toolbar .movimientos-filtro-tipo,
+  .movimientos-toolbar .movimientos-filtro-fecha {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+
+  .movimientos-toolbar .btn {
+    width: 100%;
+  }
+
+  .movimientos-lista {
+    grid-template-columns: 1fr;
+  }
+
+  .movimientos-lista-encabezado > span {
+    align-self: flex-end;
+  }
+}
+
+.categoria-controles {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.categoria-controles .contenedor-buscador {
+  flex: 1;
+  min-width: 0;
+}
+
+.categoria-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--white);
+  color: var(--primary-dark);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+.categoria-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.categoria-dialog-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  background-color: var(--primary-dark);
+  color: var(--white);
+}
+
+.categoria-dialog-encabezado h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.categoria-dialog-cerrar {
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--white);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.categoria-dialog-contenido {
+  padding: 22px;
+}
+
+.categoria-dialog-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.categoria-dialog-completo {
+  grid-column: 1 / -1;
+}
+
+.categoria-dialog-nota {
+  margin: 16px 0 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.categoria-dialog-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 560px) {
+  .categoria-controles {
+    flex-direction: column;
+  }
+
+  .categoria-controles .btn {
+    width: 100%;
+  }
+
+  .categoria-dialog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .categoria-dialog-completo {
+    grid-column: auto;
+  }
+}
+
 /* ORDEN DE COMPRA: interfaz de sugerencias, catálogo y selección. */
 .orden-compra-acciones {
   display: flex;

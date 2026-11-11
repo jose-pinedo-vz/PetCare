@@ -64,6 +64,7 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
           <div class="inventario-tarjeta">
             <h3>Movimientos hoy</h3>
             <p><?= $movimientosHoy === null ? 'No disponible' : $movimientosHoy . ' registros' ?></p>
+            <a class="btn inventario-btn-contactar btn-chico" href="movimientos_inventario.php">Detalles</a>
           </div>
         </div>
 
