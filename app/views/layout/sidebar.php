@@ -1,4 +1,18 @@
 <?php
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+$empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+$horario_empleado = $_SESSION['horario_empleado'] ?? null;
+// Mostrar nombre del usuario
+
 $sbActiva = $paginaActiva ?? '';
 
 $sbModulos = [
@@ -44,8 +58,8 @@ $sbModulos = [
       </nav>
 
       <div class="sesion">
-        <span>Empleado: Nombre del Empleado</span>
-        <a href="#">Cerrar sesión</a>
+        <span>Empleado: <strong><?php echo htmlspecialchars($empleado_asociado); ?></strong></span>
+        <a href="../controllers/Login.php?action=logout">Cerrar sesión</a> 
       </div>
     </aside>
 
