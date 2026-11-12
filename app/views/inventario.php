@@ -91,9 +91,24 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
             <tbody>
               <?php if (!empty($productos)): ?>
                   <?php foreach ($productos as $producto): ?>
+                      <?php
+                        $imagenProducto = '../../' . ltrim((string) $producto['imagen'], '/');
+                        $nombreProducto = (string) $producto['nombre'];
+                      ?>
                       <?php if ($producto['existencia'] <= $producto['existencia_minima']): ?>
                         <tr>
-                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td>
+                            <div class="foto-miniatura-celda">
+                              <img class="producto-imagen foto-miniatura"
+                                   src="<?= $escaparInventario($imagenProducto) ?>"
+                                   alt="<?= $escaparInventario($nombreProducto) ?>"
+                                   title="Click para ampliar imagen"
+                                   data-full="<?= $escaparInventario($imagenProducto) ?>"
+                                   data-title="<?= $escaparInventario($nombreProducto) ?>"
+                                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                              <span class="sin-foto" style="display:none;">Imagen no disponible</span>
+                            </div>
+                          </td>
                           <td><?= $producto['codigo'] ?></td>
                           <td><?= $producto['nombre'] ?></td>
                           <td><span class="estado-chip estado-espera"><?= $producto['existencia'] ?> (bajo)</span></td>
@@ -106,7 +121,18 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
                         </tr>
                       <?php else: ?>
                         <tr>
-                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td>
+                            <div class="foto-miniatura-celda">
+                              <img class="producto-imagen foto-miniatura"
+                                   src="<?= $escaparInventario($imagenProducto) ?>"
+                                   alt="<?= $escaparInventario($nombreProducto) ?>"
+                                   title="Click para ampliar imagen"
+                                   data-full="<?= $escaparInventario($imagenProducto) ?>"
+                                   data-title="<?= $escaparInventario($nombreProducto) ?>"
+                                   onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                              <span class="sin-foto" style="display:none;">Imagen no disponible</span>
+                            </div>
+                          </td>
                           <td><?= $producto['codigo'] ?></td>
                           <td><?= $producto['nombre'] ?></td>
                           <td><span class="estado-chip estado-atendida"><?= $producto['existencia'] ?> (normal)</span></td>
@@ -132,6 +158,14 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <div id="modal-visor-imagen" class="modal-visor" role="dialog" aria-modal="true" aria-label="Visor de imagen">
+    <span class="btn-cerrar-visor" title="Cerrar (Esc)">&times;</span>
+    <div class="visor-contenido">
+      <img id="imagen-ampliada" src="" alt="Imagen ampliada" title="Haz clic para cerrar">
+      <div id="pie-imagen-ampliada" class="pie-visor"></div>
+    </div>
+  </div>
 
   <dialog id="ventana-agotados" class="inventario-dialog" aria-labelledby="titulo-agotados">
     <h2 id="titulo-agotados">Productos agotados</h2>
@@ -176,6 +210,54 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
         document.getElementById('cerrar-agotados').addEventListener('click', () => ventanaAgotados.close());
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && ventanaAgotados.open) ventanaAgotados.close();
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = document.getElementById('modal-visor-imagen');
+            var imgAmpliada = document.getElementById('imagen-ampliada');
+            var pie = document.getElementById('pie-imagen-ampliada');
+            var btnCerrar = modal.querySelector('.btn-cerrar-visor');
+
+            function abrirModal(src, titulo) {
+                imgAmpliada.src = src;
+                pie.textContent = titulo || '';
+                modal.classList.add('activo');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function cerrarModal() {
+                modal.classList.remove('activo');
+                document.body.style.overflow = '';
+                imgAmpliada.src = '';
+            }
+
+            document.addEventListener('click', function (event) {
+                var target = event.target;
+                if (target && target.classList.contains('foto-miniatura')) {
+                    var src = target.getAttribute('data-full') || target.src;
+                    var titulo = target.getAttribute('data-title') || '';
+                    abrirModal(src, titulo);
+                }
+            });
+
+            btnCerrar.addEventListener('click', function (event) {
+                event.stopPropagation();
+                cerrarModal();
+            });
+
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal || event.target === imgAmpliada || event.target.classList.contains('visor-contenido')) {
+                    cerrarModal();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if ((event.key === 'Escape' || event.key === 'Esc') && modal.classList.contains('activo')) {
+                    cerrarModal();
+                }
+            });
         });
     </script>
 
