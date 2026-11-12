@@ -1,5 +1,5 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {die('No se recibieron datos de una venta.');}
+if ($_SERVER['REQUEST_METHOD'] !== 'POST')// {die('No se recibieron datos de una venta.');}
 
 $id_cliente = !empty($_POST['id_cliente']) ? (int)$_POST['id_cliente'] : null;
 
