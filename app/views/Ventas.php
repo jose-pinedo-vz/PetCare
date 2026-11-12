@@ -9,6 +9,7 @@ if (!isset($_SESSION['usuario']))
 $usuario=$_SESSION['usuario'];
 $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
 $horario_empleado = $_SESSION['horario_empleado'] ?? null;
+$id_empleado = $_SESSION['id_empleado'] ?? null;
 // Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>

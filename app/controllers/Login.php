@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
                 $_SESSION['id_usuario']=$datosUsuario['id_usuario'];
                 $_SESSION['empleado_asociado']=$datosUsuario['nombre_empleado'] ?? null;
                 $_SESSION['horario_empleado']=$datosUsuario['horario_empleado'] ?? null;
+                $_SESSION['id_empleado']=$datosUsuario['id_empleado'] ?? null;
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
                 header("Location: ../views/inicio.php");
