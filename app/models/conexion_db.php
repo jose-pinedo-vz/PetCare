@@ -56,7 +56,7 @@ class ConexionDB
     }
     public static function buscarUsuarioPorNombre(PDO $conexion, string $usuario)
     {
-        $sql = "SELECT u.id_usuario, u.contrasena, u.rol, u.estado, u.empleado_asociado,e.nombre AS nombre_empleado, e.apellido AS apellido_empleado, e.horario AS horario_empleado
+        $sql = "SELECT u.id_usuario, u.contrasena, u.rol, u.estado, u.empleado_asociado AS id_empleado,e.nombre AS nombre_empleado, e.apellido AS apellido_empleado, e.horario AS horario_empleado
                 FROM usuarios u
                 LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
                 WHERE u.usuario = ?";
