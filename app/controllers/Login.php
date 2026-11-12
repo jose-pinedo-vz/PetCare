@@ -23,7 +23,7 @@ if ($action==='logout')
     exit();
 }
 
-if (isset($_SESSION['usuario']))
+if (isset($_SESSION['usuario']) && $_SERVER['REQUEST_METHOD'] !== 'POST')
 {
     header("Location: ../views/inicio.php");
     exit();
@@ -53,8 +53,10 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
             {
                 session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);
+                session_unset();
                 $_SESSION['id_usuario']=$datosUsuario['id_usuario'];
-                $_SESSION['empleado_asociado']=$datosUsuario['empleado_asociado'] ?? null;
+                $_SESSION['empleado_asociado']=$datosUsuario['nombre_empleado'] ?? null;
+                $_SESSION['horario_empleado']=$datosUsuario['horario_empleado'] ?? null;
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
                 header("Location: ../views/inicio.php");
