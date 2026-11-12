@@ -4,6 +4,7 @@
 $mascotas      = $mascotas ?? [];
 $idConsulta    = $idConsulta ?? 0;
 $idVeterinario = $idVeterinario ?? 1;
+$vacunas       = $vacunas ?? [];
 
 
 // Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
@@ -47,11 +48,9 @@ $mascotaVieja = old('oldMascota');
 
       <div class="panel-inicio">
 
-        <!-- COLUMNA IZQUIERDA -->
+        <!-- COLUMNA DE LA IZQUIERDA -->
         <div class="columna-principal">
-
           <div class="tarjeta">
-
             <h2>Seleccionar mascota</h2>
             <select class="campo" name="mascota" id="mascota">
                 <option value="">Selecciona una mascota</option>
@@ -59,23 +58,19 @@ $mascotaVieja = old('oldMascota');
                     <option value="<?= (int)$m['id'] ?>" <?= ((string)$m['id'] === (string)$mascotaVieja) ? 'selected' : '' ?>><?= htmlspecialchars($m['nombre']) ?></option>
                 <?php endforeach; ?>
             </select>
-
           </div>
-
           <div class="tarjeta">
 
-            <h2>Información de la mascota</h2>
-                
+            <h2>Información de la mascota</h2>  
                 <div class="Card_cita">
                     <div>
-                      <p><strong>Especie: </strong><?php //echo $d['nombre']; ?></p>
-                      <p><strong>Raza: </strong></p>
-                      <p><strong>Edad: </strong></p>
-                      <p><strong>Peso: </strong></p>
-                      <p><strong>Color: </strong></p>
+                      <p><strong>Especie: </strong><span id="especie"></span></p>
+                      <p><strong>Raza: </strong><span id="raza"></span></p>
+                      <p><strong>Edad: </strong><span id="edad"></span></p>
+                      <p><strong>Peso: </strong><span id="peso"></span></p>
+                      <p><strong>Color: </strong><span id="color"></span></p>
                     </div>
                 </div>
-
             <h2>Datos del propietario</h2>
 
             <div class="Card_cita">
@@ -83,50 +78,44 @@ $mascotaVieja = old('oldMascota');
                 <p><strong>Telefono:</strong></p>
                 <p><strong>Correo:</strong></p>
             </div>
-
           </div>
-
         </div>
 
-        <!-- COLUMNA DERECHA -->
+        <!-- cOLUMNA DE LA DERECHA -->
         <div class="columna-lateral">
-
           <div class="tarjeta">
-
             <h2>Acciones</h2>
-
             <div class="lista-accesos">
-              <a href="#" class="btn btn-chico">Nueva consulta</a>
+              <a href="citas.php" class="btn btn-chico">Nueva consulta</a>
               <a href="#" class="btn btn-chico btn-secundario">Editar datos</a>
             </div>
-
           </div>
 
           <div class="tarjeta">
-
             <h2>Última desparasitación</h2>
-
             <p><strong>Fecha:</strong></p>
             <p><strong>Producto:</strong></p>
             <p><strong>Próxima:</strong></p>
-
           </div>
 
           <div class="tarjeta">
-
             <h2>Vacunas de la mascota</h2>
-
             <div class="tabla-envoltura">
               <table>
                 <thead>
-                  <tr>
                     <th>Vacuna</th>
                     <th>Aplicada</th>
                     <th>Fecha</th>
+                    <th>Veterinario</th>
                   </tr>
                 </thead>
-
-                <tbody>
+                <tbody id="tablaVacunas"><!--Estas recuerda que se sacan de la tabla vacunas siempre que tengan el id de la mascota seleccionada-->
+                  <tr>
+                    <td>vacuna</td>
+                    <td>aplicada <!-- Es tinyint en bd, o sea, 1 es atendido y 0 es no-->
+                    <td>11/11/2011</td>
+                    <td>Gerundi Bocanegra</td>
+                  <tr>
                 </tbody>
               </table>
             </div>
@@ -136,16 +125,10 @@ $mascotaVieja = old('oldMascota');
                 Gestionar vacunas
               </a>
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </main>
-
   </div>
-
 </body>
 </html>

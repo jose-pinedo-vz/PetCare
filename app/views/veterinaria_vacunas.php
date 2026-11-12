@@ -1,6 +1,7 @@
 <?php
 $vacunas          = $vacunas ?? [];
 $desparasitaciones = $desparasitaciones ?? [];
+$catalogoVacunas = $catalogoVacunas ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -35,12 +36,21 @@ $desparasitaciones = $desparasitaciones ?? [];
             </a>
           </div>
 
-          <div class="tarjeta">
-            <span>Vacunas</span>
-            <span></br>-</span>
-            <span></br>-</span>
-            <span></br>-</span>
-            <span></br>-</span>
+          <div class="tarjeta"> <!-- Al darle clic en agregar te va a abrir un text ahi pones el nombre de la nueva vacuna y ya, despues veo como se hace eso-->
+            <h2>Vacunas</h2>
+            <ul class="lista-vacunas" id="listaVacunas">
+                <?php if (!empty($catalogoVacunas)): ?>
+                    <?php foreach ($catalogoVacunas as $vacuna): ?>
+                        <li>
+                            <?= htmlspecialchars($vacuna['nombre']) ?>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>No hay vacunas registradas</li>
+                <?php endif; ?>
+            </ul>
+                
+            <button type="button" class="btn" id="agregarVacuna">Agregar vacuna</button>
           </div>
         </div>
 
@@ -48,56 +58,56 @@ $desparasitaciones = $desparasitaciones ?? [];
       <!-- Columna Derecha -->
         <div class="columna-principal">
             <div class="tarjeta">
-              <h2>Historial de vacunas</h2>
+              <h2>Historial de vacunas</h2> 
               <div class="tabla-envoltura">
-                <table>
+                <table> <!-- Tabla de historial de vacunas -->
                   <thead>
                     <tr>
                       <th>Fecha</th>
                       <th>Vacuna</th>
                       <th>Lote</th>
-                      <th>Veterinario</th>
+                      <th>Proxima aplicacion</th>
                     </tr>
                   </thead>
+                  <tbody id="tablaMascotas">
+                    <?php foreach ($vacunas as $v): ?>
+                      <tr>
+                        <td><?= htmlspecialchars($v['fecha_aplicacion']) ?></td>
+                        <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
+                        <td><?= htmlspecialchars($v['lote']) ?></td>
+                        <td><?= htmlspecialchars($v['fecha_proxima']) ?></td>
+                        <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
                 </table>
-                <tbody id="tablaMascotas">
-                  <?php foreach ($vacunas as $v): ?>
-                    <tr>
-                      <td><?= htmlspecialchars($v['nombre']) ?></td>
-                      <td><?= htmlspecialchars($v['especie']) ?></td>
-                      <td><?= htmlspecialchars($v['raza']) ?></td>
-                      <td><?= htmlspecialchars($v['dueno']) ?></td>
-                      <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
               </div>
             </div>
 
             <div class="tarjeta">   
                 <h2>Historial de desparacitaciones</h2>
-                <div class="tabla-envoltura">
+                <div class="tabla-envoltura"> <!-- Tabla de desparacitaciones -->
                   <table>
                     <thead>
                       <tr>
                         <th>Fecha</th>
                         <th>Tipo</th>
                         <th>Producto</th>
-                        <th>Veterinario</th>
+                        <th>Dosis</th>
                       </tr>
                     </thead>
+                    <tbody id="tablaDespara">
+                      <?php foreach ($desparasitaciones as $d): ?>
+                        <tr>
+                          <td><?= htmlspecialchars($d['fecha']) ?></td> <!--La fecha de aqui saldra de la tabla citas-->
+                          <td><?= htmlspecialchars($d['tipo']) ?></td>
+                          <td><?= htmlspecialchars($d['producto_utilizado']) ?></td>
+                          <td><?= htmlspecialchars($d['dosis']) ?></td>
+                          <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
+                        </tr>
+                      <?php endforeach; ?>
+                    </tbody>
                   </table>
-                  <tbody id="tablaDespara">
-                    <?php foreach ($desparasitaciones as $d): ?>
-                      <tr>
-                        <td><?= htmlspecialchars($d['nombre']) ?></td>
-                        <td><?= htmlspecialchars($d['especie']) ?></td>
-                        <td><?= htmlspecialchars($d['raza']) ?></td>
-                        <td><?= htmlspecialchars($d['dueno']) ?></td>
-                        <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
-                      </tr>
-                    <?php endforeach; ?>
-                  </tbody>
                 </div>
             </div>
         </div>
