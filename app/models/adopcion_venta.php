@@ -101,23 +101,23 @@ function editar(array $datos)
     try
     {
         $stmt=$conexion->prepare($update);
-        $stmt->bindParam(":id_animal",            $id,                        PDO::PARAM_INT);
-        $stmt->bindParam(":especie",              $datos['especie'],          PDO::PARAM_STR);
-        $stmt->bindParam(":raza",                 $datos['raza'],             PDO::PARAM_STR);
-        $stmt->bindParam(":sexo",                 $datos['sexo'],             PDO::PARAM_STR);
-        $stmt->bindParam(":fecha_de_nacimiento",  $datos['fecha_de_nacimiento'],      PDO::PARAM_STR);
-        $stmt->bindParam(":color",                $datos['color'],            PDO::PARAM_STR);
+        $stmt->bindParam(":id_animal",            $id,                          PDO::PARAM_INT);
+        $stmt->bindParam(":especie",              $datos['especie'],            PDO::PARAM_STR);
+        $stmt->bindParam(":raza",                 $datos['raza'],               PDO::PARAM_STR);
+        $stmt->bindParam(":sexo",                 $datos['sexo'],               PDO::PARAM_STR);
+        $stmt->bindParam(":fecha_de_nacimiento",  $datos['fecha_de_nacimiento'],PDO::PARAM_STR);
+        $stmt->bindParam(":color",                $datos['color'],              PDO::PARAM_STR);
         $stmt->bindParam(":peso",                 $datos['peso']);
-        $stmt->bindParam(":caracteristicas",      $datos['caracteristicas'],          PDO::PARAM_STR);
-        $stmt->bindParam(":fotografia",           $datos['fotografia'],       PDO::PARAM_STR);
-        $stmt->bindParam(":procedencia",          $datos['procedencia'],      PDO::PARAM_STR);
-        $stmt->bindParam(":fecha_de_ingreso",     $datos['fecha_de_ingreso'],         PDO::PARAM_STR);
+        $stmt->bindParam(":caracteristicas",      $datos['caracteristicas'],    PDO::PARAM_STR);
+        $stmt->bindParam(":fotografia",           $datos['fotografia'],         PDO::PARAM_STR);
+        $stmt->bindParam(":procedencia",          $datos['procedencia'],        PDO::PARAM_STR);
+        $stmt->bindParam(":fecha_de_ingreso",     $datos['fecha_de_ingreso'],   PDO::PARAM_STR);
         $stmt->bindParam(":costo_de_adquisicion", $datos['costo_de_adquisicion']);
         $stmt->bindParam(":precio_de_venta",      $datos['precio_de_venta']);
-        $stmt->bindParam(":estado",               $datos['estado'],           PDO::PARAM_STR);
-        $stmt->bindParam(":vacunas",              $datos['vacunas'],          PDO::PARAM_STR);
-        $stmt->bindParam(":desparasitacion",      $datos['desparasitacion'],          PDO::PARAM_STR);
-        $stmt->bindParam(":observaciones",        $datos['observaciones'],            PDO::PARAM_STR);
+        $stmt->bindParam(":estado",               $datos['estado'],             PDO::PARAM_STR);
+        $stmt->bindParam(":vacunas",              $datos['vacunas'],            PDO::PARAM_STR);
+        $stmt->bindParam(":desparasitacion",      $datos['desparasitacion'],    PDO::PARAM_STR);
+        $stmt->bindParam(":observaciones",        $datos['observaciones'],      PDO::PARAM_STR);
 
         $stmt->execute();
         return [];

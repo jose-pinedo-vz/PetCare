@@ -73,6 +73,13 @@ $correoPdf = $escapar($pedido['correo'] ?? 'No registrado');
 $telefonoPdf = $escapar($pedido['telefono'] ?? 'No registrado');
 $clavePdf = $escapar($pedido['clave_compra']);
 $totalPdf = $formatearDinero($pedido['total_estimado'] ?? $totalCalculado);
+$logoContenido = file_get_contents(__DIR__ . '/../views/img/logo3.svg');
+if ($logoContenido === false) {
+    error_log('No se pudo leer el logotipo de PetCare para generar el PDF de pedido.');
+    http_response_code(500);
+    exit('No se pudo cargar el logotipo para generar el PDF.');
+}
+$logoPdf = 'data:image/svg+xml;base64,' . base64_encode($logoContenido);
 
 $htmlPdf = <<<HTML
 <!DOCTYPE html>
@@ -85,7 +92,7 @@ $htmlPdf = <<<HTML
         .encabezado { width: 100%; margin-bottom: 28px; }
         .marca { width: 55%; vertical-align: top; }
         .orden { width: 45%; text-align: right; vertical-align: top; }
-        .logo { border: 1px dashed #8b98a8; color: #65758b; display: inline-block; padding: 18px 24px; }
+        .logo { display: block; height: 58px; width: auto; margin-bottom: 8px; }
         h1 { color: #176b58; font-size: 23px; margin: 0 0 8px; }
         h2 { color: #176b58; font-size: 13px; margin: 0 0 8px; }
         p { margin: 4px 0; }
@@ -102,7 +109,7 @@ $htmlPdf = <<<HTML
     <table class="encabezado">
         <tr>
             <td class="marca">
-                <div class="logo">PetCare</div>
+                <img class="logo" src="{$logoPdf}" alt="Logotipo de PetCare">
                 <p><strong>Veterinaria PetCare</strong></p>
             </td>
             <td class="orden">

@@ -8,7 +8,7 @@ if (isset($_GET['id'])) {
 
     try {
         UsuariosDB::eliminar($id_usuario);
-        $_SESSION['mensaje']="Usuario eliminado con éxito.";
+        //$_SESSION['mensaje']="Usuario eliminado con éxito.";
     }
     catch (PDOException $e)
     {

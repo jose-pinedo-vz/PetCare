@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () =>{
     btn.disabled=true;
     btn.textContent='Conectando con Banco Emisor...';
     const formData=new FormData(this);
-    formData.append('monto', '5005.00'); // Donde se tiene que añadir el monto a pagar
     formData.append('comercio', 'PetCare Veterinaria');
     try
     {

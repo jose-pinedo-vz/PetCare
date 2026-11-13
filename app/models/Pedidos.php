@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/conexion_db.php';
+require_once __DIR__ . '/Productos.php';
 
 class Pedidos
 {
@@ -239,6 +240,71 @@ class Pedidos
                 $conexion->rollBack();
             }
             throw $e;
+        }
+    }
+
+    private static function siguienteClave(PDO $conexion): int {
+        return (int) $conexion -> query (
+            "
+            SELECT COALESCE(MAX(clave_compra), 0) + 1 
+            FROM orden_compra
+            "
+        ) -> fetchColumn();
+    }
+
+    public static function crearPedido(int $idProveedor, array $productos, array $cantidades): int {
+        $conexion = ConexionDB::obtenerConexion();
+        $conexion -> beginTransaction();
+
+        try {
+            $clave = self::siguienteClave($conexion);
+            $dias = Productos::obtenerTiempoEntregaProveedor($idProveedor);
+            $fechaSolicitud = date('Y-m-d');
+            $fechaEsperada = date('Y-m-d', strtotime("+$dias days"));
+
+            $detalles = [];
+            $total = 0.0;
+            foreach ($productos as $idProducto => $p) {
+                $cantidad = max(1, (int) ($cantidades[$idProducto] ?? 1));
+                $precio = Productos::obtenerPrecioCompra((int) $idProducto);
+                $total += $precio * $cantidad;
+                $detalles[] = [(int) $idProducto, $cantidad, $precio];
+            }
+
+            $sql_orden = "
+                INSERT INTO orden_compra (
+                    clave_compra, id_proveedor, fecha_solicitud, fecha_esperada, total_estimado, estado
+                )
+                VALUES (
+                    ?, ?, ?, ?, ?, 'pendiente'
+                )
+            ";
+            $consulta_consulta = $conexion -> prepare($sql_orden);
+            $consulta_consulta -> execute([$clave, $idProveedor, $fechaSolicitud, $fechaEsperada, $total]);
+
+            $sql_detalles = "
+                INSERT INTO detalle_orden_compra (
+                    clave_compra, id_producto, cantidad, precio_unitario
+                )
+                VALUES (
+                    ?, ?, ?, ?
+                )
+            ";
+            $consulta_detalles = $conexion -> prepare($sql_detalles);
+
+            foreach ($detalles as $d) {
+                $consulta_detalles -> execute([$clave, $d[0], $d[1], $d[2]]);
+            }
+
+            $conexion -> commit();
+            return $clave;
+
+            
+        } catch (Throwable $e) {
+            if ($conexion -> inTransaction()) {
+                $conexion -> rollBack();
+            } throw $e;
+            
         }
     }
 }

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
         'observaciones'    => trim($_POST['observaciones'] ?? '')
     ];
-    actualizar_proveedor($idProveedor, $datos); 
+    actualizar_proveedor($idProveedor, $datos);
 }
 
 $proveedor = obtenerProveedorPorId($idProveedor);
@@ -104,7 +104,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -159,7 +159,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -225,7 +225,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="codigo_postal">
-                            Código Postal:
+                            Código postal:
                         </label>
 
                         <input
@@ -300,7 +300,7 @@ if (!$proveedor) {
 
         </form>
 
-    
+
       </div>
     </main>
 

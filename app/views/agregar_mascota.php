@@ -34,7 +34,7 @@ unset($_SESSION['old']);
       </div>
 
       <div class="tarjeta">
-    
+
 
     <!-- BLOQUE DE ALERTAS: Muestra los errores guardados en la sesión -->
     <?php if (!empty($errores)): ?>
@@ -112,7 +112,7 @@ unset($_SESSION['old']);
                   <option value="Blanco y gris" <?= ($old['color'] ?? '') === 'Blanco y gris' ? 'selected' : '' ?>>Blanco y gris</option>
                   <option value="Verde y amarillo" <?= ($old['color'] ?? '') === 'Verde y amarillo' ? 'selected' : '' ?>>Verde y amarillo</option>
                   <option value="Blanco, amarillo y negro" <?= ($old['color'] ?? '') === 'Blanco, amarillo y negro' ? 'selected' : '' ?>>Blanco, amarillo y negro</option>
-                  <option value="Otro" <?= ($old['color'] ?? '') === 'Otro' ? 'selected' : '' ?>>Otro (Especificar)</option>
+                  <option value="Otro" <?= ($old['color'] ?? '') === 'Otro' ? 'selected' : '' ?>>Otro (especificar)</option>
                 </select>
               </div>
 
@@ -121,8 +121,8 @@ unset($_SESSION['old']);
                   <div>
                       <label class="label-campo" for="color_espec" >
                           Especifique el color *:</label>
-                      <input type="text" class="campo" id="color_espec" name="color_espec" style="border: 1px solid #3b82f6; background-color: #f9f9f9;" 
-                             value="<?= htmlspecialchars($old['color_espec'] ?? '') ?>" 
+                      <input type="text" class="campo" id="color_espec" name="color_espec" style="border: 1px solid #3b82f6; background-color: #f9f9f9;"
+                             value="<?= htmlspecialchars($old['color_espec'] ?? '') ?>"
                              placeholder="Ej. Marrón rojizo" required>
                   </div>
               <?php endif; ?>
@@ -231,7 +231,7 @@ unset($_SESSION['old']);
         <button type="submit" name="Guardar" class="btn btn-chico">Guardar</button>
       </div>
     </form>
-  
+
       </div>
     </main>
 
