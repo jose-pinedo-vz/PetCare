@@ -76,7 +76,6 @@
                             <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00124">Detalles</button> <!-- este boton deberia abrir una ventana modal con los detalles de la venta, incluyendo productos, cantidades, precios, descuentos, impuestos y total -->
                             <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00124">Imprimir ticket</button>
                             <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00124">Generar factura</button>
-                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Cancelar venta FV-00124">Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -92,7 +91,6 @@
                             <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00123">Detalles</button>
                             <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00123">Imprimir ticket</button>
                             <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00123">Generar factura</button>
-                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Cancelar venta FV-00123">Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -108,7 +106,6 @@
                             <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00122">Detalles</button>
                             <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00122" disabled>Imprimir ticket</button>
                             <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00122" disabled>Generar factura</button>
-                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Cancelar venta FV-00122">Cancelar</button>
                         </div>
                     </td>
                         </tr>
@@ -124,7 +121,6 @@
                             <td><div class="historial-acciones">                            <button class="btn btn-chico accion-detalles" type="button" aria-label="Ver venta FV-00121">Detalles</button>
                             <button class="btn btn-chico accion-imprimir" type="button" aria-label="Imprimir ticket de la venta FV-00121" disabled>Imprimir ticket</button>
                             <button class="btn btn-chico accion-factura" type="button" aria-label="Generar factura de la venta FV-00121" disabled>Generar factura</button>
-                            <button class="btn btn-chico accion-cancelar" type="button" aria-label="Venta FV-00121 cancelada" disabled>Cancelar</button>
                         </div>
                     </td>
                         </tr>
