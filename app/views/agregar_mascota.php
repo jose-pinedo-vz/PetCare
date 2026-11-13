@@ -34,7 +34,7 @@ unset($_SESSION['old']);
       </div>
 
       <div class="tarjeta">
-    
+
 
     <!-- BLOQUE DE ALERTAS: Muestra los errores guardados en la sesión -->
     <?php if (!empty($errores)): ?>
@@ -121,8 +121,8 @@ unset($_SESSION['old']);
                   <div>
                       <label class="label-campo" for="color_espec" >
                           Especifique el color *:</label>
-                      <input type="text" class="campo" id="color_espec" name="color_espec" style="border: 1px solid #3b82f6; background-color: #f9f9f9;" 
-                             value="<?= htmlspecialchars($old['color_espec'] ?? '') ?>" 
+                      <input type="text" class="campo" id="color_espec" name="color_espec" style="border: 1px solid #3b82f6; background-color: #f9f9f9;"
+                             value="<?= htmlspecialchars($old['color_espec'] ?? '') ?>"
                              placeholder="Ej. Marrón rojizo" required>
                   </div>
               <?php endif; ?>
@@ -231,7 +231,7 @@ unset($_SESSION['old']);
         <button type="submit" name="Guardar" class="btn btn-chico">Guardar</button>
       </div>
     </form>
-  
+
       </div>
     </main>
 

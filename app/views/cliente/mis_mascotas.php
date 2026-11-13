@@ -27,13 +27,11 @@
     </header>
 
     <main>
-        <div>
+
             <div>
                 <h1>Mis mascotas</h1>
                 <p>Aquí están las mascotas que has registrado.</p>
             </div>
-            <a href="registrar_mascota.php">+ Registrar mascota</a>
-        </div>
 
         <div>
 
