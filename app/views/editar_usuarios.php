@@ -15,6 +15,7 @@ if ($idUsuario === false || $idUsuario === null)
     header('Location: usuarios.php');
     exit();
 }
+$user_edi=UsuariosDB::usuario_ID($idUsuario);
 $usuario=$_SESSION['usuario'];
 // Mostrar nombre del usuario
 ?>
@@ -46,15 +47,15 @@ $usuario=$_SESSION['usuario'];
                 <?php endif; ?>
 
                 <form action="../controllers/editar_usuario.php" method="POST">
-                    <input type="hidden" name="id" value="<?= $idUsuario ?>">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($user_edi['id_usuario']) ?>">
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Usuario (Obligatorio):</label>
-                        <input type="text" name="nuevo_usuario" class="campo" required>
+                        <input type="text" name="nuevo_usuario" class="campo" value="<?= htmlspecialchars($user_edi['usuario']) ?>" required>
                     </div>
 
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Contraseña (Obligatorio):</label>
-                        <input type="password" name="nueva_password" class="campo" required>
+                        <input type="password" name="nueva_password" class="campo" value="<?= htmlspecialchars($user_edi['contrasena']) ?>" required>
                     </div>
 
                     <div style="margin-bottom: 12px;">
@@ -63,12 +64,12 @@ $usuario=$_SESSION['usuario'];
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
                                 <?php foreach ($empleados_disponibles as $emp): ?>
-                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>">
+                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>" <?= ($user_edi['empleado_asociado'] === $emp['nombre']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($emp['nombre']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <option value="" disabled>No hay empleados disponibles sin usuario</option>
+                                <option value="" disabled>No hay empleados disponibles</option>
                             <?php endif; ?>
                         </select>
                     </div>
@@ -76,32 +77,32 @@ $usuario=$_SESSION['usuario'];
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
-                            <option value="admin">Administrador</option>
-                            <option value="veterinario">Veterinario</option>
-                            <option value="vendedor">Vendedor</option>
-                            <option value="cliente">Cliente</option>
-                            <option value="estilista">Estilista</option>
-                            <option value="recepcionista">Recepcionista</option>
-                            <option value="hotelero">Hotelero</option>
+                            <option value="admin"           <?= ($user_edi['rol'] === 'admin') ? 'selected' : '' ?>>Administrador</option>
+                            <option value="veterinario"     <?= ($user_edi['rol'] === 'veterinario') ? 'selected' : '' ?>>Veterinario</option>
+                            <option value="vendedor"        <?= ($user_edi['rol'] === 'vendedor') ? 'selected' : '' ?>>Vendedor</option>
+                            <option value="cliente"         <?= ($user_edi['rol'] === 'cliente') ? 'selected' : '' ?>>Cliente</option>
+                            <option value="estilista"       <?= ($user_edi['rol'] === 'estilista') ? 'selected' : '' ?>>Estilista</option>
+                            <option value="recepcionista"   <?= ($user_edi['rol'] === 'recepcionista') ? 'selected' : '' ?>>Recepcionista</option>
+                            <option value="hotelero"        <?= ($user_edi['rol'] === 'hotelero') ? 'selected' : '' ?>>Hotelero</option>
                         </select>
                     </div>
 
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Permisos:</label>
                         <select name="permisos" class="campo" multiple size="1">
-                            <option value="todos">Todo</option>
-                            <option value="lectura">Lectura</option>
-                            <option value="modificar">Modificcar</option>
-                            <option value="eliminar">Eliminar</option>
-                            <option value="insertar">Insertar</option>
+                            <option value="todos"       <?= ($user_edi['permisos'] === 'todos') ? 'selected' : '' ?>>Todo</option>
+                            <option value="lectura"     <?= ($user_edi['permisos'] === 'lectura') ? 'selected' : '' ?>>Lectura</option>
+                            <option value="modificar"   <?= ($user_edi['permisos'] === 'modificar') ? 'selected' : '' ?>>Modificcar</option>
+                            <option value="eliminar"    <?= ($user_edi['permisos'] === 'eliminar') ? 'selected' : '' ?>>Eliminar</option>
+                            <option value="insertar"    <?= ($user_edi['permisos'] === 'insertar') ? 'selected' : '' ?>>Insertar</option>
                         </select>
                     </div>
 
                     <div style="margin-bottom: 20px;">
                         <label class="label-campo">Estado:</label>
                         <select name="estado" class="campo">
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
+                            <option value="activo"      <?= ($user_edi['permisos'] === 'activo') ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo"    <?= ($user_edi['permisos'] === 'inactivo') ? 'selected' : '' ?>>Inactivo</option>
                         </select>
                     </div>
 
