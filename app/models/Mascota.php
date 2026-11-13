@@ -136,6 +136,57 @@ function obtenerDatosMascotas(): array {
     }
 }
 
+// Funcion para obtener las mascotas activas de UN cliente (lado cliente)
+function obtenerMascotasPorCliente(int $idCliente): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "SELECT id_mascota, nombre, especie, raza, sexo, edad, peso, fotografia, vacunas
+                FROM mascotas
+                WHERE id_cliente = ? AND esta_activo = 1
+                ORDER BY id_mascota DESC";
+
+        $consulta = $conexion->prepare($sql);
+        $consulta->execute([$idCliente]);
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (Exception $e) {
+        error_log("Error en obtenerMascotasPorCliente: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Convierte la fecha de nacimiento (columna `edad`) en un texto como "3 años" o "5 meses"
+function textoEdadMascota(?string $fechaNacimiento): string {
+    if (empty($fechaNacimiento)) {
+        return 'Edad no registrada';
+    }
+
+    try {
+        $diferencia = (new DateTime($fechaNacimiento))->diff(new DateTime('today'));
+    } catch (Exception $e) {
+        return 'Edad no registrada';
+    }
+
+    if ($diferencia->y >= 1) {
+        return $diferencia->y . ($diferencia->y === 1 ? ' año' : ' años');
+    }
+
+    return $diferencia->m . ($diferencia->m === 1 ? ' mes' : ' meses');
+}
+
+// Devuelve la ruta de la foto (ej. "uploads/mascotas/pet_x.jpg") solo si el archivo existe en disco.
+// Si no hay foto, o el archivo no esta, devuelve null.
+function rutaFotoMascota(?string $ruta): ?string {
+    $ruta = trim((string) $ruta);
+    if ($ruta === '') {
+        return null;
+    }
+
+    $rutaEnDisco = __DIR__ . '/../../' . $ruta;
+
+    return file_exists($rutaEnDisco) ? $ruta : null;
+}
+
 // Funcion para obtener una sola mascota por su ID (para precargar el formulario de editar)
 function obtenerMascotaPorId(int $id): ?array {
     try {
@@ -155,6 +206,9 @@ function obtenerMascotaPorId(int $id): ?array {
 class Mascota {
     public static function obtenerTodos(): array {
         return obtenerDatosMascotas();
+    }
+    public static function obtenerPorCliente(int $idCliente): array {
+        return obtenerMascotasPorCliente($idCliente);
     }
     public static function obtenerPorId(int $id): ?array {
         return obtenerMascotaPorId($id);

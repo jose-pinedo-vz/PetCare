@@ -470,6 +470,7 @@ textarea.campo__entrada {
 .foto-marcador--hero      { flex: 1 1 400px; height: 380px; }
 .foto-marcador--servicio  { height: 130px; }
 .foto-marcador--mascota   { height: 170px; }
+img.foto-marcador         { width: 100%; object-fit: cover; }
 .foto-marcador--subir     { width: 240px; height: 240px; gap: 12px; border-radius: 20px; }
 
 .foto-marcador--avatar {
