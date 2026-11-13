@@ -2531,8 +2531,7 @@
 
 .historial-acciones button.accion-detalles,
 .historial-acciones button.accion-imprimir,
-.historial-acciones button.accion-factura,
-.historial-acciones button.accion-cancelar {
+.historial-acciones button.accion-factura {
   flex: 1;
   padding: 6px 7px;
   font-weight: bold;
@@ -2551,12 +2550,6 @@
 .historial-acciones button.accion-factura {
   background: #e0edf4;
   color: #23536d;
-}
-
-.historial-acciones button.accion-cancelar {
-  border-color: #e6b9b3;
-  background: #fae8e5;
-  color: #a33b2c;
 }
 
 .historial-acciones button:disabled,
