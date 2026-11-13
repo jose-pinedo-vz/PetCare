@@ -182,18 +182,6 @@ class Pedidos
                 $cantidad,
             ]);
 
-            $stmtExistencia = $conexion->prepare(
-                "UPDATE productos SET existencia = existencia + ?
-                 WHERE id_producto = ?"
-            );
-            $stmtExistencia->execute([
-                $cantidad,
-                (int) $detalle['id_producto'],
-            ]);
-            if ($stmtExistencia->rowCount() !== 1) {
-                throw new RuntimeException('No se pudo actualizar la existencia del producto.');
-            }
-
             $stmtExisteRecepcion = $conexion->prepare(
                 "SELECT cantidad_recibida
                  FROM recepciones_detalle_orden

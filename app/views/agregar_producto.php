@@ -1,18 +1,32 @@
 <?php  require_once __DIR__ . '/../models/proveedores.php';
 $proveedor = obtenerProveedoresActivos();
 
-require_once __DIR__ . '/../models/categ_prod.php';
+require_once __DIR__ . '/../models/Categoria.php';
 $categorias = Categoria::obtenerCategoriasActivas();
 
 session_start();
 
+if (empty($_SESSION['csrf_categoria'])) {
+    $_SESSION['csrf_categoria'] = bin2hex(random_bytes(32));
+}
+
     // Obtener errores y datos enviados previamente (si existen)
     $errores = $_SESSION['errores'] ?? [];
     $old     = $_SESSION['old'] ?? [];
+    $erroresCategoria = is_array($_SESSION['errores_categoria'] ?? null)
+        ? $_SESSION['errores_categoria']
+        : [];
+    $oldCategoria = is_array($_SESSION['old_categoria'] ?? null)
+        ? $_SESSION['old_categoria']
+        : [];
 
     // Limpiar la sesión para que las alertas no reaparezcan al recargar
-    unset($_SESSION['errores']);
-    unset($_SESSION['old']);
+    unset(
+        $_SESSION['errores'],
+        $_SESSION['old'],
+        $_SESSION['errores_categoria'],
+        $_SESSION['old_categoria']
+    );
 
 ?>
 
@@ -83,27 +97,32 @@ session_start();
             required placeholder="Ej. Croquetas Adulto Raza Mediana 15kg">
           </div>
 
-          <div class="contenedor-buscador">
-                <label class="label-campo" for="id_categoria">Categoría (ID):</label>
+          <div class="categoria-campo">
+            <label class="label-campo" for="id_categoria">Categoría (ID):</label>
+            <div class="categoria-controles">
+              <div class="contenedor-buscador">
                 <input
-                    type="text"
-                    class="campo"
-                    id="id_categoria"
-                    placeholder="Seleccionar categoría..."
-                    autocomplete="off"
-                    value="<?= htmlspecialchars($old['id_categoria'] ?? '') ?>"
-                    required>
+                  type="text"
+                  class="campo"
+                  id="id_categoria"
+                  placeholder="Seleccionar categoría..."
+                  autocomplete="off"
+                  value="<?= htmlspecialchars($old['id_categoria'] ?? '') ?>"
+                  required>
 
                 <ul id="lista_categorias" class="lista-resultados">
-                    <?php foreach ($categorias as $cat): ?>
-                      <li data-id="<?php echo $cat['id_categoria']; ?>" data-nombre="<?php echo htmlspecialchars($cat['nombre']); ?>"><?php echo htmlspecialchars("Id: " . $cat['id_categoria'] . " - " . $cat['nombre']); ?></li>
-                    <?php endforeach; ?>
+                  <?php foreach ($categorias as $cat): ?>
+                    <li data-id="<?php echo $cat['id_categoria']; ?>" data-nombre="<?php echo htmlspecialchars($cat['nombre']); ?>"><?php echo htmlspecialchars("Id: " . $cat['id_categoria'] . " - " . $cat['nombre']); ?></li>
+                  <?php endforeach; ?>
                 </ul>
+              </div>
+              <button type="button" class="btn btn-chico" id="btn-abrir-modal-categoria">+ Nueva categoría</button>
             </div>
+          </div>
 
-            <input class="label-campo" type="hidden" id="categoria_id_oculto" name="id_categoria" value="<?= htmlspecialchars($old['id_categoria'] ?? '') ?>">
+          <input class="label-campo" type="hidden" id="categoria_id_oculto" name="id_categoria" value="<?= htmlspecialchars($old['id_categoria'] ?? '') ?>">
 
-            <script src="js/busc_cat.js"></script>
+          <script src="js/busc_cat.js"></script>
 
           <div class="contenedor-buscador">
             <label class="label-campo" for="id_proveedor">Proveedor (ID):</label>
@@ -186,21 +205,9 @@ session_start();
       </fieldset>
 
       <fieldset>
-        <legend>Precios e Inventario</legend>
+        <legend>Precio e inventario</legend>
 
         <div class="grid-formulario">
-          <div>
-            <label class="label-campo" for="precio_compra">Precio de compra ($):</label>
-            <input
-            type="number"
-            step="0.01"
-            class="campo"
-            id="precio_compra"
-            name="precio_compra"
-            value="<?= htmlspecialchars($old['precio_compra'] ?? '') ?>"
-            required placeholder="0.00">
-          </div>
-
           <div>
             <label class="label-campo" for="precio_venta">Precio de venta ($):</label>
             <input
@@ -211,18 +218,6 @@ session_start();
             name="precio_venta"
             value="<?= htmlspecialchars($old['precio_venta'] ?? '') ?>"
             required placeholder="0.00">
-          </div>
-
-          <div>
-            <label class="label-campo" for="existencia">Existencia (Stock):</label>
-            <input
-            type="number"
-            step="0.01"
-            class="campo"
-            id="existencia"
-            name="existencia"
-            value="<?= htmlspecialchars($old['existencia'] ?? '') ?>"
-            required placeholder="0">
           </div>
 
           <div>
@@ -263,61 +258,13 @@ session_start();
         </div>
       </fieldset>
 
-      <fieldset>
-        <legend>Logística y Almacén</legend>
-
-        <div class="grid-formulario">
-          <div>
-            <label class="label-campo" for="lote">Lote:</label>
-            <input
-            type="text"
-            class="campo"
-            id="lote"
-            name="lote"
-            maxlength="20"
-            value="<?= htmlspecialchars($old['lote'] ?? '') ?>"
-            placeholder="Ej. L-2026-01">
-          </div>
-
-          <div>
-            <label class="label-campo" for="ubicacion">Ubicación / Estante:</label>
-            <input
-             type="text"
-             class="campo"
-             id="ubicacion"
-             name="ubicacion" maxlength="20"
-             value="<?= htmlspecialchars($old['ubicacion'] ?? '') ?>"
-             placeholder="Ej. Estante 3, Fila B / 3-B">
-          </div>
-
-          <div>
-            <label class="label-campo" for="fecha_ingreso">Fecha de ingreso:</label>
-            <input
-             type="date"
-             class="campo"
-             id="fecha_ingreso"
-             name="fecha_ingreso"
-              value="<?= htmlspecialchars($old['fecha_ingreso'] ?? '') ?>"
-             required>
-          </div>
-
-          <div>
-            <label class="label-campo" for="fecha_caducidad">Fecha de caducidad:</label>
-            <input
-            type="date"
-            class="campo"
-            id="fecha_caducidad"
-            name="fecha_caducidad"
-            value="<?= htmlspecialchars($old['fecha_caducidad'] ?? '') ?>">
-          </div>
-        </div>
-      </fieldset>
-
       <div class="acciones-formulario">
         <a class="btn btn-secundario btn-chico" href="inventario.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
     </form>
+
+    <?php include __DIR__ . '/modal_categoria.php'; ?>
 
       </div>
     </main>
@@ -330,6 +277,7 @@ session_start();
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-producto.js"></script>
+  <script src="js/modal_categoria.js"></script>
 </body>
 
 </html>

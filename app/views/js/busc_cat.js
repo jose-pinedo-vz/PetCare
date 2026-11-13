@@ -31,15 +31,17 @@ inputCategoria.addEventListener('input', () => {
     }
 });
 
-// Seleccionar un elemento al hacer clic
-for (let item of itemsCategoria) {
-    item.addEventListener('click', () => {
-        inputCategoria.value = item.textContent.trim(); 
-        
-        categoriaIdOculto.value = item.getAttribute('data-id');
-        listaCategorias.style.display = 'none';
-    });
-};
+// Delegación para que las categorías recién creadas también puedan seleccionarse.
+listaCategorias.addEventListener('click', (evento) => {
+    const item = evento.target.closest('li');
+    if (!item || !listaCategorias.contains(item)) {
+        return;
+    }
+
+    inputCategoria.value = item.textContent.trim();
+    categoriaIdOculto.value = item.getAttribute('data-id');
+    listaCategorias.style.display = 'none';
+});
 
 // Ocultar la lista si se hace clic fuera del buscador
 document.addEventListener('click', (e) => {
