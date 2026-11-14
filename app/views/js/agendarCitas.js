@@ -171,6 +171,8 @@ document.addEventListener("DOMContentLoaded", async function()
 });
 
 
+
+// mostrar responsable
 document.addEventListener("DOMContentLoaded", async function()
 {
     const servicio_listo = document.getElementById('servicio');

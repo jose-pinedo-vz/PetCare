@@ -303,5 +303,68 @@
                 return false;
             }
         }
+
+        public static function consultarServicioPorCategoria(string $servicio)
+        {
+            $query = "SELECT categoria FROM servicios WHERE id_servicio = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$servicio]);
+            return $stml->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public static function consultarEmpleadoPorPuesto($puesto)
+        {
+            try
+            {
+                $query = "SELECT empleados.id_empleado, CONCAT(empleados.nombre, ' ', empleados.apellido) AS nombre 
+                  FROM empleados 
+                  WHERE puesto = ?
+                  ";
+                  
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$puesto]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Exception $e)
+            {
+                return [];
+            }
+        }
+
+        public static function consultarServicioPorConsulta($id_consulta)
+        {
+            $query = "SELECT servicio FROM citas WHERE id_cita = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$id_consulta]);
+            return $stml->fetchColumn();
+        }
+
+        public static function consultarResponsablePorConsulta($id_consulta)
+        {
+            $query = "SELECT empleado FROM citas WHERE id_cita = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$id_consulta]);
+            return $stml->fetchColumn();
+        }
+
+        public static function insertarDesparacitacion($id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones)
+        {
+            // try
+            // {
+                $query = "INSERT INTO servicio_desparasitacion (id_cita, tipo, producto_utilizado, proxima_aplicacion, dosis, veterinario, observaciones) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                return $stml->execute([$id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones]);
+            // }
+            // catch (Exception $e)
+            // {
+            //     return false;
+            // }
+        }
     }
 ?>

@@ -52,7 +52,6 @@ function errorSession(string $error)
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agendar_cita'))
 {
-    // LÍNEA DE DEPURACIÓN TEMPORAL:
     // echo "<pre>";
     // print_r($_POST);
     // echo "</pre>";
@@ -284,11 +283,16 @@ if ($accion === "mostrarResponsable")
 function mostrarResponsable()
 {
     $servicio = $_GET['servicio'];
-    // if ($servicio === 'Estética') $equivalente = 'Veterinario';
-    // if ($servicio === 'Salud') $equivalente = 'Estilista';
 
+    $servicio = ConexionesClientes::consultarServicioPorCategoria($servicio);
+    $equivalente = '';
 
-    $responsables = ConexionesClientes::mostrarServiciosPorServicio($servicio);
+    $servicio = $servicio['categoria'] ?? '';
+
+    if ($servicio === 'Estética') $equivalente = 'Estilista';
+    if ($servicio === 'Salud') $equivalente = 'Veterinario';
+
+    $responsables = ConexionesClientes::consultarEmpleadoPorPuesto($equivalente);
 
     echo json_encode($responsables);
     exit();
