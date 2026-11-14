@@ -65,11 +65,11 @@ function insertar(array $datos) {
             ':enfermedades'           => $datos['enfermedades'] ?? null,
             ':medicamentos'           => $datos['medicamentos'] ?? null,
             ':condiciones_especiales' => $datos['condiciones_especiales'] ?? null,
-            ':temperamento'           => $temperamento,
+            ':temperamento'           => $datos['temperamento'] ?? null,
             ':restricciones'          => $restricciones,
             ':vacunas'                => $datos['vacunas'] ?? null,
             ':ultima_desparasitacion' => $datos['ultima_desparasitacion'] ?? null,
-            ':observaciones'          => $observaciones
+            ':observaciones'          => $datos['observaciones'] ?? null
         ]);
 
     } catch (PDOException $e) {

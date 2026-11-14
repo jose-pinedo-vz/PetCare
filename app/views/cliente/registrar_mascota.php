@@ -1,15 +1,22 @@
 <?php
 session_start();
+
+$errores = $_SESSION['errores'] ?? [];
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['errores'], $_SESSION['old']);
+
 $paginaActiva = 'mascotas';
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar mascota</title>
     <link rel="stylesheet" href="../css/v2/cliente.css">
 </head>
+
 <body>
     <?php include __DIR__ . '/../layout/menu_cliente.php'; ?>
 
@@ -18,9 +25,17 @@ $paginaActiva = 'mascotas';
 
         <div class="tarjeta tarjeta--formulario">
             <h1 class="tarjeta__titulo">Registrar mascota</h1>
-            <p class="tarjeta__subtitulo">Los campos con <span class="campo__obligatorio">*</span> son obligatorios.</p>
+            <p class="tarjeta__subtitulo">Los campos con <span
+                    class="campo__obligatorio">*</span> son obligatorios.</p>
+            <?php if ($errores): ?>
+                <div class="aviso aviso--error">
+                    <?php foreach ($errores as $error): ?>
+                        <p><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
 
-            <form action="guardar_mascota.php" method="post" enctype="multipart/form-data">
+            <form action="../../controllers/cliente_guardar_mascota.php" method="post" enctype="multipart/form-data">
 
                 <div class="formulario-con-foto">
                     <div>
@@ -34,7 +49,9 @@ $paginaActiva = 'mascotas';
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="p. ej. Luna" required>
+                            <input class="campo__entrada" type="text" id="nombre" name="nombre"
+                                placeholder="p. ej. Luna" required
+                                value="<?= htmlspecialchars($old['nombre'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -48,7 +65,7 @@ $paginaActiva = 'mascotas';
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="raza">Raza</label>
-                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador">
+                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -61,17 +78,17 @@ $paginaActiva = 'mascotas';
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="edad">Edad (años) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" required>
+                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="peso">Peso (kg) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" required>
+                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" required value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="color">Color</label>
-                            <input class="campo__entrada" type="text" id="color" name="color">
+                            <input class="campo__entrada" type="text" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -119,4 +136,5 @@ $paginaActiva = 'mascotas';
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
 </body>
+
 </html>
