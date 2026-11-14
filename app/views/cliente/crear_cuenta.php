@@ -1,15 +1,22 @@
 <?php
 session_start();
+
+$errores = $_SESSION['errores'] ?? [];
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['errores'], $_SESSION['old']);
+
 $paginaActiva = '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear mi cuenta</title>
     <link rel="stylesheet" href="../css/v2/cliente.css">
 </head>
+
 <body>
     <?php include __DIR__ . '/../layout/menu_cliente.php'; ?>
 
@@ -17,8 +24,15 @@ $paginaActiva = '';
         <div class="tarjeta tarjeta--formulario">
             <h1 class="tarjeta__titulo">Crear mi cuenta</h1>
             <p class="tarjeta__subtitulo">Los campos con <span class="campo__obligatorio">*</span> son obligatorios.</p>
+            <?php if ($errores): ?>
+                <div class="aviso aviso--error">
+                    <?php foreach ($errores as $error): ?>
+                        <p><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
 
-            <form action="registrar_cuenta.php" method="post">
+            <form action="../../controllers/cliente_registrar_cuenta.php" method="post">
 
                 <fieldset class="grupo-campos">
                     <legend class="tarjeta__seccion">Datos de acceso</legend>
@@ -102,4 +116,5 @@ $paginaActiva = '';
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
 </body>
+
 </html>
