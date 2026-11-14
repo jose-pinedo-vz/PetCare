@@ -104,14 +104,16 @@ function old(string $clave): string
               placeholder="Notas u observaciones adicionales"><?= old('oldObservaciones') ?></textarea>
           </div>
         </div>
+
+         <div class="acciones-formulario">
+          <a class="btn-secundario" href="citas.php">Cancelar</a>
+          <button type="submit" class="btn">Terminar consulta</button>
+        </div>
       </fieldset>
 
       
 
-      <div class="acciones-formulario">
-        <a class="btn-secundario" href="citas.php">Cancelar</a>
-        <button type="submit" class="btn">Terminar consulta</button>
-      </div>
+     
     </form>
 
       </div>

@@ -30,9 +30,13 @@
         if ($esrvicio['nombre'] === 'Desparasitación') {
             header("Location: ../views/desparasitacion.php?id_consulta=" . urlencode((string)$id_consulta));
             exit();
+        } else if ($esrvicio['nombre'] === 'Corte de uñas') {
+            header("Location: ../views/corte_unias.php?id_consulta=" . urlencode((string)$id_consulta));
+            exit();
         } else {
             echo "ID de consulta no proporcionado.";
-        }
+        } 
+        
 
         $clasificacion = ConexionesClientes::consultarServicioPorCategoria((string)$id_servicio);
         if ($clasificacion['categoria'] === 'Salud') {
