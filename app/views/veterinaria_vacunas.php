@@ -20,7 +20,7 @@ $catalogoVacunas = $catalogoVacunas ?? [];
   <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-    <div class="migaja"><a href="veterinaria_inicio.php" class="link-tenue">Veterinaria</a> / Datos de mascota</div>
+    <div class="migaja"><a href="veterinaria_Inicio.php" class="link-tenue">Veterinaria</a> / Datos de mascota</div>
     
     <div class="panel-inicio">
     <!-- Columna Izquierda -->

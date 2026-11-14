@@ -1,5 +1,7 @@
 <?php
-$citas = $citas ?? [];
+require_once __DIR__ . '/../controllers/veterinaria.php';
+
+$citas = extraerCitasHoy();
 ?>
 
 
@@ -22,20 +24,24 @@ $citas = $citas ?? [];
 
     <main>
       <div class="migaja">Veterinaria /</div>
+      <div class="encabezado-pagina">
+        <h1>Veterinaria</h1>
+      </div>
+
       <div class="resumen">
         <div class="resumen-item">
         <a class="btn" href="veterinaria_mascota.php">
-          Detalles Mascotas
+          Detalles mascotas
         </a>
         </div>
         <div class="resumen-item">
         <a class="btn" href="citas.php">
-          citas
+          Citas
         </a>
         </div>
         <div class="resumen-item">
         <a class="btn" href="veterinaria_vacunas.php" >
-          vacunas
+          Vacunas
         </a>
       </div>
       </div>
@@ -51,24 +57,17 @@ $citas = $citas ?? [];
                   <th>Dueño</th>
                   <th>Motivo</th>
                   <th>Estado</th>
-                  <th>Boton</th>
+                  <th> </th>
                 </tr>
               </thead>
               <tbody id="tablaCitas">
-                <tr>
-                    <td>12:04 11/11/2011</td>
-                    <td>Ramon</td> <!-- Vas a tener que buscar el nombre del cliente por id-->
-                    <td>Tenia frio</td>
-                    <td>Atendida</td> <!-- Es tinyint en bd, o sea, 1 es atendido y 0 es no-->
-                    <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$c['id_mascota']) ?>"> Ver datos</a></td>
-                  </tr>
                 <?php foreach ($citas as $c): ?>
                   <tr>
-                    <td><?= htmlspecialchars($c['fecha']) ?></td>
+                    <td><?= htmlspecialchars(formatearFechaEsp((string)$c['fecha'])) ?></td>
                     <td><?= htmlspecialchars($c['cliente']) ?></td>
-                    <td><?= htmlspecialchars($c['motivo_consulta']) ?></td>
-                    <td><?= (int)$c['atendido']===1 ? 'Atendida': 'Pendiente'?></td>
-                    <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$c['id_mascota']) ?>"> Ver datos</a></td>
+                    <td><?= htmlspecialchars($c['motivo_de_consulta']) ?></td>
+                    <td><?= (int)$c['atendido'] ===1 ? 'Atendida': 'Pendiente'?></td>
+                    <td> <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?= urlencode((string)$c['id_consulta']) ?>">Ficha medica</a></td>
                   </tr>
                 <?php endforeach; ?>
               </tbody>
@@ -80,7 +79,7 @@ $citas = $citas ?? [];
           <div class="tarjeta">
             <h2>Accesos rápidos</h2>
             <div class="lista-accesos">
-              <a class="btn" href="citas.php">Nueva consulta</a>
+              <a class="btn" href="agendarCita.php">Nueva consulta</a>
               <a class="btn" href="citas.php">Acceder como otro veterinario</a> <!--Aqui mandara al historial de vacunas o al historial de citas, pero ese modulo debe de pedir un veterinario responsable-->
               <button type="button" class="btn" id="generarCodigo">Compartir acceso temporal</button> <!-- Al darle clic en este boton debe de aparecer en el text de abajo el codigo, si crees que es mejor por gmail me avisas para quitar el text y poner una mini interfaz para que le diga a que correo -->
               <input type="text" id="codigo" readonly>
