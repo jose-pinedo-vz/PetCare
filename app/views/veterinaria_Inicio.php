@@ -53,14 +53,17 @@ $citas = extraerCitasHoy();
             <table> <!-- En esta tabla se muestran las citas del veterinario, no se si eso tambien me tocaba a mi desde front, si fuera asi avisame porfas -->
               <thead>
                 <tr>
-                  <th>Fecha</th>
                   <th>Dueño</th>
+                  <th>Fecha</th>
                   <th>Motivo</th>
-                  <th>Estado</th>
                   <th> </th>
                 </tr>
               </thead>
               <tbody id="tablaCitas">
+                <!-- EJEMPLO -->
+                 <td>Martinez</td>
+                 <td>24/05/20026></td>
+                <td>Dolor estomacal</td>
                 <?php foreach ($citas as $c): ?>
                   <tr>
                     <td><?= htmlspecialchars(formatearFechaEsp((string)$c['fecha'])) ?></td>
@@ -80,7 +83,12 @@ $citas = extraerCitasHoy();
             <h2>Accesos rápidos</h2>
             <div class="lista-accesos">
               <a class="btn" href="agendarCita.php">Nueva consulta</a>
-              <a class="btn" href="citas.php">Acceder como otro veterinario</a> <!--Aqui mandara al historial de vacunas o al historial de citas, pero ese modulo debe de pedir un veterinario responsable-->
+              <a class="btn" href="citas.php">Revisar mis consultas</a>
+              <a class="btn" href="citas.php" id="accesoVeterinario">Acceder como otro veterinario</a> <!--Aqui mandara al historial de vacunas o al historial de citas, pero ese modulo debe de pedir un veterinario responsable-->
+              <div id="formularioAcceso" style="display: none;">
+                <input type="text" id="codigoAcceso" placeholder="Introduce el codigo de acecso">
+                <button type="button" class="btn" id="confirmarAcceso">Acceder</button>
+              </div>
               <button type="button" class="btn" id="generarCodigo">Compartir acceso temporal</button> <!-- Al darle clic en este boton debe de aparecer en el text de abajo el codigo, si crees que es mejor por gmail me avisas para quitar el text y poner una mini interfaz para que le diga a que correo -->
               <input type="text" id="codigo" readonly>
             </div>
@@ -92,3 +100,29 @@ $citas = extraerCitasHoy();
 
 </body>
 </html>
+
+<!-- Esto no lo hice yo si quieres cambialo, solo queria que quedara el ejemplo de como seria mas o menos -->
+<script>
+    // Mostrar u ocultar el formulario
+    document.getElementById("accederVeterinario").addEventListener("click", function() {
+        const formulario = document.getElementById("formularioAcceso");
+
+        if (formulario.style.display === "none") {
+            formulario.style.display = "block";
+        } else {
+            formulario.style.display = "none";
+        }
+    });
+
+    // Acceder con código
+    document.getElementById("confirmarAcceso").addEventListener("click", function() {
+        const codigo = document.getElementById("codigoAcceso").value.trim();
+
+        if (codigo === "") {
+            alert("Introduce un código de acceso");
+            return;
+        }
+
+        window.location.href = "accesoVeterinario.php?codigo=" + encodeURIComponent(codigo);
+    });
+</script>

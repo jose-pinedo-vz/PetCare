@@ -25,30 +25,36 @@ $catalogoVacunas = $catalogoVacunas ?? [];
     <div class="panel-inicio">
     <!-- Columna Izquierda -->
         <div class="columna-lateral">
-          <div class=" tarjeta">
-            <a href="#" class="resumen-item">
-              <span class="resumen-titulo">Nueva vacuna</span>
-              <span class="resumen-cifra" id="Nueva vacuna"></span>
-            </a>
-            <a href="#" class="resumen-item">
-              <span class="resumen-titulo">Nueva desparasitación</span>
-              <span class="resumen-cifra" id="Nueva desparacitacion"></span>
-            </a>
-          </div>
-
           <div class="tarjeta"> <!-- Al darle clic en agregar te va a abrir un text ahi pones el nombre de la nueva vacuna y ya, despues veo como se hace eso-->
             <h2>Vacunas</h2>
             <ul class="lista-vacunas" id="listaVacunas">
+              <!-- De aqui es codigo de ejemplo hasta.... -->
+              <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">Rabia
+              <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
+
+              <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">Pargovirus
+              <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
+
+              <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">Tetanos
+              <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
+
+              <!-- Aca -->
+              </li>
                 <?php if (!empty($catalogoVacunas)): ?>
                     <?php foreach ($catalogoVacunas as $vacuna): ?>
-                        <li>
-                            <?= htmlspecialchars($vacuna['nombre']) ?>
+                        <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;"><?= htmlspecialchars($vacuna['nombre']) ?>
+                        <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
                         </li>
                     <?php endforeach; ?>
-                <?php else: ?>
+                <?php else: ?> 
                     <li>No hay vacunas registradas</li>
                 <?php endif; ?>
             </ul>
+
+            <div id="formularioVacuna" style="display: none;">
+                <input type="text" id="nombreVacuna" placeholder="Nombre de la vacuna">
+                <button type="button" class="btn" id="guardarVacuna">Guardar</button>
+            </div>
                 
             <button type="button" class="btn" id="agregarVacuna">Agregar vacuna</button>
           </div>
@@ -63,6 +69,7 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                 <table> <!-- Tabla de historial de vacunas -->
                   <thead>
                     <tr>
+                      <th>Mascota</th>
                       <th>Fecha</th>
                       <th>Vacuna</th>
                       <th>Lote</th>
@@ -70,8 +77,14 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                     </tr>
                   </thead>
                   <tbody id="tablaMascotas">
+                    <td>Free of lies</td>
+                    <td>02/07/2026</td>
+                    <td>Pargovirus</td>
+                    <td>024024</td>
+                    <td>11/11/2026</td>
                     <?php foreach ($vacunas as $v): ?>
                       <tr>
+                        <td><?= htmlspecialchars($v['mascota']) ?></td>
                         <td><?= htmlspecialchars($v['fecha_aplicacion']) ?></td>
                         <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
                         <td><?= htmlspecialchars($v['lote']) ?></td>
@@ -90,6 +103,7 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                   <table>
                     <thead>
                       <tr>
+                        <th>Mascota</th>
                         <th>Fecha</th>
                         <th>Tipo</th>
                         <th>Producto</th>
@@ -97,6 +111,13 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                       </tr>
                     </thead>
                     <tbody id="tablaDespara">
+                    <tr> <!-- EJEMPLO -->
+                    <td>Free of lies</td>
+                    <td>02/07/2026</td>
+                    <td>Lombrices</td>
+                    <td>Desparasitanol Iboproxido</td>
+                    <td>1/2 pastilla</td>
+                    </tr>
                       <?php foreach ($desparasitaciones as $d): ?>
                         <tr>
                           <td><?= htmlspecialchars($d['fecha']) ?></td> <!--La fecha de aqui saldra de la tabla citas-->
@@ -117,3 +138,9 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 
 </body>
 </html>
+
+<script>
+document.getElementById('agregarVacuna').addEventListener('click', function() {
+    document.getElementById('formularioVacuna').style.display = 'block';
+});
+</script>
