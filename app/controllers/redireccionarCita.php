@@ -46,7 +46,8 @@
             header("Location: FichaMedicaController.php?id_consulta=" . urlencode((string)$id_consulta));
             exit();
         } else {
-            echo "ID de consulta no proporcionado.";
+            header("Location: ../views/servicioGeneral.php?id_consulta=" . urlencode((string)$id_consulta) . "&nombreServicio=" . urlencode($esrvicio['nombre']));
+            exit();
         }
     }
 ?>

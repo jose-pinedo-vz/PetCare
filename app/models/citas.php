@@ -476,5 +476,20 @@
                 return null;
             }
         }
+
+        public static function actualizarCitaObservacino(int $Idcita, string $observacion)
+        {
+            try
+            {
+                $query = "UPDATE citas SET observacion = ? WHERE id_cita = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stmt = $db->prepare($query);
+                return $stmt->execute([$observacion, $Idcita]);
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
     }
 ?>
