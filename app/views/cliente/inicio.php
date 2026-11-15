@@ -21,7 +21,7 @@ $paginaActiva = 'inicio';
                 <h1 class="portada__titulo">Cuidamos a tu mascota como parte de la familia</h1>
                 <p class="portada__descripcion">Agenda su cita en línea, consulta nuestros servicios y conoce al equipo que la va a atender.</p>
                 <div class="portada__botones">
-                    <a class="boton" href="agendarCita.php">Agendar una cita</a>
+                    <a class="boton" href="agendar_cita.php">Agendar una cita</a>
                     <a class="boton boton--contorno" href="servicios.php">Ver servicios</a>
                 </div>
             </div>
@@ -88,7 +88,7 @@ $paginaActiva = 'inicio';
                     <h3 class="tarjeta-servicio-mini__titulo">Corte de uñas</h3>
                     <p class="tarjeta-servicio-mini__texto">Corte y limado de uñas.</p>
                     <p class="tarjeta-servicio-mini__precio">20 min · $60.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=corte_unas">Agendar</a>
+                    <a class="boton boton--chico" href="agendar_cita.php?servicio=corte_unas">Agendar</a>
                 </article>
 
                 <article class="tarjeta tarjeta-servicio-mini">
@@ -96,7 +96,7 @@ $paginaActiva = 'inicio';
                     <h3 class="tarjeta-servicio-mini__titulo">Desparasitación</h3>
                     <p class="tarjeta-servicio-mini__texto">Aplicación a cargo de nuestro veterinario.</p>
                     <p class="tarjeta-servicio-mini__precio">30 min · $120.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=desparasitacion">Agendar</a>
+                    <a class="boton boton--chico" href="agendar_cita.php?servicio=desparasitacion">Agendar</a>
                 </article>
 
                 <article class="tarjeta tarjeta--oscura tarjeta-servicio-mini">
