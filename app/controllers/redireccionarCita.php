@@ -36,8 +36,9 @@
         } else if ($esrvicio['nombre'] === 'Baño') {
             header("Location: ../views/servicioBanio.php?id_consulta=" . urlencode((string)$id_consulta));
             exit();
-        } else {
-            echo "ID de consulta no proporcionado.";
+        } else if ($esrvicio['nombre'] === 'Corte de pelo') {
+            header("Location: ../views/servicioCortepelo.php?id_consulta=" . urlencode((string)$id_consulta));
+            exit();
         }
 
         $clasificacion = ConexionesClientes::consultarServicioPorCategoria((string)$id_servicio);

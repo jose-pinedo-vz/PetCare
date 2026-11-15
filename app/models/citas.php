@@ -400,5 +400,36 @@
                 return false;
             }
         }
+
+        public static function insertarCortePelo($id_cita, $tipo_corte, $longitud_corte, $corte_higienico, $corte_cara, $corte_patas, $cepillado, $deslanado, $accesorios, $precio, $observaciones)
+        {
+            // try
+            // {
+                $query = "INSERT INTO servicio_corte_pelo (id_cita, tipo_corte, longitud_corte, corte_higienico, corte_cara, corte_patas, cepillado, deslanado,  
+                precio, observaciones) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                return $stml->execute([
+                    $id_cita, 
+                    $tipo_corte, 
+                    $longitud_corte, 
+                    $corte_higienico, 
+                    $corte_cara, 
+                    $corte_patas, 
+                    $cepillado, 
+                    $deslanado, 
+                    //$accesorios, 
+                    $precio, 
+                    $observaciones
+                ]);
+            //}
+            // catch (Exception $e)
+            // {
+            //     exit();
+            //     return false;
+            // }
+        }
     }
 ?>
