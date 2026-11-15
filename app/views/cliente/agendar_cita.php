@@ -22,7 +22,7 @@
                             <label class="campo__etiqueta" for="id_servicio">Servicio <span class="campo__obligatorio">*</span></label>
                             <select class="campo__entrada" id="id_servicio" name="id_servicio" required>
                                 <option value="">Elige un servicio</option>
-                                <!-- aquí irán los servicios reales -->
+    
                                 <option value="1">Baño</option>
                                 <option value="2">Corte de uñas</option>
                                 <option value="3">Desparasitación</option>
