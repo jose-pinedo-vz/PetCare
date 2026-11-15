@@ -20,6 +20,13 @@
     const btnCancelar = document.getElementById('btnCancelarVenta');
     const btnCobrar = document.getElementById('btnCobrar');
 
+    // Elementos del buscador de servicios
+    const inputBuscarServ = document.getElementById('buscarServicio');
+    const tbodyServicios = document.getElementById('resultadosServicios');
+    const mensajeBusquedaServ = document.getElementById('mensajeBusquedaServicio');
+    const modalBuscarServ = document.getElementById('modalBuscarServicio');
+    const btnAgregarServicio = document.getElementById('btnAgregarServicio');
+
     // Elementos del modal de pago
     const modalPago = document.getElementById('modalPagarVenta');
     const inputMonto = document.getElementById('montoRecibido');
@@ -31,6 +38,7 @@
     const metodos = modalPago.querySelectorAll('.pago-metodo');
 
     let temporizador = null;
+    let temporizadorServ = null;
     let carrito = [];
     let formaPago = 'efectivo';
 
@@ -176,6 +184,68 @@
         buscar('');
     });
 
+    // Busqueda de servicios
+
+    // Muestra un texto en la tabla de servicios
+    function filaMensajeServicio(texto) {
+        tbodyServicios.innerHTML = '';
+        const tr = document.createElement('tr');
+        const td = celda(texto);
+        td.colSpan = 6;
+        td.className = 'vacio';
+        tr.appendChild(td);
+        tbodyServicios.appendChild(tr);
+    }
+
+    // Muestra los servicios encontrados
+    function dibujarServicios(servicios) {
+        if (!Array.isArray(servicios) || servicios.length === 0) {
+            filaMensajeServicio('No se encontraron servicios.');
+            return;
+        }
+        tbodyServicios.innerHTML = '';
+        servicios.forEach(function (s) {
+            const tr = document.createElement('tr');
+            tr.appendChild(celda(s.nombre));
+            tr.appendChild(celda(s.categoria || ''));
+            tr.appendChild(celda(s.descripcion || ''));
+            tr.appendChild(celda(s.duracion + ' min'));
+            tr.appendChild(celda(dinero(Number(s.precio))));
+            tr.appendChild(celda(boton('Agregar', 'btn btn-info', function () {
+                agregarServicio(s);
+                modalBuscarServ.close();
+            })));
+            tbodyServicios.appendChild(tr);
+        });
+    }
+
+    // Pide los servicios al servidor
+    async function buscarServicios(termino) {
+        mensajeBusquedaServ.textContent = '';
+        try {
+            const resp = await fetch(URL_VENTAS + '?accion=buscar_servicios&q=' + encodeURIComponent(termino));
+            const datos = await resp.json();
+            // Si ya escribio otra cosa, ignora esta respuesta
+            if (termino !== inputBuscarServ.value.trim()) return;
+            dibujarServicios(datos);
+        } catch (e) {
+            mensajeBusquedaServ.textContent = 'No se pudo realizar la búsqueda.';
+        }
+    }
+
+    // Busca cuando deja de escribir
+    inputBuscarServ.addEventListener('input', function () {
+        clearTimeout(temporizadorServ);
+        const termino = inputBuscarServ.value.trim();
+        temporizadorServ = setTimeout(function () { buscarServicios(termino); }, 300);
+    });
+
+    // Al abrir el modal muestra los servicios
+    btnAgregarServicio.addEventListener('click', function () {
+        inputBuscarServ.value = '';
+        buscarServicios('');
+    });
+
     // Carrito
 
     // Suma todo lo que hay en el carrito
@@ -212,7 +282,7 @@
 
         if (carrito.length === 0) {
             const tr = document.createElement('tr');
-            const td = celda('No hay productos en la venta.');
+            const td = celda('No hay productos ni servicios en la venta.');
             td.colSpan = 7;
             td.className = 'venta-carrito-vacio';
             tr.appendChild(td);
@@ -227,37 +297,42 @@
             tr.appendChild(celda(item.codigo));
             tr.appendChild(celda(dinero(item.precio)));
 
-            // Cantidad con - y + a los lados
-            const cant = filaControl();
-            const inputCant = inputMini('1', item.existencia, item.cantidad);
-            inputCant.addEventListener('change', function () {
-                let n = parseInt(inputCant.value, 10);
-                if (isNaN(n) || n < 1) n = 1;
-                if (n > item.existencia) {
-                    n = item.existencia;
-                    mensajeVenta.textContent = 'Solo hay ' + item.existencia + ' en existencia.';
-                }
-                item.cantidad = n;
-                dibujarCarrito();
-            });
-            cant.appendChild(botonMini('-', function () {
-                if (item.cantidad > 1) {
-                    item.cantidad--;
+            // El servicio siempre es 1, sin - ni +
+            if (item.tipo === 'servicio') {
+                tr.appendChild(celda('1'));
+            } else {
+                // Cantidad con - y + a los lados
+                const cant = filaControl();
+                const inputCant = inputMini('1', item.existencia, item.cantidad);
+                inputCant.addEventListener('change', function () {
+                    let n = parseInt(inputCant.value, 10);
+                    if (isNaN(n) || n < 1) n = 1;
+                    if (n > item.existencia) {
+                        n = item.existencia;
+                        mensajeVenta.textContent = 'Solo hay ' + item.existencia + ' en existencia.';
+                    }
+                    item.cantidad = n;
                     dibujarCarrito();
-                }
-            }));
-            cant.appendChild(inputCant);
-            cant.appendChild(botonMini('+', function () {
-                if (item.cantidad < item.existencia) {
-                    item.cantidad++;
-                    dibujarCarrito();
-                } else {
-                    mensajeVenta.textContent = 'No hay más existencia de ' + item.nombre + '.';
-                }
-            }));
-            const tdCant = celda(cant);
-            tdCant.style.whiteSpace = 'nowrap';
-            tr.appendChild(tdCant);
+                });
+                cant.appendChild(botonMini('-', function () {
+                    if (item.cantidad > 1) {
+                        item.cantidad--;
+                        dibujarCarrito();
+                    }
+                }));
+                cant.appendChild(inputCant);
+                cant.appendChild(botonMini('+', function () {
+                    if (item.cantidad < item.existencia) {
+                        item.cantidad++;
+                        dibujarCarrito();
+                    } else {
+                        mensajeVenta.textContent = 'No hay más existencia de ' + item.nombre + '.';
+                    }
+                }));
+                const tdCant = celda(cant);
+                tdCant.style.whiteSpace = 'nowrap';
+                tr.appendChild(tdCant);
+            }
 
             // Descuento en porcentaje
             const caja = document.createElement('div');
@@ -309,7 +384,7 @@
             return;
         }
 
-        const actual = carrito.find(function (i) { return i.id_producto === p.id_producto; });
+        const actual = carrito.find(function (i) { return i.tipo === 'producto' && i.id_producto === p.id_producto; });
         if (actual) {
             if (actual.cantidad < actual.existencia) {
                 actual.cantidad++;
@@ -318,6 +393,7 @@
             }
         } else {
             carrito.push({
+                tipo: 'producto',
                 id_producto: p.id_producto,
                 codigo: p.codigo,
                 nombre: p.nombre,
@@ -327,6 +403,29 @@
                 descuento: 0
             });
         }
+        dibujarCarrito();
+    }
+
+    // Agrega un servicio al carrito (una sola linea, sin stock)
+    function agregarServicio(s) {
+        mensajeVenta.textContent = '';
+        const id = Number(s.id_servicio);
+
+        const actual = carrito.find(function (i) { return i.tipo === 'servicio' && i.id_servicio === id; });
+        if (actual) {
+            mensajeVenta.textContent = 'El servicio ya esta en la venta.';
+            return;
+        }
+
+        carrito.push({
+            tipo: 'servicio',
+            id_servicio: id,
+            codigo: s.categoria || '',
+            nombre: s.nombre,
+            precio: Number(s.precio),
+            cantidad: 1,
+            descuento: 0
+        });
         dibujarCarrito();
     }
 
@@ -367,7 +466,7 @@
     function confirmarYReiniciar(texto) {
         if (carrito.length === 0) {
             reiniciar();
-            mensajeVenta.textContent = 'No hay productos en la venta.';
+            mensajeVenta.textContent = 'No hay productos ni servicios en la venta.';
             return;
         }
         if (confirm(texto)) {
@@ -409,7 +508,7 @@
             const nombre = document.createElement('strong');
             nombre.textContent = i.nombre;
             const codigo = document.createElement('small');
-            codigo.textContent = 'Cód. ' + i.codigo;
+            codigo.textContent = (i.tipo === 'servicio') ? 'Servicio · ' + i.codigo : 'Cód. ' + i.codigo;
             detalle.appendChild(nombre);
             detalle.appendChild(codigo);
 
@@ -472,7 +571,7 @@
     btnCobrar.addEventListener('click', function () {
         if (carrito.length === 0) {
             modalPago.close();
-            mensajeVenta.textContent = 'Agrega productos antes de cobrar.';
+            mensajeVenta.textContent = 'Agrega productos o servicios antes de cobrar.';
             return;
         }
         mensajeVenta.textContent = '';
@@ -484,6 +583,10 @@
     });
         // Confirmar pago: manda la venta al servidor
     btnConfirmar.addEventListener('click', async function () {
+        // Si es abono de Pagos de servicios no se guarda la venta
+        if (typeof contextoPago !== 'undefined' && contextoPago && contextoPago.tipo === 'servicio') return;
+
+        // Solo termina si el carrito completo esta vacio
         if (carrito.length === 0) return;
 
         const modalConfirmado = document.getElementById('modalPagoConfirmado');
@@ -494,10 +597,16 @@
         const datos = {
             forma_pago: formaPago,
             recibido: Number(inputMonto.value) || 0,
-            items: carrito.map(function (i) {
+            items: carrito.filter(function (i) { return i.tipo === 'producto'; }).map(function (i) {
                 return {
                     id_producto: i.id_producto,
                     cantidad: i.cantidad,
+                    descuento: i.descuento
+                };
+            }),
+            servicios: carrito.filter(function (i) { return i.tipo === 'servicio'; }).map(function (i) {
+                return {
+                    id_servicio: i.id_servicio,
                     descuento: i.descuento
                 };
             })

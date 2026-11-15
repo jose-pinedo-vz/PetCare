@@ -54,12 +54,34 @@ class Ventas
             return null;
         }
     }
-        // Guarda la venta completa en una sola transaccion
-        // Guarda la venta completa en una sola transaccion
-    public static function guardarVenta(array $items, string $formaPago, float $recibido, int $idEmpleado, int $idCliente): array
+
+    // Busca servicios activos por nombre o categoria (vacio muestra todos)
+    public static function buscarServicios(string $termino): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_servicio, nombre, categoria, descripcion, duracion, precio
+                 FROM servicios
+                 WHERE estado = 1
+                   AND (nombre LIKE :nombre OR categoria LIKE :categoria)
+                 ORDER BY nombre
+                 LIMIT 50"
+            );
+            $like = '%' . $termino . '%';
+            $stmt->execute([':nombre' => $like, ':categoria' => $like]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en Ventas::buscarServicios: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Guarda la venta completa en una sola transaccion
+    public static function guardarVenta(array $items, string $formaPago, float $recibido, int $idEmpleado, int $idCliente, array $servicios = []): array
     {
         $formasValidas = ['efectivo', 'tarjeta', 'transferencia'];
-        if (empty($items) || !in_array($formaPago, $formasValidas, true)) {
+        if ((empty($items) && empty($servicios)) || !in_array($formaPago, $formasValidas, true)) {
             return ['ok' => false, 'error' => 'Datos de venta no validos.'];
         }
 
@@ -147,6 +169,51 @@ class Ventas
                 ];
             }
 
+            // Servicios: el precio siempre sale de la BD
+            $lineasServ = [];
+            $vistosServ = [];
+            foreach ($servicios as $serv) {
+                if (!is_array($serv)) {
+                    throw new Exception('Servicio o descuento no validos.');
+                }
+                $idServicio = (int)($serv['id_servicio'] ?? 0);
+                $descServ = (float)($serv['descuento'] ?? 0);
+
+                if ($idServicio <= 0 || $descServ < 0 || $descServ > 100) {
+                    throw new Exception('Servicio o descuento no validos.');
+                }
+                if (isset($vistosServ[$idServicio])) {
+                    throw new Exception('Un servicio esta repetido en la venta.');
+                }
+                $vistosServ[$idServicio] = true;
+
+                $stmt = $db->prepare(
+                    "SELECT precio FROM servicios WHERE id_servicio = ? AND estado = 1"
+                );
+                $stmt->execute([$idServicio]);
+                $srv = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$srv) {
+                    throw new Exception('Un servicio ya no esta disponible.');
+                }
+
+                $precio = (float)$srv['precio'];
+                $desc = round($precio * $descServ / 100, 2);
+                $subtotal = round($precio - $desc, 2);
+                $iva = round($subtotal * 0.16, 2);
+
+                $subtotalVenta += $subtotal;
+                $ivaVenta += $iva;
+
+                $lineasServ[] = [
+                    'id' => $idServicio,
+                    'precio' => $precio,
+                    'descuento' => $descServ,
+                    'subtotal' => $subtotal,
+                    'iva' => $iva
+                ];
+            }
+
             $total = round($subtotalVenta + $ivaVenta, 2);
 
             // En efectivo el monto debe alcanzar
@@ -198,6 +265,16 @@ class Ventas
                     ]);
                     $stockActual -= $u['toma'];
                 }
+            }
+
+            // Detalle de cada servicio (no mueve inventario)
+            foreach ($lineasServ as $s) {
+                $stmt = $db->prepare(
+                    "INSERT INTO detalles_servicios
+                     (id_venta, id_servicio, precio_unitario, iva, descuento, subtotal)
+                     VALUES (?, ?, ?, ?, ?, ?)"
+                );
+                $stmt->execute([$idVenta, $s['id'], $s['precio'], $s['iva'], $s['descuento'], $s['subtotal']]);
             }
 
             // Pago de la venta, solo efectivo lleva cambio

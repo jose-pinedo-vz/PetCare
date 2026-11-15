@@ -12,8 +12,19 @@ if ($accion === 'buscar_productos') {
     ventaBuscarProductos();
 } elseif ($accion === 'producto_por_codigo') {
     ventaProductoPorCodigo();
+} elseif ($accion === 'buscar_servicios') {
+    ventaBuscarServicios();
 } elseif ($accion === 'guardar_venta') {
     ventaGuardar();
+}
+
+// Lista servicios activos por nombre o categoria (si esta vacio muestra todos)
+function ventaBuscarServicios()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    $termino = trim($_GET['q'] ?? '');
+    echo json_encode(Ventas::buscarServicios($termino));
+    exit;
 }
 
 // Lista productos por nombre o codigo (si esta vacio muestra todos)
@@ -60,7 +71,11 @@ function ventaGuardar()
     // El JS manda un JSON con los productos y el pago
     $datos = json_decode(file_get_contents('php://input'), true);
 
-    if (!is_array($datos) || empty($datos['items'])) {
+    // Productos y servicios, si no llegan como lista se toman vacios
+    $items = (is_array($datos) && is_array($datos['items'] ?? null)) ? $datos['items'] : [];
+    $servicios = (is_array($datos) && is_array($datos['servicios'] ?? null)) ? $datos['servicios'] : [];
+
+    if (empty($items) && empty($servicios)) {
         echo json_encode(['ok' => false, 'error' => 'El carrito esta vacio.']);
         exit;
     }
@@ -69,11 +84,12 @@ function ventaGuardar()
     $recibido = (float)($datos['recibido'] ?? 0);
 
     $resultado = Ventas::guardarVenta(
-        $datos['items'],
+        $items,
         $formaPago,
         $recibido,
         ID_EMPLEADO_VENTA,
-        ID_CLIENTE_PUBLICO
+        ID_CLIENTE_PUBLICO,
+        $servicios
     );
 
     echo json_encode($resultado);
