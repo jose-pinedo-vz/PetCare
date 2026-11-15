@@ -1057,3 +1057,20 @@ textarea.campo__entrada {
     font-size: 14px;
     text-align: center;
 }
+
+/*Agregados para las vistas nuevas*/
+
+/* Foto grande de la ficha de mascota (detalle_mascota.php) */
+.foto-marcador--ficha {
+    height: 220px;
+    margin-bottom: 20px;
+}
+
+/* Mensajes de los formularios */
+.aviso--error {
+    background: var(--color-estado-cancelado);
+}
+
+.aviso--exito {
+    background: var(--color-estado-exito);
+}
