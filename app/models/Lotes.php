@@ -72,14 +72,17 @@ Class Lotes
                 WHERE p.id_producto = :id_producto AND p.estado = 1";
 
         $stmt = $conexion->prepare($sql);
-        $stmt->execute([
-            ':id_producto' => $datos['id_producto'],
-            ':lote' => $datos['lote'],
-            ':fecha_caducidad' => $datos['fecha_caducidad'],
-            ':precio_compra' => $datos['precio_compra'],
-            ':ubicacion' => $datos['ubicacion'],
-            ':cantidad' => $datos['cantidad'],
-        ]);
+        $stmt->bindValue(':id_producto', (int) $datos['id_producto'], PDO::PARAM_INT);
+        $stmt->bindValue(':lote', $datos['lote'], PDO::PARAM_STR);
+        $stmt->bindValue(
+            ':fecha_caducidad',
+            $datos['fecha_caducidad'],
+            $datos['fecha_caducidad'] === null ? PDO::PARAM_NULL : PDO::PARAM_STR
+        );
+        $stmt->bindValue(':precio_compra',  (string)$datos['precio_compra'], PDO::PARAM_STR);
+        $stmt->bindValue(':ubicacion',              $datos['ubicacion'],     PDO::PARAM_STR);
+        $stmt->bindValue(':cantidad',          (int)$datos['cantidad'],      PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->rowCount() === 1;
     }

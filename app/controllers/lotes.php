@@ -39,20 +39,22 @@ if ($idProducto === false || $idProducto < 1) {
     $errores[] = 'Selecciona un producto válido.';
 }
 
-$fecha = DateTimeImmutable::createFromFormat(
-    '!Y-m-d',
-    $datos['fecha_caducidad'],
-    new DateTimeZone('America/Mexico_City')
-);
-$erroresFecha = DateTimeImmutable::getLastErrors();
-if (
-    $fecha === false
-    || ($erroresFecha !== false && ($erroresFecha['warning_count'] > 0 || $erroresFecha['error_count'] > 0))
-    || $fecha->format('Y-m-d') !== $datos['fecha_caducidad']
-) {
-    $errores[] = 'La fecha de caducidad no tiene un formato válido.';
-} elseif ($fecha < new DateTimeImmutable('today', new DateTimeZone('America/Mexico_City'))) {
-    $errores[] = 'La fecha de caducidad no puede ser anterior a hoy.';
+if ($datos['fecha_caducidad'] !== '') {
+    $fecha = DateTimeImmutable::createFromFormat(
+        '!Y-m-d',
+        $datos['fecha_caducidad'],
+        new DateTimeZone('America/Mexico_City')
+    );
+    $erroresFecha = DateTimeImmutable::getLastErrors();
+    if (
+        $fecha === false
+        || ($erroresFecha !== false && ($erroresFecha['warning_count'] > 0 || $erroresFecha['error_count'] > 0))
+        || $fecha->format('Y-m-d') !== $datos['fecha_caducidad']
+    ) {
+        $errores[] = 'La fecha de caducidad no tiene un formato válido.';
+    } elseif ($fecha < new DateTimeImmutable('today', new DateTimeZone('America/Mexico_City'))) {
+        $errores[] = 'La fecha de caducidad no puede ser anterior a hoy.';
+    }
 }
 
 if ($datos['precio_compra'] === '') {
@@ -110,7 +112,7 @@ try {
     $registrado = Lotes::registrarLote([
         'id_producto' => $idProducto,
         'lote' => $datos['lote'],
-        'fecha_caducidad' => $datos['fecha_caducidad'],
+        'fecha_caducidad' => $datos['fecha_caducidad'] !== '' ? $datos['fecha_caducidad'] : null,
         'precio_compra' => $datos['precio_compra'],
         'ubicacion' => $datos['ubicacion'],
         'cantidad' => $cantidad,

@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '/../models/Movimientos.php';
+
+$movimientos = Movimientos::obtenerTodos();
+$errorMovimientos = $movimientos === null;
+$movimientos = $movimientos ?? [];
+$totalMovimientos = count($movimientos);
+$escaparMovimiento = static fn ($valor): string => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,14 +36,18 @@
         <div class="movimientos-encabezado">
           <div>
             <h2 class="subtitulo" id="titulo-movimientos">Movimientos registrados</h2>
-            <p class="movimientos-descripcion">Revisa entradas, salidas y ajustes realizados en el inventario.</p>
+            <p class="movimientos-descripcion">Revisa las entradas y salidas registradas en el inventario.</p>
           </div>
           <a class="btn btn-secundario btn-chico" href="inventario.php">Volver al inventario</a>
         </div>
 
-        <form class="movimientos-toolbar" aria-label="Filtros de movimientos">
+        <?php if ($errorMovimientos): ?>
+          <div class="msg-error" role="alert">No se pudieron cargar los movimientos de inventario.</div>
+        <?php endif; ?>
+
+        <form class="movimientos-toolbar" aria-label="Filtros de movimientos" onsubmit="return false">
           <label class="visualmente-oculto" for="filtro-buscar-movimiento">Buscar movimiento</label>
-          <input class="campo movimientos-buscador" id="filtro-buscar-movimiento" type="search" placeholder="Buscar por producto, ID o empleado...">
+          <input class="campo movimientos-buscador" id="filtro-buscar-movimiento" type="search" placeholder="Buscar por producto, empleado o motivo...">
           <label class="visualmente-oculto" for="filtro-tipo-movimiento">Filtrar por tipo de movimiento</label>
           <select class="campo movimientos-filtro-tipo" id="filtro-tipo-movimiento">
             <option value="">Todos los movimientos</option>
@@ -46,96 +59,69 @@
           <input class="campo movimientos-filtro-fecha" id="filtro-fecha-desde" type="date" aria-label="Fecha desde">
           <label class="visualmente-oculto" for="filtro-fecha-hasta">Fecha hasta</label>
           <input class="campo movimientos-filtro-fecha" id="filtro-fecha-hasta" type="date" aria-label="Fecha hasta">
-          <button class="btn btn-chico" type="button" disabled>Filtrar</button>
         </form>
 
         <div class="movimientos-lista-encabezado">
           <div>
             <h3>Historial de movimientos</h3>
-            <p>Ejemplos de presentación; no son registros reales.</p>
+            <p>Registros guardados en el inventario.</p>
           </div>
-          <span>3 movimientos</span>
+          <span id="cantidad-movimientos"><?= $totalMovimientos ?> movimientos</span>
         </div>
 
-        <div class="movimientos-lista">
-          <article class="movimiento-tarjeta">
-            <header class="movimiento-encabezado">
-              <span class="movimiento-icono movimiento-icono-entrada" aria-hidden="true">EN</span>
-              <div class="movimiento-identidad">
-                <span class="movimiento-etiqueta">Movimiento de entrada</span>
-                <h3>MOV-0001</h3>
+        <div class="movimientos-lista" id="lista-movimientos">
+          <?php foreach ($movimientos as $movimiento): ?>
+            <?php
+              $tipo = strtolower((string) $movimiento['tipo_movimiento']);
+              $tipoClase = in_array($tipo, ['entrada', 'salida', 'ajuste'], true) ? $tipo : 'ajuste';
+              $tipoTexto = ucfirst($tipo);
+              $empleado = trim((string) ($movimiento['nombre_empleado'] ?? '') . ' ' . (string) ($movimiento['apellido_empleado'] ?? ''));
+              $fecha = strtotime((string) $movimiento['fecha']);
+              $fechaTexto = $fecha === false ? (string) $movimiento['fecha'] : date('d/m/Y, H:i', $fecha);
+              $fechaFiltro = $fecha === false ? '' : date('Y-m-d', $fecha);
+              $producto = $movimiento['nombre_producto'] ?? null;
+            ?>
+            <article
+              class="movimiento-tarjeta"
+              data-movimiento
+              data-tipo="<?= $escaparMovimiento($tipo) ?>"
+              data-fecha="<?= $escaparMovimiento($fechaFiltro) ?>"
+            >
+              <header class="movimiento-encabezado">
+                <span class="movimiento-icono movimiento-icono-<?= $escaparMovimiento($tipoClase) ?>" aria-hidden="true"><?= $escaparMovimiento(strtoupper(substr($tipoClase, 0, 2))) ?></span>
+                <div class="movimiento-identidad">
+                  <span class="movimiento-etiqueta">ID de producto</span>
+                  <h3>#<?= (int) $movimiento['id_producto'] ?></h3>
+                </div>
+                <span class="movimiento-tipo movimiento-tipo-<?= $escaparMovimiento($tipoClase) ?>"><?= $escaparMovimiento($tipoTexto) ?></span>
+              </header>
+              <div class="movimiento-producto">
+                <span>Producto</span>
+                <strong>
+                  <?php if ($producto !== null): ?>
+                    <?= $escaparMovimiento($producto) ?>
+                    <?php if (!empty($movimiento['codigo_producto'])): ?>
+                      (<?= $escaparMovimiento($movimiento['codigo_producto']) ?>)
+                    <?php endif; ?>
+                  <?php else: ?>
+                    Producto ID <?= (int) $movimiento['id_producto'] ?>
+                  <?php endif; ?>
+                </strong>
               </div>
-              <span class="movimiento-tipo movimiento-tipo-entrada">Entrada</span>
-            </header>
-            <div class="movimiento-producto">
-              <span>Producto</span>
-              <strong>Alimento para perro adulto 5 kg</strong>
-            </div>
-            <div class="movimiento-datos">
-              <div><span>Fecha</span><strong>10/11/2026, 08:15</strong></div>
-              <div><span>Cantidad</span><strong class="movimiento-cantidad-entrada">+12 unidades</strong></div>
-              <div><span>Existencia anterior</span><strong>18</strong></div>
-              <div><span>Existencia posterior</span><strong>30</strong></div>
-              <div><span>Motivo</span><strong>Recepción de pedido</strong></div>
-              <div><span>Empleado responsable</span><strong>María López</strong></div>
-              <div><span>Número de factura</span><strong>FAC-10482</strong></div>
-              <div class="movimiento-observaciones"><span>Observaciones</span><strong>Pedido recibido completo.</strong></div>
-            </div>
-          </article>
-
-          <article class="movimiento-tarjeta">
-            <header class="movimiento-encabezado">
-              <span class="movimiento-icono movimiento-icono-salida" aria-hidden="true">SA</span>
-              <div class="movimiento-identidad">
-                <span class="movimiento-etiqueta">Movimiento de salida</span>
-                <h3>MOV-0002</h3>
+              <div class="movimiento-datos">
+                <div><span>Fecha</span><strong><?= $escaparMovimiento($fechaTexto) ?></strong></div>
+                <div><span>Motivo</span><strong><?= $escaparMovimiento($movimiento['motivo'] ?: 'Sin motivo registrado') ?></strong></div>
+                <div><span>Empleado responsable</span><strong><?= $escaparMovimiento($empleado !== '' ? $empleado : 'No disponible') ?></strong></div>
               </div>
-              <span class="movimiento-tipo movimiento-tipo-salida">Salida</span>
-            </header>
-            <div class="movimiento-producto">
-              <span>Producto</span>
-              <strong>Shampoo dermatológico para mascotas</strong>
-            </div>
-            <div class="movimiento-datos">
-              <div><span>Fecha</span><strong>09/11/2026, 16:42</strong></div>
-              <div><span>Cantidad</span><strong class="movimiento-cantidad-salida">−3 unidades</strong></div>
-              <div><span>Existencia anterior</span><strong>15</strong></div>
-              <div><span>Existencia posterior</span><strong>12</strong></div>
-              <div><span>Motivo</span><strong>Venta</strong></div>
-              <div><span>Empleado responsable</span><strong>Carlos Ramírez</strong></div>
-              <div><span>Número de factura</span><strong>FAC-10479</strong></div>
-              <div class="movimiento-observaciones"><span>Observaciones</span><strong>Salida por venta de mostrador.</strong></div>
-            </div>
-          </article>
-
-          <article class="movimiento-tarjeta">
-            <header class="movimiento-encabezado">
-              <span class="movimiento-icono movimiento-icono-ajuste" aria-hidden="true">AJ</span>
-              <div class="movimiento-identidad">
-                <span class="movimiento-etiqueta">Ajuste de inventario</span>
-                <h3>MOV-0003</h3>
-              </div>
-              <span class="movimiento-tipo movimiento-tipo-ajuste">Ajuste</span>
-            </header>
-            <div class="movimiento-producto">
-              <span>Producto</span>
-              <strong>Juguete de cuerda para perro</strong>
-            </div>
-            <div class="movimiento-datos">
-              <div><span>Fecha</span><strong>08/11/2026, 11:20</strong></div>
-              <div><span>Cantidad</span><strong class="movimiento-cantidad-ajuste">−1 unidad</strong></div>
-              <div><span>Existencia anterior</span><strong>9</strong></div>
-              <div><span>Existencia posterior</span><strong>8</strong></div>
-              <div><span>Motivo</span><strong>Corrección de inventario</strong></div>
-              <div><span>Empleado responsable</span><strong>Andrea Torres</strong></div>
-              <div><span>Número de factura</span><strong>—</strong></div>
-              <div class="movimiento-observaciones"><span>Observaciones</span><strong>Una pieza dañada durante el conteo.</strong></div>
-            </div>
-          </article>
+            </article>
+          <?php endforeach; ?>
         </div>
 
-        <div class="movimiento-paginacion" aria-label="Paginación del historial">
-          <span>Mostrando 3 de 3 movimientos de ejemplo</span>
+        <p class="movimientos-sin-resultados" id="sin-movimientos" <?= $totalMovimientos === 0 ? '' : 'hidden' ?>>
+          <?= $errorMovimientos ? 'No hay movimientos disponibles.' : 'No hay movimientos que coincidan con los filtros.' ?>
+        </p>
+        <div class="movimiento-paginacion" aria-live="polite">
+          <span id="resumen-movimientos">Mostrando <?= $totalMovimientos ?> de <?= $totalMovimientos ?> movimientos</span>
         </div>
       </section>
     </main>
@@ -144,5 +130,40 @@
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <script>
+    const tarjetasMovimiento = [...document.querySelectorAll('[data-movimiento]')];
+    const filtroTexto = document.getElementById('filtro-buscar-movimiento');
+    const filtroTipo = document.getElementById('filtro-tipo-movimiento');
+    const filtroDesde = document.getElementById('filtro-fecha-desde');
+    const filtroHasta = document.getElementById('filtro-fecha-hasta');
+    const sinMovimientos = document.getElementById('sin-movimientos');
+
+    const filtrarMovimientos = () => {
+      const texto = filtroTexto.value.trim().toLocaleLowerCase('es');
+      let visibles = 0;
+
+      tarjetasMovimiento.forEach((tarjeta) => {
+        const coincideTexto = tarjeta.textContent.toLocaleLowerCase('es').includes(texto);
+        const coincideTipo = !filtroTipo.value || tarjeta.dataset.tipo === filtroTipo.value;
+        const fecha = tarjeta.dataset.fecha;
+        const coincideDesde = !filtroDesde.value || (fecha && fecha >= filtroDesde.value);
+        const coincideHasta = !filtroHasta.value || (fecha && fecha <= filtroHasta.value);
+        const mostrar = coincideTexto && coincideTipo && coincideDesde && coincideHasta;
+        tarjeta.hidden = !mostrar;
+        if (mostrar) visibles += 1;
+      });
+
+      sinMovimientos.hidden = visibles > 0;
+      document.getElementById('cantidad-movimientos').textContent = `${visibles} movimientos`;
+      document.getElementById('resumen-movimientos').textContent =
+        `Mostrando ${visibles} de ${tarjetasMovimiento.length} movimientos`;
+    };
+
+    [filtroTexto, filtroTipo, filtroDesde, filtroHasta].forEach((filtro) => {
+      filtro.addEventListener('input', filtrarMovimientos);
+      filtro.addEventListener('change', filtrarMovimientos);
+    });
+  </script>
 </body>
 </html>
