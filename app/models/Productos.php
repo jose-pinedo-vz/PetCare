@@ -193,7 +193,129 @@ function obtenerProductoPorId(int $id): ?array {
     }
 }
 
+function obtenerNombreProveedor(int $id): ?string {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT nombre_comercial 
+            FROM proveedores 
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+        $nombre = $consulta -> fetchColumn();
 
+        return $nombre !== false ? $nombre : null;
+    } catch (Exception $error) {
+        error_log("Error al obterner el nombre del proveedor " . $error -> getMessage());
+        return null;
+    }
+}
+
+function obtenerCorreoProveedor(int $id): ?string {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT correo
+            FROM proveedores
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+
+        $correo = $consulta -> fetchColumn();
+
+        return $correo !== false ? $correo : null;
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el correo del proveedor " . $error -> getMessage());
+        return null;
+    }
+}
+
+function obtenerProductosPorProveedor(int $id_proveedor): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT id_producto, codigo, nombre, existencia, imagen
+            FROM productos
+            WHERE id_proveedor = ? AND estado = 1
+            ORDER BY nombre
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_proveedor]);
+
+        return $consulta -> fetchAll(PDO::FETCH_ASSOC) ? : [];
+
+    } catch (Exception $error) {
+        error_log("Error al obtener los productos del proveedor " . $error -> getMessage());
+        return [];
+    }
+}
+
+function obtenerTiempoEntregaProveedor(int $id): int {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT tiempo_entrega 
+            FROM proveedores
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+
+        $dias = $consulta -> fetchColumn();
+
+        return $dias !== false ? (int) $dias : 0;
+    } catch (Exception $error) {
+        error_log("Error al obtener los dias de entrega " . $error -> getMessage());
+        return 0;
+    }
+}
+
+function obtenerPrecioCompra(int $id_producto): float {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT MAX(precio_compra) 
+            FROM lote_productos 
+            WHERE id_producto = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_producto]);
+        $precio = $consulta -> fetchColumn();
+
+        return $precio !== false && $precio !== null ? (float) $precio : 0.0;
+    } catch (Exception $error) {
+        error_log("Error al obtener el precio " . $error->getMessage());
+        return 0.0;
+    }
+}
+
+function obtenerExistenciaMinima(int $id_proveedor): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT id_producto, nombre, codigo, existencia, existencia_minima, unidad_medida
+            FROM productos
+            WHERE id_proveedor = ? AND existencia <= existencia_minima AND estado = 1
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_proveedor]);
+
+        $resultado = $consulta -> fetchAll(PDO::FETCH_ASSOC);
+
+        if ($resultado) {
+            return $resultado;
+        } else {
+            return [];
+        }
+
+    } catch (Exception $error) {
+        error_log("Error en obtener la existencia minima de un producto " . $error -> getMessage());
+        return [];
+    }
+}
 
 function ActualizarProducto(array $datos, $id){
     try{
@@ -275,6 +397,30 @@ class Productos {
 
     public static function obtenerProductoPorId(int $id): ?array{
         return obtenerProductoPorId($id);
+    }
+
+    public static function obtenerNombreProveedor(int $id): ?string {
+        return obtenerNombreProveedor($id);
+    }
+
+    public static function obtenerCorreoProveedor(int $id): ?string {
+        return obtenerCorreoProveedor($id);
+    }
+
+    public static function obtenerProductosPorProveedor(int $id_proveedor): array {
+        return obtenerProductosPorProveedor($id_proveedor);
+    }
+
+    public static function obtenerTiempoEntregaProveedor(int $id): int {
+        return obtenerTiempoEntregaProveedor($id);
+    }
+
+    public static function obtenerExistenciaMinima(int $id_proveedor) : array {
+        return obtenerExistenciaMinima($id_proveedor);
+    }
+
+    public static function obtenerPrecioCompra(int $id_producto): float {
+        return obtenerPrecioCompra($id_producto);
     }
 
     public static function ActualizarProducto(array $datos, $id){

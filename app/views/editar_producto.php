@@ -73,11 +73,11 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
           <div>
             <label class="label-campo" for="codigo">Código:</label>
             <input
-            type="text" 
-            class="campo" 
-            id="codigo" 
-            name="codigo" 
-            maxlength="20" 
+            type="text"
+            class="campo"
+            id="codigo"
+            name="codigo"
+            maxlength="20"
             value="<?= htmlspecialchars($old['codigo'] ?? $producto['codigo'] ?? '') ?>"
             required placeholder="Ej. PROD-001">
           </div>
@@ -85,12 +85,12 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
           <div class="campo-completo">
             <label class="label-campo" for="nombre">Nombre:</label>
-            <input 
-            type="text" 
-            class="campo" 
-            id="nombre" 
-            name="nombre" 
-            maxlength="50" 
+            <input
+            type="text"
+            class="campo"
+            id="nombre"
+            name="nombre"
+            maxlength="50"
             value="<?= htmlspecialchars($old['nombre'] ?? $producto['nombre'] ?? '') ?>"
             required placeholder="Ej. Croquetas Adulto Raza Mediana 15kg">
           </div>
@@ -117,17 +117,17 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
                   <button type="button" class="btn btn-chico" id="btn-abrir-modal-categoria">+ Nueva categoría</button>
                 </div>
             </div>
-                    
+
             <input class="label-campo" type="hidden" id="categoria_id_oculto" name="id_categoria" value="<?= htmlspecialchars($old['id_categoria'] ?? $producto['id_categoria'] ?? '') ?>">
-                    
+
             <script src="js/busc_cat.js"></script>
 
           <div class="contenedor-buscador">
             <label class="label-campo" for="id_proveedor">Proveedor (ID):</label>
-            <input 
-            type="text" 
-            class="campo" 
-            id="id_proveedor" 
+            <input
+            type="text"
+            class="campo"
+            id="id_proveedor"
             placeholder="Seleccionar..."
             autocomplete="off"
             value="<?= htmlspecialchars($old['id_proveedor'] ?? $producto['id_proveedor'] ?? '') ?>"
@@ -144,25 +144,25 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
           <div>
             <label class="label-campo" for="contenido">Contenido:</label>
-            <input 
-            type="number" 
-            step="0.01" 
-            class="campo" 
-            id="contenido" 
-            name="contenido" 
+            <input
+            type="number"
+            step="0.01"
+            class="campo"
+            id="contenido"
+            name="contenido"
             value="<?= htmlspecialchars($old['contenido'] ?? $producto['contenido'] ?? '') ?>"
             required placeholder="Ej. 15">
           </div>
 
-          <?php 
+          <?php
             $unidadActual = $old['unidad_medida'] ?? $producto['unidad_medida'] ?? '';
           ?>
           <div>
             <label class="label-campo" for="unidad_medida">Unidad de medida:</label>
-            <select 
-            class="campo" 
-            id="unidad_medida" 
-            name="unidad_medida" 
+            <select
+            class="campo"
+            id="unidad_medida"
+            name="unidad_medida"
             required>
               <option value="pza" <?= ($unidadActual === 'pza') ? 'selected' : '' ?>    >Pieza (pza)</option>
               <option value="kg" <?= ($unidadActual === 'kg') ? 'selected' : '' ?>    >Kilogramo (kg)</option>
@@ -187,7 +187,7 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
         <div class="campo-completo-sep">
           <label class="label-campo" for="imagen">Imagen del producto:</label>
-          <input 
+          <input
           type="file" class="campo" id="imagen" name="imagen" accept="image/*">
           <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
         </div>
@@ -203,30 +203,42 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
           </div>
         </div>
       </fieldset>
-      
+
       <fieldset>
         <legend>Precio e inventario</legend>
 
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="precio_venta">Precio de venta ($):</label>
-            <input 
-            type="number" 
-            step="0.01" 
-            class="campo" 
-            id="precio_venta" 
-            name="precio_venta" 
+            <input
+            type="number"
+            step="0.01"
+            class="campo"
+            id="precio_venta"
+            name="precio_venta"
             value="<?= htmlspecialchars($old['precio_venta'] ?? $producto['precio_venta'] ?? '') ?>"
             required placeholder="0.00">
           </div>
 
           <div>
+            <label class="label-campo" for="existencia">Existencia (Stock):</label>
+            <input
+            type="number"
+            step="0.01"
+            class="campo"
+            id="existencia"
+            name="existencia"
+            value="<?= htmlspecialchars($old['existencia'] ?? $producto['existencia'] ?? '') ?>"
+            required placeholder="0">
+          </div>
+
+          <div>
             <label class="label-campo" for="existencia_minima">Existencia mínima:</label>
             <input
-            type="number" 
-            step="0.01" 
+            type="number"
+            step="0.01"
             class="campo"
-            id="existencia_minima" 
+            id="existencia_minima"
             name="existencia_minima"
             value="<?= htmlspecialchars($old['existencia_minima'] ?? $producto['existencia_minima'] ?? '') ?>"
             required placeholder="0">
@@ -234,12 +246,12 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
           <div>
             <label class="label-campo" for="existencia_maxima">Existencia máxima:</label>
-            <input 
-            type="number" 
-            step="0.01" 
-            class="campo" 
-            id="existencia_maxima" 
-            name="existencia_maxima" 
+            <input
+            type="number"
+            step="0.01"
+            class="campo"
+            id="existencia_maxima"
+            name="existencia_maxima"
             value="<?= htmlspecialchars($old['existencia_maxima'] ?? $producto['existencia_maxima'] ?? '') ?>"
             required placeholder="0">
           </div>
@@ -247,23 +259,23 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
           <div>
             <label class="label-campo" for="fecha_ingreso">Fecha de ingreso:</label>
             <input
-             type="date" 
-             class="campo" 
-             id="fecha_ingreso" 
-             name="fecha_ingreso" 
+             type="date"
+             class="campo"
+             id="fecha_ingreso"
+             name="fecha_ingreso"
               value="<?= htmlspecialchars($old['fecha_ingreso'] ?? $producto['fecha_ingreso'] ?? '') ?>"
              required>
           </div>
 
-          <?php 
+          <?php
             $estado = $old['estado'] ?? $producto['estado'] ?? '';
           ?>
           <div>
             <label class="label-campo" for="estado">Estado:</label>
-            <select 
-            class="campo" 
-            id="estado" 
-            name="estado" 
+            <select
+            class="campo"
+            id="estado"
+            name="estado"
             required>
               <option value="1" <?= ((int)$estado === 1) ? 'selected' : '' ?>>Activo</option>
               <option value="0" <?= ((int)$estado === 0) ? 'selected' : '' ?>>Inactivo</option>
@@ -279,7 +291,6 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
     </form>
 
     <?php include __DIR__ . '/modal_categoria.php'; ?>
-  
       </div>
     </main>
 

@@ -7,7 +7,6 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 $usuario = $_SESSION['usuario'];
-
 require_once __DIR__ . '/../models/Productos.php';
 require_once __DIR__ . '/../models/conexion_db.php';
 
@@ -42,6 +41,7 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
 </head>
 
 <body>
+
   <div class="layout">
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 

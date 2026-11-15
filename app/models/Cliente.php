@@ -93,6 +93,62 @@ class Cliente
         }
     }
 
+    // cliente nuevo desde la pagina publica "Crear mi cuenta".
+    // La contrasena debe llegar encriptada (password_hash)
+    public static function registrarCuenta(array $datos): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+
+            $existe = $db->prepare("SELECT COUNT(*) FROM clientes WHERE usuario = ?");
+            $existe->execute([$datos['usuario']]);
+            if ((int) $existe->fetchColumn() > 0) {
+                return ['exito' => false, 'id' => null, 'mensaje' => 'Ese nombre de usuario ya está en uso.'];
+            }
+
+            $id = self::generarIdCliente($db);
+
+            $sql = "INSERT INTO clientes (
+                id_cliente, nombre, apellido, telefono, correo, calle, estado,
+                contacto_emergencia, telefono_emergencia, usuario, contrasena
+            ) VALUES (?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?)";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                $id,
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                !empty($datos['direccion']) ? $datos['direccion'] : null,
+                $datos['contacto_emergencia'],
+                $datos['telefono_emergencia'],
+                $datos['usuario'],
+                $datos['contrasena']
+            ]);
+
+            return ['exito' => true, 'id' => $id, 'mensaje' => 'Cuenta creada con éxito'];
+        } catch (Exception $e) {
+            error_log('Error en Cliente::registrarCuenta: ' . $e->getMessage());
+            return ['exito' => false, 'id' => null, 'mensaje' => 'No se pudo crear la cuenta. Intenta de nuevo.'];
+        }
+    }
+
+    // buscar un cliente activo por su nombre de usuario
+    public static function obtenerPorUsuario(string $usuario): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT id_cliente, nombre, contrasena FROM clientes WHERE usuario = ? AND esta_activo = 1");
+            $stmt->execute([$usuario]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::obtenerPorUsuario: ' . $e->getMessage());
+            return null;
+        }
+    }
+
     public static function actualizar(int $id, array $datos): array
     {
         try {

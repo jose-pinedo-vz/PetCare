@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (empty($_SESSION['id_cliente'])) {
+    header('Location: iniciar_sesion.php');
+    exit;
+}
+$paginaActiva = 'citas';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +15,8 @@
     <link rel="stylesheet" href="../css/v2/cliente.css">
 </head>
 <body>
+    <?php include __DIR__ . '/../layout/menu_cliente.php'; ?>
+
 
     <main class="contenedor contenedor--angosto">
         <div class="tarjeta tarjeta--formulario">

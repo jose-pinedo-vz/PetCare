@@ -36,7 +36,7 @@ $paginaActiva = 'inicio';
             <p class="seccion-inicio__subtitulo">Entra a tu cuenta para ver tus mascotas y tus citas.</p>
 
             <div class="rejilla-tarjetas">
-                <a class="tarjeta tarjeta-acceso" href="agendarCita.php">
+                <a class="tarjeta tarjeta-acceso" href="agendar_cita.php">
                     <span class="tarjeta-acceso__icono" aria-hidden="true"></span>
                     <h3 class="tarjeta-acceso__titulo">Agendar una cita</h3>
                     <p class="tarjeta-acceso__texto">Elige el servicio, el día y el horario.</p>
@@ -72,7 +72,7 @@ $paginaActiva = 'inicio';
                     <h3 class="tarjeta-servicio-mini__titulo">Baño</h3>
                     <p class="tarjeta-servicio-mini__texto">Baño y secado.</p>
                     <p class="tarjeta-servicio-mini__precio">60 min · $150.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=bano">Agendar</a>
+                    <a class="boton boton--chico" href="agendar_cita.php?servicio=bano">Agendar</a>
                 </article>
 
                 <article class="tarjeta tarjeta-servicio-mini">
@@ -80,7 +80,7 @@ $paginaActiva = 'inicio';
                     <h3 class="tarjeta-servicio-mini__titulo">Corte de pelo</h3>
                     <p class="tarjeta-servicio-mini__texto">Corte según el tipo de pelaje y lo que prefieras.</p>
                     <p class="tarjeta-servicio-mini__precio">90 min · $250.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=corte_pelo">Agendar</a>
+                    <a class="boton boton--chico" href="agendar_cita.php?servicio=corte_pelo">Agendar</a>
                 </article>
 
                 <article class="tarjeta tarjeta-servicio-mini">
@@ -103,7 +103,7 @@ $paginaActiva = 'inicio';
                     <h3 class="tarjeta-servicio-mini__titulo">Hotel de mascotas</h3>
                     <p class="tarjeta-servicio-mini__texto">Hospedaje para perros, gatos y otros mamíferos pequeños. Pedimos el esquema de vacunación completo. El baño y los cortes se cobran aparte.</p>
                     <p class="tarjeta-servicio-mini__precio">Consulta disponibilidad con nosotros</p>
-                    <a class="boton boton--secundario boton--chico" href="hotel_requisitos.php">Ver requisitos</a>
+                    <a class="boton boton--secundario boton--chico" href="solicitar_reservacion.php">Reservar hotel</a>
                 </article>
             </div>
         </section>

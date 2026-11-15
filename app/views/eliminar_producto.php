@@ -34,7 +34,7 @@ $imagen = $_GET['imagen'];
         <h1>Eliminar producto</h1>
       </div>
       <form action="../controllers/eliminar_producto.php" method="POST">
-  
+
       <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_producto ?>">
 
       <div class="tarjeta">

@@ -1,3 +1,12 @@
+<?php
+session_start();
+if (empty($_SESSION['id_cliente'])) {
+    header('Location: iniciar_sesion.php');
+    exit;
+}
+$paginaActiva = 'mascotas';
+$idMascota = (int)($_GET['id_mascota'] ?? 0);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +16,7 @@
     <link rel="stylesheet" href="../css/v2/cliente.css">
 </head>
 <body>
+    <?php include __DIR__ . '/../layout/menu_cliente.php'; ?>
 
     <main class="contenedor contenedor--angosto">
         <div class="tarjeta tarjeta--formulario">
@@ -15,11 +25,11 @@
 
             <p class="aviso">Dejará de aparecer en tu cuenta. Su historial médico se conserva en la veterinaria.</p>
 
-            <form action="confirmar_eliminar_mascota.php" method="post">
-                <input type="hidden" name="id_mascota" value="1"> 
+            <form action="../../controllers/cliente_eliminar_mascota.php" method="post">
+                <input type="hidden" name="id_mascota" value="<?= htmlspecialchars((string)$idMascota) ?>"> 
                 <div class="grupo-botones">
                     <button class="boton" type="submit">Sí, eliminar</button>
-                    <a class="boton boton--contorno" href="detalle_mascota.php?id_mascota=1">No, volver</a>
+                    <a class="boton boton--contorno" href="mis_mascotas.php">No, volver</a>
                 </div>
             </form>
         </div>

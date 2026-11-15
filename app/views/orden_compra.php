@@ -1,3 +1,108 @@
+<?php
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+
+    session_start();
+    require_once __DIR__ . "/../models/Productos.php";
+    require_once __DIR__ . "/../controllers/validar_orden_compra.php";
+
+    $productoSeleccionado = null;
+    $id_proveedor = null;
+
+    if (isset($_GET['id']) && $_GET['id'] != "") {
+        $id_producto = (int) $_GET['id'];
+        $productoSeleccionado = Productos::obtenerProductoPorId($id_producto);
+    }
+
+    if ($productoSeleccionado != null && isset($productoSeleccionado['id_proveedor'])) {
+        $id_proveedor = (int) $productoSeleccionado['id_proveedor'];
+
+    } elseif (isset($_GET['proveedor']) && $_GET['proveedor'] != "") {
+        $id_proveedor = (int) $_GET['proveedor'];
+    }
+
+    if (!isset($_SESSION['orden_proveedor']) || $_SESSION['orden_proveedor'] !== $id_proveedor) {
+        $_SESSION['orden_proveedor'] = $id_proveedor;
+        $_SESSION['orden_productos'] = [];
+        $_SESSION['orden_cantidades'] = [];
+    }
+
+    if (isset($_GET['cancelar'])) {
+        $_SESSION['orden_productos'] = [];
+        $_SESSION['orden_cantidades'] = [];
+        header("Location: inventario.php");
+        exit;
+    }
+
+    if (isset($_GET['quitar'])) {
+        $quitar = (int) $_GET['quitar'];
+        unset($_SESSION['orden_productos'][$quitar]);
+        unset($_SESSION['orden_cantidades'][$quitar]);
+        header("Location: orden_compra.php?proveedor=" . $id_proveedor);
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cantidad'])) {
+        $cantidadesNuevas = [];
+        foreach ($_POST['cantidad'] as $id => $cant) {
+            $id = (int) $id;
+            if (isset($_SESSION['orden_productos'][$id])) {
+                $cantidadesNuevas[$id] = max(1, (int) $cant);
+            }
+        }
+
+        $propuestas = $cantidadesNuevas + ($_SESSION['orden_cantidades'] ?? []);
+        $errores = validarCantidadesOrdenCompra($_SESSION['orden_productos'] ?? [], $propuestas);
+
+        foreach ($cantidadesNuevas as $id => $cant) {
+            if (!isset($errores[$id])) {
+                $_SESSION['orden_cantidades'][$id] = $cant;
+            }
+        }
+
+        if (count($errores) > 0) {
+            $_SESSION['error_orden'] = implode("\n\n", $errores);
+        }
+
+        header("Location: orden_compra.php?proveedor=" . $id_proveedor);
+        exit;
+    }
+
+    if ($productoSeleccionado != null) {
+        $id_prod = $productoSeleccionado['id_producto'];
+        $_SESSION['orden_productos'][$id_prod] = $productoSeleccionado;
+        if (!isset($_SESSION['orden_cantidades'][$id_prod])) {
+            $limites = limitePedido($productoSeleccionado);
+            $_SESSION['orden_cantidades'][$id_prod] = max(1, min($limites['minimo'], $limites['maximo']));
+        }
+        header("Location:orden_compra.php?proveedor=" . $id_proveedor);
+        exit;
+    } 
+
+    $productosOrden = $_SESSION['orden_productos'];
+
+    $diasEntrega = 0;
+    $productosProveedor = [];
+    if ($id_proveedor != null) {
+        $productosProveedor = Productos::obtenerProductosPorProveedor($id_proveedor);
+        $diasEntrega = Productos::obtenerTiempoEntregaProveedor($id_proveedor);
+    }
+
+    $fechaEmision = date('Y-m-d');
+    $fechaEntrega = date('Y-m-d', strtotime("+$diasEntrega days"));
+
+    $total = 0;
+    foreach ($productosOrden as $id_prod => $p) {
+        $cant = $_SESSION['orden_cantidades'][$id_prod] ?? 1;
+        $total += Productos::obtenerPrecioCompra((int) $id_prod) * $cant;
+    }
+
+    $existencia_Minima = Productos::obtenerExistenciaMinima($id_proveedor);
+
+    $mensajeError = $_SESSION['error_orden'] ?? null;
+    unset($_SESSION['error_orden']);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -21,31 +126,50 @@
             <div class="tarjeta">
                 <h2 class="subtitulo">Detalles de la orden</h2>
 
+                <?php if ($mensajeError) { ?>
+                    <div class="msg-error"> 
+                        <?php foreach (explode("\n\n", $mensajeError) as $error) { ?>
+                            <div>• <?php echo htmlspecialchars($error); ?></div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+
                 <div class="orden-compra-detalles">
-                    <p><strong>Proveedor:</strong> Nombre del proveedor</p>
+                    <p><strong>Proveedor:</strong>
+                        <?php
+                            if ($id_proveedor != null) {
+                                $nombreProveedor = Productos::obtenerNombreProveedor($id_proveedor);
+
+                                if ($nombreProveedor != null) {
+                                    echo htmlspecialchars($nombreProveedor);
+                                } else {
+                                    echo "Sin proveedor asignado";
+                                }
+                            } else {
+                                echo "Sin proveedor asignado";
+                            }
+                        ?>
+                    </p>
                 </div>
 
                 <section class="orden-compra-seccion" aria-labelledby="titulo-sugeridos">
                     <h2 id="titulo-sugeridos" class="subtitulo">Productos sugeridos</h2>
-                    <p class="orden-compra-ayuda">Productos con existencias bajas y productos agregados directamente a esta solicitud.</p>
-                    <!-- Datos de ejemplo: mostrar aquí sugerencias de bajo stock y productos solicitados manualmente. -->
+                    <p class="orden-compra-ayuda">Productos con existencias bajas generales</p>
                     <div class="orden-compra-sugerencias">
-                        <article class="orden-compra-sugerencia">
-                            <div>
-                                <span class="orden-compra-etiqueta">Stock bajo</span>
-                                <h3>Alimento para perro adulto</h3>
-                                <p>Código: ALI-001 · Existencia: 3 kg · Mínimo: 10 kg</p>
-                            </div>
-                            <button class="btn btn-chico" type="button">Agregar</button>
-                        </article>
-                        <article class="orden-compra-sugerencia">
-                            <div>
-                                <span class="orden-compra-etiqueta orden-compra-etiqueta-solicitado">Solicitud directa</span>
-                                <h3>Guantes de exploración</h3>
-                                <p>Código: MED-014 · Existencia: 24 piezas</p>
-                            </div>
-                            <button class="btn btn-chico" type="button">Agregar</button>
-                        </article>
+                        <?php if (count($existencia_Minima) > 0) { ?>
+                            <?php foreach ($existencia_Minima as $exis_mini) { ?>
+                                <article class="orden-compra-sugerencia">
+                                    <div>
+                                        <span class="orden-compra-etiqueta">Stock bajo</span>
+                                        <h3> <?php echo htmlspecialchars($exis_mini['nombre']); ?> </h3>
+                                        <p> Codigo: <?php echo htmlspecialchars($exis_mini['codigo']); ?> · Existencia: <?php echo htmlspecialchars($exis_mini['existencia']); ?> <?php echo htmlspecialchars($exis_mini['unidad_medida']) ?>; · Minimo: <?php echo htmlspecialchars($exis_mini['existencia_minima']) ?>  <?php echo htmlspecialchars($exis_mini['unidad_medida']); ?></p>
+                                    </div>
+                                    <a class="btn btn-chico" href= "orden_compra.php?proveedor=<?php echo $id_proveedor; ?>&id=<?php echo (int) $exis_mini['id_producto']; ?>">Agregar</a>
+                                </article>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <p> No hay productos con stock bajo en este momento </p>
+                        <?php } ?>
                     </div>
                 </section>
 
@@ -60,26 +184,26 @@
                                     <th>Código</th>
                                     <th>Nombre</th>
                                     <th>Existencia</th>
-                                    
+
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Catálogo ilustrativo: reemplazar por los productos relacionados con el proveedor seleccionado. -->
+                                <?php if (count($productosProveedor) > 0) {?>
+                                    <?php foreach ($productosProveedor as $prod) { ?>
+
                                 <tr>
-                                    <td><button class="btn btn-chico" type="button">Agregar</button></td>
-                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
-                                    <td>ALI-001</td>
-                                    <td>Pelotas</td>
-                                    <td>3</td>
+                                    <td><a class="btn btn-chico" href= "orden_compra.php?proveedor=<?php echo $id_proveedor; ?>&id=<?php echo (int) $prod['id_producto']; ?>">Agregar</a></td>
+                                    <td><img class="producto-imagen" src="../../<?php echo htmlspecialchars($prod['imagen']); ?>" alt="<?php echo htmlspecialchars($prod['nombre']); ?>"></td>
+                                    <td><?php echo htmlspecialchars($prod['codigo'])?></td>
+                                    <td><?php echo htmlspecialchars($prod['nombre'])?></td>
+                                    <td><?php echo htmlspecialchars($prod['existencia'])?></td>
                                 </tr>
-                                <tr>
-                                    <td><button class="btn btn-chico" type="button">Agregar</button></td>
-                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
-                                    <td>839301</td>
-                                    <td>Camas para gato</td>
-                                    <td>5</td>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <tr> 
+                                    <td colspan="5">Este proveedor no tiene productos registrados</td>
                                 </tr>
-                                
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
@@ -87,42 +211,62 @@
 
                 <section class="orden-compra-seccion" aria-labelledby="titulo-productos-seleccionados">
                     <h2 id="titulo-productos-seleccionados" class="subtitulo">Productos seleccionados para la orden</h2>
-                    <div class="tabla-envoltura">
-                        <table class="orden-compra-tabla-seleccionados">
-                            <thead>
-                                <tr>
-                                    <th>Imagen</th>
-                                    <th>Código</th>
-                                    <th>Producto</th>
-                                    <th>Contenido / unidad</th>
-                                    <th>Cantidad editable</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Selección de ejemplo: editar precio y cantidad; los controles son solo interfaz y no calculan ni guardan datos. -->
-                                <tr>
-                                    <td><img src="imagen.jpg" alt="Imagen de productos"></td>
-                                    <td>ALI-001</td>
-                                    <td>Alimento para perro adulto</td>
-                                    <td>10 kg</td>
-                                    <td><input type="number" min="1" value="2"></td>
-                                    <td class="acciones"><button class="btn btn-chico btn-peligro" type="button" aria-label="Eliminar Alimento para perro adulto">Eliminar</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <form id="form-orden" method="post" action="orden_compra.php?proveedor=<?php echo $id_proveedor; ?>">
+                        <div class="tabla-envoltura">
+                            <table class="orden-compra-tabla-seleccionados">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Código</th>
+                                        <th>Producto</th>
+                                        <th>Contenido / unidad</th>
+                                        <th>Cantidad editable</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (count($productosOrden) > 0) { ?>
+                                        <?php foreach ($productosOrden as $id_prod => $prodSelec) { ?>
+                                            <tr>
+                                                <td><img class="producto-imagen "src="../../<?php echo htmlspecialchars($prodSelec['imagen']); ?>" alt="<?php echo htmlspecialchars($prodSelec['nombre']); ?>"></td>
+                                                <td><?php echo htmlspecialchars($prodSelec['codigo']); ?></td>
+                                                <td><?php echo htmlspecialchars($prodSelec['nombre']); ?></td>
+                                                <td><?php echo htmlspecialchars($prodSelec['contenido'] . ' ' . $prodSelec['unidad_medida']); ?></td>
+                                                <td><input type="number" min="1" name="cantidad[<?php echo (int) $id_prod; ?>]" value="<?php echo (int) ($_SESSION['orden_cantidades'][$id_prod] ?? 1); ?>"></td>
+                                                <td class="acciones">
+                                                <a class="btn btn-chico btn-peligro" href="orden_compra.php?proveedor=<?php echo $id_proveedor; ?>&quitar=<?php echo (int) $id_prod; ?>">Eliminar</a>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    <?php } else { ?>
+                                        <tr>
+                                            <td colspan="6">No hay ningun producto seleccionado para esta orden</td>
+                                        </tr>
+                                    <?php
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php if (count($productosOrden) > 0) { ?>
+                            <button class="btn btn-chico" type="submit">Actualizar cantidades</button>
+                        <?php } ?>
+                    </form>
                 </section>
 
                 <div class="orden-compra-detalles">
-                    <p><strong>Fecha de emisión:</strong> 2024-06-15</p>
-                    <p><strong>Fecha de entrega:</strong> 2024-06-20</p>
-                    <p><strong>Total:</strong> $150.00</p>
+                    <p><strong>Fecha de emisión:</strong> <?php echo $fechaEmision; ?></p>
+                    <p><strong>Fecha de entrega:</strong> <?php echo $fechaEntrega; ?></p>
                 </div>
 
                 <div class="orden-compra-acciones">
-                    <a class="btn btn-peligro btn-chico" href="inventario.php">Cancelar orden</a>
-                    <a class= "btn btn-chico" href="../controllers/pdf_ordencompra.php" target="_blank" rel="noopener">Confirmar orden</a>
+                    <a class="btn btn-peligro btn-chico" href="orden_compra.php?proveedor=<?php echo $id_proveedor; ?>&cancelar=1">Cancelar orden</a>
+
+                    <?php if (count($productosOrden) > 0 ) { ?>
+                        <form method= "POST" action= "../controllers/enviar_correo.php" style= "display:inline">
+                            <button class= "btn btn-chico" type= "submit">Confirmar orden</button>
+                        </form> 
+                    <?php } ?>
                 </div>
 
             </div>
