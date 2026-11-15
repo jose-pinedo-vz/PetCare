@@ -28,7 +28,6 @@ $usuario=$_SESSION['usuario'];
   <div class="layout">
   <?php $paginaActiva = 'mascotas'; include __DIR__ . '/layout/sidebar.php'; ?>
 
-
   <main>
       <div class="migaja">Gestión de mascotas /</div>
       <div class="encabezado-pagina">
@@ -37,8 +36,8 @@ $usuario=$_SESSION['usuario'];
 
       <div class="tarjeta">
 
-        <div class="agregar-buscar">
-          <form method="get" action="mascotas.php" role="search">
+        <div class="barra-acciones-busqueda">
+          <form class="busqueda-barra" method="get" action="mascotas.php" role="search">
             <label class="visualmente-oculto" for="buscarMascota">Buscar mascota</label>
             <input class="campo buscador-inteligente" id="buscarMascota" name="buscar" type="search" placeholder="Buscar por nombre, especie o raza" value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>" autocomplete="off">
             <?php if (!empty($_GET['buscar'])): ?>
@@ -115,16 +114,16 @@ $usuario=$_SESSION['usuario'];
       <div class="campo-completo"><span class="label-campo">Alergias</span><span data-campo="alergias"></span></div>
       <div class="campo-completo"><span class="label-campo">Enfermedades</span><span data-campo="enfermedades"></span></div>
       <div class="campo-completo"><span class="label-campo">Vacunas</span><span data-campo="vacunas"></span></div>
-      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="alergias"></span></div>
+      <div class="campo-completo"><span class="label-campo">Observaciones</span><span data-campo="observaciones"></span></div>
     </div>
   </dialog>
 
 
   <script>
     document.querySelector('tbody').addEventListener('click', (e) => {
-      if(e.target.closest('a, button')) return;
+      if (e.target.closest('a, button')) return;
       const fila = e.target.closest('tr[data-registro]');
-      if(!fila) return;
+      if (!fila) return;
 
       const datos = JSON.parse(fila.dataset.registro);
       document.querySelectorAll('#modalDetalle [data-campo]').forEach((el) => {

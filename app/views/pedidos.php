@@ -1,3 +1,29 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+	session_start();
+}
+
+require_once __DIR__ . '/../models/Pedidos.php';
+
+if (empty($_SESSION['csrf_pedidos'])) {
+	$_SESSION['csrf_pedidos'] = bin2hex(random_bytes(32));
+}
+
+$escaparPedido = static fn ($valor): string => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+$pedidos = [];
+$errorPedidos = '';
+try {
+	$pedidos = Pedidos::obtenerPedidos();
+	foreach ($pedidos as &$pedido) {
+		$pedido['productos'] = Pedidos::obtenerDetalles((int) $pedido['clave_compra']);
+	}
+	unset($pedido);
+} catch (Throwable $e) {
+	error_log('Error al cargar pedidos: ' . $e->getMessage());
+	$pedidos = [];
+	$errorPedidos = 'No se pudieron cargar los pedidos. Verifica la conexión y las tablas de órdenes de compra.';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -26,6 +52,9 @@
 			</nav>
 
 			<section id="pedidos" aria-label="Pedidos pendientes">
+				<?php if ($errorPedidos !== ''): ?>
+					<p class="pedido-sin-resultados" role="alert"><?= $escaparPedido($errorPedidos) ?></p>
+				<?php endif; ?>
 				<div class="inventario-pedidos-toolbar">
 					<label class="visualmente-oculto" for="buscar-pedido">Buscar pedidos</label>
 					<input id="buscar-pedido" class="campo buscador-inteligente" type="search" placeholder="Buscar por proveedor, ID pedido...">
@@ -39,132 +68,86 @@
 				</div>
 
 				<div class="inventario-pedidos-grid" id="lista-pedidos">
-					<article class="pedido-tarjeta" data-pedido>
+					<?php foreach ($pedidos as $pedido): ?>
+						<?php
+						$idPedido = (int) $pedido['clave_compra'];
+						$estadoPedido = strtolower((string) $pedido['estado']);
+						$esPendiente = $estadoPedido === 'pendiente';
+						$claseEstado = $estadoPedido === 'entregado'
+							? 'pagada'
+							: ($estadoPedido === 'cancelado' ? 'cancelada' : 'pendiente');
+						$textoEstado = $estadoPedido === 'entregado'
+							? 'Entregado'
+							: ($estadoPedido === 'cancelado' ? 'Cancelado' : 'Pendiente');
+						?>
+					<article class="pedido-tarjeta" data-pedido data-pedido-id="<?= $idPedido ?>" data-estado="<?= $escaparPedido($estadoPedido) ?>">
 						<header class="pedido-encabezado">
 							<span class="pedido-icono" aria-hidden="true">OC</span>
 							<div>
 								<span class="pedido-etiqueta">Orden de compra</span>
-								<h2>ORD-001</h2>
+								<h2>ORD-<?= $escaparPedido($pedido['clave_compra']) ?></h2>
 							</div>
-							<span class="historial-estado pendiente">Pendiente</span>
+							<span class="historial-estado <?= $claseEstado ?>"><?= $textoEstado ?></span>
 						</header>
-						<a class="pedido-proveedor" href="#pedido-001">
+						<a class="pedido-proveedor" href="#pedido-<?= $idPedido ?>">
 							<span>Proveedor</span>
-							<strong>Distribuidores Caninos</strong>
+							<strong><?= $escaparPedido($pedido['proveedor']) ?></strong>
 							<span class="pedido-flecha" aria-hidden="true">›</span>
 						</a>
 						<div class="pedido-fechas">
-							<div><span>Fecha de solicitud</span><time datetime="2026-10-15">2026-10-15</time></div>
-							<div><span>Fecha esperada</span><time datetime="2026-10-20">2026-10-20</time></div>
+							<div><span>Fecha de solicitud</span><time datetime="<?= $escaparPedido($pedido['fecha_solicitud']) ?>"><?= $escaparPedido($pedido['fecha_solicitud']) ?></time></div>
+							<div><span>Fecha esperada</span><time datetime="<?= $escaparPedido($pedido['fecha_esperada'] ?? '') ?>"><?= $escaparPedido($pedido['fecha_esperada'] ?? 'Sin definir') ?></time></div>
 						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
+						<div class="pedido-total"><span>Total estimado</span><strong>$<?= number_format((float) $pedido['total_estimado'], 2, '.', ',') ?></strong></div>
 						<div class="pedido-acciones">
-									<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
+							<?php if ($esPendiente): ?>
+								<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
+							<?php endif; ?>
 							<button class="btn btn-secundario btn-chico" type="button" data-abrir-detalles>Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-001">Eliminar</button>
+							<?php if ($esPendiente): ?>
+								<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-<?= $escaparPedido($pedido['clave_compra']) ?>">Eliminar</button>
+							<?php endif; ?>
 						</div>
 						<template data-productos>
-							<tr><td>Alimento premium para perro 10 kg</td><td>2</td><td>$600.00</td><td>$1,200.00</td></tr>
-							<tr><td>Shampoo para perro 500 ml</td><td>3</td><td>$100.00</td><td>$300.00</td></tr>
+							<?php foreach ($pedido['productos'] as $productoPedido): ?>
+								<?php
+								$precioUnitario = (float) $productoPedido['precio_unitario'];
+								$cantidadPedido = (int) $productoPedido['cantidad'];
+								?>
+								<tr><td><?= $escaparPedido($productoPedido['nombre']) ?></td><td><?= $cantidadPedido ?></td><td>$<?= number_format($precioUnitario, 2, '.', ',') ?></td><td>$<?= number_format($precioUnitario * $cantidadPedido, 2, '.', ',') ?></td></tr>
+							<?php endforeach; ?>
 						</template>
 					</article>
-
-					<article class="pedido-tarjeta" data-pedido>
-						<header class="pedido-encabezado">
-							<span class="pedido-icono" aria-hidden="true">OC</span>
-							<div>
-								<span class="pedido-etiqueta">Orden de compra</span>
-								<h2>ORD-002</h2>
-							</div>
-							<span class="historial-estado pagada">Entregado</span>
-						</header>
-						<a class="pedido-proveedor" href="#pedido-002">
-							<span>Proveedor</span>
-							<strong>Distribuidores Caninos</strong>
-							<span class="pedido-flecha" aria-hidden="true">›</span>
-						</a>
-						<div class="pedido-fechas">
-							<div><span>Fecha de solicitud</span><time datetime="2026-10-20">2026-10-20</time></div>
-							<div><span>Fecha esperada</span><time datetime="2026-10-25">2026-10-25</time></div>
-						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
-						<div class="pedido-acciones">
-							<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
-							<button class="btn btn-secundario btn-chico" type="button" data-abrir-detalles>Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-002">Eliminar</button>
-						</div>
-						<template data-productos>
-							<tr><td>Alimento premium para perro 10 kg</td><td>1</td><td>$600.00</td><td>$600.00</td></tr>
-							<tr><td>Alimento para gato adulto 3 kg</td><td>3</td><td>$250.00</td><td>$750.00</td></tr>
-							<tr><td>Juguete de cuerda</td><td>3</td><td>$50.00</td><td>$150.00</td></tr>
-						</template>
-					</article>
-
-					<article class="pedido-tarjeta" data-pedido>
-						<header class="pedido-encabezado">
-							<span class="pedido-icono" aria-hidden="true">OC</span>
-							<div>
-								<span class="pedido-etiqueta">Orden de compra</span>
-								<h2>ORD-003</h2>
-							</div>
-							<span class="historial-estado cancelada">Cancelado</span>
-						</header>
-						<a class="pedido-proveedor" href="#pedido-003">
-							<span>Proveedor</span>
-							<strong>Distribuidores Caninos</strong>
-							<span class="pedido-flecha" aria-hidden="true">›</span>
-						</a>
-						<div class="pedido-fechas">
-							<div><span>Fecha de solicitud</span><time datetime="2026-10-20">2026-10-20</time></div>
-							<div><span>Fecha esperada</span><time datetime="2026-10-25">2026-10-25</time></div>
-						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$1,500.00</strong></div>
-						<div class="pedido-acciones">
-							<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
-							<button class="btn btn-secundario btn-chico" type="button" data-abrir-detalles>Ver detalles</button>
-							<button class="btn btn-peligro pedido-eliminar btn-chico" type="button" aria-label="Eliminar ORD-003">Eliminar</button>
-						</div>
-						<template data-productos>
-							<tr><td>Alimento para gato adulto 3 kg</td><td>4</td><td>$250.00</td><td>$1,000.00</td></tr>
-							<tr><td>Shampoo para perro 500 ml</td><td>5</td><td>$100.00</td><td>$500.00</td></tr>
-						</template>
-					</article>
+					<?php endforeach; ?>
 				</div>
 
-				<p class="pedido-sin-resultados" id="sin-pedidos" hidden>No hay pedidos que coincidan con la búsqueda.</p>
+				<p class="pedido-sin-resultados" id="sin-pedidos" <?= $pedidos === [] ? '' : 'hidden' ?>>No hay pedidos que coincidan con la búsqueda.</p>
 				<div class="pedido-paginacion" aria-label="Paginación de pedidos">
-					<span>1-3 de 8 pedidos</span>
-					<button class="btn btn-secundario btn-chico" type="button" aria-label="Página anterior" disabled>‹</button>
-					<button class="btn btn-secundario btn-chico" type="button" aria-label="Página siguiente">›</button>
+					<span><?= count($pedidos) ?> pedidos</span>
 				</div>
 			</section>
 			</div>
 		</main>
 	</div>
 
-	<dialog class="lote-dialog" id="dialogo-registro-pedido" aria-labelledby="titulo-registro-pedido">
+	<dialog class="lote-dialog" id="dialogo-registro-pedido" aria-labelledby="titulo-registro-pedido" data-csrf="<?= $escaparPedido($_SESSION['csrf_pedidos']) ?>">
 		<h2 id="titulo-registro-pedido">Registrar pedido</h2>
 		<form id="formulario-registro-pedido">
 			<div class="lote-formulario">
 				<div class="lote-campo">
 					<label for="pedido-id">Código de lote</label>
-					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" required>
+					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" pattern="(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+" required>
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-producto">Producto</label>
 					<select class="campo" id="pedido-producto" name="producto" required>
 						<option value="">Selecciona un producto</option>
-						<option value="1">1 · Pelota</option>
-						<option value="2">2 · Collar</option>
 					</select>
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-proveedor">Proveedor</label>
 					<select class="campo" id="pedido-proveedor" name="proveedor" required>
 						<option value="">Selecciona un proveedor</option>
-						<option value="Distribuidora Canina">Distribuidora Canina</option>
-						<option value="Pet Supplies MX">Pet Supplies MX</option>
-						<option value="Mascota Feliz">Mascota Feliz</option>
 					</select>
 				</div>
 				<div class="lote-campo">
@@ -173,15 +156,15 @@
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-precio">Precio de compra</label>
-					<input class="campo" id="pedido-precio" name="precio_compra" type="number" min="0" step="0.01" required>
+					<input class="campo" id="pedido-precio" name="precio_compra" type="number" min="0.01" step="0.01" readonly required>
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-ubicacion">Ubicación</label>
-					<input class="campo" id="pedido-ubicacion" name="ubicacion" type="text" maxlength="20" required>
+					<input class="campo" id="pedido-ubicacion" name="ubicacion" type="text" maxlength="20" pattern="(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+" required>
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-cantidad">Cantidad</label>
-					<input class="campo" id="pedido-cantidad" name="cantidad" type="number" min="0" step="1" required>
+					<input class="campo" id="pedido-cantidad" name="cantidad" type="number" min="1" step="1" required>
 				</div>
 			</div>
 			<div class="lote-dialog-acciones">
@@ -311,6 +294,7 @@
 			mensajeSinPedidos.hidden = pedidosVisibles > 0;
 		});
 	</script>
+	<script src="js/pedidos.js?v=2"></script>
 </body>
 
 </html>

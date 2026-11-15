@@ -1,3 +1,32 @@
+<?php  
+session_start();
+
+    // Obtener errores y datos enviados previamente (si existen)
+    $errores = $_SESSION['errores'] ?? [];
+    $old     = $_SESSION['old'] ?? [];
+
+    // Limpiar la sesión para que las alertas no reaparezcan al recargar
+    unset($_SESSION['errores']);
+    unset($_SESSION['old']);
+
+if (!isset($_GET['id']) && !$old['id']) {
+    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+    header("Location: inventario.php");
+    exit();
+}
+require_once __DIR__ . '/../models/proveedores.php';
+$proveedor = obtenerProveedoresActivos();
+
+require_once __DIR__ . '/../models/categ_prod.php';
+$categorias = Categoria::obtenerCategoriasActivas();
+
+require_once __DIR__ . '/../models/Productos.php';
+$id_producto = (int)($_GET['id'] ?? $old['id'] ?? 0);
+$producto = Productos::obtenerProductoPorId((int)($id_producto));
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -22,19 +51,34 @@
       </div>
 
       <div class="tarjeta">
-    <form action="actualizar_producto.php" method="POST" enctype="multipart/form-data">
+
+      <?php if (!empty($errores)): ?>
+            <div class="msg-error">
+              <h4>Por favor corrige los siguientes errores:</h4>
+              <ul>
+                <?php foreach ($errores as $error): ?>
+                  <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+        <?php endif; ?>
+
+    <form action="../controllers/actualizar_producto.php" method="POST" enctype="multipart/form-data">
+
+      <input type="hidden" id="id_producto" name="id_producto" value="<?= (int)$id_producto?>">
        <fieldset>
         <legend>Datos básicos</legend>
 
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="codigo">Código:</label>
-            <input 
+            <input
             type="text" 
             class="campo" 
             id="codigo" 
             name="codigo" 
             maxlength="20" 
+            value="<?= htmlspecialchars($old['codigo'] ?? $producto['codigo'] ?? '') ?>"
             required placeholder="Ej. PROD-001">
           </div>
 
@@ -47,27 +91,56 @@
             id="nombre" 
             name="nombre" 
             maxlength="50" 
+            value="<?= htmlspecialchars($old['nombre'] ?? $producto['nombre'] ?? '') ?>"
             required placeholder="Ej. Croquetas Adulto Raza Mediana 15kg">
           </div>
 
-          <div>
-            <label class="label-campo" for="id_categoria">Categoría (ID):</label>
-            <input 
-            type="number" 
-            class="campo" 
-            id="id_categoria" 
-            name="id_categoria" 
-            placeholder="ID Categoría" required>
-          </div>
+          <div class="categoria-campo">
+                <label class="label-campo" for="id_categoria">Categoría (ID):</label>
+                <div class="categoria-controles">
+                  <div class="contenedor-buscador">
+                    <input
+                    type="text" 
+                    class="campo" 
+                    id="id_categoria" 
+                    placeholder="Seleccionar categoría..." 
+                    autocomplete="off"
+                    value="<?= htmlspecialchars($old['id_categoria'] ?? $producto['id_categoria'] ?? '') ?>"
+                    required>
 
-          <div>
+                    <ul id="lista_categorias" class="lista-resultados">
+                        <?php foreach ($categorias as $cat): ?>
+                          <li data-id="<?php echo $cat['id_categoria']; ?>" data-nombre="<?php echo htmlspecialchars($cat['nombre']); ?>"><?php echo htmlspecialchars("Id: " . $cat['id_categoria'] . " - " . $cat['nombre']); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                  </div>
+                  <button type="button" class="btn btn-chico" id="btn-abrir-modal-categoria">+ Nueva categoría</button>
+                </div>
+            </div>
+                    
+            <input class="label-campo" type="hidden" id="categoria_id_oculto" name="id_categoria" value="<?= htmlspecialchars($old['id_categoria'] ?? $producto['id_categoria'] ?? '') ?>">
+                    
+            <script src="js/busc_cat.js"></script>
+
+          <div class="contenedor-buscador">
             <label class="label-campo" for="id_proveedor">Proveedor (ID):</label>
             <input 
-            type="number" 
+            type="text" 
             class="campo" 
             id="id_proveedor" 
-            name="id_proveedor" required>
+            placeholder="Seleccionar..."
+            autocomplete="off"
+            value="<?= htmlspecialchars($old['id_proveedor'] ?? $producto['id_proveedor'] ?? '') ?>"
+            required>
+
+            <ul id="lista_proveedores" class="lista-resultados">
+              <?php foreach ($proveedor as $prov): ?>
+                <li data-id="<?php echo $prov['id_proveedor']; ?>" data-razon="<?php echo htmlspecialchars($prov['razon_social']); ?>"><?php echo htmlspecialchars("Id: " . $prov['id_proveedor'] . " - " . $prov['razon_social']); ?>
+                </li>
+              <?php endforeach; ?>
           </div>
+          <input class="label-campo" type="hidden" id="proveedor_id_oculto" name="id_proveedor" value="<?= htmlspecialchars($old['id_proveedor'] ?? $producto['id_proveedor'] ?? '') ?>">
+          <script src="js/busc_proveed.js"></script>
 
           <div>
             <label class="label-campo" for="contenido">Contenido:</label>
@@ -77,9 +150,13 @@
             class="campo" 
             id="contenido" 
             name="contenido" 
+            value="<?= htmlspecialchars($old['contenido'] ?? $producto['contenido'] ?? '') ?>"
             required placeholder="Ej. 15">
           </div>
 
+          <?php 
+            $unidadActual = $old['unidad_medida'] ?? $producto['unidad_medida'] ?? '';
+          ?>
           <div>
             <label class="label-campo" for="unidad_medida">Unidad de medida:</label>
             <select 
@@ -87,8 +164,13 @@
             id="unidad_medida" 
             name="unidad_medida" 
             required>
-              <option value="pza">Pieza (pza)</option>
-              <option value="kg">Kilogramo (kg)</option>
+              <option value="pza" <?= ($unidadActual === 'pza') ? 'selected' : '' ?>    >Pieza (pza)</option>
+              <option value="kg" <?= ($unidadActual === 'kg') ? 'selected' : '' ?>    >Kilogramo (kg)</option>
+              <option value="g" <?= ($unidadActual === 'g') ? 'selected' : '' ?>    >Gramos (g)</option>
+              <option value="l" <?= ($unidadActual === 'l') ? 'selected' : '' ?>    >Litros (l)</option>
+              <option value="ml" <?= ($unidadActual === 'ml') ? 'selected' : '' ?>    >Mililitros (ml)</option>
+              <option value="caja" <?= ($unidadActual === 'caja') ? 'selected' : '' ?>    >Caja (caja)</option>
+              <option value="paq" <?= ($unidadActual === 'paq') ? 'selected' : '' ?>        >Paquete (paq)</option>
             </select>
           </div>
 
@@ -99,14 +181,14 @@
             id="descripcion" 
             name="descripcion" 
             rows="2" 
-            placeholder="Descripción breve del producto..." required></textarea>
+            placeholder="Descripción breve del producto..." required><?= htmlspecialchars($old['descripcion'] ?? $producto['descripcion'] ?? '') ?></textarea>
           </div>
         </div>
 
         <div class="campo-completo-sep">
           <label class="label-campo" for="imagen">Imagen del producto:</label>
           <input 
-          type="file" class="campo" id="imagen" name="imagen" accept="image/*" required>
+          type="file" class="campo" id="imagen" name="imagen" accept="image/*">
           <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
         </div>
 
@@ -123,20 +205,9 @@
       </fieldset>
       
       <fieldset>
-        <legend>Precios e Inventario</legend>
+        <legend>Precio e inventario</legend>
 
         <div class="grid-formulario">
-          <div>
-            <label class="label-campo" for="precio_compra">Precio de compra ($):</label>
-            <input 
-            type="number" 
-            step="0.01" 
-            class="campo" 
-            id="precio_compra" 
-            name="precio_compra" 
-            required placeholder="0.00">
-          </div>
-
           <div>
             <label class="label-campo" for="precio_venta">Precio de venta ($):</label>
             <input 
@@ -145,18 +216,8 @@
             class="campo" 
             id="precio_venta" 
             name="precio_venta" 
+            value="<?= htmlspecialchars($old['precio_venta'] ?? $producto['precio_venta'] ?? '') ?>"
             required placeholder="0.00">
-          </div>
-
-          <div>
-            <label class="label-campo" for="existencia">Existencia (Stock):</label>
-            <input 
-            type="number" 
-            step="0.01" 
-            class="campo" 
-            id="existencia" 
-            name="existencia" 
-            required placeholder="0">
           </div>
 
           <div>
@@ -167,6 +228,7 @@
             class="campo"
             id="existencia_minima" 
             name="existencia_minima"
+            value="<?= htmlspecialchars($old['existencia_minima'] ?? $producto['existencia_minima'] ?? '') ?>"
             required placeholder="0">
           </div>
 
@@ -178,9 +240,24 @@
             class="campo" 
             id="existencia_maxima" 
             name="existencia_maxima" 
+            value="<?= htmlspecialchars($old['existencia_maxima'] ?? $producto['existencia_maxima'] ?? '') ?>"
             required placeholder="0">
           </div>
 
+          <div>
+            <label class="label-campo" for="fecha_ingreso">Fecha de ingreso:</label>
+            <input
+             type="date" 
+             class="campo" 
+             id="fecha_ingreso" 
+             name="fecha_ingreso" 
+              value="<?= htmlspecialchars($old['fecha_ingreso'] ?? $producto['fecha_ingreso'] ?? '') ?>"
+             required>
+          </div>
+
+          <?php 
+            $estado = $old['estado'] ?? $producto['estado'] ?? '';
+          ?>
           <div>
             <label class="label-campo" for="estado">Estado:</label>
             <select 
@@ -188,25 +265,11 @@
             id="estado" 
             name="estado" 
             required>
-              <option value="activo" selected>Activo</option>
-              <option value="inactivo">Inactivo</option>
+              <option value="1" <?= ((int)$estado === 1) ? 'selected' : '' ?>>Activo</option>
+              <option value="0" <?= ((int)$estado === 0) ? 'selected' : '' ?>>Inactivo</option>
             </select>
           </div>
         </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Logística y Almacén</legend>
-
-          <div>
-            <label class="label-campo" for="ubicacion">Ubicación / Estante:</label>
-            <input 
-             type="text" 
-             class="campo" 
-             id="ubicacion" 
-             name="ubicacion" maxlength="20" >
-          </div>
-
       </fieldset>
 
       <div class="acciones-formulario">
@@ -214,6 +277,8 @@
         <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
     </form>
+
+    <?php include __DIR__ . '/modal_categoria.php'; ?>
   
       </div>
     </main>
@@ -226,6 +291,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-producto.js"></script>
+  <script src="js/modal-categoria.js"></script>
 </body>
 
 </html>
