@@ -19,7 +19,7 @@
             <div class="grupo-botones">
                 <a class="boton" href="agendar_cita.php?id_mascota=1">Agendar cita</a>
                 <a class="boton boton--contorno" href="editar_mascota.php?id_mascota=1">Editar</a>
-                <a class="boton boton--contorno" href="confirmar_eliminar_mascota.php?id_mascota=1">Eliminar</a>
+                <a class="boton boton--contorno" href="eliminar_mascota.php?id_mascota=1">Eliminar</a>
             </div>
         </div>
 
