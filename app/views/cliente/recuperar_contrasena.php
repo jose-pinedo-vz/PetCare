@@ -18,7 +18,7 @@ $paginaActiva = '';
             <h1 class="tarjeta__titulo">Recuperar contraseña</h1>
             <p class="tarjeta__subtitulo">Escribe tu usuario y tu correo para continuar.</p>
 
-            <form action="validar_recuperacion.php" method="post">
+            <form action="" method="post">
                 <div class="formulario-rejilla">
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="usuario">Usuario</label>

@@ -4,7 +4,7 @@ if (empty($_SESSION['id_cliente'])) {
     header('Location: iniciar_sesion.php');
     exit;
 }
-$paginaActiva = 'servicios';
+$paginaActiva = 'reservaciones';
 ?>
 <!DOCTYPE html>
 <html lang="es">

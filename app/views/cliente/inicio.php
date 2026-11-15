@@ -103,7 +103,7 @@ $paginaActiva = 'inicio';
                     <h3 class="tarjeta-servicio-mini__titulo">Hotel de mascotas</h3>
                     <p class="tarjeta-servicio-mini__texto">Hospedaje para perros, gatos y otros mamíferos pequeños. Pedimos el esquema de vacunación completo. El baño y los cortes se cobran aparte.</p>
                     <p class="tarjeta-servicio-mini__precio">Consulta disponibilidad con nosotros</p>
-                    <a class="boton boton--secundario boton--chico" href="hotel_requisitos.php">Ver requisitos</a>
+                    <a class="boton boton--secundario boton--chico" href="solicitar_reservacion.php">Reservar hotel</a>
                 </article>
             </div>
         </section>

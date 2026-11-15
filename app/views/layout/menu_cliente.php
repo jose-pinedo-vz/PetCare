@@ -8,6 +8,7 @@ $mcModulos = [
     'inicio'    => ['Inicio',         'inicio.php',       false],
     'mascotas'  => ['Mis mascotas',   'mis_mascotas.php', true],
     'citas'     => ['Mis citas',      'mis_citas.php',    true],
+    'reservaciones' => ['Mis reservaciones', 'mis_reservaciones.php', true],
     'servicios' => ['Servicios',      'servicios.php',    false],
     'equipo'    => ['Nuestro equipo', 'nuestro_equipo.php',       false],
 ];
@@ -44,6 +45,7 @@ function mcEsc(string $texto): string {
         <div class="barra-navegacion__cuenta">
 <?php if ($mcConSesion): ?>
           <span class="barra-navegacion__saludo">Hola, <?= mcEsc($mcCliente) ?></span>
+          <a class="boton boton--contorno-claro boton--chico" href="mi_perfil.php">Mi perfil</a>
           <a class="boton boton--contorno-claro boton--chico" href="../../controllers/cliente_logout.php">Salir</a>
 <?php else: ?>
           <a class="boton boton--contorno-claro boton--chico" href="iniciar_sesion.php">Iniciar sesión</a>

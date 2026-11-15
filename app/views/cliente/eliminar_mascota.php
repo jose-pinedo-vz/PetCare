@@ -25,7 +25,7 @@ $paginaActiva = 'mascotas';
 
             <p class="aviso">Dejará de aparecer en tu cuenta. Su historial médico se conserva en la veterinaria.</p>
 
-            <form action="confirmar_eliminar_mascota.php" method="post">
+            <form action="" method="post">
                 <input type="hidden" name="id_mascota" value="1"> 
                 <div class="grupo-botones">
                     <button class="boton" type="submit">Sí, eliminar</button>
