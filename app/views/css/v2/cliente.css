@@ -1058,3 +1058,17 @@ img.foto-marcador         { width: 100%; object-fit: cover; }
     font-size: 14px;
     text-align: center;
 }
+/* Ficha de la mascota (detalle_mascota) */
+.foto-marcador--ficha {
+    height: 220px;
+    margin-bottom: 20px;
+}
+
+/* Mensajes de los formularios */
+.aviso--error {
+    background: var(--color-estado-cancelado);
+}
+
+.aviso--exito {
+    background: var(--color-estado-exito);
+}
