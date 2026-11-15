@@ -55,14 +55,14 @@ function old(string $clave): string
         $id_cita = (int)$id_consulta;
       ?>
 
-    <form action="../controllers/servicioCorteUnias.php" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="id_cita" value="<?= (int)$id_consulta ?>">
+    <form action="../controllers/servicioCorteUnias.php" method="POST">
+      <input type="hidden" name="id_cita" value="<?= $id_cita ?>">
 
       <fieldset>
         <legend>Datos de la consulta</legend>
         <div class="grid-formulario">
 
-        <fieldset>
+        
           <div class="campo-completo">
             <label class="label-campo" for="comportamiento">Comportamiento:</label>
             <textarea class="campo" id="comportamiento" name="comportamiento" rows="3" placeholder="Comportamiento del animal durante el servicio"></textarea>
@@ -74,7 +74,7 @@ function old(string $clave): string
         </div>
 
          
-      </fieldset>
+    
         
 
       </fieldset>

@@ -353,18 +353,52 @@
 
         public static function insertarDesparacitacion($id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones)
         {
-            // try
-            // {
+            try
+            {
                 $query = "INSERT INTO servicio_desparasitacion (id_cita, tipo, producto_utilizado, proxima_aplicacion, dosis, veterinario, observaciones) 
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 return $stml->execute([$id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones]);
-            // }
-            // catch (Exception $e)
-            // {
-            //     return false;
-            // }
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+
+        public static function insertarCorteUnias($id_cita, $tipo_servicio, $precio, $observaciones, $comportamiento)
+        {
+            try
+            {
+                $query = "INSERT INTO servicio_corte_unas (id_cita, tipo_servicio, precio, observaciones, comportamiento, estado) 
+                        VALUES (?, ?, ?, ?, ?, 1)";
+
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                
+                // Mandamos los 5 parámetros restantes (ya sin el estado)
+                return $stml->execute([$id_cita, $tipo_servicio, $precio, $observaciones, $comportamiento]);
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+
+        public static function marcarCitaAtendida($id_cita)
+        {
+            try
+            {
+                $query = "UPDATE citas SET estado_cita = 'atendida' WHERE id_cita = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                return $stml->execute([$id_cita]);
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
         }
     }
 ?>
