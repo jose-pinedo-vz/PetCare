@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita)
 {
     $_SESSION['error'] = $mensaje;
-    $url = "../views/servicioCortepelo.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
+    $url = "../views/servicioBanio.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
     header("Location: " . $url);
     exit();
 }
@@ -18,16 +18,16 @@ function errorSession($mensaje, $id_cita)
 if ($_SERVER["REQUEST_METHOD"] === "POST")
 {
     $id_cita = trim($_POST['id_cita'] ?? '');
-    $tipoCorte = trim($_POST['Tipo'] ?? '');
-    $Longitud = trim($_POST['Longitud'] ?? '');
-    $corte_higienico = trim($_POST['corte_higienico'] ?? '');
-    $accesorios = trim($_POST['accesorios'] ?? ''); 
-    //$Observaciones = trim($_POST['Observaciones'] ?? ''); 
-    $corteCara = trim($_POST['corteCara'] ?? ''); 
-    $cortePatas = trim($_POST['cortePatas'] ?? ''); 
-    $Deslanado = trim($_POST['Deslanado'] ?? ''); 
-    $Observaciones = trim($_POST['Observaciones'] ?? ''); 
-    $Cepillado = trim($_POST['Cepillado'] ?? '');
+    $tipoBanio = trim($_POST['Tipo'] ?? '');
+    // $tipoBanio = trim($_POST['Tipo'] ?? '');
+    $Shampoo = trim($_POST['Shampoo'] ?? '');
+    $TratamientoAdicional = trim($_POST['TratamientoAdicional'] ?? '');
+    $Cepillado = trim($_POST['Cepillado'] ?? ''); 
+    $Observaciones = trim($_POST['observaciones'] ?? ''); 
+    $Condiciones_recibidas = trim($_POST['Condiciones_recibidas'] ?? ''); 
+    $Condiciones_entrega = trim($_POST['Condiciones_entrega'] ?? ''); 
+    $Secado = trim($_POST['Secado'] ?? ''); 
+    // $Cepillado = trim($_POST['Cepillado'] ?? '');
 
     //$Deslanado = trim($_POST['Deslanado'] ?? ''); 
     if ($id_cita === '') {
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         exit();
     }
 
-    if ($tipoCorte === '' || $Longitud === '' || $corte_higienico === '' || $accesorios === '' || $Observaciones === '' || $corteCara === '' || $cortePatas === '' || $Deslanado === '' || $Observaciones === '' || $Cepillado === '') {
+    if ($tipoBanio === '' || $Shampoo === '' || $TratamientoAdicional === '' || $Cepillado === '' || $Observaciones === '' || $Condiciones_recibidas === '' || $Condiciones_entrega === '' || $Secado === '') {
         errorSession("Todos los campos son obligatorios.", $id_cita);
         exit();
     }
@@ -51,24 +51,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         exit();
     }
 
-    $tipo_servicio = "Corte de uñas";
-    $precio = 0.00; 
-    $estado = "1";    
+    if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,]+$/u', $Condiciones_entrega)) 
+    {
+        errorSession("Los campos contienen caracteres no válidos.", $id_cita);
+        exit();
+    }
 
-    $insercion = ConexionesClientes::insertarCortePelo(
+    if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,]+$/u', $Condiciones_recibidas))
+    {
+        errorSession("Los campos contienen caracteres no válidos.", $id_cita);
+        exit();
+    }
+
+    $estado = "En proceso"; 
+    $precio = 150.00;       
+
+    $insercion = ConexionesClientes::insertarBano(
         (int)$id_cita, 
-        $tipoCorte, 
-        $Longitud, 
-        $corte_higienico, 
-        $corteCara, 
-        $cortePatas, 
-        $Cepillado,
-        $Deslanado, 
-        $accesorios, 
-        (float)0.00,
+        $tipoBanio, 
+        $Shampoo, 
+        $TratamientoAdicional, 
+        $Cepillado, 
+        $Secado, 
+        (float)$precio, 
+        $estado, 
         $Observaciones, 
+        $Condiciones_recibidas, 
+        $Condiciones_entrega
     );
 
+    if (!$insercion) {
+        errorSession("Error al guardar la información del baño.", (int)$id_cita);
+        exit();
+    }
     
 
     if (!$insercion) {

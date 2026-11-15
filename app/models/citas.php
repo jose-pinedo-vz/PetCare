@@ -403,8 +403,8 @@
 
         public static function insertarCortePelo($id_cita, $tipo_corte, $longitud_corte, $corte_higienico, $corte_cara, $corte_patas, $cepillado, $deslanado, $accesorios, $precio, $observaciones)
         {
-            // try
-            // {
+            try
+            {
                 $query = "INSERT INTO servicio_corte_pelo (id_cita, tipo_corte, longitud_corte, corte_higienico, corte_cara, corte_patas, cepillado, deslanado,  
                 precio, observaciones) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -424,12 +424,57 @@
                     $precio, 
                     $observaciones
                 ]);
-            //}
-            // catch (Exception $e)
-            // {
-            //     exit();
-            //     return false;
-            // }
+            }
+            catch (Exception $e)
+            {
+                exit();
+                return false;
+            }
+        }
+
+        public static function insertarBano($id_cita, $tipo_bano, $tipo_shampoo, $tratamiento_adicional, $cepillado, $secado, $precio, $estado, $observaciones, $condiciones_recibidas, $condiciones_entrega)
+        {
+            try {
+                $query = "INSERT INTO servicio_bano (id_cita, tipo_bano, tipo_shampoo, tratamiento_adicional, cepillado, secado, precio, estado, observaciones, condiciones_recibidas, condiciones_entrega) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                return $stml->execute([
+                    $id_cita, 
+                    $tipo_bano, 
+                    $tipo_shampoo, 
+                    $tratamiento_adicional, 
+                    $cepillado, 
+                    $secado, 
+                    $precio, 
+                    $estado, 
+                    $observaciones, 
+                    $condiciones_recibidas, 
+                    $condiciones_entrega
+                ]);
+            } 
+            catch (Exception $e) 
+            {
+
+                return false;
+            }
+        }
+
+        public static function consutltarDuracinoServicio($idServicio)
+        {
+            try
+            {
+                $query = "SELECT duracion FROM servicios WHERE id_servicio = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$idServicio]);
+                return $stml->fetchColumn();
+            }
+            catch (Exception $e)
+            {
+                return null;
+            }
         }
     }
 ?>

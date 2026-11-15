@@ -3,8 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Esta vista se carga desde controllers/FichaMedicaController.php,
-// asi que puede que estas variables no existan si se entra directo.
 
 
 // Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
@@ -55,7 +53,7 @@ function old(string $clave): string
         $id_cita = (int)$id_consulta;
       ?>
 
-    <form action="../controllers/servicioDesparacitacion.php" method="POST" enctype="multipart/form-data">
+    <form action="../controllers/servicioBanio.php" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="id_cita" value="<?= (int)$id_consulta ?>">
 
       <fieldset>
@@ -100,6 +98,16 @@ function old(string $clave): string
               <option value="Cepillado básico">Cepillado básico</option>
               <option value="Desenredado">Desenredado</option>
               <option value="Cepillado para pelo corto">Cepillado para pelo corto</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="label-campo" for="Cepillado">Secado *:</label>
+            <select class="campo" name="Secado" id="Secado" required>
+              <option value="">Selecciona un tipo de secado</option>
+              <option value="Secado a toalla y aire tibio">Secado a toalla y aire tibio</option>
+              <option value="Secado rápido">Secado rápido</option>
+              <option value="No aplica">No aplica</option>
             </select>
           </div>
       </fieldset>

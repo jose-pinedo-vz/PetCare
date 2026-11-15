@@ -89,7 +89,7 @@ $usuario=$_SESSION['usuario'];
 
           <div>
             <label class="label-campo" for="Duración">Duración estimada (minutos) *:</label>
-            <input type="number" class="campo" id="duracion" name="duracion" required placeholder="Ej. 60"
+            <input type="number" class="campo" id="duracion" name="duracion" required placeholder="Ej. 60" readonly
               value="<?php echo htmlspecialchars((string)($_SESSION['oldDuracion'] ?? '')); unset($_SESSION['oldDuracion']); ?>">
 
           </div>

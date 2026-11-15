@@ -59,9 +59,11 @@ if (session_status() === PHP_SESSION_NONE)
           <td><?php echo $d['nombre']; ?> </td>
           <td><?php echo $d['fecha']; ?> </td>
           <td><?php echo $d['motivo']; ?></td>
+          <td><?php 
+            $serv = consultarServicio($d['servicio']);
+            echo htmlspecialchars($serv['nombre'] ?? 'Sin servicio'); 
+          ?></td>
           <td>
-            
-            
             <a class="btn">Pagar</a>
           </td>
 

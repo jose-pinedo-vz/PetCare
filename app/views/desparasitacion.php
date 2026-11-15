@@ -84,8 +84,8 @@ function old(string $clave): string
       <fieldset>
         <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="Dicis">Dicis (ml por kg) *:</label>
-            <input type="number" class="campo" id="Dicis" name="Dicis" min="30" max="45" step="0.1"
+            <label class="label-campo" for="Dicis">Dicis (mg por kg) *:</label>
+            <input type="number" class="campo" id="Dicis" name="Dicis" min="0" max="1000" step="0.1"
               placeholder="Ej. 10.5" required value="<?= old('oldDicis') ?>">
           </div>
 
