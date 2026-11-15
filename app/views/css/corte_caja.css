@@ -187,19 +187,27 @@
   padding: 8px 0;
 }
 
-.corte-apertura-estado strong,
-.corte-apertura-estado small {
+.corte-apertura-detalle {
+  min-width: 150px;
+}
+
+.corte-apertura-detalle strong,
+.corte-apertura-detalle small {
   display: block;
 }
 
-.corte-apertura-estado strong {
+.corte-apertura-detalle strong {
   font-size: 12px;
 }
 
-.corte-apertura-estado small {
+.corte-apertura-detalle small {
   margin-top: 4px;
   color: var(--texto-suave);
   font-size: 11px;
+}
+
+.corte-apertura-estado .btn[hidden] {
+  display: none;
 }
 
 .corte-estado {

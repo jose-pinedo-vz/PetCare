@@ -22,7 +22,7 @@
                 <div class="corte-encabezado-derecha">
                     <div class="corte-sesion" aria-label="Sesión de caja">
                         <span class="corte-avatar" aria-hidden="true">ML</span>
-                        <span><strong>María López</strong><small>Matutino · <time id="fechaActual">14/11/2026</time></small></span>
+                        <span><strong>María López</strong><small><span id="turnoSesion">Matutino</span> · <time id="fechaActual">14/11/2026</time></small></span>
                     </div>
                     <a class="btn btn-secundario btn-chico" href="Ventas.php">Regresar a venta</a>
                 </div>
@@ -59,8 +59,9 @@
                         </div>
                     </div>
                     <div class="corte-apertura-estado">
-                        <span class="corte-estado abierto" id="estadoTurno">Abierto</span>
-                        <span><strong>Turno iniciado</strong><small>Hoy, 08:00 a. m.</small></span>
+                        <span class="corte-estado cerrado" id="estadoTurno">Cerrado</span>
+                        <span class="corte-apertura-detalle"><strong id="tituloEstadoTurno">Sin corte abierto</strong><small id="detalleEstadoTurno">Configura el turno y el fondo para iniciar.</small></span>
+                        <button class="btn btn-chico" id="abrirCaja" type="button">Abrir caja</button>
                     </div>
                 </div>
 
@@ -136,7 +137,7 @@
                     <label class="label-campo" for="observacionesCorte">Observaciones</label>
                     <textarea class="campo" id="observacionesCorte" rows="3" placeholder="Ej. Se reportó un faltante por..."></textarea>
                     <div class="corte-acciones">
-                        <button class="btn btn-peligro" id="abrirConfirmarCierre" type="button">Cerrar corte</button>
+                        <button class="btn btn-peligro" id="abrirConfirmarCierre" type="button" disabled>Cerrar corte</button>
                         <button class="btn-secundario" type="button" data-aviso="La descarga de PDF estará disponible al conectar el backend.">Descargar PDF del corte</button>
                     </div>
                 </section>

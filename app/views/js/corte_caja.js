@@ -15,6 +15,8 @@
     const dialogCierreMensual = document.getElementById('modalCierreMensual');
     const dialogDetalle = document.getElementById('modalDetalleCorte');
     const aviso = document.getElementById('avisoCorte');
+    const botonAbrirCaja = document.getElementById('abrirCaja');
+    const botonCerrarCorte = document.getElementById('abrirConfirmarCierre');
     let avisoTemporizador;
 
     function moneda(valor) {
@@ -100,6 +102,25 @@
 
     inputFondo.addEventListener('input', recalcularCorte);
     inputContado.addEventListener('input', recalcularCorte);
+
+    botonAbrirCaja.addEventListener('click', () => {
+        const estado = document.getElementById('estadoTurno');
+        const turno = document.getElementById('turnoCorte');
+        const hora = new Intl.DateTimeFormat('es-MX', {
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(new Date());
+        estado.textContent = 'Abierto';
+        estado.classList.remove('cerrado');
+        estado.classList.add('abierto');
+        document.getElementById('tituloEstadoTurno').textContent = `Turno ${turno.options[turno.selectedIndex].text} iniciado`;
+        document.getElementById('detalleEstadoTurno').textContent = `Hoy, ${hora}`;
+        document.getElementById('turnoSesion').textContent = turno.options[turno.selectedIndex].text;
+        botonAbrirCaja.hidden = true;
+        botonCerrarCorte.disabled = false;
+        botonCerrarCorte.focus();
+        mostrarAviso('Apertura de demostración; no se guardó en la base de datos.');
+    });
 
     function abrirDialog(dialogo) {
         if (!dialogo.open) dialogo.showModal();
@@ -201,11 +222,12 @@
         estado.textContent = 'Cerrado';
         estado.classList.remove('abierto');
         estado.classList.add('cerrado');
-        const detalleTurno = estado.nextElementSibling;
-        detalleTurno.querySelector('strong').textContent = 'Turno cerrado';
-        detalleTurno.querySelector('small').textContent = `Cierre de demostración · ${new Intl.DateTimeFormat('es-MX', { hour: '2-digit', minute: '2-digit' }).format(new Date())}`;
-        document.getElementById('abrirConfirmarCierre').disabled = true;
+        document.getElementById('tituloEstadoTurno').textContent = 'Sin corte abierto';
+        document.getElementById('detalleEstadoTurno').textContent = 'Configura el turno y el fondo para iniciar.';
+        botonAbrirCaja.hidden = false;
+        botonCerrarCorte.disabled = true;
         dialogCierre.close();
+        botonAbrirCaja.focus();
         mostrarAviso('Corte marcado como cerrado solo en esta vista; no se guardó en la base de datos.');
     });
 
