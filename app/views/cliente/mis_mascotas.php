@@ -4,6 +4,9 @@ if (empty($_SESSION['id_cliente'])) {
     header('Location: iniciar_sesion.php');
     exit;
 }
+$errores = $_SESSION['errores'] ?? [];
+unset($_SESSION['errores']);
+
 $paginaActiva = 'mascotas';
 
 require_once __DIR__ . '/../../models/Mascota.php';
@@ -28,6 +31,13 @@ $mascotas = Mascota::obtenerPorCliente((int) $_SESSION['id_cliente']);
         <div>
             <h1 class="titulo-pagina">Mis mascotas</h1>
             <p class="subtitulo-pagina">Aquí están las mascotas que has registrado.</p>
+            <?php if ($errores): ?>
+                <div class="aviso aviso--error">
+                    <?php foreach ($errores as $error): ?>
+                        <p><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="rejilla-tarjetas">
