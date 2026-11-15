@@ -16,6 +16,64 @@ if ($accion === 'buscar_productos') {
     ventaBuscarServicios();
 } elseif ($accion === 'guardar_venta') {
     ventaGuardar();
+} elseif ($accion === 'historial_ventas') {
+    ventaHistorial();
+} elseif ($accion === 'detalle_venta') {
+    ventaDetalle();
+} elseif ($accion === 'guardar_factura') {
+    ventaGuardarFactura();
+}
+
+// Lista el historial con filtros y paginas
+function ventaHistorial()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    $filtros = [
+        'q' => trim($_GET['q'] ?? ''),
+        'desde' => trim($_GET['desde'] ?? ''),
+        'hasta' => trim($_GET['hasta'] ?? ''),
+        'estado' => trim($_GET['estado'] ?? ''),
+        'pagina' => (int)($_GET['pagina'] ?? 1)
+    ];
+    echo json_encode(Ventas::listarHistorial($filtros));
+    exit;
+}
+
+// Detalle de una venta por id
+function ventaDetalle()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    $id = (int)($_GET['id'] ?? 0);
+    $venta = ($id > 0) ? Ventas::detalleVenta($id) : null;
+
+    if ($venta === null) {
+        echo json_encode(['error' => 'Venta no encontrada.']);
+        exit;
+    }
+
+    echo json_encode($venta);
+    exit;
+}
+
+// Guarda los datos de factura de una venta (solo por POST)
+function ventaGuardarFactura()
+{
+    header('Content-Type: application/json; charset=utf-8');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        echo json_encode(['ok' => false, 'error' => 'Metodo no permitido.']);
+        exit;
+    }
+
+    $datos = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($datos)) {
+        echo json_encode(['ok' => false, 'error' => 'Datos no validos.']);
+        exit;
+    }
+
+    $idVenta = (int)($datos['id_venta'] ?? 0);
+    echo json_encode(Ventas::guardarFactura($idVenta, $datos));
+    exit;
 }
 
 // Lista servicios activos por nombre o categoria (si esta vacio muestra todos)

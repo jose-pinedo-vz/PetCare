@@ -295,5 +295,266 @@ class Ventas
             return ['ok' => false, 'error' => $e->getMessage()];
         }
     }
+
+    // Revisa que la fecha venga como YYYY-MM-DD y sea real
+    private static function fechaValida(string $fecha): bool
+    {
+        $d = DateTime::createFromFormat('Y-m-d', $fecha);
+        return $d !== false && $d->format('Y-m-d') === $fecha;
+    }
+
+    // Lista las ventas del historial con filtros y paginas de 10
+    public static function listarHistorial(array $f): array
+    {
+        $porPagina = 10;
+        $pagina = max(1, (int)($f['pagina'] ?? 1));
+        $vacio = ['total' => 0, 'pagina' => $pagina, 'por_pagina' => $porPagina, 'ventas' => []];
+
+        try {
+            $db = ConexionDB::obtenerConexion();
+
+            $where = [];
+            $params = [];
+
+            // Texto: cada uso lleva su propio parametro
+            $q = trim((string)($f['q'] ?? ''));
+            if ($q !== '') {
+                $where[] = "(v.folio LIKE :q1 OR c.nombre LIKE :q2 OR c.apellido LIKE :q3
+                             OR e.nombre LIKE :q4 OR e.apellido LIKE :q5
+                             OR CONCAT(c.nombre, ' ', c.apellido) LIKE :q6
+                             OR CONCAT(e.nombre, ' ', e.apellido) LIKE :q7)";
+                $like = '%' . $q . '%';
+                for ($i = 1; $i <= 7; $i++) {
+                    $params[':q' . $i] = $like;
+                }
+            }
+
+            // Fechas, si no son validas se ignoran
+            $desde = trim((string)($f['desde'] ?? ''));
+            $hasta = trim((string)($f['hasta'] ?? ''));
+            $desdeOk = $desde !== '' && self::fechaValida($desde);
+            $hastaOk = $hasta !== '' && self::fechaValida($hasta);
+            if ($desdeOk && $hastaOk) {
+                $where[] = "DATE(v.fecha) BETWEEN :desde AND :hasta";
+                $params[':desde'] = $desde;
+                $params[':hasta'] = $hasta;
+            } elseif ($desdeOk) {
+                $where[] = "DATE(v.fecha) >= :desde";
+                $params[':desde'] = $desde;
+            } elseif ($hastaOk) {
+                $where[] = "DATE(v.fecha) <= :hasta";
+                $params[':hasta'] = $hasta;
+            }
+
+            // Estado, solo los permitidos
+            $estado = trim((string)($f['estado'] ?? ''));
+            if (in_array($estado, ['Pagada', 'Pendiente', 'Cancelada'], true)) {
+                $where[] = "v.estado = :estado";
+                $params[':estado'] = $estado;
+            }
+
+            $from = " FROM ventas v
+                      LEFT JOIN clientes c ON c.id_cliente = v.cliente
+                      LEFT JOIN empleados e ON e.id_empleado = v.empleado";
+            $sqlWhere = $where ? ' WHERE ' . implode(' AND ', $where) : '';
+
+            // Total de ventas que cumplen el filtro
+            $stmt = $db->prepare("SELECT COUNT(*)" . $from . $sqlWhere);
+            foreach ($params as $k => $v) {
+                $stmt->bindValue($k, $v, PDO::PARAM_STR);
+            }
+            $stmt->execute();
+            $total = (int)$stmt->fetchColumn();
+
+            // Ventas de la pagina pedida
+            $stmt = $db->prepare(
+                "SELECT v.id_venta, v.folio, v.fecha,
+                        CASE WHEN c.id_cliente IS NULL THEN 'Publico en general'
+                             ELSE TRIM(CONCAT(COALESCE(c.nombre, ''), ' ', COALESCE(c.apellido, ''))) END AS cliente_nombre,
+                        c.telefono AS cliente_telefono,
+                        TRIM(CONCAT(COALESCE(e.nombre, ''), ' ', COALESCE(e.apellido, ''))) AS empleado_nombre,
+                        COALESCE((SELECT SUM(dp.cantidad) FROM detalles_productos dp WHERE dp.id_venta = v.id_venta), 0)
+                          + (SELECT COUNT(*) FROM detalles_servicios ds WHERE ds.id_venta = v.id_venta) AS num_items,
+                        v.total,
+                        (SELECT p.forma_pago FROM pago p WHERE p.venta = v.id_venta ORDER BY p.id_pago LIMIT 1) AS forma_pago,
+                        v.estado,
+                        (v.factura IS NOT NULL AND v.factura <> '') AS tiene_factura"
+                . $from . $sqlWhere .
+                " ORDER BY v.fecha DESC, v.id_venta DESC
+                  LIMIT :limite OFFSET :inicio"
+            );
+            foreach ($params as $k => $v) {
+                $stmt->bindValue($k, $v, PDO::PARAM_STR);
+            }
+            $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+            $stmt->bindValue(':inicio', ($pagina - 1) * $porPagina, PDO::PARAM_INT);
+            $stmt->execute();
+            $ventas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($ventas as &$v) {
+                $v['id_venta'] = (int)$v['id_venta'];
+                $v['num_items'] = (int)$v['num_items'];
+                $v['total'] = (float)$v['total'];
+                $v['tiene_factura'] = (bool)$v['tiene_factura'];
+            }
+            unset($v);
+
+            return ['total' => $total, 'pagina' => $pagina, 'por_pagina' => $porPagina, 'ventas' => $ventas];
+        } catch (Exception $e) {
+            error_log("Error en Ventas::listarHistorial: " . $e->getMessage());
+            return $vacio;
+        }
+    }
+
+    // Detalle completo de una venta (null si no existe)
+    public static function detalleVenta(int $idVenta): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+
+            // Encabezado con el primer pago de la venta
+            $stmt = $db->prepare(
+                "SELECT v.id_venta, v.folio, v.fecha,
+                        CASE WHEN c.id_cliente IS NULL THEN 'Publico en general'
+                             ELSE TRIM(CONCAT(COALESCE(c.nombre, ''), ' ', COALESCE(c.apellido, ''))) END AS cliente_nombre,
+                        c.telefono AS cliente_telefono,
+                        TRIM(CONCAT(COALESCE(e.nombre, ''), ' ', COALESCE(e.apellido, ''))) AS empleado_nombre,
+                        v.estado, p.forma_pago, p.monto_recibido, p.cambio, v.total, v.factura
+                 FROM ventas v
+                 LEFT JOIN clientes c ON c.id_cliente = v.cliente
+                 LEFT JOIN empleados e ON e.id_empleado = v.empleado
+                 LEFT JOIN pago p ON p.id_pago = (SELECT MIN(p2.id_pago) FROM pago p2 WHERE p2.venta = v.id_venta)
+                 WHERE v.id_venta = ?"
+            );
+            $stmt->execute([$idVenta]);
+            $venta = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$venta) {
+                return null;
+            }
+
+            // Productos vendidos
+            $stmt = $db->prepare(
+                "SELECT pr.codigo, pr.nombre, dp.cantidad, dp.precio_unitario, dp.descuento, dp.iva, dp.subtotal
+                 FROM detalles_productos dp
+                 LEFT JOIN productos pr ON pr.id_producto = dp.id_producto
+                 WHERE dp.id_venta = ?"
+            );
+            $stmt->execute([$idVenta]);
+            $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Servicios vendidos
+            $stmt = $db->prepare(
+                "SELECT s.nombre, s.categoria, ds.precio_unitario, ds.descuento, ds.iva, ds.subtotal
+                 FROM detalles_servicios ds
+                 LEFT JOIN servicios s ON s.id_servicio = ds.id_servicio
+                 WHERE ds.id_venta = ?"
+            );
+            $stmt->execute([$idVenta]);
+            $servicios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Totales a partir de los renglones
+            $subtotal = 0;
+            $iva = 0;
+            foreach (array_merge($productos, $servicios) as $r) {
+                $subtotal += (float)$r['subtotal'];
+                $iva += (float)$r['iva'];
+            }
+
+            $facturaTexto = trim((string)($venta['factura'] ?? ''));
+            unset($venta['factura']);
+
+            $venta['id_venta'] = (int)$venta['id_venta'];
+            $venta['total'] = (float)$venta['total'];
+            $venta['tiene_factura'] = $facturaTexto !== '';
+            $venta['productos'] = $productos;
+            $venta['servicios'] = $servicios;
+            $venta['subtotal'] = round($subtotal, 2);
+            $venta['iva'] = round($iva, 2);
+
+            // Datos de factura guardados como JSON
+            if ($facturaTexto !== '') {
+                $factura = json_decode($facturaTexto, true);
+                if (is_array($factura)) {
+                    $venta['factura'] = $factura;
+                }
+            }
+
+            return $venta;
+        } catch (Exception $e) {
+            error_log("Error en Ventas::detalleVenta: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Guarda la solicitud de factura de una venta pagada
+    public static function guardarFactura(int $idVenta, array $datos): array
+    {
+        $rfc = trim((string)($datos['rfc'] ?? ''));
+        $rfc = function_exists('mb_strtoupper') ? mb_strtoupper($rfc, 'UTF-8') : strtoupper($rfc);
+        $razon = trim((string)($datos['razon_social'] ?? ''));
+        $cp = trim((string)($datos['codigo_postal'] ?? ''));
+        $correo = trim((string)($datos['correo'] ?? ''));
+        $largoRazon = function_exists('mb_strlen') ? mb_strlen($razon, 'UTF-8') : strlen($razon);
+
+        if ($idVenta <= 0) {
+            return ['ok' => false, 'error' => 'Venta no valida.'];
+        }
+        if (!preg_match('/^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$/u', $rfc)) {
+            return ['ok' => false, 'error' => 'El RFC no tiene un formato valido.'];
+        }
+        if ($largoRazon < 3 || $largoRazon > 100) {
+            return ['ok' => false, 'error' => 'La razon social debe tener de 3 a 100 caracteres.'];
+        }
+        if (!preg_match('/^[0-9]{5}$/', $cp)) {
+            return ['ok' => false, 'error' => 'El codigo postal debe tener 5 digitos.'];
+        }
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            return ['ok' => false, 'error' => 'El correo no es valido.'];
+        }
+
+        try {
+            $db = ConexionDB::obtenerConexion();
+
+            $stmt = $db->prepare("SELECT estado, factura FROM ventas WHERE id_venta = ?");
+            $stmt->execute([$idVenta]);
+            $venta = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$venta) {
+                return ['ok' => false, 'error' => 'Venta no encontrada.'];
+            }
+            if ($venta['estado'] !== 'Pagada') {
+                return ['ok' => false, 'error' => 'Solo se puede facturar una venta pagada.'];
+            }
+            if (trim((string)$venta['factura']) !== '') {
+                return ['ok' => false, 'error' => 'La venta ya tiene factura solicitada.'];
+            }
+
+            $json = json_encode([
+                'rfc' => $rfc,
+                'razon_social' => $razon,
+                'codigo_postal' => $cp,
+                'correo' => $correo,
+                // Hora de Mexico sin cambiar la zona global
+                'fecha_solicitud' => (new DateTime('now', new DateTimeZone('America/Mexico_City')))->format('Y-m-d H:i:s')
+            ], JSON_UNESCAPED_UNICODE);
+
+            // Solo guarda si nadie la facturo antes
+            $stmt = $db->prepare(
+                "UPDATE ventas SET factura = ?
+                 WHERE id_venta = ? AND (factura IS NULL OR factura = '')"
+            );
+            $stmt->execute([$json, $idVenta]);
+
+            if ($stmt->rowCount() === 0) {
+                return ['ok' => false, 'error' => 'La venta ya tiene factura solicitada.'];
+            }
+
+            return ['ok' => true];
+        } catch (Exception $e) {
+            error_log("Error en Ventas::guardarFactura: " . $e->getMessage());
+            return ['ok' => false, 'error' => 'No se pudo guardar la factura.'];
+        }
+    }
 }
                 
