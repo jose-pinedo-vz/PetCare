@@ -134,6 +134,21 @@ class Cliente
         }
     }
 
+    // buscar un cliente activo por su nombre de usuario
+    public static function obtenerPorUsuario(string $usuario): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT id_cliente, nombre, contrasena FROM clientes WHERE usuario = ? AND esta_activo = 1");
+            $stmt->execute([$usuario]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::obtenerPorUsuario: ' . $e->getMessage());
+            return null;
+        }
+    }
+
     public static function actualizar(int $id, array $datos): array
     {
         try {

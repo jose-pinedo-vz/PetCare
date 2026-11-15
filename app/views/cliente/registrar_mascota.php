@@ -1,6 +1,9 @@
 <?php
 session_start();
-
+if (empty($_SESSION['id_cliente'])) {
+    header('Location: iniciar_sesion.php');
+    exit;
+}
 $errores = $_SESSION['errores'] ?? [];
 $old = $_SESSION['old'] ?? [];
 unset($_SESSION['errores'], $_SESSION['old']);

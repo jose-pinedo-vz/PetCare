@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (empty($_SESSION['id_cliente'])) {
+    header('Location: iniciar_sesion.php');
+    exit;
+}
 $paginaActiva = 'citas';
 ?>
 <!DOCTYPE html>

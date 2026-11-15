@@ -1,12 +1,12 @@
 <?php
 session_start();
+if (empty($_SESSION['id_cliente'])) {
+    header('Location: iniciar_sesion.php');
+    exit;
+}
 $paginaActiva = 'mascotas';
 
 require_once __DIR__ . '/../../models/Mascota.php';
-
-// TEMPORAL: mientras no exista el login, simulamos que entró el cliente 1.
-// BORRAR esta linea cuando el login guarde el id_cliente real en la sesion.
-$_SESSION['id_cliente'] = $_SESSION['id_cliente'] ?? 1;
 
 $mascotas = Mascota::obtenerPorCliente((int) $_SESSION['id_cliente']);
 ?>

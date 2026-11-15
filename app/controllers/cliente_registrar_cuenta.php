@@ -92,5 +92,6 @@ if (!$resultado['exito']) {
 }
 
 $_SESSION['id_cliente'] = $resultado['id'];
+$_SESSION['cliente_nombre'] = $nombres;
 header('Location: ../views/cliente/mis_mascotas.php');
 exit;
