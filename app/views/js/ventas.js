@@ -482,7 +482,66 @@
         elegirMetodo(metodos[0]);
         inputMonto.focus();
     });
+        // Confirmar pago: manda la venta al servidor
+    btnConfirmar.addEventListener('click', async function () {
+        if (carrito.length === 0) return;
 
+        const modalConfirmado = document.getElementById('modalPagoConfirmado');
+
+        // Evita que den doble clic
+        btnConfirmar.disabled = true;
+
+        const datos = {
+            forma_pago: formaPago,
+            recibido: Number(inputMonto.value) || 0,
+            items: carrito.map(function (i) {
+                return {
+                    id_producto: i.id_producto,
+                    cantidad: i.cantidad,
+                    descuento: i.descuento
+                };
+            })
+        };
+
+        try {
+            const resp = await fetch(URL_VENTAS + '?accion=guardar_venta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            const r = await resp.json();
+
+            if (!r.ok) {
+                mostrarError('No se pudo guardar: ' + r.error);
+                return;
+            }
+
+            if (modalPago.open) modalPago.close();
+            reiniciar();
+
+            // Muestra el resultado real en el modal de confirmacion
+            if (modalConfirmado) {
+                const texto = modalConfirmado.querySelector('.resultado-mensaje');
+                if (texto) {
+                    texto.textContent = 'Venta ' + r.folio + ' guardada correctamente.' +
+                        (r.cambio > 0 ? ' Cambio: ' + dinero(r.cambio) : '');
+                }
+                const totalReal = document.getElementById('totalVentaDemostracion');
+                if (totalReal) totalReal.textContent = dinero(r.total);
+                if (!modalConfirmado.open) modalConfirmado.showModal();
+            }
+        } catch (e) {
+            mostrarError('Error de conexion con el servidor.');
+        }
+
+        // Cierra la confirmacion, avisa y regresa al modal de pago
+        function mostrarError(msg) {
+            if (modalConfirmado && modalConfirmado.open) modalConfirmado.close();
+            alert(msg);
+            if (!modalPago.open) modalPago.showModal();
+            actualizarPago();
+        }
+    });
     // Dibuja el carrito vacio al cargar
     dibujarCarrito();
 })(); 
