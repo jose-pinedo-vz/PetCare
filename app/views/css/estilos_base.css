@@ -827,7 +827,8 @@ td .btn:last-child {
 }
 
 /* me permite ocultar los divs en citas */
-.oculto {
+.oculto 
+{
   display: none !important;
 }
 
