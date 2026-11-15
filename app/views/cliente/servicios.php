@@ -35,7 +35,7 @@ $paginaActiva = 'servicios';
 
                 <div class="tarjeta-servicio__precio">
                     <p class="tarjeta-servicio__monto">$150</p>
-                    <a class="boton" href="agendarCita.php?servicio=bano">Agendar</a>
+                    <a class="boton" href="agendar_cita.php?servicio=bano">Agendar</a>
                 </div>
             </article>
 
@@ -53,7 +53,7 @@ $paginaActiva = 'servicios';
 
                 <div class="tarjeta-servicio__precio">
                     <p class="tarjeta-servicio__monto">$250</p>
-                    <a class="boton" href="agendarCita.php?servicio=corte_pelo">Agendar</a>
+                    <a class="boton" href="agendar_cita.php?servicio=corte_pelo">Agendar</a>
                 </div>
             </article>
 
@@ -71,7 +71,7 @@ $paginaActiva = 'servicios';
 
                 <div class="tarjeta-servicio__precio">
                     <p class="tarjeta-servicio__monto">$60</p>
-                    <a class="boton" href="agendarCita.php?servicio=corte_unas">Agendar</a>
+                    <a class="boton" href="agendar_cita.php?servicio=corte_unas">Agendar</a>
                 </div>
             </article>
 
@@ -89,7 +89,7 @@ $paginaActiva = 'servicios';
 
                 <div class="tarjeta-servicio__precio">
                     <p class="tarjeta-servicio__monto">$120</p>
-                    <a class="boton" href="agendarCita.php?servicio=desparasitacion">Agendar</a>
+                    <a class="boton" href="agendar_cita.php?servicio=desparasitacion">Agendar</a>
                 </div>
             </article>
 

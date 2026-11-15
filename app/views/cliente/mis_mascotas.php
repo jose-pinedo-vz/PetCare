@@ -52,7 +52,7 @@ $mascotas = Mascota::obtenerPorCliente((int) $_SESSION['id_cliente']);
                         <?php endif; ?>
                     </div>
                     <div class="grupo-botones grupo-botones--compacto">
-                        <a class="boton boton--chico" href="agendarCita.php?id_mascota=<?= $mascota['id_mascota'] ?>">Agendar cita</a>
+                        <a class="boton boton--chico" href="agendar_cita.php?id_mascota=<?= $mascota['id_mascota'] ?>">Agendar cita</a>
                         <a class="boton boton--contorno boton--chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
                     </div>
                 </div>

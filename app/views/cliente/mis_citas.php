@@ -23,7 +23,7 @@ $paginaActiva = 'citas';
                 <h1 class="titulo-pagina">Mis citas</h1>
                 <p class="subtitulo-pagina">Consulta o cancela tus citas.</p>
             </div>
-            <a class="boton" href="agendarCita.php">+ Agendar cita</a>
+            <a class="boton" href="agendar_cita.php">+ Agendar cita</a>
         </div>
 
         <nav class="pestanas">
