@@ -31,7 +31,7 @@ $paginaActiva = 'mascotas';
                     <span class="etiqueta etiqueta--exito">Vacunas al día</span>
                 </div>
                 <div class="grupo-botones grupo-botones--compacto">
-                    <a class="boton boton--chico" href="agendarCita.php?id_mascota=1">Agendar cita</a>
+                    <a class="boton boton--chico" href="agendar_cita.php?id_mascota=1">Agendar cita</a>
                     <a class="boton boton--contorno boton--chico" href="editar_mascota.php?id_mascota=1">Editar</a>
                 </div>
             </div>
@@ -45,7 +45,7 @@ $paginaActiva = 'mascotas';
                     <span class="etiqueta">Sin vacunas registradas</span>
                 </div>
                 <div class="grupo-botones grupo-botones--compacto">
-                    <a class="boton boton--chico" href="agendarCita.php?id_mascota=2">Agendar cita</a>
+                    <a class="boton boton--chico" href="agendar_cita.php?id_mascota=2">Agendar cita</a>
                     <a class="boton boton--contorno boton--chico" href="editar_mascota.php?id_mascota=2">Editar</a>
                 </div>
             </div>
