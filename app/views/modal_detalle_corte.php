@@ -4,12 +4,20 @@
         <button class="corte-dialog-cerrar" type="button" data-cerrar-dialog aria-label="Cerrar ventana">×</button>
     </div>
     <div class="corte-detalle-modal">
-        <div><span>Turno</span><strong><?= htmlspecialchars(ucfirst($detalleCorte['turno'])) ?></strong></div>
-        <div><span>Apertura</span><strong><?= htmlspecialchars(date('d/m/Y H:i', strtotime($detalleCorte['apertura']))) ?></strong></div>
-        <div><span>Cajero de apertura</span><strong><?= htmlspecialchars($detalleCorte['cajero_apertura']) ?></strong></div>
-        <div><span>Empleado de cierre</span><strong><?= htmlspecialchars($detalleCorte['cajero_cierre'] ?? '—') ?></strong></div>
+        <?php if ($detalleCorte['tipo'] === 'mensual'): ?>
+            <div><span>Periodo</span><strong><?= htmlspecialchars(date('d/m/Y', strtotime($detalleCorte['periodo_inicio']))) ?> – <?= htmlspecialchars(date('d/m/Y', strtotime($detalleCorte['periodo_fin']))) ?></strong></div>
+            <div><span>Administrador responsable</span><strong><?= htmlspecialchars($detalleCorte['cajero_cierre'] ?? $detalleCorte['cajero_apertura']) ?></strong></div>
+        <?php else: ?>
+            <div><span>Turno</span><strong><?= htmlspecialchars(ucfirst($detalleCorte['turno'])) ?></strong></div>
+            <div><span>Apertura</span><strong><?= htmlspecialchars(date('d/m/Y H:i', strtotime($detalleCorte['apertura']))) ?></strong></div>
+            <div><span>Cajero de apertura</span><strong><?= htmlspecialchars($detalleCorte['cajero_apertura']) ?></strong></div>
+            <div><span>Empleado de cierre</span><strong><?= htmlspecialchars($detalleCorte['cajero_cierre'] ?? '—') ?></strong></div>
+        <?php endif; ?>
         <div><span>Estado</span><strong><?= htmlspecialchars(ucfirst($detalleCorte['estado'])) ?></strong></div>
-        <?php if ($detalleCorte['estado'] === 'cerrado'): ?>
+        <?php if ($detalleCorte['tipo'] === 'mensual'): ?>
+            <div><span>Fondo inicial</span><strong>No aplica al corte mensual</strong></div>
+            <div><span>Total general</span><strong><?= $moneda($detalleCorte['total_general']) ?></strong></div>
+        <?php elseif ($detalleCorte['estado'] === 'cerrado'): ?>
             <div><span>Efectivo esperado</span><strong><?= $moneda($detalleCorte['efectivo_esperado']) ?></strong></div>
             <div><span>Efectivo contado</span><strong><?= $moneda($detalleCorte['efectivo_contado']) ?></strong></div>
             <div><span>Diferencia</span><strong><?= $monedaConSigno($detalleCorte['diferencia']) ?></strong></div>

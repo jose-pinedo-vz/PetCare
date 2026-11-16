@@ -48,12 +48,63 @@ final class CorteCaja
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function obtenerResumenPagos(PDO $db, int $corte): array
+    {
+        $stmt = $db->prepare(
+            "SELECT
+                COALESCE(SUM(CASE WHEN forma_pago = 'efectivo' THEN
+                    CASE WHEN tipo = 'devolucion' THEN -ABS(importe) ELSE importe END
+                ELSE 0 END), 0) AS efectivo,
+                COALESCE(SUM(CASE WHEN forma_pago = 'tarjeta' THEN
+                    CASE WHEN tipo = 'devolucion' THEN -ABS(importe) ELSE importe END
+                ELSE 0 END), 0) AS tarjeta,
+                COALESCE(SUM(CASE WHEN forma_pago = 'transferencia' THEN
+                    CASE WHEN tipo = 'devolucion' THEN -ABS(importe) ELSE importe END
+                ELSE 0 END), 0) AS transferencia,
+                COUNT(*) AS pagos,
+                COUNT(DISTINCT venta) AS ventas
+             FROM pago
+             WHERE corte = :corte AND estado = 'aplicado'
+               AND (tipo IS NULL OR tipo IN ('pago', 'devolucion'))"
+        );
+        $stmt->execute([':corte' => $corte]);
+        $resumen = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        $resumen['efectivo'] = (float)($resumen['efectivo'] ?? 0);
+        $resumen['tarjeta'] = (float)($resumen['tarjeta'] ?? 0);
+        $resumen['transferencia'] = (float)($resumen['transferencia'] ?? 0);
+        $resumen['general'] = round($resumen['efectivo'] + $resumen['tarjeta'] + $resumen['transferencia'], 2);
+        $resumen['pagos'] = (int)($resumen['pagos'] ?? 0);
+        $resumen['ventas'] = (int)($resumen['ventas'] ?? 0);
+
+        return $resumen;
+    }
+
+    public static function listarPagos(PDO $db, int $corte): array
+    {
+        $stmt = $db->prepare(
+            "SELECT p.id_pago, p.fecha, p.importe, p.forma_pago, p.referencia_pago,
+                    v.folio AS folio_venta, v.total AS total_venta, v.estado AS estado_venta,
+                    CONCAT(c.nombre, ' ', c.apellido) AS cliente
+             FROM pago p
+             JOIN ventas v ON v.id_venta = p.venta
+             LEFT JOIN clientes c ON c.id_cliente = p.cliente
+             WHERE p.corte = :corte AND p.estado = 'aplicado'
+               AND (p.tipo IS NULL OR p.tipo IN ('pago', 'devolucion'))
+             ORDER BY p.fecha DESC, p.id_pago DESC"
+        );
+        $stmt->execute([':corte' => $corte]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function listarCortes(
         PDO $db,
         DateTimeImmutable $inicio,
         DateTimeImmutable $fin,
         int $empleado,
-        bool $esAdministrador
+        bool $esAdministrador,
+        ?int $empleadoFiltro = null,
+        string $estado = 'todos'
     ): array {
         $sql = self::consultaCortes()
             . " WHERE c.tipo = 'diario' AND c.apertura >= :inicio AND c.apertura < :fin";
@@ -65,9 +116,83 @@ final class CorteCaja
         if (!$esAdministrador) {
             $sql .= ' AND c.empleado_apertura = :empleado';
             $parametros[':empleado'] = $empleado;
+        } elseif ($empleadoFiltro !== null) {
+            $sql .= ' AND c.empleado_apertura = :empleado_filtro';
+            $parametros[':empleado_filtro'] = $empleadoFiltro;
+        }
+
+        if (in_array($estado, ['abierto', 'cerrado'], true)) {
+            $sql .= ' AND c.estado = :estado';
+            $parametros[':estado'] = $estado;
         }
 
         $sql .= ' ORDER BY c.apertura DESC';
+        $stmt = $db->prepare($sql);
+        $stmt->execute($parametros);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function listarMovimientosPeriodo(
+        PDO $db,
+        DateTimeImmutable $inicio,
+        DateTimeImmutable $fin,
+        ?int $empleadoFiltro = null
+    ): array {
+        $sql = "SELECT m.fecha, m.tipo, m.concepto, m.importe, m.observaciones,
+                       c.folio AS folio_corte,
+                       CONCAT(e.nombre, ' ', e.apellido) AS responsable,
+                       CONCAT(b.nombre, ' ', b.apellido) AS beneficiario
+                FROM movimientos_de_caja m
+                JOIN corte_de_caja c ON c.id = m.corte
+                JOIN empleados e ON e.id_empleado = m.empleado
+                LEFT JOIN empleados b ON b.id_empleado = m.empleado_beneficiario
+                WHERE c.tipo = 'diario' AND c.estado = 'cerrado'
+                  AND c.apertura >= :inicio AND c.apertura < :fin";
+        $parametros = [
+            ':inicio' => $inicio->format('Y-m-d H:i:s'),
+            ':fin' => $fin->format('Y-m-d H:i:s'),
+        ];
+        if ($empleadoFiltro !== null) {
+            $sql .= ' AND c.empleado_apertura = :empleado';
+            $parametros[':empleado'] = $empleadoFiltro;
+        }
+        $sql .= ' ORDER BY m.fecha, m.id';
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($parametros);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function listarPagosPeriodo(
+        PDO $db,
+        DateTimeImmutable $inicio,
+        DateTimeImmutable $fin,
+        ?int $empleadoFiltro = null
+    ): array {
+        $sql = "SELECT p.fecha, p.importe, p.forma_pago, p.tipo, p.referencia_pago,
+                       v.folio AS folio_venta, v.total AS total_venta,
+                       c.folio AS folio_corte,
+                       CONCAT(cl.nombre, ' ', cl.apellido) AS cliente
+                FROM pago p
+                JOIN corte_de_caja c ON c.id = p.corte
+                JOIN ventas v ON v.id_venta = p.venta
+                LEFT JOIN clientes cl ON cl.id_cliente = p.cliente
+                WHERE c.tipo = 'diario' AND c.estado = 'cerrado'
+                  AND c.apertura >= :inicio AND c.apertura < :fin
+                  AND p.estado = 'aplicado'
+                  AND (p.tipo IS NULL OR p.tipo IN ('pago', 'devolucion'))";
+        $parametros = [
+            ':inicio' => $inicio->format('Y-m-d H:i:s'),
+            ':fin' => $fin->format('Y-m-d H:i:s'),
+        ];
+        if ($empleadoFiltro !== null) {
+            $sql .= ' AND c.empleado_apertura = :empleado';
+            $parametros[':empleado'] = $empleadoFiltro;
+        }
+        $sql .= ' ORDER BY p.fecha, p.id_pago';
+
         $stmt = $db->prepare($sql);
         $stmt->execute($parametros);
 
@@ -268,7 +393,7 @@ final class CorteCaja
                 $retiro = $db->prepare(
                     "INSERT INTO movimientos_de_caja
                         (corte, fecha, tipo, concepto, importe, empleado, empleado_beneficiario, observaciones)
-                     VALUES (:corte, NOW(), 'retiro', 'Retiro de excedente posterior al arqueo',
+                     VALUES (:corte, NOW(), 'retiro', 'Entrega de excedente a resguardo',
                              :importe, :empleado, NULL, NULL)"
                 );
                 $retiro->execute([
@@ -327,8 +452,17 @@ final class CorteCaja
     public static function obtenerResumenMensual(
         PDO $db,
         DateTimeImmutable $inicio,
-        DateTimeImmutable $fin
+        DateTimeImmutable $fin,
+        ?int $empleadoFiltro = null
     ): array {
+        $filtroEmpleadoSql = $empleadoFiltro === null ? '' : ' AND empleado_apertura = :empleado';
+        $parametros = [
+            ':inicio' => $inicio->format('Y-m-d H:i:s'),
+            ':fin' => $fin->format('Y-m-d H:i:s'),
+        ];
+        if ($empleadoFiltro !== null) {
+            $parametros[':empleado'] = $empleadoFiltro;
+        }
         $stmt = $db->prepare(
             "SELECT
                 COALESCE(SUM(total_efectivo), 0) AS efectivo,
@@ -340,11 +474,9 @@ final class CorteCaja
              FROM corte_de_caja
              WHERE tipo = 'diario' AND estado = 'cerrado'
                AND apertura >= :inicio AND apertura < :fin"
+            . $filtroEmpleadoSql
         );
-        $stmt->execute([
-            ':inicio' => $inicio->format('Y-m-d H:i:s'),
-            ':fin' => $fin->format('Y-m-d H:i:s'),
-        ]);
+        $stmt->execute($parametros);
         $totales = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
         $stmt = $db->prepare(
@@ -354,12 +486,10 @@ final class CorteCaja
              WHERE c.tipo = 'diario' AND c.estado = 'cerrado'
                AND c.apertura >= :inicio AND c.apertura < :fin
                AND m.tipo IN ('ingreso manual', 'nomina', 'retiro', 'gasto')
+             " . ($empleadoFiltro === null ? '' : ' AND c.empleado_apertura = :empleado') . "
              GROUP BY m.tipo"
         );
-        $stmt->execute([
-            ':inicio' => $inicio->format('Y-m-d H:i:s'),
-            ':fin' => $fin->format('Y-m-d H:i:s'),
-        ]);
+        $stmt->execute($parametros);
         $movimientos = [
             'ingreso manual' => 0.0,
             'nomina' => 0.0,
@@ -369,6 +499,16 @@ final class CorteCaja
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $movimiento) {
             $movimientos[$movimiento['tipo']] = (float)$movimiento['importe'];
         }
+
+        $stmt = $db->prepare(
+            "SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS importe
+             FROM ventas
+             WHERE fecha >= :inicio AND fecha < :fin
+               AND LOWER(estado) NOT LIKE 'cancel%'"
+            . ($empleadoFiltro === null ? '' : ' AND empleado = :empleado')
+        );
+        $stmt->execute($parametros);
+        $ventas = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
         $productosSql = "
             SELECT p.id_producto, p.nombre,
@@ -380,24 +520,22 @@ final class CorteCaja
                 ON v.id_venta = dp.id_venta
                 AND v.fecha >= :inicio AND v.fecha < :fin
                 AND LOWER(v.estado) NOT LIKE 'cancel%'
+                " . ($empleadoFiltro === null ? '' : ' AND v.empleado = :empleado') . "
             GROUP BY p.id_producto, p.nombre";
         $stmt = $db->prepare($productosSql . ' HAVING cantidad > 0 ORDER BY cantidad DESC, p.nombre ASC LIMIT 5');
-        $stmt->execute([
-            ':inicio' => $inicio->format('Y-m-d H:i:s'),
-            ':fin' => $fin->format('Y-m-d H:i:s'),
-        ]);
+        $stmt->execute($parametros);
         $masVendidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $stmt = $db->prepare($productosSql . ' HAVING importe > 0 ORDER BY importe DESC, p.nombre ASC LIMIT 5');
+        $stmt->execute($parametros);
+        $masIngresos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         $stmt = $db->prepare($productosSql . ' ORDER BY cantidad ASC, p.nombre ASC');
-        $stmt->execute([
-            ':inicio' => $inicio->format('Y-m-d H:i:s'),
-            ':fin' => $fin->format('Y-m-d H:i:s'),
-        ]);
+        $stmt->execute($parametros);
         $menosVendidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $comercial = (float)($totales['comercial'] ?? 0);
-        $ingresos = $comercial + $movimientos['ingreso manual'];
-        $egresos = $movimientos['nomina'] + $movimientos['retiro'] + $movimientos['gasto'];
+        $gastosOperativos = $movimientos['nomina'] + $movimientos['gasto'];
 
         return [
             'efectivo' => (float)($totales['efectivo'] ?? 0),
@@ -406,11 +544,13 @@ final class CorteCaja
             'comercial' => $comercial,
             'fondos_iniciales' => (float)($totales['fondos_iniciales'] ?? 0),
             'cortes' => (int)($totales['cortes'] ?? 0),
+            'ventas_cantidad' => (int)($ventas['cantidad'] ?? 0),
+            'ventas_importe' => (float)($ventas['importe'] ?? 0),
             'movimientos' => $movimientos,
-            'ingresos_considerados' => $ingresos,
-            'egresos_considerados' => $egresos,
-            'flujo_neto' => $ingresos - $egresos,
+            'gastos_operativos' => $gastosOperativos,
+            'retiros_resguardo' => $movimientos['retiro'],
             'mas_vendidos' => $masVendidos,
+            'mas_ingresos' => $masIngresos,
             'menos_vendidos' => $menosVendidos,
         ];
     }

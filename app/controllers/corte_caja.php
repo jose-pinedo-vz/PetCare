@@ -23,10 +23,13 @@ if (!is_string($periodo) || !preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $periodo)) 
 $inicioPeriodo = new DateTimeImmutable($periodo . '-01 00:00:00');
 $finPeriodo = $inicioPeriodo->modify('+1 month');
 $activePanel = $_GET['panel'] ?? 'diario';
-if (!is_string($activePanel) || !in_array($activePanel, ['diario', 'historial', 'estadisticas'], true)) {
+if (!is_string($activePanel) || !in_array($activePanel, ['diario', 'historial', 'mensual', 'estadisticas'], true)) {
     $activePanel = 'diario';
 }
 if ($activePanel === 'estadisticas' && !$esAdministrador) {
+    $activePanel = 'diario';
+}
+if ($activePanel === 'mensual' && !$esAdministrador) {
     $activePanel = 'diario';
 }
 $nombresMeses = [
@@ -53,6 +56,19 @@ $leerEntero = static function (array $datos, string $campo) {
     $valor = $datos[$campo] ?? null;
 
     return is_scalar($valor) ? filter_var($valor, FILTER_VALIDATE_INT) : false;
+};
+$validarFecha = static function ($fecha): ?DateTimeImmutable {
+    if (!is_string($fecha) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+        return null;
+    }
+
+    $resultado = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+    $errores = DateTimeImmutable::getLastErrors();
+    if (!$resultado || ($errores && ($errores['warning_count'] || $errores['error_count'])) || $resultado->format('Y-m-d') !== $fecha) {
+        return null;
+    }
+
+    return $resultado;
 };
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -138,9 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 unset($_SESSION['corte_arqueo']);
                 $mensaje = 'Corte cerrado correctamente.';
                 if ($resultado['excedente'] > 0) {
-                    $mensaje .= ' Retiro de excedente registrado: $' . number_format($resultado['excedente'], 2) . '.';
+                    $mensaje .= ' Excedente enviado a resguardo; el fondo fijo permanece en caja: $' . number_format($resultado['excedente'], 2) . '.';
                 } elseif ($resultado['faltante_fondo'] > 0) {
-                    $mensaje .= ' Faltan $' . number_format($resultado['faltante_fondo'], 2) . ' para conservar el fondo fijo; no se registró un retiro.';
+                    $mensaje .= ' Faltan $' . number_format($resultado['faltante_fondo'], 2) . ' para conservar el fondo fijo; no se envió efectivo a resguardo.';
                 }
                 $_SESSION['corte_flash'] = ['tipo' => 'exito', 'mensaje' => $mensaje];
                 break;
@@ -166,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['corte_flash'] = ['tipo' => 'error', 'mensaje' => 'No se pudo completar la operación de caja. Intenta de nuevo.'];
     }
 
-    header('Location: ../views/corte_caja.php?periodo=' . rawurlencode((string)$periodo));
+    header('Location: ../views/corte_caja.php?panel=diario&periodo=' . rawurlencode((string)$periodo));
     exit();
 }
 
@@ -189,13 +205,89 @@ if (
     $arqueoPendiente = null;
 }
 
+$estadoHistorial = is_string($_GET['estado'] ?? null) && in_array($_GET['estado'], ['todos', 'abierto', 'cerrado'], true)
+    ? $_GET['estado']
+    : 'todos';
+$empleadoHistorial = $esAdministrador ? ($leerEntero($_GET, 'empleado') ?: null) : null;
 $historialCortes = $idEmpleado > 0 || $esAdministrador
-    ? CorteCaja::listarCortes($db, $inicioPeriodo, $finPeriodo, $idEmpleado, $esAdministrador)
+    ? CorteCaja::listarCortes(
+        $db,
+        $inicioPeriodo,
+        $finPeriodo,
+        $idEmpleado,
+        $esAdministrador,
+        $empleadoHistorial,
+        $estadoHistorial
+    )
+    : [];
+$pagosCorte = $corteAbierto
+    ? CorteCaja::listarPagos($db, (int)$corteAbierto['id'])
+    : [];
+$resumenPagosCorte = $corteAbierto
+    ? CorteCaja::obtenerResumenPagos($db, (int)$corteAbierto['id'])
+    : ['efectivo' => 0.0, 'tarjeta' => 0.0, 'transferencia' => 0.0, 'general' => 0.0, 'pagos' => 0, 'ventas' => 0];
+$fechaInicioEstadisticas = $validarFecha($_GET['fecha_inicio'] ?? null) ?? $inicioPeriodo;
+$fechaFinEstadisticas = $validarFecha($_GET['fecha_fin'] ?? null) ?? $inicioPeriodo->modify('last day of this month');
+if ($fechaFinEstadisticas < $fechaInicioEstadisticas || $fechaFinEstadisticas->diff($fechaInicioEstadisticas)->days > 366) {
+    $fechaInicioEstadisticas = $inicioPeriodo;
+    $fechaFinEstadisticas = $inicioPeriodo->modify('last day of this month');
+}
+$finExclusivoEstadisticas = $fechaFinEstadisticas->modify('+1 day');
+$filtroEmpleadoEstadisticas = $esAdministrador ? ($leerEntero($_GET, 'empleado_estadisticas') ?: null) : null;
+$empleados = $esAdministrador || ($idEmpleado > 0 && $corteAbierto)
+    ? CorteCaja::listarEmpleados($db)
     : [];
 $resumenMensual = $esAdministrador
-    ? CorteCaja::obtenerResumenMensual($db, $inicioPeriodo, $finPeriodo)
+    ? CorteCaja::obtenerResumenMensual($db, $fechaInicioEstadisticas, $finExclusivoEstadisticas, $filtroEmpleadoEstadisticas)
     : null;
-$empleados = $idEmpleado > 0 && $corteAbierto ? CorteCaja::listarEmpleados($db) : [];
+$cortesEstadisticas = $esAdministrador
+    ? CorteCaja::listarCortes(
+        $db,
+        $fechaInicioEstadisticas,
+        $finExclusivoEstadisticas,
+        $idEmpleado,
+        true,
+        $filtroEmpleadoEstadisticas,
+        'cerrado'
+    )
+    : [];
+$movimientosEstadisticas = $esAdministrador
+    ? CorteCaja::listarMovimientosPeriodo(
+        $db,
+        $fechaInicioEstadisticas,
+        $finExclusivoEstadisticas,
+        $filtroEmpleadoEstadisticas
+    )
+    : [];
+$pagosEstadisticas = $esAdministrador
+    ? CorteCaja::listarPagosPeriodo(
+        $db,
+        $fechaInicioEstadisticas,
+        $finExclusivoEstadisticas,
+        $filtroEmpleadoEstadisticas
+    )
+    : [];
+$filtroEmpleadoMensual = $esAdministrador ? ($leerEntero($_GET, 'empleado_mensual') ?: null) : null;
+$resumenMensualPeriodo = $esAdministrador
+    ? CorteCaja::obtenerResumenMensual($db, $inicioPeriodo, $finPeriodo, $filtroEmpleadoMensual)
+    : null;
+$cortesResumenMensual = $esAdministrador
+    ? CorteCaja::listarCortes(
+        $db,
+        $inicioPeriodo,
+        $finPeriodo,
+        $idEmpleado,
+        true,
+        $filtroEmpleadoMensual,
+        'todos'
+    )
+    : [];
+$movimientosMensuales = $esAdministrador
+    ? CorteCaja::listarMovimientosPeriodo($db, $inicioPeriodo, $finPeriodo, $filtroEmpleadoMensual)
+    : [];
+$pagosMensuales = $esAdministrador
+    ? CorteCaja::listarPagosPeriodo($db, $inicioPeriodo, $finPeriodo, $filtroEmpleadoMensual)
+    : [];
 $detalleCorte = null;
 $movimientosDetalle = [];
 $detalleId = $leerEntero($_GET, 'detalle');

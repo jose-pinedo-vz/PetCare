@@ -18,7 +18,7 @@
                     <td><?= $cerrado ? $moneda($corte['efectivo_contado']) : '—' ?></td>
                     <td><?= $cerrado ? $monedaConSigno($corte['diferencia']) : '—' ?></td>
                     <td><span class="corte-estado <?= $cerrado ? 'cerrado' : 'abierto' ?>"><?= htmlspecialchars(ucfirst($corte['estado'])) ?></span></td>
-                    <td><a class="btn-secundario btn-chico" href="corte_caja.php?panel=historial&periodo=<?= rawurlencode($periodo) ?>&detalle=<?= (int)$corte['id'] ?>">Ver</a></td>
+                    <td><a class="btn-secundario btn-chico" href="corte_caja.php?panel=historial&periodo=<?= rawurlencode(date('Y-m', strtotime($corte['apertura']))) ?>&detalle=<?= (int)$corte['id'] ?>">Ver</a></td>
                 </tr>
             <?php endforeach; ?>
             <?php if (!$historialCortes): ?>
