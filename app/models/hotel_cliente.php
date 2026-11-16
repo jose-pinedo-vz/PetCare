@@ -26,6 +26,8 @@ class HotelCliente
     const ESTADO_VENCIDA = 'Vencida';
     const ESTADO_ABANDONADA = 'Abandonada';
     const ESTADO_CANCELADA = 'Cancelada';
+    // Estado que usan las reservaciones creadas por el empleado (modelo Hotel.php)
+    const ESTADO_ACTIVO_EMPLEADO = 'activo';
 
     // Mascotas activas del cliente para el select del formulario
     public static function mascotasDelCliente(int $idCliente): array
@@ -102,6 +104,25 @@ class HotelCliente
 
             $db->beginTransaction();
 
+            // La misma mascota no puede tener dos reservaciones que se crucen
+            $stmt = $db->prepare(
+                "SELECT 1 FROM hotel h
+                 WHERE h.mascota = ?
+                   AND h.estado IN (?, ?, ?, ?)
+                   AND ? < h.fecha_salida
+                   AND ? > h.fecha_entrada
+                 LIMIT 1"
+            );
+            $stmt->execute([
+                (int)$mascota['id_mascota'],
+                self::ESTADO_PENDIENTE_PAGO, self::ESTADO_PENDIENTE_CARTILLA, self::ESTADO_CONFIRMADA, self::ESTADO_ACTIVO_EMPLEADO,
+                $fechaEntrada, $fechaSalida
+            ]);
+            if ($stmt->fetchColumn() !== false) {
+                $db->rollBack();
+                return ['exito' => false, 'mensaje' => 'Esa mascota ya tiene una reservación en esas fechas.'];
+            }
+
             // Bloquea las jaulas de ese tamano para que dos reservaciones no tomen la misma
             $stmt = $db->prepare(
                 "SELECT id FROM jaula
@@ -119,7 +140,7 @@ class HotelCliente
                    AND NOT EXISTS (
                        SELECT 1 FROM hotel h
                        WHERE h.id_jaula = j.id
-                         AND h.estado IN (?, ?, ?)
+                         AND h.estado IN (?, ?, ?, ?)
                          AND ? < h.fecha_salida
                          AND ? > h.fecha_entrada
                    )
@@ -129,7 +150,7 @@ class HotelCliente
             );
             $stmt->execute([
                 $tamano,
-                self::ESTADO_PENDIENTE_PAGO, self::ESTADO_PENDIENTE_CARTILLA, self::ESTADO_CONFIRMADA,
+                self::ESTADO_PENDIENTE_PAGO, self::ESTADO_PENDIENTE_CARTILLA, self::ESTADO_CONFIRMADA, self::ESTADO_ACTIVO_EMPLEADO,
                 $fechaEntrada, $fechaSalida
             ]);
             $idJaula = $stmt->fetchColumn();
