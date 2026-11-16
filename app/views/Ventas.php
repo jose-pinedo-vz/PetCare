@@ -1,3 +1,17 @@
+<?php
+// Mostrar nombre del usuario
+session_start();
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+$empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+$horario_empleado = $_SESSION['horario_empleado'] ?? null;
+$id_empleado = $_SESSION['id_empleado'] ?? null;
+// Mostrar nombre del usuario
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,7 +28,7 @@
             <div class="migaja">Ventas y pagos /</div>
             <header class="encabezado-pagina">
                 <h1>Ventas y pagos</h1>
-                <div class="venta-cajero">Cajero: <strong>Nombre de empleado</strong> | Turno: Matutino</div>
+                <div class="venta-cajero">Cajero: <strong><?php echo htmlspecialchars($empleado_asociado); ?></strong> | Turno: <strong><?php echo htmlspecialchars($horario_empleado); ?></strong></div>
             </header>
 
             <nav class="inventario-pestanas" aria-label="Secciones de ventas y pagos">

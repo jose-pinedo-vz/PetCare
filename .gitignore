@@ -66,3 +66,6 @@ $RECYCLE.BIN/
 # "composer install"
 vendor/
 config_correo.php
+
+# Credenciales SMTP locales del cliente (recuperar contrasena)
+app/config/correo.local.php

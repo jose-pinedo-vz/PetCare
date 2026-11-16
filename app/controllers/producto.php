@@ -15,13 +15,6 @@ function validar_datos(array $datos) {
         $errores[] = "El código debe contener al menos una letra, un número y sin caracteres especiales.";
     }
 
-    //El codigo de barra es obligatorio
-    //if (empty($datos['codigo_barra'])) {
-    //    $errores[] = "El codigo de barra es obligatorio.";
-    //}else if(!(int)$datos['codigo_barra']){
-    //    $errores[] = "El codigo de barra debe ser un valor numerico.";
-    //}
-
     //El nombre es obligatorio
     if (empty($datos['nombre'])) {
         $errores[] = "El nombre es obligatorio.";
@@ -83,54 +76,23 @@ function validar_datos(array $datos) {
         $errores[] = "La unidad de medida no puede tener mas de 5 caracteres";
     }
 
-    //El precio de compra es obligatorio
-    if (empty($datos['precio_compra'])) {
-        $errores[] = "El precio de compra es obligatorio.";
-    }else if(!(float)$datos['precio_compra']){
-        $errores[] = "El precio de compra debe ser un valor numerico.";
-    }else {
-        $precioCompraLimpio = str_replace(',', '.', $datos['precio_compra'] ?? '');
-        $datos['precio_compra'] = (float)$precioCompraLimpio;
-        list(,$digitosDecimales) = explode('.', $datos['precio_compra'] . '.');
-        if (strlen($digitosDecimales) > 2) {
-            $errores[] = "El precio de compra no puede tener más de 2 decimales.";
-        }else if ((float)$datos['precio_compra'] < 0) {
-            $errores[] = "El precio de compra debe ser un valor mayor a 0.";
-        }
-    }
-
     //El precio de venta es obligatorio
-    if (empty($datos['precio_venta'])) {
+    if ($datos['precio_venta'] === '') {
         $errores[] = "El precio de venta es obligatorio.";
-    }else if(!(float)$datos['precio_venta']){
+    }else if (!is_numeric($datos['precio_venta']) || (float)$datos['precio_venta'] <= 0) {
         $errores[] = "El precio de venta debe ser un valor numerico.";
     }else {
-        $precioVentaLimpio = str_replace(',', '.', $datos['precio_venta'] ?? '');
-        $datos['precio_venta'] = (float)$precioVentaLimpio;
-        list(,$digitosDecimales) = explode('.', $datos['precio_venta'] . '.');
-        if (strlen($digitosDecimales) > 2) {
+        $datos['precio_venta'] = (float)$datos['precio_venta'];
+        $partesPrecio = explode('.', (string)$datos['precio_venta']);
+        if (isset($partesPrecio[1]) && strlen($partesPrecio[1]) > 2) {
             $errores[] = "El precio de venta no puede tener más de 2 decimales.";
-        }else if ((float)$datos['precio_venta'] < 0) {
-            $errores[] = "El precio de venta debe ser un valor mayor a 0.";
-        }else if ((float)$datos['precio_venta'] < (float)$datos['precio_compra']) {
-            $errores[] = "El precio de venta no puede ser menor al precio de compra.";
         }
     }
-    //La existencia es obligatorio
-    if (empty($datos['existencia'])) {
-        $errores[] = "La existencia es obligatoria.";
-    }else if(!(int)$datos['existencia']){
-        $errores[] = "La existencia debe ser un valor numerico.";
-    }else if ((int)$datos['existencia'] < 0) {
-        $errores[] = "La existencia debe ser un valor mayor a 0.";
-    }else{
-        $datos['existencia']=(int)$datos['existencia'];
-    }
 
-    //La existencia minima es obligatorio
-    if (empty($datos['existencia_minima'])) {
+    // Los límites de inventario pueden ser cero, pero deben ser enteros no negativos.
+    if ($datos['existencia_minima'] === '') {
         $errores[] = "La existencia minima es obligatoria.";
-    }else if(!(int)$datos['existencia_minima']){
+    }else if (filter_var($datos['existencia_minima'], FILTER_VALIDATE_INT) === false) {
         $errores[] = "La existencia minima debe ser un valor numerico.";
     }else if ((int)$datos['existencia_minima'] < 0) {
         $errores[] = "La existencia minima debe ser un valor mayor a 0.";
@@ -138,10 +100,9 @@ function validar_datos(array $datos) {
         $datos['existencia_minima']=(int)$datos['existencia_minima'];
     }
 
-    //La existencia maxima es obligatorio
-    if (empty($datos['existencia_maxima'])) {
+    if ($datos['existencia_maxima'] === '') {
         $errores[] = "La existencia maxima es obligatoria.";
-    }else if(!(int)$datos['existencia_maxima']){
+    }else if (filter_var($datos['existencia_maxima'], FILTER_VALIDATE_INT) === false) {
         $errores[] = "La existencia maxima debe ser un valor numerico.";
     }else if ((int)$datos['existencia_maxima'] < 0) {
         $errores[] = "La existencia maxima debe ser un valor mayor a 0.";
@@ -149,63 +110,11 @@ function validar_datos(array $datos) {
         $datos['existencia_maxima']=(int)$datos['existencia_maxima'];
     }
 
-    //La fecha de ingreso es obligatorio
-    if (empty($datos['fecha_ingreso'])) {
-        $errores[] = "La fecha de ingreso es obligatoria.";
-    }else {
-        try {
-            $fechaActual    = new DateTime('today');
-            $fechaIngresada = new DateTime($datos['fecha_ingreso']);
-            if ($fechaIngresada > $fechaActual) {
-                $errores[] = "Fecha de ingreso: No puede ser una fecha posterior a hoy o  anterior.";
-            }
-        } catch (Exception $e) {
-            $errores[] = "Fecha de ingreso: Formato de fecha no válido.";
-        }
-    }
-
-    //La fecha de caducidad es obligatorio
-    if (empty($datos['fecha_caducidad'])) {
-        $errores[] = "La fecha de caducidad es obligatoria.";
-    }else {
-        try {
-            $fechaActual    = new DateTime('today');
-            $fechaIngresada = new DateTime($datos['fecha_caducidad']);
-            if ($fechaIngresada < $fechaActual) {
-                $errores[] = "Fecha de caducidad: No puede ser una fecha anterior a hoy.";
-            }
-        } catch (Exception $e) {
-            $errores[] = "Fecha de caducidad: Formato de fecha no válido.";
-        }
-    }
-
-    //El lote es obligatorio
-    if (empty($datos['lote'])) {
-        $errores[] = "El lote es obligatorio.";
-    }else if (strlen($datos['lote']) > 20) {
-        $errores[] = "El lote no puede tener mas de 20 caracteres.";
-    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['lote'])) {
-        $errores[] = "El lote debe contener al menos una letra, un número y sin caracteres especiales.";
-    }
-
-    //La ubicacion es obligatorio
-    if (empty($datos['ubicacion'])) {
-        $errores[] = "La ubicacion es obligatoria.";
-    }else if (strlen($datos['ubicacion']) > 20) {
-        $errores[] = "La ubicacion no puede tener mas de 20 caracteres.";
-    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['ubicacion'])) {
-        $errores[] = "La ubicacion debe contener al menos una letra, un número y sin caracteres especiales.";
-    }
-
-    //El estado es obligatorio
-    if (!isset($datos['estado'])) {
+    if (!in_array((string)$datos['estado'], ['0', '1'], true)) {
         $errores[] = "El estado es obligatorio.";
     }else{
-        $estado = $datos['estado'];
-        $datos['estado'] = (int)$estado;
+        $datos['estado'] = (int)$datos['estado'];
     }
-
-    
 
     if (count($errores) > 0) {
         // se muestra errores de que campos no se llenaron
@@ -217,16 +126,37 @@ function validar_datos(array $datos) {
 
     } else {
         require_once __DIR__ . '/../models/Productos.php';
+        $datos['fecha_ingreso'] = date('Y-m-d');
+
+        try {
+            if (Productos::existeCodigo($datos['codigo'])) {
+                $_SESSION['errores'] = ["El código del producto ya está registrado."];
+                $_SESSION['old'] = $datos;
+
+                header("Location: ../views/agregar_producto.php");
+                exit;
+            }
+        } catch (Throwable $e) {
+            error_log("Error al validar el código del producto: " . $e->getMessage());
+            $_SESSION['errores'] = ["No fue posible validar si el código del producto ya existe. Inténtalo nuevamente."];
+            $_SESSION['old'] = $datos;
+
+            header("Location: ../views/agregar_producto.php");
+            exit;
+        }
+
         //La imagen es obligatorio
-        if (empty($datos['imagen'])) {
+        if (!is_array($datos['imagen'])
+            || empty($datos['imagen']['name'])
+            || $datos['imagen']['error'] === UPLOAD_ERR_NO_FILE) {
             $errores[] = "La imagen es obligatoria.";
         }else{
             require_once __DIR__ . '/../controllers/ImagenController.php';
 
-            $resultadoImagen = null;
             $foto = $datos['imagen'];
-
-            if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+            if ($foto['error'] !== UPLOAD_ERR_OK) {
+                $errores[] = "No fue posible recibir la imagen del producto.";
+            } else {
                 $resultadoImagen = ImagenController::subir($foto);
                 if ($resultadoImagen['exito']) {
                     $datos['imagen'] = $resultadoImagen['ruta'];
@@ -253,7 +183,7 @@ function validar_datos(array $datos) {
             if (is_array($advert) && count($advert) > 0) {
                 if ($advert[0] === "Error ID") {
                     $_SESSION['errores'] = ["El Id categoria (ID: " . htmlspecialchars((string)$datos['id_categoria']) . ") o el Id proveedor (ID: " . htmlspecialchars((string)$datos['id_proveedor']) . ")no se encontraron."];
-                } else if($advert[0] === "Error al aguardar") {
+                } else {
                     $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
                 }
                 $_SESSION['old'] = $datos;

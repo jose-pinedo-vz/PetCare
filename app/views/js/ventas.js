@@ -20,6 +20,13 @@
     const btnCancelar = document.getElementById('btnCancelarVenta');
     const btnCobrar = document.getElementById('btnCobrar');
 
+    // Elementos del buscador de servicios
+    const inputBuscarServ = document.getElementById('buscarServicio');
+    const tbodyServicios = document.getElementById('resultadosServicios');
+    const mensajeBusquedaServ = document.getElementById('mensajeBusquedaServicio');
+    const modalBuscarServ = document.getElementById('modalBuscarServicio');
+    const btnAgregarServicio = document.getElementById('btnAgregarServicio');
+
     // Elementos del modal de pago
     const modalPago = document.getElementById('modalPagarVenta');
     const inputMonto = document.getElementById('montoRecibido');
@@ -31,8 +38,13 @@
     const metodos = modalPago.querySelectorAll('.pago-metodo');
 
     let temporizador = null;
+    let temporizadorServ = null;
     let carrito = [];
     let formaPago = 'efectivo';
+    // Ultima venta guardada, para poder facturarla
+    let ultimaVentaId = null;
+    let ultimoFolio = null;
+    let enviandoFactura = false;
 
     // Funciones de apoyo
     function redondear(n) { return Math.round(n * 100) / 100; }
@@ -176,6 +188,68 @@
         buscar('');
     });
 
+    // Busqueda de servicios
+
+    // Muestra un texto en la tabla de servicios
+    function filaMensajeServicio(texto) {
+        tbodyServicios.innerHTML = '';
+        const tr = document.createElement('tr');
+        const td = celda(texto);
+        td.colSpan = 6;
+        td.className = 'vacio';
+        tr.appendChild(td);
+        tbodyServicios.appendChild(tr);
+    }
+
+    // Muestra los servicios encontrados
+    function dibujarServicios(servicios) {
+        if (!Array.isArray(servicios) || servicios.length === 0) {
+            filaMensajeServicio('No se encontraron servicios.');
+            return;
+        }
+        tbodyServicios.innerHTML = '';
+        servicios.forEach(function (s) {
+            const tr = document.createElement('tr');
+            tr.appendChild(celda(s.nombre));
+            tr.appendChild(celda(s.categoria || ''));
+            tr.appendChild(celda(s.descripcion || ''));
+            tr.appendChild(celda(s.duracion + ' min'));
+            tr.appendChild(celda(dinero(Number(s.precio))));
+            tr.appendChild(celda(boton('Agregar', 'btn btn-info', function () {
+                agregarServicio(s);
+                modalBuscarServ.close();
+            })));
+            tbodyServicios.appendChild(tr);
+        });
+    }
+
+    // Pide los servicios al servidor
+    async function buscarServicios(termino) {
+        mensajeBusquedaServ.textContent = '';
+        try {
+            const resp = await fetch(URL_VENTAS + '?accion=buscar_servicios&q=' + encodeURIComponent(termino));
+            const datos = await resp.json();
+            // Si ya escribio otra cosa, ignora esta respuesta
+            if (termino !== inputBuscarServ.value.trim()) return;
+            dibujarServicios(datos);
+        } catch (e) {
+            mensajeBusquedaServ.textContent = 'No se pudo realizar la búsqueda.';
+        }
+    }
+
+    // Busca cuando deja de escribir
+    inputBuscarServ.addEventListener('input', function () {
+        clearTimeout(temporizadorServ);
+        const termino = inputBuscarServ.value.trim();
+        temporizadorServ = setTimeout(function () { buscarServicios(termino); }, 300);
+    });
+
+    // Al abrir el modal muestra los servicios
+    btnAgregarServicio.addEventListener('click', function () {
+        inputBuscarServ.value = '';
+        buscarServicios('');
+    });
+
     // Carrito
 
     // Suma todo lo que hay en el carrito
@@ -212,7 +286,7 @@
 
         if (carrito.length === 0) {
             const tr = document.createElement('tr');
-            const td = celda('No hay productos en la venta.');
+            const td = celda('No hay productos ni servicios en la venta.');
             td.colSpan = 7;
             td.className = 'venta-carrito-vacio';
             tr.appendChild(td);
@@ -227,37 +301,42 @@
             tr.appendChild(celda(item.codigo));
             tr.appendChild(celda(dinero(item.precio)));
 
-            // Cantidad con - y + a los lados
-            const cant = filaControl();
-            const inputCant = inputMini('1', item.existencia, item.cantidad);
-            inputCant.addEventListener('change', function () {
-                let n = parseInt(inputCant.value, 10);
-                if (isNaN(n) || n < 1) n = 1;
-                if (n > item.existencia) {
-                    n = item.existencia;
-                    mensajeVenta.textContent = 'Solo hay ' + item.existencia + ' en existencia.';
-                }
-                item.cantidad = n;
-                dibujarCarrito();
-            });
-            cant.appendChild(botonMini('-', function () {
-                if (item.cantidad > 1) {
-                    item.cantidad--;
+            // El servicio siempre es 1, sin - ni +
+            if (item.tipo === 'servicio') {
+                tr.appendChild(celda('1'));
+            } else {
+                // Cantidad con - y + a los lados
+                const cant = filaControl();
+                const inputCant = inputMini('1', item.existencia, item.cantidad);
+                inputCant.addEventListener('change', function () {
+                    let n = parseInt(inputCant.value, 10);
+                    if (isNaN(n) || n < 1) n = 1;
+                    if (n > item.existencia) {
+                        n = item.existencia;
+                        mensajeVenta.textContent = 'Solo hay ' + item.existencia + ' en existencia.';
+                    }
+                    item.cantidad = n;
                     dibujarCarrito();
-                }
-            }));
-            cant.appendChild(inputCant);
-            cant.appendChild(botonMini('+', function () {
-                if (item.cantidad < item.existencia) {
-                    item.cantidad++;
-                    dibujarCarrito();
-                } else {
-                    mensajeVenta.textContent = 'No hay más existencia de ' + item.nombre + '.';
-                }
-            }));
-            const tdCant = celda(cant);
-            tdCant.style.whiteSpace = 'nowrap';
-            tr.appendChild(tdCant);
+                });
+                cant.appendChild(botonMini('-', function () {
+                    if (item.cantidad > 1) {
+                        item.cantidad--;
+                        dibujarCarrito();
+                    }
+                }));
+                cant.appendChild(inputCant);
+                cant.appendChild(botonMini('+', function () {
+                    if (item.cantidad < item.existencia) {
+                        item.cantidad++;
+                        dibujarCarrito();
+                    } else {
+                        mensajeVenta.textContent = 'No hay más existencia de ' + item.nombre + '.';
+                    }
+                }));
+                const tdCant = celda(cant);
+                tdCant.style.whiteSpace = 'nowrap';
+                tr.appendChild(tdCant);
+            }
 
             // Descuento en porcentaje
             const caja = document.createElement('div');
@@ -309,7 +388,7 @@
             return;
         }
 
-        const actual = carrito.find(function (i) { return i.id_producto === p.id_producto; });
+        const actual = carrito.find(function (i) { return i.tipo === 'producto' && i.id_producto === p.id_producto; });
         if (actual) {
             if (actual.cantidad < actual.existencia) {
                 actual.cantidad++;
@@ -318,6 +397,7 @@
             }
         } else {
             carrito.push({
+                tipo: 'producto',
                 id_producto: p.id_producto,
                 codigo: p.codigo,
                 nombre: p.nombre,
@@ -327,6 +407,29 @@
                 descuento: 0
             });
         }
+        dibujarCarrito();
+    }
+
+    // Agrega un servicio al carrito (una sola linea, sin stock)
+    function agregarServicio(s) {
+        mensajeVenta.textContent = '';
+        const id = Number(s.id_servicio);
+
+        const actual = carrito.find(function (i) { return i.tipo === 'servicio' && i.id_servicio === id; });
+        if (actual) {
+            mensajeVenta.textContent = 'El servicio ya esta en la venta.';
+            return;
+        }
+
+        carrito.push({
+            tipo: 'servicio',
+            id_servicio: id,
+            codigo: s.categoria || '',
+            nombre: s.nombre,
+            precio: Number(s.precio),
+            cantidad: 1,
+            descuento: 0
+        });
         dibujarCarrito();
     }
 
@@ -363,15 +466,28 @@
         inputCodigo.focus();
     }
 
+    // Olvida la venta facturable y oculta el mensaje de factura
+    function limpiarFactura() {
+        ultimaVentaId = null;
+        ultimoFolio = null;
+        const mensajeFactura = document.getElementById('mensajeFactura');
+        if (mensajeFactura) {
+            mensajeFactura.textContent = '';
+            mensajeFactura.hidden = true;
+        }
+    }
+
     // Pregunta antes de limpiar
     function confirmarYReiniciar(texto) {
         if (carrito.length === 0) {
             reiniciar();
-            mensajeVenta.textContent = 'No hay productos en la venta.';
+            limpiarFactura();
+            mensajeVenta.textContent = 'No hay productos ni servicios en la venta.';
             return;
         }
         if (confirm(texto)) {
             reiniciar();
+            limpiarFactura();
             mensajeVenta.textContent = 'Venta cancelada.';
         }
     }
@@ -409,7 +525,7 @@
             const nombre = document.createElement('strong');
             nombre.textContent = i.nombre;
             const codigo = document.createElement('small');
-            codigo.textContent = 'Cód. ' + i.codigo;
+            codigo.textContent = (i.tipo === 'servicio') ? 'Servicio · ' + i.codigo : 'Cód. ' + i.codigo;
             detalle.appendChild(nombre);
             detalle.appendChild(codigo);
 
@@ -472,7 +588,7 @@
     btnCobrar.addEventListener('click', function () {
         if (carrito.length === 0) {
             modalPago.close();
-            mensajeVenta.textContent = 'Agrega productos antes de cobrar.';
+            mensajeVenta.textContent = 'Agrega productos o servicios antes de cobrar.';
             return;
         }
         mensajeVenta.textContent = '';
@@ -482,6 +598,184 @@
         elegirMetodo(metodos[0]);
         inputMonto.focus();
     });
+        // Confirmar pago: manda la venta al servidor
+    btnConfirmar.addEventListener('click', async function () {
+        // Si es abono de Pagos de servicios no se guarda la venta
+        if (typeof contextoPago !== 'undefined' && contextoPago && contextoPago.tipo === 'servicio') return;
+
+        // Solo termina si el carrito completo esta vacio
+        if (carrito.length === 0) return;
+
+        const modalConfirmado = document.getElementById('modalPagoConfirmado');
+
+        // Evita que den doble clic
+        btnConfirmar.disabled = true;
+
+        // Datos de tarjeta / transferencia (se leen antes de que el modal se cierre)
+        const campoNumero = document.getElementById('numeroTarjeta');
+        const campoTitular = document.getElementById('nombreTarjeta');
+        const campoVencimiento = document.getElementById('vencimientoTarjeta');
+        const campoCvv = document.getElementById('cvvTarjeta');
+        const campoReferencia = document.getElementById('referenciaTransferencia');
+
+        let datosPago = null;
+        if (formaPago === 'tarjeta') {
+            datosPago = {
+                numero_tarjeta: campoNumero ? campoNumero.value.replace(/\D/g, '') : '',
+                titular: campoTitular ? campoTitular.value.trim() : '',
+                vencimiento: campoVencimiento ? campoVencimiento.value.trim() : '',
+                cvv: campoCvv ? campoCvv.value.trim() : ''
+            };
+        } else if (formaPago === 'transferencia') {
+            datosPago = {
+                referencia: campoReferencia ? campoReferencia.value.trim() : ''
+            };
+        }
+
+        const datos = {
+            forma_pago: formaPago,
+            recibido: Number(inputMonto.value) || 0,
+            datos_pago: datosPago,
+            items: carrito.filter(function (i) { return i.tipo === 'producto'; }).map(function (i) {
+                return {
+                    id_producto: i.id_producto,
+                    cantidad: i.cantidad,
+                    descuento: i.descuento
+                };
+            }),
+            servicios: carrito.filter(function (i) { return i.tipo === 'servicio'; }).map(function (i) {
+                return {
+                    id_servicio: i.id_servicio,
+                    descuento: i.descuento
+                };
+            })
+        };
+
+        try {
+            const resp = await fetch(URL_VENTAS + '?accion=guardar_venta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            const r = await resp.json();
+
+            if (!r.ok) {
+                mostrarError('No se pudo guardar: ' + r.error);
+                return;
+            }
+
+            if (modalPago.open) modalPago.close();
+            limpiarCamposPago();
+            reiniciar();
+
+            // Venta nueva guardada: se recuerda para facturarla
+            limpiarFactura();
+            ultimaVentaId = r.id_venta;
+            ultimoFolio = r.folio;
+
+            // Muestra el resultado real en el modal de confirmacion
+            if (modalConfirmado) {
+                const texto = modalConfirmado.querySelector('.resultado-mensaje');
+                if (texto) {
+                    texto.textContent = 'Venta ' + r.folio + ' guardada correctamente.' +
+                        (r.cambio > 0 ? ' Cambio: ' + dinero(r.cambio) : '');
+                }
+                const totalReal = document.getElementById('totalVentaDemostracion');
+                if (totalReal) totalReal.textContent = dinero(r.total);
+                if (!modalConfirmado.open) modalConfirmado.showModal();
+            }
+        } catch (e) {
+            mostrarError('Error de conexion con el servidor.');
+        } finally {
+            // No deja los datos sensibles en memoria
+            datosPago = null;
+            datos.datos_pago = null;
+        }
+
+        // Cierra la confirmacion, avisa y regresa al modal de pago
+        function mostrarError(msg) {
+            if (modalConfirmado && modalConfirmado.open) modalConfirmado.close();
+            alert(msg);
+            if (!modalPago.open) modalPago.showModal();
+            // Sincroniza la forma de pago con el boton que quedo marcado en pantalla
+            const marcado = Array.prototype.find.call(metodos, function (m) {
+                return m.classList.contains('seleccionado');
+            });
+            if (marcado) formaPago = marcado.querySelector('strong').textContent.trim().toLowerCase();
+            actualizarPago();
+        }
+
+        // Limpia los campos de tarjeta y la referencia tras guardar
+        function limpiarCamposPago() {
+            [campoNumero, campoTitular, campoVencimiento, campoCvv, campoReferencia].forEach(function (c) {
+                if (c) c.value = '';
+            });
+        }
+    });
+
+    // Factura de la ultima venta guardada.
+    // El listener inline de Ventas.php corre antes (cierra el modal y pone su texto);
+    // este resultado llega despues y lo reemplaza.
+    const formFactura = document.getElementById('formDatosFactura');
+    if (formFactura) {
+        formFactura.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const mensajeFactura = document.getElementById('mensajeFactura');
+
+            function avisarFactura(texto) {
+                if (!mensajeFactura) return;
+                mensajeFactura.textContent = texto;
+                mensajeFactura.hidden = false;
+            }
+
+            // Error: avisa y regresa al formulario para corregir
+            function errorFactura(texto) {
+                avisarFactura(texto);
+                const modalFactura = document.getElementById('modalDatosFactura');
+                if (modalFactura && !modalFactura.open) modalFactura.showModal();
+            }
+
+            if (!ultimaVentaId) {
+                avisarFactura('No hay una venta guardada para facturar.');
+                return;
+            }
+            // Evita doble envio
+            if (enviandoFactura) return;
+            enviandoFactura = true;
+
+            const valor = function (id) {
+                const campo = document.getElementById(id);
+                return campo ? campo.value.trim() : '';
+            };
+            const datosFactura = {
+                id_venta: ultimaVentaId,
+                rfc: valor('facturaRfc').toUpperCase(),
+                razon_social: valor('facturaRazonSocial'),
+                codigo_postal: valor('facturaCodigoPostal'),
+                correo: valor('facturaCorreo')
+            };
+            const folio = ultimoFolio;
+
+            try {
+                const resp = await fetch(URL_VENTAS + '?accion=guardar_factura', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosFactura)
+                });
+                const r = await resp.json();
+
+                if (r.ok) {
+                    avisarFactura('Factura solicitada para la venta ' + folio + '.');
+                } else {
+                    errorFactura(r.error || 'No se pudo guardar la factura.');
+                }
+            } catch (err) {
+                errorFactura('Error de conexion con el servidor.');
+            } finally {
+                enviandoFactura = false;
+            }
+        });
+    }
 
     // Dibuja el carrito vacio al cargar
     dibujarCarrito();
