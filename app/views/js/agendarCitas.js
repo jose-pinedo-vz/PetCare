@@ -171,6 +171,8 @@ document.addEventListener("DOMContentLoaded", async function()
 });
 
 
+
+// mostrar responsable
 document.addEventListener("DOMContentLoaded", async function()
 {
     const servicio_listo = document.getElementById('servicio');
@@ -210,10 +212,47 @@ document.addEventListener("DOMContentLoaded", async function()
         {
             responsables(event.target.value.trim());
         });
-
-
     }
 });
+
+
+
+// duracion del servicio
+document.addEventListener("DOMContentLoaded", async function()
+{
+    const servicio_listo = document.getElementById('servicio');
+    const duracion = document.getElementById('duracion');
+
+    if (servicio_listo)
+    {
+        const consultarDuracion = async (evet) =>
+        {
+            let datos = [];
+            try
+            {
+                duracion.innerHTML = '';
+                const respuesta = await fetch(`../controllers/citas.php?accion=mostrarDuracion&servicio=${encodeURIComponent(evet)}`, {
+                    method: "GET"
+                });
+                datos = await respuesta.json();
+                console.log("duracino" + datos);
+                duracion.value = datos.duracion || '';
+
+            }
+            catch (error)
+            {
+               duracion.value = '';
+            }
+        }
+
+        servicio_listo.addEventListener('change', (event) =>
+        {
+            consultarDuracion(event.target.value.trim());
+        });
+    }
+});
+
+
 
 
 

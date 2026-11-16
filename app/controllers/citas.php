@@ -52,7 +52,6 @@ function errorSession(string $error)
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agendar_cita'))
 {
-    // LÍNEA DE DEPURACIÓN TEMPORAL:
     // echo "<pre>";
     // print_r($_POST);
     // echo "</pre>";
@@ -208,7 +207,7 @@ function horarios()
 
 
         $currentVespertino = DateTime::createFromFormat('H:i:s', '16:00:00');
-        $limiteVespertino = DateTime::createFromFormat('H:i:s', '18:00:00');
+        $limiteVespertino = DateTime::createFromFormat('H:i:s', '19:00:00');
         while ($currentVespertino < $limiteVespertino)
         {
             $fechaHoraActual = $fechaSeleccionada . " " . $currentVespertino->format('H:i:s');
@@ -284,11 +283,16 @@ if ($accion === "mostrarResponsable")
 function mostrarResponsable()
 {
     $servicio = $_GET['servicio'];
-    // if ($servicio === 'Estética') $equivalente = 'Veterinario';
-    // if ($servicio === 'Salud') $equivalente = 'Estilista';
 
+    $servicio = ConexionesClientes::consultarServicioPorCategoria($servicio);
+    $equivalente = '';
 
-    $responsables = ConexionesClientes::mostrarServiciosPorServicio($servicio);
+    $servicio = $servicio['categoria'] ?? '';
+
+    if ($servicio === 'Estética') $equivalente = 'Estilista';
+    if ($servicio === 'Salud') $equivalente = 'Veterinario';
+
+    $responsables = ConexionesClientes::consultarEmpleadoPorPuesto($equivalente);
 
     echo json_encode($responsables);
     exit();
@@ -382,7 +386,7 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
     $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;
     $fecha = $horaLimpia . " " . $nuevaFecha;
 
-    // actualizar en base de datos
+    // actualisar en base  datos
     $resultado = ConexionesClientes::actualizarCita((int)$idConsulta, (string)$fechaHoraFinal);
 
     if (!$resultado) 
@@ -390,6 +394,22 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
         erroresDeReprogramarCitas("Error al actualizar la cita en la base de datos.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
     header("Location: ../views/citas.php");
+    exit();
+}
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === "mostrarDuracion")
+{
+    duracionServicio();
+}
+
+function duracionServicio()
+{
+    $idServicio = $_GET['servicio'];
+    $res = ConexionesClientes::consutltarDuracinoServicio($idServicio);
+    header('Content-Type: application/json');
+    echo json_encode(['duracion' => $res]);
     exit();
 }
 
