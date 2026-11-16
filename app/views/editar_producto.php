@@ -176,7 +176,7 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             id="descripcion"
             name="descripcion"
             rows="2"
-            placeholder="Descripción breve del producto..." required><?= htmlspecialchars($old['nombre'] ?? $producto['nombre'] ?? '') ?></textarea>
+            placeholder="Descripción breve del producto..." required><?= htmlspecialchars($old['descripcion'] ?? $producto['descripcion'] ?? '') ?></textarea>
           </div>
         </div>
 
@@ -200,7 +200,7 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
       </fieldset>
 
       <fieldset>
-        <legend>Precios e Inventario</legend>
+        <legend>Precio e inventario</legend>
 
         <div class="grid-formulario">
 
@@ -215,18 +215,6 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             name="precio_venta"
             value="<?= htmlspecialchars($old['precio_venta'] ?? $producto['precio_venta'] ?? '') ?>"
             required placeholder="0.00">
-          </div>
-
-          <div>
-            <label class="label-campo" for="existencia">Existencia (Stock):</label>
-            <input
-            type="number"
-            step="0.01"
-            class="campo"
-            id="existencia"
-            name="existencia"
-            value="<?= htmlspecialchars($old['existencia'] ?? $producto['existencia'] ?? '') ?>"
-            required placeholder="0">
           </div>
 
           <div>
@@ -251,17 +239,6 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             name="existencia_maxima"
             value="<?= htmlspecialchars($old['existencia_maxima'] ?? $producto['existencia_maxima'] ?? '') ?>"
             required placeholder="0">
-          </div>
-
-          <div>
-            <label class="label-campo" for="fecha_ingreso">Fecha de ingreso:</label>
-            <input
-             type="date"
-             class="campo"
-             id="fecha_ingreso"
-             name="fecha_ingreso"
-              value="<?= htmlspecialchars($old['fecha_ingreso'] ?? $producto['fecha_ingreso'] ?? '') ?>"
-             required>
           </div>
 
           <?php
