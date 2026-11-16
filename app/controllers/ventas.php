@@ -141,14 +141,19 @@ function ventaGuardar()
     $formaPago = strtolower(trim($datos['forma_pago'] ?? ''));
     $recibido = (float)($datos['recibido'] ?? 0);
 
+    // Datos de tarjeta o transferencia; solo se pasan al modelo, nunca se registran
+    $datosPago = (is_array($datos) && is_array($datos['datos_pago'] ?? null)) ? $datos['datos_pago'] : [];
+
     $resultado = Ventas::guardarVenta(
         $items,
         $formaPago,
         $recibido,
         ID_EMPLEADO_VENTA,
         ID_CLIENTE_PUBLICO,
-        $servicios
+        $servicios,
+        $datosPago
     );
+    unset($datos, $datosPago);
 
     echo json_encode($resultado);
     exit;

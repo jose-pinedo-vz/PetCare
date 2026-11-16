@@ -594,9 +594,31 @@
         // Evita que den doble clic
         btnConfirmar.disabled = true;
 
+        // Datos de tarjeta / transferencia (se leen antes de que el modal se cierre)
+        const campoNumero = document.getElementById('numeroTarjeta');
+        const campoTitular = document.getElementById('nombreTarjeta');
+        const campoVencimiento = document.getElementById('vencimientoTarjeta');
+        const campoCvv = document.getElementById('cvvTarjeta');
+        const campoReferencia = document.getElementById('referenciaTransferencia');
+
+        let datosPago = null;
+        if (formaPago === 'tarjeta') {
+            datosPago = {
+                numero_tarjeta: campoNumero ? campoNumero.value.replace(/\D/g, '') : '',
+                titular: campoTitular ? campoTitular.value.trim() : '',
+                vencimiento: campoVencimiento ? campoVencimiento.value.trim() : '',
+                cvv: campoCvv ? campoCvv.value.trim() : ''
+            };
+        } else if (formaPago === 'transferencia') {
+            datosPago = {
+                referencia: campoReferencia ? campoReferencia.value.trim() : ''
+            };
+        }
+
         const datos = {
             forma_pago: formaPago,
             recibido: Number(inputMonto.value) || 0,
+            datos_pago: datosPago,
             items: carrito.filter(function (i) { return i.tipo === 'producto'; }).map(function (i) {
                 return {
                     id_producto: i.id_producto,
@@ -626,6 +648,7 @@
             }
 
             if (modalPago.open) modalPago.close();
+            limpiarCamposPago();
             reiniciar();
 
             // Muestra el resultado real en el modal de confirmacion
@@ -641,6 +664,10 @@
             }
         } catch (e) {
             mostrarError('Error de conexion con el servidor.');
+        } finally {
+            // No deja los datos sensibles en memoria
+            datosPago = null;
+            datos.datos_pago = null;
         }
 
         // Cierra la confirmacion, avisa y regresa al modal de pago
@@ -648,7 +675,19 @@
             if (modalConfirmado && modalConfirmado.open) modalConfirmado.close();
             alert(msg);
             if (!modalPago.open) modalPago.showModal();
+            // Sincroniza la forma de pago con el boton que quedo marcado en pantalla
+            const marcado = Array.prototype.find.call(metodos, function (m) {
+                return m.classList.contains('seleccionado');
+            });
+            if (marcado) formaPago = marcado.querySelector('strong').textContent.trim().toLowerCase();
             actualizarPago();
+        }
+
+        // Limpia los campos de tarjeta y la referencia tras guardar
+        function limpiarCamposPago() {
+            [campoNumero, campoTitular, campoVencimiento, campoCvv, campoReferencia].forEach(function (c) {
+                if (c) c.value = '';
+            });
         }
     });
     // Dibuja el carrito vacio al cargar

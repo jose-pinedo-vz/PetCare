@@ -78,11 +78,40 @@ class Ventas
     }
 
     // Guarda la venta completa en una sola transaccion
-    public static function guardarVenta(array $items, string $formaPago, float $recibido, int $idEmpleado, int $idCliente, array $servicios = []): array
+    public static function guardarVenta(array $items, string $formaPago, float $recibido, int $idEmpleado, int $idCliente, array $servicios = [], array $datosPago = []): array
     {
         $formasValidas = ['efectivo', 'tarjeta', 'transferencia'];
         if ((empty($items) && empty($servicios)) || !in_array($formaPago, $formasValidas, true)) {
             return ['ok' => false, 'error' => 'Datos de venta no validos.'];
+        }
+
+        // Referencia y observaciones del pago (efectivo no lleva)
+        $referenciaPago = null;
+        $observacionesPago = null;
+
+        if ($formaPago === 'tarjeta') {
+            // Se valida y se consulta la pasarela ANTES de abrir la transaccion
+            $tarjeta = self::validarTarjeta($datosPago);
+            if (!$tarjeta['ok']) {
+                return ['ok' => false, 'error' => $tarjeta['error']];
+            }
+            $pasarela = self::simularPasarela($tarjeta['numero']);
+            $ultimos4 = substr($tarjeta['numero'], -4);
+            // El numero completo y el CVV ya no se usan
+            unset($tarjeta, $datosPago);
+            if (!$pasarela['ok']) {
+                return ['ok' => false, 'error' => $pasarela['error']];
+            }
+            $referenciaPago = $pasarela['autorizacion'];
+            $observacionesPago = 'Tarjeta ****' . $ultimos4;
+        } elseif ($formaPago === 'transferencia') {
+            $ref = $datosPago['referencia'] ?? '';
+            $ref = is_scalar($ref) ? trim((string)$ref) : '';
+            if ($ref !== '' && !preg_match('/^[A-Za-z0-9-]{1,30}$/', $ref)) {
+                return ['ok' => false, 'error' => 'La referencia de transferencia debe tener maximo 30 caracteres (solo letras, numeros y guiones).'];
+            }
+            $referenciaPago = ($ref === '') ? null : $ref;
+            $observacionesPago = 'Transferencia';
         }
 
         $db = ConexionDB::obtenerConexion();
@@ -281,9 +310,9 @@ class Ventas
             $montoRecibido = ($formaPago === 'efectivo') ? round($recibido, 2) : $total;
             $stmt = $db->prepare(
                 "INSERT INTO pago (venta, cliente, fecha, importe, forma_pago, referencia_pago, empleado_receptor, estado, tipo, monto_recibido, cambio, observaciones)
-                 VALUES (?, ?, NOW(), ?, ?, NULL, ?, 'aplicado', 'pago', ?, ?, NULL)"
+                 VALUES (?, ?, NOW(), ?, ?, ?, ?, 'aplicado', 'pago', ?, ?, ?)"
             );
-            $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $idEmpleado, $montoRecibido, $cambio]);
+            $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $referenciaPago, $idEmpleado, $montoRecibido, $cambio, $observacionesPago]);
 
             $db->commit();
             return ['ok' => true, 'id_venta' => $idVenta, 'folio' => $folio, 'total' => $total, 'cambio' => $cambio];
@@ -294,6 +323,73 @@ class Ventas
             error_log("Error en Ventas::guardarVenta: " . $e->getMessage());
             return ['ok' => false, 'error' => $e->getMessage()];
         }
+    }
+
+    // Valida los datos de tarjeta; nunca incluye el numero ni el CVV en los mensajes
+    private static function validarTarjeta(array $datos): array
+    {
+        $leer = function (string $clave) use ($datos): string {
+            $v = $datos[$clave] ?? '';
+            return is_scalar($v) ? trim((string)$v) : '';
+        };
+
+        $numero = $leer('numero_tarjeta');
+        $titular = $leer('titular');
+        $vencimiento = $leer('vencimiento');
+        $cvv = $leer('cvv');
+
+        if (!preg_match('/^\d{13,19}$/', $numero)) {
+            return ['ok' => false, 'error' => 'El numero de tarjeta debe tener de 13 a 19 digitos.'];
+        }
+        if (!self::luhnValido($numero)) {
+            return ['ok' => false, 'error' => 'El numero de tarjeta no es valido.'];
+        }
+
+        $largoTitular = mb_strlen($titular, 'UTF-8');
+        if ($largoTitular < 3 || $largoTitular > 60) {
+            return ['ok' => false, 'error' => 'El titular de la tarjeta debe tener de 3 a 60 caracteres.'];
+        }
+
+        if (!preg_match('/^(\d{4})-(0[1-9]|1[0-2])$/', $vencimiento)) {
+            return ['ok' => false, 'error' => 'El vencimiento debe tener el formato AAAA-MM.'];
+        }
+        $mesActual = (new DateTime('now', new DateTimeZone('America/Mexico_City')))->format('Y-m');
+        if (strcmp($vencimiento, $mesActual) < 0) {
+            return ['ok' => false, 'error' => 'La tarjeta esta vencida.'];
+        }
+
+        if (!preg_match('/^\d{3,4}$/', $cvv)) {
+            return ['ok' => false, 'error' => 'El CVV debe tener 3 o 4 digitos.'];
+        }
+
+        return ['ok' => true, 'numero' => $numero];
+    }
+
+    // Algoritmo de Luhn sobre una cadena de solo digitos
+    private static function luhnValido(string $numero): bool
+    {
+        $suma = 0;
+        $doble = false;
+        for ($i = strlen($numero) - 1; $i >= 0; $i--) {
+            $d = (int)$numero[$i];
+            if ($doble) {
+                $d *= 2;
+                if ($d > 9) $d -= 9;
+            }
+            $suma += $d;
+            $doble = !$doble;
+        }
+        return $suma % 10 === 0;
+    }
+
+    // Pasarela de pago simulada: termina en 0002 = rechazada, otra = aprobada
+    private static function simularPasarela(string $numero): array
+    {
+        if (substr($numero, -4) === '0002') {
+            return ['ok' => false, 'error' => 'Tarjeta rechazada: fondos insuficientes'];
+        }
+        $codigo = 'AUT-' . str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        return ['ok' => true, 'autorizacion' => $codigo];
     }
 
     // Revisa que la fecha venga como YYYY-MM-DD y sea real
