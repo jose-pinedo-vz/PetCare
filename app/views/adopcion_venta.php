@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../controllers/adopcion_venta.php';
 $animales = listar_adopciones_ventas();
 ?>
