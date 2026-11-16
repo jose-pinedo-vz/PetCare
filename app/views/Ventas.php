@@ -10,6 +10,19 @@ $usuario=$_SESSION['usuario'];
 $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
 $horario_empleado = $_SESSION['horario_empleado'] ?? null;
 $id_empleado = $_SESSION['id_empleado'] ?? null;
+
+require_once __DIR__ . '/../models/conexion_db.php';
+require_once __DIR__ . '/../models/CorteCaja.php';
+
+$tieneCajaAbierta = false;
+if (!empty($id_empleado)) {
+    try {
+        $dbCorte = ConexionDB::obtenerConexion();
+        $tieneCajaAbierta = CorteCaja::obtenerCorteAbierto($dbCorte, (int)$id_empleado) !== null;
+    } catch (Exception $e) {
+        $tieneCajaAbierta = false;
+    }
+}
 // Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
@@ -28,7 +41,7 @@ $id_empleado = $_SESSION['id_empleado'] ?? null;
             <div class="migaja">Ventas y pagos /</div>
             <header class="encabezado-pagina">
                 <h1>Ventas y pagos</h1>
-                <div class="venta-cajero">Cajero: <strong><?php echo htmlspecialchars($empleado_asociado); ?></strong> | Turno: <strong><?php echo htmlspecialchars($horario_empleado); ?></strong></div>
+                <div class="venta-cajero">Cajero: <strong><?php echo htmlspecialchars((string)$empleado_asociado); ?></strong> | Turno: <strong><?php echo htmlspecialchars((string)$horario_empleado); ?></strong> | Caja: <strong style="color: <?php echo $tieneCajaAbierta ? '#166534' : '#991b1b'; ?>;"><?php echo $tieneCajaAbierta ? 'Abierta' : 'Sin abrir'; ?></strong></div>
             </header>
 
             <nav class="inventario-pestanas" aria-label="Secciones de ventas y pagos">
@@ -103,7 +116,7 @@ $id_empleado = $_SESSION['id_empleado'] ?? null;
                             <div class="venta-total"><span>Total</span><strong id="lblTotal">$23.20 MXN</strong></div>
                         </div>
                         <div class="venta-acciones">
-                            <button class="btn btn-info btn-chico" id="btnCobrar" type="button">Cobrar</button>
+                            <button class="btn btn-info btn-chico" id="btnCobrar" type="button" data-caja-abierta="<?php echo $tieneCajaAbierta ? '1' : '0'; ?>">Cobrar</button>
                             <button class="btn btn-peligro btn-chico" id="btnCancelarVenta" type="button">Cancelar venta</button> <!-- este boton deberia cancelar la venta actual, y se deberia preguntar si se desea cancelar la venta actual y limpiar la ventana actual, o eso entnedi -->
                         </div>
                     </aside>

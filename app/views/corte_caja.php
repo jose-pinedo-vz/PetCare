@@ -95,9 +95,11 @@ $anchoGrafica = static function ($valor, $maximo): float {
                                     </select>
                                 </div>
                                 <div class="corte-campo">
-                                    <span class="label-campo">Fondo inicial</span>
-                                    <strong><?= $moneda(CorteCaja::FONDO_INICIAL) ?></strong>
-                                    <small>Importe fijo; configuración administrativa pendiente.</small>
+                                    <label class="label-campo" for="fondoInicial">Fondo inicial</label>
+                                    <div class="corte-input-monto">
+                                        <span aria-hidden="true">$</span>
+                                        <input class="campo" id="fondoInicial" name="fondo_inicial" type="number" min="0" step="0.01" value="<?= number_format(CorteCaja::FONDO_INICIAL, 2, '.', '') ?>" required>
+                                    </div>
                                 </div>
                                 <button class="btn btn-chico" type="submit">Abrir caja</button>
                             </form>

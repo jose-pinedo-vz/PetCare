@@ -219,10 +219,13 @@ final class CorteCaja
         return $corte ?: null;
     }
 
-    public static function crearCorte(PDO $db, int $empleado, string $turno): int
+    public static function crearCorte(PDO $db, int $empleado, string $turno, float $fondoInicial = self::FONDO_INICIAL): int
     {
         if (!in_array($turno, ['matutino', 'vespertino', 'ambos'], true)) {
             throw new DomainException('Selecciona un turno válido.');
+        }
+        if ($fondoInicial < 0 || $fondoInicial > self::IMPORTE_MAXIMO || !is_finite($fondoInicial)) {
+            throw new DomainException('El fondo inicial debe ser igual o mayor a cero y caber en el campo monetario.');
         }
 
         for ($intento = 0; $intento < 3; $intento++) {
@@ -257,7 +260,7 @@ final class CorteCaja
                     ':folio' => $folio,
                     ':turno' => $turno,
                     ':empleado' => $empleado,
-                    ':fondo' => self::FONDO_INICIAL,
+                    ':fondo' => round($fondoInicial, 2),
                 ]);
                 $id = (int)$db->lastInsertId();
                 $db->commit();

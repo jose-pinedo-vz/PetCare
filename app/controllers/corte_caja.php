@@ -88,9 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($idEmpleado < 1) {
                     throw new DomainException('Tu usuario no está asociado a un empleado.');
                 }
-                CorteCaja::crearCorte($db, $idEmpleado, $leerTexto($_POST, 'turno'));
+                $fondoPost = $_POST['fondo_inicial'] ?? null;
+                $fondoInicial = (is_scalar($fondoPost) && is_numeric($fondoPost)) ? (float)$fondoPost : CorteCaja::FONDO_INICIAL;
+                CorteCaja::crearCorte($db, $idEmpleado, $leerTexto($_POST, 'turno'), $fondoInicial);
                 unset($_SESSION['corte_arqueo']);
-                $_SESSION['corte_flash'] = ['tipo' => 'exito', 'mensaje' => 'Caja abierta con fondo inicial de $1,000.00.'];
+                $_SESSION['corte_flash'] = ['tipo' => 'exito', 'mensaje' => 'Caja abierta con fondo inicial de $' . number_format($fondoInicial, 2) . '.'];
                 break;
 
             case 'movimiento':

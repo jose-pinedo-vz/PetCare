@@ -5,6 +5,7 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 } elseif (file_exists(__DIR__ . '/../../conexion_db.php')) {
     require_once __DIR__ . '/../../conexion_db.php';
 }
+require_once __DIR__ . '/CorteCaja.php';
 
 class Ventas
 {
@@ -115,6 +116,12 @@ class Ventas
         }
 
         $db = ConexionDB::obtenerConexion();
+
+        $corteAbierto = CorteCaja::obtenerCorteAbierto($db, $idEmpleado);
+        if (!$corteAbierto) {
+            return ['ok' => false, 'error' => 'No tienes un corte de caja abierto. Debes abrir caja antes de registrar ventas.'];
+        }
+        $idCorte = (int)$corteAbierto['id'];
 
         try {
             $db->beginTransaction();
@@ -309,10 +316,10 @@ class Ventas
             // Pago de la venta, solo efectivo lleva cambio
             $montoRecibido = ($formaPago === 'efectivo') ? round($recibido, 2) : $total;
             $stmt = $db->prepare(
-                "INSERT INTO pago (venta, cliente, fecha, importe, forma_pago, referencia_pago, empleado_receptor, estado, tipo, monto_recibido, cambio, observaciones)
-                 VALUES (?, ?, NOW(), ?, ?, ?, ?, 'aplicado', 'pago', ?, ?, ?)"
+                "INSERT INTO pago (venta, cliente, fecha, importe, forma_pago, referencia_pago, empleado_receptor, estado, tipo, monto_recibido, cambio, observaciones, corte)
+                 VALUES (?, ?, NOW(), ?, ?, ?, ?, 'aplicado', 'pago', ?, ?, ?, ?)"
             );
-            $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $referenciaPago, $idEmpleado, $montoRecibido, $cambio, $observacionesPago]);
+            $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $referenciaPago, $idEmpleado, $montoRecibido, $cambio, $observacionesPago, $idCorte]);
 
             $db->commit();
             return ['ok' => true, 'id_venta' => $idVenta, 'folio' => $folio, 'total' => $total, 'cambio' => $cambio];

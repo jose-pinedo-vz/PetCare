@@ -585,7 +585,28 @@
     inputMonto.addEventListener('input', actualizarPago);
 
     // Al pulsar Cobrar se prepara el modal (el modal ya se abre solo)
-    btnCobrar.addEventListener('click', function () {
+    btnCobrar.addEventListener('click', async function () {
+        if (btnCobrar.dataset.cajaAbierta === '0') {
+            try {
+                const resp = await fetch(URL_VENTAS + '?accion=estado_caja');
+                const st = await resp.json();
+                if (st && st.abierta) {
+                    btnCobrar.dataset.cajaAbierta = '1';
+                } else {
+                    if (modalPago && modalPago.open) modalPago.close();
+                    if (confirm('No tienes un corte de caja abierto. Debes abrir tu turno en Corte de Caja antes de cobrar.\n\n¿Deseas ir a abrir caja ahora?')) {
+                        window.location.href = 'corte_caja.php';
+                    }
+                    return;
+                }
+            } catch (err) {
+                if (modalPago && modalPago.open) modalPago.close();
+                if (confirm('No tienes un corte de caja abierto. Debes abrir tu turno en Corte de Caja antes de cobrar.\n\n¿Deseas ir a abrir caja ahora?')) {
+                    window.location.href = 'corte_caja.php';
+                }
+                return;
+            }
+        }
         if (carrito.length === 0) {
             modalPago.close();
             mensajeVenta.textContent = 'Agrega productos o servicios antes de cobrar.';
@@ -695,9 +716,15 @@
         // Cierra la confirmacion, avisa y regresa al modal de pago
         function mostrarError(msg) {
             if (modalConfirmado && modalConfirmado.open) modalConfirmado.close();
+            if (msg.includes('corte de caja') || msg.includes('abrir caja')) {
+                if (modalPago && modalPago.open) modalPago.close();
+                if (confirm(msg + '\n\n¿Deseas ir a Corte de Caja ahora?')) {
+                    window.location.href = 'corte_caja.php';
+                }
+                return;
+            }
             alert(msg);
             if (!modalPago.open) modalPago.showModal();
-            // Sincroniza la forma de pago con el boton que quedo marcado en pantalla
             const marcado = Array.prototype.find.call(metodos, function (m) {
                 return m.classList.contains('seleccionado');
             });

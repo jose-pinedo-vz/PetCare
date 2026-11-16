@@ -1,9 +1,10 @@
 <?php
-// Carga el modelo
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../models/Ventas.php';
 
-// Datos fijos hasta que haya login
-const ID_EMPLEADO_VENTA = 1;
 const ID_CLIENTE_PUBLICO = 11;
 
 $accion = $_GET['accion'] ?? '';
@@ -22,6 +23,8 @@ if ($accion === 'buscar_productos') {
     ventaDetalle();
 } elseif ($accion === 'guardar_factura') {
     ventaGuardarFactura();
+} elseif ($accion === 'estado_caja') {
+    ventaEstadoCaja();
 }
 
 // Lista el historial con filtros y paginas
@@ -144,11 +147,17 @@ function ventaGuardar()
     // Datos de tarjeta o transferencia; solo se pasan al modelo, nunca se registran
     $datosPago = (is_array($datos) && is_array($datos['datos_pago'] ?? null)) ? $datos['datos_pago'] : [];
 
+    $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
+    if ($idEmpleado <= 0) {
+        echo json_encode(['ok' => false, 'error' => 'No hay una sesión de empleado activa. Inicia sesión para continuar.']);
+        exit;
+    }
+
     $resultado = Ventas::guardarVenta(
         $items,
         $formaPago,
         $recibido,
-        ID_EMPLEADO_VENTA,
+        $idEmpleado,
         ID_CLIENTE_PUBLICO,
         $servicios,
         $datosPago
@@ -156,5 +165,25 @@ function ventaGuardar()
     unset($datos, $datosPago);
 
     echo json_encode($resultado);
+    exit;
+}
+
+function ventaEstadoCaja()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
+    if ($idEmpleado <= 0) {
+        echo json_encode(['ok' => false, 'abierta' => false, 'error' => 'Sin sesión de empleado']);
+        exit;
+    }
+    require_once __DIR__ . '/../models/conexion_db.php';
+    require_once __DIR__ . '/../models/CorteCaja.php';
+    try {
+        $db = ConexionDB::obtenerConexion();
+        $corte = CorteCaja::obtenerCorteAbierto($db, $idEmpleado);
+        echo json_encode(['ok' => true, 'abierta' => $corte !== null, 'corte' => $corte]);
+    } catch (Exception $e) {
+        echo json_encode(['ok' => false, 'abierta' => false, 'error' => $e->getMessage()]);
+    }
     exit;
 }
