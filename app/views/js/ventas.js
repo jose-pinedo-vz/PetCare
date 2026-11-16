@@ -41,6 +41,10 @@
     let temporizadorServ = null;
     let carrito = [];
     let formaPago = 'efectivo';
+    // Ultima venta guardada, para poder facturarla
+    let ultimaVentaId = null;
+    let ultimoFolio = null;
+    let enviandoFactura = false;
 
     // Funciones de apoyo
     function redondear(n) { return Math.round(n * 100) / 100; }
@@ -462,15 +466,28 @@
         inputCodigo.focus();
     }
 
+    // Olvida la venta facturable y oculta el mensaje de factura
+    function limpiarFactura() {
+        ultimaVentaId = null;
+        ultimoFolio = null;
+        const mensajeFactura = document.getElementById('mensajeFactura');
+        if (mensajeFactura) {
+            mensajeFactura.textContent = '';
+            mensajeFactura.hidden = true;
+        }
+    }
+
     // Pregunta antes de limpiar
     function confirmarYReiniciar(texto) {
         if (carrito.length === 0) {
             reiniciar();
+            limpiarFactura();
             mensajeVenta.textContent = 'No hay productos ni servicios en la venta.';
             return;
         }
         if (confirm(texto)) {
             reiniciar();
+            limpiarFactura();
             mensajeVenta.textContent = 'Venta cancelada.';
         }
     }
@@ -651,6 +668,11 @@
             limpiarCamposPago();
             reiniciar();
 
+            // Venta nueva guardada: se recuerda para facturarla
+            limpiarFactura();
+            ultimaVentaId = r.id_venta;
+            ultimoFolio = r.folio;
+
             // Muestra el resultado real en el modal de confirmacion
             if (modalConfirmado) {
                 const texto = modalConfirmado.querySelector('.resultado-mensaje');
@@ -690,6 +712,71 @@
             });
         }
     });
+
+    // Factura de la ultima venta guardada.
+    // El listener inline de Ventas.php corre antes (cierra el modal y pone su texto);
+    // este resultado llega despues y lo reemplaza.
+    const formFactura = document.getElementById('formDatosFactura');
+    if (formFactura) {
+        formFactura.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const mensajeFactura = document.getElementById('mensajeFactura');
+
+            function avisarFactura(texto) {
+                if (!mensajeFactura) return;
+                mensajeFactura.textContent = texto;
+                mensajeFactura.hidden = false;
+            }
+
+            // Error: avisa y regresa al formulario para corregir
+            function errorFactura(texto) {
+                avisarFactura(texto);
+                const modalFactura = document.getElementById('modalDatosFactura');
+                if (modalFactura && !modalFactura.open) modalFactura.showModal();
+            }
+
+            if (!ultimaVentaId) {
+                avisarFactura('No hay una venta guardada para facturar.');
+                return;
+            }
+            // Evita doble envio
+            if (enviandoFactura) return;
+            enviandoFactura = true;
+
+            const valor = function (id) {
+                const campo = document.getElementById(id);
+                return campo ? campo.value.trim() : '';
+            };
+            const datosFactura = {
+                id_venta: ultimaVentaId,
+                rfc: valor('facturaRfc').toUpperCase(),
+                razon_social: valor('facturaRazonSocial'),
+                codigo_postal: valor('facturaCodigoPostal'),
+                correo: valor('facturaCorreo')
+            };
+            const folio = ultimoFolio;
+
+            try {
+                const resp = await fetch(URL_VENTAS + '?accion=guardar_factura', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosFactura)
+                });
+                const r = await resp.json();
+
+                if (r.ok) {
+                    avisarFactura('Factura solicitada para la venta ' + folio + '.');
+                } else {
+                    errorFactura(r.error || 'No se pudo guardar la factura.');
+                }
+            } catch (err) {
+                errorFactura('Error de conexion con el servidor.');
+            } finally {
+                enviandoFactura = false;
+            }
+        });
+    }
+
     // Dibuja el carrito vacio al cargar
     dibujarCarrito();
 })(); 
