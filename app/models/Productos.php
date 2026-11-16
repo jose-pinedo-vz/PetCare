@@ -434,6 +434,25 @@ class Productos {
     public static function eliminar_producto(int $id){
        return eliminar_producto($id);
     }
+
+    //catalogo para el cliente (solo lectura). La existencia sale de la suma de los lotes
+    //la tabla productos no tiene columna "existencia"
+    public static function obtenerCatalogoCliente(): array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.precio_venta, p.imagen,
+                           COALESCE(SUM(l.cantidad), 0) AS existencia
+                    FROM productos p
+                    LEFT JOIN lote_productos l ON l.id_producto = p.id_producto
+                    WHERE p.estado = 1
+                    GROUP BY p.id_producto, p.nombre, p.descripcion, p.precio_venta, p.imagen
+                    ORDER BY p.nombre";
+            return $conexion->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            error_log("Error en obtenerCatalogoCliente: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 
 if (!class_exists('Productos', false)) {
