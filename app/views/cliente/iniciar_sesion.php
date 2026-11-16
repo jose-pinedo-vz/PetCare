@@ -2,7 +2,8 @@
 session_start();
 
 $errores = $_SESSION['errores'] ?? [];
-unset($_SESSION['errores']);
+$exito = $_SESSION['exito'] ?? '';
+unset($_SESSION['errores'], $_SESSION['exito']);
 
 $paginaActiva = '';
 ?>
@@ -26,6 +27,11 @@ $paginaActiva = '';
                     <?php foreach ($errores as $error): ?>
                         <p><?= htmlspecialchars($error) ?></p>
                     <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($exito !== ''): ?>
+                <div class="aviso aviso--exito">
+                    <p><?= htmlspecialchars($exito) ?></p>
                 </div>
             <?php endif; ?>
 

@@ -219,5 +219,118 @@ class Cliente
             return [];
         }
     }
+
+    // ===== Recuperar contrasena del cliente =====
+    // En BD solo se guarda el sha256 del token (token_recuperacion es varchar(255)).
+    // Las fechas se calculan en PHP con America/Mexico_City y se pasan como parametro.
+
+    private static function ahoraMexico(string $modificar = ''): string
+    {
+        $fecha = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+        if ($modificar !== '') {
+            $fecha->modify($modificar);
+        }
+        return $fecha->format('Y-m-d H:i:s');
+    }
+
+    // Un token valido son 64 caracteres hexadecimales (bin2hex de 32 bytes)
+    private static function hashTokenRecuperacion(string $token): ?string
+    {
+        if (!preg_match('/^[0-9a-f]{64}$/', $token)) {
+            return null;
+        }
+        return hash('sha256', $token);
+    }
+
+    // Cliente activo por correo
+    public static function buscarPorCorreoActivo(string $correo): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_cliente, nombre, correo FROM clientes
+                 WHERE correo = ? AND esta_activo = 1
+                 ORDER BY id_cliente
+                 LIMIT 1"
+            );
+            $stmt->execute([$correo]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::buscarPorCorreoActivo: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Guarda el token (hasheado) con vigencia de 1 hora.
+    // Anti-abuso: si ya hay uno generado en el ultimo minuto (expira despues de ahora + 59 min)
+    // no lo reemplaza y devuelve false. La condicion va en el mismo UPDATE para que sea atomica.
+    public static function guardarTokenRecuperacion(int $idCliente, string $token): bool
+    {
+        $hash = self::hashTokenRecuperacion($token);
+        if ($hash === null) {
+            return false;
+        }
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "UPDATE clientes
+                 SET token_recuperacion = ?, token_expiracion = ?
+                 WHERE id_cliente = ? AND esta_activo = 1
+                   AND (token_expiracion IS NULL OR token_expiracion <= ?)"
+            );
+            $stmt->execute([$hash, self::ahoraMexico('+1 hour'), $idCliente, self::ahoraMexico('+59 minutes')]);
+            return $stmt->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::guardarTokenRecuperacion: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Cliente activo con ese token vigente, o null
+    public static function obtenerPorTokenRecuperacion(string $token): ?array
+    {
+        $hash = self::hashTokenRecuperacion($token);
+        if ($hash === null) {
+            return null;
+        }
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_cliente, nombre FROM clientes
+                 WHERE token_recuperacion = ? AND token_expiracion > ? AND esta_activo = 1
+                 LIMIT 1"
+            );
+            $stmt->execute([$hash, self::ahoraMexico()]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::obtenerPorTokenRecuperacion: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Cambia la contrasena (ya con password_hash) y borra el token en el mismo UPDATE.
+    // Solo afecta si el token sigue vigente, asi un token sirve una sola vez.
+    public static function actualizarContrasenaPorToken(string $token, string $contrasenaHash): bool
+    {
+        $hash = self::hashTokenRecuperacion($token);
+        if ($hash === null) {
+            return false;
+        }
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "UPDATE clientes
+                 SET contrasena = ?, token_recuperacion = NULL, token_expiracion = NULL
+                 WHERE token_recuperacion = ? AND token_expiracion > ? AND esta_activo = 1"
+            );
+            $stmt->execute([$contrasenaHash, $hash, self::ahoraMexico()]);
+            return $stmt->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::actualizarContrasenaPorToken: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
