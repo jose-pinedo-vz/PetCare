@@ -60,19 +60,21 @@ $citas = extraerCitasHoy();
                 </tr>
               </thead>
               <tbody id="tablaCitas">
-                <!-- EJEMPLO -->
-                 <td>Martinez</td>
-                 <td>24/05/20026></td>
-                <td>Dolor estomacal</td>
-                <?php foreach ($citas as $c): ?>
-                  <tr>
-                    <td><?= htmlspecialchars(formatearFechaEsp((string)$c['fecha'])) ?></td>
-                    <td><?= htmlspecialchars($c['cliente']) ?></td>
-                    <td><?= htmlspecialchars($c['motivo_de_consulta']) ?></td>
-                    <td><?= (int)$c['atendido'] ===1 ? 'Atendida': 'Pendiente'?></td>
-                    <td> <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?= urlencode((string)$c['id_consulta']) ?>">Ficha medica</a></td>
-                  </tr>
-                <?php endforeach; ?>
+                <?php if (count($citas) > 0) { ?>
+                    <?php foreach ($citas as $c): ?>
+                      <tr>
+                        <td><?= htmlspecialchars(formatearFechaEsp((string)$c['fecha'])) ?></td>
+                        <td><?= htmlspecialchars($c['cliente']) ?></td>
+                        <td><?= htmlspecialchars($c['motivo_de_consulta']) ?></td>
+                        <td><?= (int)$c['atendido'] ===1 ? 'Atendida': 'Pendiente'?></td>
+                        <td> <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?= urlencode((string)$c['id_consulta']) ?>">Ficha medica</a></td>
+                      </tr>
+                    <?php endforeach; ?>
+                <?php } else { ?>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No hay citas para el dia de hoy en este momento</td>
+                    </tr>
+                <?php } ?>
               </tbody>
             </table>
           </div>
