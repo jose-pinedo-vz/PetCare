@@ -28,10 +28,10 @@ function insertar(array $datos) {
 
     $id = IDmascota($conexion);
 
-    /* $temperamento  = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado'; */
-    $restricciones = !empty($datos['restricciones_para_manejo']) ? $datos['restricciones_para_manejo'] : null;
-    /* $observaciones = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales'; */
-    $fotografia    = !empty($datos['fotografia']) ? $datos['fotografia'] : null;
+    $temperamento   = !empty($datos['temperamento']) ? $datos['temperamento'] : 'Equilibrado';
+    $restricciones  = !empty($datos['restricciones_para_manejo']) ? $datos['restricciones_para_manejo'] : null;
+    $observaciones  = !empty($datos['observaciones']) ? $datos['observaciones'] : 'Sin observaciones iniciales';
+    $fotografia     = !empty($datos['fotografia']) ? $datos['fotografia'] : null;
     $id_veterinario = !empty($datos['id_veterinario']) ? (int)$datos['id_veterinario'] : null;
 
     $insert = "INSERT INTO mascotas (
@@ -153,6 +153,82 @@ function obtenerMascotaPorId(int $id): ?array {
 }
 
 class Mascota {
+    public static function obtenerVeterinariosActivos(): array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $stmt = $conexion->query("
+                SELECT id_empleado, nombre, apellido
+                FROM empleados
+                WHERE esta_activo = 1
+                    AND LOWER(TRIM(puesto)) = 'veterinario'
+                ORDER BY nombre, apellido
+            ");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            error_log("Error al consultar veterinarios activos: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public static function esVeterinarioActivo(int $id_empleado): bool {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $stmt = $conexion->prepare("
+                SELECT 1
+                FROM empleados
+                WHERE id_empleado = ?
+                    AND esta_activo = 1
+                    AND LOWER(TRIM(puesto)) = 'veterinario'
+                LIMIT 1
+            ");
+            $stmt->execute([$id_empleado]);
+            return $stmt->fetchColumn() !== false;
+        } catch (Exception $e) {
+            error_log("Error al validar veterinario activo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function obtenerEspecies(): array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $stmt = $conexion->query("SELECT id, especie FROM especies ORDER BY especie");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            error_log("Error al consultar especies: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public static function obtenerRazas(): array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $stmt = $conexion->query("SELECT id, especie, raza FROM razas ORDER BY raza");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            error_log("Error al consultar razas: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public static function especieRazaExiste(string $especie, string $raza): bool {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $stmt = $conexion->prepare("
+                SELECT 1
+                FROM especies e
+                INNER JOIN razas r ON r.especie = e.id
+                WHERE e.especie = ? AND r.raza = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$especie, $raza]);
+            return $stmt->fetchColumn() !== false;
+        } catch (Exception $e) {
+            error_log("Error al validar especie y raza de mascota: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public static function obtenerTodos(): array {
         return obtenerDatosMascotas();
     }

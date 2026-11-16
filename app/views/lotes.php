@@ -130,7 +130,7 @@ foreach ($lotes as $lote){
 							}
 						} else {
 							$estado = 'vigente';
-							$textoEstado = 'Sin caducidad';
+							$textoEstado = 'Vigente';
 						}
 
 						$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');

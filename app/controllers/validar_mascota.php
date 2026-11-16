@@ -2,6 +2,7 @@
 //Punto de guardado
 
 date_default_timezone_set('America/Mexico_City');
+require_once __DIR__ . '/../models/Mascota.php';
 
 function validacion(array $datos, bool $actualizacion, int $idMascota, string $sets){
 
@@ -23,8 +24,9 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     // Especie obligatorio
     if (empty(trim($datos['especie']))) {
         $errores[] = "Debe especificar la especie.";
-    }else if (strlen($datos['especie']) > 20) {
-        $errores[] = "La especie no puede tener mas de 20 letras";
+    }else if (strlen($datos['especie']) > ($actualizacion ? 20 : 30)) {
+        $limiteEspecie = $actualizacion ? 20 : 30;
+        $errores[] = "La especie no puede tener mas de {$limiteEspecie} letras";
     }else if (preg_match('/\d/', $datos['especie'])) {
         $errores[] = "La especie no puede contener números.";
     }
@@ -32,10 +34,20 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     // Raza obligatorio
     if (empty(trim($datos['raza']))) {
         $errores[] = "Debe especificar la raza.";
-    }else if (strlen($datos['raza']) > 20) {
-        $errores[] = "La raza no puede tener mas de 20 letras";
+    }else if (strlen($datos['raza']) > ($actualizacion ? 20 : 30)) {
+        $limiteRaza = $actualizacion ? 20 : 30;
+        $errores[] = "La raza no puede tener mas de {$limiteRaza} letras";
     }else if (preg_match('/\d/', $datos['raza'])) {
         $errores[] = "La raza no puede contener números.";
+    }
+
+    if (
+        !$actualizacion &&
+        !empty($datos['especie']) &&
+        !empty($datos['raza']) &&
+        !Mascota::especieRazaExiste($datos['especie'], $datos['raza'])
+    ) {
+        $errores[] = "La raza seleccionada no corresponde a la especie.";
     }
 
     // Sexo obligatorio
@@ -103,10 +115,16 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     if (empty(trim($datos['id_veterinario']))) {
         $datos['id_veterinario'] = NULL;
     }else {
-        $datos['id_veterinario'] = (int)$datos['id_veterinario'];
+        $idVeterinario = (int) $datos['id_veterinario'];
 
-        if (!is_numeric($datos['id_veterinario']) || $datos['id_veterinario'] <= 0) {
+        if ($idVeterinario <= 0 && !$actualizacion) {
+            $errores[] = "El veterinario seleccionado no es válido.";
+        } elseif ($idVeterinario <= 0) {
             $errores[] = "El cliente seleccionado no es valido.";
+        } elseif (!$actualizacion && !Mascota::esVeterinarioActivo($idVeterinario)) {
+            $errores[] = "El veterinario debe estar activo y tener el puesto de veterinario.";
+        } else {
+            $datos['id_veterinario'] = $idVeterinario;
         }
     }
     // Alergias obligatorio
@@ -232,7 +250,6 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         }
 
     } else {
-        require_once __DIR__ . '/../models/Mascota.php';
         if($datos['color'] === 'Otro') {
             $datos['color'] = $datos['color_espec'];
         }
