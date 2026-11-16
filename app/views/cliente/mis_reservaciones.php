@@ -9,11 +9,11 @@ unset($_SESSION['exito']);
 
 $paginaActiva = 'reservaciones';
 
-require_once __DIR__ . '/../../models/hotel.php';
+require_once __DIR__ . '/../../models/hotel_cliente.php';
 $idCliente = (int) $_SESSION['id_cliente'];
 // Primero recalcula Vencida / Abandonada y luego lista
-Hotel::actualizarVencidas($idCliente);
-$reservaciones = Hotel::reservacionesDelCliente($idCliente);
+HotelCliente::actualizarVencidas($idCliente);
+$reservaciones = HotelCliente::reservacionesDelCliente($idCliente);
 
 $mesesCortos = ['', 'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 // Estado -> clase de color que ya existe en el CSS

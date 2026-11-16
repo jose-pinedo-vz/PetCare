@@ -7,7 +7,7 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
     require_once __DIR__ . '/../../conexion_db.php';
 }
 
-class Hotel
+class HotelCliente
 {
     // Precio por noche segun el tamano de la jaula
     const PRECIO_CHICO = 150.00;
@@ -41,7 +41,7 @@ class Hotel
             $stmt->execute([$idCliente]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
-            error_log('Error en Hotel::mascotasDelCliente: ' . $e->getMessage());
+            error_log('Error en HotelCliente::mascotasDelCliente: ' . $e->getMessage());
             return [];
         }
     }
@@ -186,7 +186,7 @@ class Hotel
             if (isset($db) && $db->inTransaction()) {
                 $db->rollBack();
             }
-            error_log('Error en Hotel::reservar: ' . $e->getMessage());
+            error_log('Error en HotelCliente::reservar: ' . $e->getMessage());
             return ['exito' => false, 'mensaje' => 'No se pudo registrar la reservación. Intenta de nuevo.'];
         }
     }
@@ -209,7 +209,7 @@ class Hotel
             );
             $stmt->execute([self::ESTADO_ABANDONADA, $idCliente, self::ESTADO_VENCIDA]);
         } catch (Exception $e) {
-            error_log('Error en Hotel::actualizarVencidas: ' . $e->getMessage());
+            error_log('Error en HotelCliente::actualizarVencidas: ' . $e->getMessage());
         }
     }
 
@@ -229,7 +229,7 @@ class Hotel
             $stmt->execute([$idCliente]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
-            error_log('Error en Hotel::reservacionesDelCliente: ' . $e->getMessage());
+            error_log('Error en HotelCliente::reservacionesDelCliente: ' . $e->getMessage());
             return [];
         }
     }

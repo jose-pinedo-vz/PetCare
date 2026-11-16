@@ -10,8 +10,8 @@ unset($_SESSION['errores'], $_SESSION['old']);
 
 $paginaActiva = 'servicios';
 
-require_once __DIR__ . '/../../models/hotel.php';
-$mascotas = Hotel::mascotasDelCliente((int) $_SESSION['id_cliente']);
+require_once __DIR__ . '/../../models/hotel_cliente.php';
+$mascotas = HotelCliente::mascotasDelCliente((int) $_SESSION['id_cliente']);
 
 // Valor anterior del formulario, ya escapado
 $v = function (string $clave) use ($old): string {

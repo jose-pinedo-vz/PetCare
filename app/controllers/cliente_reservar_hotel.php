@@ -87,9 +87,9 @@ if (count($errores) > 0) {
     exit;
 }
 
-require_once __DIR__ . '/../models/hotel.php';
+require_once __DIR__ . '/../models/hotel_cliente.php';
 
-$resultado = Hotel::reservar($idCliente, array_merge($datosOpcionales, [
+$resultado = HotelCliente::reservar($idCliente, array_merge($datosOpcionales, [
     'id_mascota' => (int) $idMascota,
     'fecha_entrada' => $fechaEntrada,
     'fecha_salida' => $fechaSalida,
@@ -106,7 +106,7 @@ if (!$resultado['exito']) {
 
 $mensaje = 'Reservación registrada: ' . $resultado['noches'] . ' noche(s), total $'
     . number_format((float) $resultado['total'], 2) . '. Paga en recepción.';
-if ($resultado['estado'] === Hotel::ESTADO_PENDIENTE_CARTILLA) {
+if ($resultado['estado'] === HotelCliente::ESTADO_PENDIENTE_CARTILLA) {
     $mensaje .= ' Lleva la cartilla de vacunación de tu mascota para confirmarla.';
 }
 $_SESSION['exito'] = $mensaje;
