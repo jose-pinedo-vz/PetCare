@@ -19,7 +19,7 @@ class Ventas
                                 WHERE l.id_producto = p.id_producto
                                     AND (l.fecha_caducidad IS NULL OR l.fecha_caducidad >= CURDATE())), 0) AS existencia
                  FROM productos p
-                 WHERE p.estado = 'activo'
+                 WHERE p.estado IN ('activo', '1')
                    AND (p.codigo LIKE :codigo OR p.nombre LIKE :nombre)
                  ORDER BY p.nombre
                  LIMIT 50"
@@ -44,7 +44,7 @@ class Ventas
                                   WHERE l.id_producto = p.id_producto
                                     AND (l.fecha_caducidad IS NULL OR l.fecha_caducidad >= CURDATE())), 0) AS existencia
                  FROM productos p
-                 WHERE p.estado = 'activo' AND p.codigo = ?"
+                 WHERE p.estado IN ('activo', '1') AND p.codigo = ?"
             );
             $stmt->execute([$codigo]);
             $producto = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -140,7 +140,7 @@ class Ventas
                 // El producto debe estar activo
                 $stmt = $db->prepare(
                     "SELECT nombre, precio_venta FROM productos
-                     WHERE id_producto = ? AND estado = 'activo'"
+                     WHERE id_producto = ? AND estado IN ('activo', '1')"
                 );
                 $stmt->execute([$idProducto]);
                 $prod = $stmt->fetch(PDO::FETCH_ASSOC);
