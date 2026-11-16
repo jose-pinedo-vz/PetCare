@@ -100,10 +100,10 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
                 <div class="categoria-controles">
                   <div class="contenedor-buscador">
                     <input
-                    type="text" 
-                    class="campo" 
-                    id="id_categoria" 
-                    placeholder="Seleccionar categoría..." 
+                    type="text"
+                    class="campo"
+                    id="id_categoria"
+                    placeholder="Seleccionar categoría..."
                     autocomplete="off"
                     value="<?= htmlspecialchars($old['id_categoria'] ?? $producto['id_categoria'] ?? '') ?>"
                     required>
@@ -176,11 +176,11 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
           <div class="campo-completo">
             <label class="label-campo" for="descripcion">Descripción:</label>
-            <textarea 
-            class="campo" 
-            id="descripcion" 
-            name="descripcion" 
-            rows="2" 
+            <textarea
+            class="campo"
+            id="descripcion"
+            name="descripcion"
+            rows="2"
             placeholder="Descripción breve del producto..." required><?= htmlspecialchars($old['descripcion'] ?? $producto['descripcion'] ?? '') ?></textarea>
           </div>
         </div>

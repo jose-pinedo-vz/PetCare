@@ -10,6 +10,7 @@ $usuario = $_SESSION['usuario'];
 $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
 $horario_empleado = $_SESSION['horario_empleado'] ?? null;
 $id_empleado = $_SESSION['id_empleado'] ?? null;
+
 require_once __DIR__ . '/../models/Productos.php';
 require_once __DIR__ . '/../models/Movimientos.php';
 

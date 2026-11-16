@@ -571,6 +571,54 @@
   font-size: 11px;
 }
 
+.corte-grafica-barras {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.corte-grafica-fila {
+  display: grid;
+  grid-template-columns: minmax(78px, .7fr) minmax(100px, 2fr) minmax(96px, auto);
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.corte-grafica-fila > strong {
+  text-align: right;
+  font-size: 12px;
+}
+
+.corte-grafica-pista {
+  height: 13px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f0e9df;
+}
+
+.corte-grafica-pista i {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: #a9875b;
+}
+
+.corte-grafica-pista i.tarjeta,
+.corte-grafica-pista i.ventas {
+  background: var(--primary-dark);
+}
+
+.corte-grafica-pista i.transferencia,
+.corte-grafica-pista i.pagos {
+  background: var(--accent-teal);
+}
+
+.corte-grafica-pista i.egresos {
+  background: #aa5a4d;
+}
+
 .corte-grafica-unidad {
   color: var(--texto-suave);
   font-size: 10px;
@@ -1045,6 +1093,16 @@
     min-height: 165px;
   }
 
+  .corte-grafica-fila {
+    grid-template-columns: minmax(60px, .7fr) minmax(70px, 1fr) minmax(82px, auto);
+    gap: 8px;
+    font-size: 10px;
+  }
+
+  .corte-grafica-fila > strong {
+    font-size: 10px;
+  }
+
   .corte-movimientos,
   .corte-historial {
     padding: 16px;
@@ -1090,5 +1148,58 @@
 
   .corte-origen-leyenda {
     flex-direction: column;
+  }
+}
+
+.corte-apertura-campos > form {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+}
+
+.corte-apertura-campos > form > .btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+@media (max-width: 760px) {
+  .corte-apertura-campos > form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .sidebar,
+  .migaja,
+  .corte-tabs,
+  .corte-encabezado-derecha,
+  .corte-panel-encabezado > button,
+  .corte-filtros,
+  .corte-estadisticas-filtro,
+  [data-imprimir],
+  .corte-acciones,
+  .corte-dialog-acciones {
+    display: none !important;
+  }
+
+  .layout {
+    display: block !important;
+  }
+
+  .corte-pagina {
+    width: 100%;
+    padding: 0;
+  }
+
+  .corte-panel[hidden] {
+    display: none !important;
+  }
+
+  .corte-tabla-envoltura {
+    overflow: visible;
   }
 }

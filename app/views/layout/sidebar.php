@@ -25,6 +25,7 @@ $sbModulos = [
     'proveedores'   => ['Proveedores',       'proveedores.php'],
     'inventario'    => ['Inventario',        'inventario.php'],
     'ventas'        => ['Ventas',            'Ventas.php'],
+    'corte_caja'    => ['Corte de caja',      'corte_caja.php'],
     'servicios'     => ['Servicios',         'servicios.php'],
     'adopcion'      => ['Adopción y venta',  'adopcion_venta.php'],
     'hotel'      => ['Hotel',  'hotel.php'],
