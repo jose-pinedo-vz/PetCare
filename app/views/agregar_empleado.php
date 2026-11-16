@@ -178,7 +178,7 @@ unset($_SESSION['error']);
             <select class="campo" id="puesto" name="puesto" required>
               <option value="">Selecciona un puesto</option>
               <option value="Gerente"       <?= $puestoViejo === 'Gerente'       ? 'selected' : '' ?>>Gerente</option>
-              <option value="Veterinario/a" <?= $puestoViejo === 'Veterinario/a' ? 'selected' : '' ?>>Veterinario</option>
+              <option value="Veterinario" <?= $puestoViejo === 'Veterinario' ? 'selected' : '' ?>>Veterinario</option>
               <option value="Vendedor"      <?= $puestoViejo === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
               <option value="Estilista"     <?= $puestoViejo === 'Estilista'     ? 'selected' : '' ?>>Estilista</option>
             </select>

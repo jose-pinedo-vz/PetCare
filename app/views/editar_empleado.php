@@ -64,13 +64,7 @@ $especialidad = dato($empleado, 'especialidad', 'oldespecialidad');
 $cedula      = dato($empleado, 'num_cedula_profesional', 'oldnum_cedula_profesional');
 $fecha       = substr(dato($empleado, 'Fecha_de_contratacion', 'oldFecha_de_contratacion'), 0, 10);
 $horario     = dato($empleado, 'horario', 'oldhorario');
-
-// Al agregar se guarda "Veterinario/a"; registros viejos pueden tener "Veterinario".
-// Se normaliza para que el <select> lo preseleccione.
 $puesto = dato($empleado, 'puesto', 'oldpuesto');
-if ($puesto === 'Veterinario') {
-    $puesto = 'Veterinario/a';
-}
 
 $mensajeError = $_SESSION['error'] ?? null;
 unset($_SESSION['error']);
@@ -116,8 +110,8 @@ unset($_SESSION['error']);
           <div>
             <label class="label-campo" for="nombre">Nombre *:</label>
             <input type="text" class="campo" id="nombre" name="nombre" minlength="2" maxlength="20" required
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}( [A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
-              title="Solo letras y un espacio simple entre palabras (mínimo 2 letras por palabra)"
+              pattern="^(?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.)(?: (?:[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}\.?|[A-Za-zÁÉÍÓÚáéíóúÑñ]\.))*$"
+              title="Solo letras y un espacio simple entre palabras. Se permite punto en abreviaturas (ej: Ma. Luisa, J. Carlos). Mínimo 2 letras por palabra."
               value="<?= e($nombre) ?>">
           </div>
 
@@ -219,7 +213,7 @@ unset($_SESSION['error']);
             <select class="campo" id="puesto" name="puesto" required>
               <option value="">Selecciona un puesto</option>
               <option value="Gerente"       <?= $puesto === 'Gerente'       ? 'selected' : '' ?>>Gerente</option>
-              <option value="Veterinario/a" <?= $puesto === 'Veterinario/a' ? 'selected' : '' ?>>Veterinario</option>
+              <option value="Veterinario" <?= $puesto === 'Veterinario' ? 'selected' : '' ?>>Veterinario</option>
               <option value="Vendedor"      <?= $puesto === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
               <option value="Estilista"     <?= $puesto === 'Estilista'     ? 'selected' : '' ?>>Estilista</option>
             </select>
