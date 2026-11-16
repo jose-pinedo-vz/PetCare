@@ -2,7 +2,8 @@
 require_once __DIR__ . '/../models/Productos.php';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $id_producto = $_POST['id_producto'];
+    $id_producto = (int)($_POST['id_producto'] ?? 0);
+    $productoActual = Productos::obtenerProductoPorId($id_producto);
 
     $archivo = $_FILES['imagen'] ?? null;
 
@@ -26,10 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'contenido'             => trim($_POST['contenido'] ?? ''),
         'unidad_medida'         => trim($_POST['unidad_medida'] ?? ''),
         'precio_venta'          => trim($_POST['precio_venta'] ?? ''),
-        'existencia'            => trim($_POST['existencia'] ?? ''),
         'existencia_minima'     => trim($_POST['existencia_minima'] ?? ''),
         'existencia_maxima'     => trim($_POST['existencia_maxima'] ?? ''),
-        'fecha_ingreso'         => trim($_POST['fecha_ingreso'] ?? ''),
+        'fecha_ingreso'         => trim((string)($productoActual['fecha_ingreso'] ?? '')),
         'imagen'                => $imagen,
         'estado'                => trim($_POST['estado'] ?? '')
     ];
@@ -133,17 +133,6 @@ if (session_status() === PHP_SESSION_NONE) {
         }
     }
 
-
-    //La existencia es obligatorio
-    if (empty($datos['existencia'])) {
-        $errores[] = "La existencia es obligatoria.";
-    }else if(!(int)$datos['existencia']){
-        $errores[] = "La existencia debe ser un valor numerico.";
-    }else if ((int)$datos['existencia'] < 0) {
-        $errores[] = "La existencia debe ser un valor mayor a 0.";
-    }else{
-        $datos['existencia']=(int)$datos['existencia'];
-    }
 
     //La existencia minima es obligatorio
     if (empty($datos['existencia_minima'])) {

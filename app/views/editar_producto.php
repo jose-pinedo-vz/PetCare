@@ -221,18 +221,6 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
           </div>
 
           <div>
-            <label class="label-campo" for="existencia">Existencia (Stock):</label>
-            <input
-            type="number"
-            step="0.01"
-            class="campo"
-            id="existencia"
-            name="existencia"
-            value="<?= htmlspecialchars($old['existencia'] ?? $producto['existencia'] ?? '') ?>"
-            required placeholder="0">
-          </div>
-
-          <div>
             <label class="label-campo" for="existencia_minima">Existencia mínima:</label>
             <input
             type="number"
@@ -254,17 +242,6 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             name="existencia_maxima"
             value="<?= htmlspecialchars($old['existencia_maxima'] ?? $producto['existencia_maxima'] ?? '') ?>"
             required placeholder="0">
-          </div>
-
-          <div>
-            <label class="label-campo" for="fecha_ingreso">Fecha de ingreso:</label>
-            <input
-             type="date"
-             class="campo"
-             id="fecha_ingreso"
-             name="fecha_ingreso"
-              value="<?= htmlspecialchars($old['fecha_ingreso'] ?? $producto['fecha_ingreso'] ?? '') ?>"
-             required>
           </div>
 
           <?php

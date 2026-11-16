@@ -47,6 +47,8 @@ function validar_datos_hotel(array $datos) {
         $errores[] = "La fecha de entrada es obligatoria.";
     }else if(!DateTime::createFromFormat('Y-m-d', $datos['fecha_entrada'])){
         $errores[] = "La fecha de entrada no tiene un formato válido.";
+    }else if (new DateTime($datos['fecha_entrada']) < new DateTime(date('Y-m-d'))) {
+        $errores[] = "La fecha de entrada no puede ser anterior a la fecha actual.";
     }
 
     //La fecha de salida es obligatoria
@@ -54,6 +56,8 @@ function validar_datos_hotel(array $datos) {
         $errores[] = "La fecha de salida es obligatoria.";
     }else if(!DateTime::createFromFormat('Y-m-d', $datos['fecha_salida'])){
         $errores[] = "La fecha de salida no tiene un formato válido.";
+    }else if (new DateTime($datos['fecha_salida']) < new DateTime(date('Y-m-d'))) {
+        $errores[] = "La fecha de salida no puede ser anterior a la fecha actual.";
     }else if (!empty($datos['fecha_entrada']) && DateTime::createFromFormat('Y-m-d', $datos['fecha_entrada'])) {
         $fechaEntrada = new DateTime($datos['fecha_entrada']);
         $fechaSalida = new DateTime($datos['fecha_salida']);
