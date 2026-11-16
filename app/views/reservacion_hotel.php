@@ -21,7 +21,7 @@
 
       <div class="tarjeta">
         
-        <form method="POST">
+        <form action="guardar_hotel.php" method="POST" enctype="multipart/form-data">
 
           <fieldset>
             <legend>Datos de la reservación</legend>
@@ -120,13 +120,9 @@
               No se puede confirmar la reservación: falta renovar la vacuna de Moquillo antes de la fecha de salida.
             </div>
 
-            <label style="display:flex;align-items:center;gap:8px;margin-top:14px;">
-              <input type="checkbox" id="otra_veterinaria" name="otra_veterinaria" value="1">
-              Mascota de otra veterinaria: cartilla revisada y verificada con su veterinario
-            </label>
+            
 
             <div class="acciones-formulario" style="justify-content:flex-start;">
-              <a class="btn-secundario" href="#">Ver cartilla de vacunas</a>
               <button type="button">Validar vacunas</button>
             </div>
           </fieldset>

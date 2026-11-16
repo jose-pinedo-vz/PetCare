@@ -152,7 +152,7 @@ try {
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-caducidad">Fecha de caducidad</label>
-					<input class="campo" id="pedido-caducidad" name="fecha_caducidad" type="date" required>
+					<input class="campo" id="pedido-caducidad" name="fecha_caducidad" type="date">
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-precio">Precio de compra</label>

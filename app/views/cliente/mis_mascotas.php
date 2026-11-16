@@ -84,5 +84,4 @@ $mascotas = Mascota::obtenerPorCliente((int) $_SESSION['id_cliente']);
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
 </body>
-
 </html>

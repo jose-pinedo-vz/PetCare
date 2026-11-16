@@ -9,6 +9,7 @@ $mcModulos = [
     'mascotas'  => ['Mis mascotas',   'mis_mascotas.php', true],
     'citas'     => ['Mis citas',      'mis_citas.php',    true],
     'reservaciones' => ['Mis reservaciones', 'mis_reservaciones.php', true],
+    'productos' => ['Productos',      'productos.php',    false],
     'servicios' => ['Servicios',      'servicios.php',    false],
     'equipo'    => ['Nuestro equipo', 'nuestro_equipo.php',       false],
 ];

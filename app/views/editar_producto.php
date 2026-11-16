@@ -95,22 +95,27 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             required placeholder="Ej. Croquetas Adulto Raza Mediana 15kg">
           </div>
 
-          <div class="contenedor-buscador">
+          <div class="categoria-campo">
                 <label class="label-campo" for="id_categoria">Categoría (ID):</label>
-                <input
-                    type="text"
-                    class="campo"
-                    id="id_categoria"
-                    placeholder="Seleccionar categoría..."
+                <div class="categoria-controles">
+                  <div class="contenedor-buscador">
+                    <input
+                    type="text" 
+                    class="campo" 
+                    id="id_categoria" 
+                    placeholder="Seleccionar categoría..." 
                     autocomplete="off"
                     value="<?= htmlspecialchars($old['id_categoria'] ?? $producto['id_categoria'] ?? '') ?>"
                     required>
 
-                <ul id="lista_categorias" class="lista-resultados">
-                    <?php foreach ($categorias as $cat): ?>
-                      <li data-id="<?php echo $cat['id_categoria']; ?>" data-nombre="<?php echo htmlspecialchars($cat['nombre']); ?>"><?php echo htmlspecialchars("Id: " . $cat['id_categoria'] . " - " . $cat['nombre']); ?></li>
-                    <?php endforeach; ?>
-                </ul>
+                    <ul id="lista_categorias" class="lista-resultados">
+                        <?php foreach ($categorias as $cat): ?>
+                          <li data-id="<?php echo $cat['id_categoria']; ?>" data-nombre="<?php echo htmlspecialchars($cat['nombre']); ?>"><?php echo htmlspecialchars("Id: " . $cat['id_categoria'] . " - " . $cat['nombre']); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                  </div>
+                  <button type="button" class="btn btn-chico" id="btn-abrir-modal-categoria">+ Nueva categoría</button>
+                </div>
             </div>
 
             <input class="label-campo" type="hidden" id="categoria_id_oculto" name="id_categoria" value="<?= htmlspecialchars($old['id_categoria'] ?? $producto['id_categoria'] ?? '') ?>">
@@ -171,12 +176,12 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
           <div class="campo-completo">
             <label class="label-campo" for="descripcion">Descripción:</label>
-            <textarea
-            class="campo"
-            id="descripcion"
-            name="descripcion"
-            rows="2"
-            placeholder="Descripción breve del producto..." required><?= htmlspecialchars($old['nombre'] ?? $producto['nombre'] ?? '') ?></textarea>
+            <textarea 
+            class="campo" 
+            id="descripcion" 
+            name="descripcion" 
+            rows="2" 
+            placeholder="Descripción breve del producto..." required><?= htmlspecialchars($old['descripcion'] ?? $producto['descripcion'] ?? '') ?></textarea>
           </div>
         </div>
 
@@ -200,11 +205,9 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
       </fieldset>
 
       <fieldset>
-        <legend>Precios e Inventario</legend>
+        <legend>Precio e inventario</legend>
 
         <div class="grid-formulario">
-
-
           <div>
             <label class="label-campo" for="precio_venta">Precio de venta ($):</label>
             <input
@@ -281,14 +284,13 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
         </div>
       </fieldset>
 
-
-
       <div class="acciones-formulario">
         <a class="btn btn-secundario btn-chico" href="inventario.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar</button>
       </div>
     </form>
 
+    <?php include __DIR__ . '/modal_categoria.php'; ?>
       </div>
     </main>
 
@@ -300,6 +302,7 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-producto.js"></script>
+  <script src="js/modal-categoria.js"></script>
 </body>
 
 </html>

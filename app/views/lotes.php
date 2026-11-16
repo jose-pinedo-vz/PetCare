@@ -32,13 +32,15 @@ $por_caducar = 0;
 $unidad_lotes = 0;
 $lotes_vencidos = 0;
 foreach ($lotes as $lote){
-    $fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
-    $diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
-    
-	if ($diasRestantes < 0) {
-        $lotes_vencidos++;
-    }else if ($diasRestantes <= 15) {
-        $por_caducar++;
+    if (!empty($lote['fecha_caducidad'])) {
+        $fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
+        $diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
+
+        if ($diasRestantes < 0) {
+            $lotes_vencidos++;
+        } elseif ($diasRestantes <= 15) {
+            $por_caducar++;
+        }
     }
 	$lotes_registrados++;
 	$unidad_lotes = $unidad_lotes + (int)$lote['cantidad'];
@@ -112,21 +114,26 @@ foreach ($lotes as $lote){
 				<div class="lotes-grid" id="lista-lotes">
 
 					<?php foreach ($lotes as $lote):
-        				$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
-        				$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
+						if (!empty($lote['fecha_caducidad'])) {
+							$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
+							$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
 
-        				if ($diasRestantes < 0) {
-        				    $estado = 'vencido';
-        				    $textoEstado = 'Vencido';
-        				} elseif ($diasRestantes <= 15) {
-        				    $estado = 'proximo';
-        				    $textoEstado = 'Por caducar';
-        				} else {
-        				    $estado = 'vigente';
-        				    $textoEstado = 'Vigente';
-        				}
+							if ($diasRestantes < 0) {
+								$estado = 'vencido';
+								$textoEstado = 'Vencido';
+							} elseif ($diasRestantes <= 15) {
+								$estado = 'proximo';
+								$textoEstado = 'Por caducar';
+							} else {
+								$estado = 'vigente';
+								$textoEstado = 'Vigente';
+							}
+						} else {
+							$estado = 'vigente';
+							$textoEstado = 'Sin caducidad';
+						}
 
-        				$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+						$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
     				?>
 
 						<article class="lote-tarjeta" data-lote data-estado="<?= $estado ?>">
@@ -152,7 +159,7 @@ foreach ($lotes as $lote){
     			    	        </div>
     			    	        <div>
     			    	            <dt>Fecha de caducidad</dt>
-    			    	            <dd><?= $escapar($fechaCaducidad->format('Y-m-d')) ?></dd>
+						<dd><?= !empty($lote['fecha_caducidad']) ? $escapar($lote['fecha_caducidad']) : 'Sin caducidad' ?></dd>
     			    	        </div>
     			    	        <div>
     			    	            <dt>Precio de compra</dt>
@@ -234,7 +241,7 @@ foreach ($lotes as $lote){
 				</div>
 				<div class="lote-campo">
 					<label for="lote-caducidad">Fecha de caducidad</label>
-					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" value="<?= $escapar($loteAnterior['fecha_caducidad'] ?? '') ?>" required>
+					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" value="<?= $escapar($loteAnterior['fecha_caducidad'] ?? '') ?>">
 				</div>
 				<div class="lote-campo">
 					<label for="lote-precio">Precio de compra</label>
