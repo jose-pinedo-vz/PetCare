@@ -312,6 +312,16 @@ final class CorteCaja
         $db->beginTransaction();
         try {
             self::bloquearCorteAbierto($db, $corte, $empleado);
+            if ($tipo === 'retiro') {
+                $efectivoDisponible = max(self::calcularEfectivoEsperado($db, $corte), 0);
+                if (round($importe, 2) > $efectivoDisponible) {
+                    throw new DomainException(
+                        'No puedes retirar más efectivo del disponible en caja ($'
+                        . number_format($efectivoDisponible, 2)
+                        . ').'
+                    );
+                }
+            }
             if ($beneficiario !== null) {
                 $verificarEmpleado = $db->prepare(
                     'SELECT id_empleado FROM empleados WHERE id_empleado = :id AND esta_activo = 1'
