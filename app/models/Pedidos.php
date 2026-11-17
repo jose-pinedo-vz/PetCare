@@ -129,7 +129,7 @@ class Pedidos
         $stmt = $conexion->prepare(
             "SELECT 1 FROM lote_productos WHERE lote = :lote LIMIT 1"
         );
-        $stmt->execute([$lote]);
+        $stmt->execute(['lote' => $lote]);
 
         return $stmt->fetchColumn() !== false;
     }
