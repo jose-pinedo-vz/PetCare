@@ -199,6 +199,32 @@ function obtenerProductoPorId(int $id): ?array {
     }
 }
 
+function obtenerProductoPorIdNew(int $id): ?array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT p.*, COALESCE(l.existencia, 0) AS existencia
+            FROM productos AS p
+            LEFT JOIN (
+                SELECT id_producto, SUM(cantidad) AS existencia
+                FROM lote_productos
+                WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                GROUP BY id_producto
+            ) AS l ON l.id_producto = p.id_producto
+            WHERE p.id_producto = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+        $producto = $consulta -> fetch(PDO::FETCH_ASSOC);
+
+        return $producto ?: null;
+
+    } catch (Exception $error) {
+        error_log("Error en obtenerMascotaPorIdNew: " . $error -> getMessage());
+        return null;
+    }
+}
+
 function obtenerNombreProveedor(int $id): ?string {
     try {
         $conexion = ConexionDB::obtenerConexion();
