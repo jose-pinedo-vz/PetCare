@@ -103,7 +103,7 @@
         {
             try
             {
-                $query = "UPDATE citas SET atendido = 1 WHERE id_cita = ?";
+                $query = "UPDATE citas SET atendido = 1, estado_cita = 'atendida', estado = 'atendida' WHERE id_cita = ?";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id]);
