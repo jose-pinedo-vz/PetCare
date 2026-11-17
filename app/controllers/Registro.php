@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     }
     else
     {
-        $password_hash=$nueva_password;
+        $password_hash=password_hash($nueva_password, PASSWORD_DEFAULT);
         try
         {
             ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
