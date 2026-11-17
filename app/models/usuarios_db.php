@@ -70,7 +70,10 @@ class UsuariosDB
     {
         $conexion=ConexionDB::obtenerConexion();
         try {
-            $query="SELECT id_empleado,nombre FROM empleados WHERE nombre NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado=nombre) and esta_activo=1";
+            $query="SELECT e.id_empleado, e.nombre 
+                    FROM empleados e 
+                    LEFT JOIN usuarios u ON e.id_empleado = u.empleado_asociado 
+                    WHERE u.empleado_asociado IS NULL AND e.esta_activo = 1";
             $stmt = $conexion->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

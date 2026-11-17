@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo = trim($_POST['tipo'] ?? '');
     $nombre_usuario=trim($_POST['nombre_usuario']??'');
     $nuevoPassword = trim($_POST['nuevo_password'] ?? '');
+    
 
     if (empty($token) || empty($nuevoPassword) || empty($tipo) || empty($nombre_usuario))
     {
@@ -18,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    
     $usuario = UsuariosDB::obtenerUsuario($nombre_usuario);
     if (!$usuario)
     {
@@ -25,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: ../views/restablecer_contraseña.php?token=" . urlencode($token));
         exit();
     }
-    
-    $val_usuario = UsuariosDB::tipoContraseña($tipo, $token, $nuevoPassword, $nombre_usuario);
+    $password_hash=password_hash($nuevoPassword, PASSWORD_DEFAULT);
+    $val_usuario = UsuariosDB::tipoContraseña($tipo, $token, $password_hash, $nombre_usuario);
 
     if ($val_usuario)
     {
