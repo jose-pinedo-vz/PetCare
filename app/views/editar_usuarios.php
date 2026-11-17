@@ -14,7 +14,6 @@ if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
   exit();
 }
 require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles=UsuariosDB::empleados_disponibles();
 $mensaje=$_SESSION['mensaje']??'';
 $error=$_SESSION['error']??'';
 unset($_SESSION['mensaje'],$_SESSION['error']);
@@ -26,6 +25,7 @@ if ($idUsuario === false || $idUsuario === null)
 }
 $user_edi=UsuariosDB::usuario_ID($idUsuario);
 $usuario=$_SESSION['usuario'];
+$empleados_disponibles=UsuariosDB::empleados_disponibles_editar($idUsuario);
 ?>
 <!DOCTYPE html>
 <html lang="es">

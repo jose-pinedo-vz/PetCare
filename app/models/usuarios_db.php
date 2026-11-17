@@ -81,6 +81,27 @@ class UsuariosDB
         }
     }
 
+    public static function empleados_disponibles_editar(int $id_usuario)
+    {
+        $conexion = ConexionDB::obtenerConexion();
+        try {
+            // Trae los empleados activos que no tienen usuario, 
+            // OR (o bien) el empleado que ya tiene asignado este usuario en específic.
+            $query =   "SELECT id_empleado, nombre FROM empleados 
+                        WHERE (id_empleado NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado IS NOT NULL)
+                        OR id_empleado = (SELECT empleado_asociado FROM usuarios WHERE id_usuario = :id_usuario))
+                        AND esta_activo = 1";
+            
+            $stmt = $conexion->prepare($query);
+            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
     public static function insertar_clientes(string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $permisos, string $estado)
     {
         $conexion=ConexionDB::obtenerConexion();
