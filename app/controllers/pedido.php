@@ -72,12 +72,46 @@ try {
             'lote' => $obtenerCampo('lote'),
             'ubicacion' => $obtenerCampo('ubicacion'),
             'fecha_caducidad' => $obtenerCampo('fecha_caducidad'),
+            'precio_compra' => $obtenerCampo('precio_compra'),
         ];
         $errores = [];
 
         $idDetalle = filter_var($datos['id_detalle'], FILTER_VALIDATE_INT);
         if ($idDetalle === false || $idDetalle < 1) {
             $errores[] = 'Selecciona un producto válido del pedido.';
+        }
+
+        $detallePedido = null;
+        if ($idDetalle !== false && $idDetalle > 0) {
+            foreach (Pedidos::obtenerDetalles($idPedido) as $detalle) {
+                if ((int) $detalle['id_detalle'] === $idDetalle) {
+                    $detallePedido = $detalle;
+                    break;
+                }
+            }
+            if ($detallePedido === null) {
+                $errores[] = 'Selecciona un producto válido del pedido.';
+            }
+        }
+
+        if ($detallePedido !== null && !$detallePedido['tiene_lotes']) {
+            if ($datos['precio_compra'] === '') {
+                $errores[] = 'El precio de compra es obligatorio para productos sin lotes registrados.';
+            } elseif (
+                !preg_match('/^\d+(?:\.\d{1,2})?$/D', $datos['precio_compra'])
+                || (float) $datos['precio_compra'] <= 0
+                || (float) $datos['precio_compra'] > 99999999.99
+            ) {
+                $errores[] = 'El precio de compra debe ser mayor que cero, tener hasta dos decimales y estar dentro del rango permitido.';
+            }
+        } elseif ($detallePedido !== null) {
+            $precioRegistrado = (float) $detallePedido['precio_unitario'];
+            if ($precioRegistrado <= 0) {
+                $precioRegistrado = (float) $detallePedido['precio_compra_lote'];
+            }
+            if ($precioRegistrado <= 0) {
+                $errores[] = 'No hay un precio de compra registrado para este producto.';
+            }
         }
 
         if ($datos['cantidad'] === '') {
@@ -147,6 +181,7 @@ try {
                 'lote' => $datos['lote'],
                 'fecha_caducidad' => $datos['fecha_caducidad'] !== '' ? $datos['fecha_caducidad'] : null,
                 'ubicacion' => $datos['ubicacion'],
+                'precio_compra' => $datos['precio_compra'],
             ]
         );
         if (!$registrado) {

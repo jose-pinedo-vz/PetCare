@@ -253,7 +253,7 @@ foreach ($lotes as $lote){
 					<input class="campo" id="lote-precio" name="precio_compra" type="number" min="0.01" step="0.01" value="<?= $escapar($loteAnterior['precio_compra'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">
-					<label for="lote-ubicacion">Ubicación</label>
+					<label for="lote-ubicacion">Ubicación estanteria</label>
 					<input class="campo" id="lote-ubicacion" name="ubicacion" type="text" maxlength="20" value="<?= $escapar($loteAnterior['ubicacion'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">
