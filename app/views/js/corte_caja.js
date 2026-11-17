@@ -54,29 +54,73 @@
         const errorArqueo = document.getElementById('errorArqueo');
         const camposCantidad = Array.from(dialogArqueo.querySelectorAll('[data-cantidad]'));
 
-        function actualizarTotalContado() {
-            let total = 0;
-            camposCantidad.forEach((campo) => {
-                const cantidad = Number(campo.value);
-                const valor = Number(campo.dataset.valor);
-                const subtotal = Number.isInteger(cantidad) && cantidad >= 0 ? cantidad * valor : 0;
-                total += subtotal;
-                campo.closest('tr').querySelector('[data-subtotal]').textContent =
-                    new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(subtotal);
-            });
-            document.getElementById('totalArqueo').textContent =
-                new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(total);
-            totalContado.value = (Math.round(total * 100) / 100).toFixed(2);
-            return total;
+        const botonesModo = Array.from(dialogArqueo.querySelectorAll('[data-modo]'));
+        const panelDenominacion = document.getElementById('panelDenominacion');
+        const panelExacto = document.getElementById('panelExacto');
+        const campoExacto = document.getElementById('montoExacto');
+        const formatoMoneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+        let modo = 'denominacion';
+
+        // Todo se calcula en centavos enteros para evitar errores de decimales
+        function aCentavos(valor) {
+            return Math.round(Number(valor) * 100);
         }
 
-        camposCantidad.forEach((campo) => campo.addEventListener('input', actualizarTotalContado));
-        formArqueo.addEventListener('submit', (evento) => {
-            const cantidadesValidas = camposCantidad.every((campo) => {
-                const valor = Number(campo.value);
-                return Number.isInteger(valor) && valor >= 0;
+        function centavosExactos() {
+            const texto = campoExacto.value.trim();
+            if (texto === '' || !/^\d+(\.\d{1,2})?$/.test(texto)) return null;
+            return aCentavos(texto);
+        }
+
+        function actualizarTotalContado() {
+            let centavos = 0;
+            if (modo === 'exacto') {
+                const exacto = centavosExactos();
+                centavos = exacto === null ? 0 : exacto;
+            } else {
+                camposCantidad.forEach((campo) => {
+                    const cantidad = Number(campo.value);
+                    const subtotal = Number.isInteger(cantidad) && cantidad >= 0 ? cantidad * aCentavos(campo.dataset.valor) : 0;
+                    centavos += subtotal;
+                    campo.closest('tr').querySelector('[data-subtotal]').textContent = formatoMoneda.format(subtotal / 100);
+                });
+            }
+            document.getElementById('totalArqueo').textContent = formatoMoneda.format(centavos / 100);
+            totalContado.value = (centavos / 100).toFixed(2);
+            return centavos;
+        }
+
+        function cambiarModo(nuevoModo) {
+            modo = nuevoModo;
+            botonesModo.forEach((boton) => {
+                const activo = boton.dataset.modo === modo;
+                boton.classList.toggle('activa', activo);
+                boton.setAttribute('aria-selected', activo ? 'true' : 'false');
+                boton.tabIndex = activo ? 0 : -1;
             });
-            if (!cantidadesValidas) {
+            panelDenominacion.hidden = modo !== 'denominacion';
+            panelExacto.hidden = modo !== 'exacto';
+            errorArqueo.hidden = true;
+            actualizarTotalContado();
+        }
+
+        botonesModo.forEach((boton) => boton.addEventListener('click', () => cambiarModo(boton.dataset.modo)));
+        camposCantidad.forEach((campo) => campo.addEventListener('input', actualizarTotalContado));
+        campoExacto.addEventListener('input', () => {
+            errorArqueo.hidden = true;
+            actualizarTotalContado();
+        });
+        formArqueo.addEventListener('submit', (evento) => {
+            let valido;
+            if (modo === 'exacto') {
+                valido = centavosExactos() !== null;
+            } else {
+                valido = camposCantidad.every((campo) => {
+                    const valor = Number(campo.value);
+                    return Number.isInteger(valor) && valor >= 0;
+                });
+            }
+            if (!valido) {
                 evento.preventDefault();
                 errorArqueo.hidden = false;
                 return;
