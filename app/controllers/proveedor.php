@@ -209,6 +209,9 @@ function listar_proveedores(): array {
 }
 //valida al provvedor y hace la validacion de datos 
 function actualizar_proveedor(int $id, array $datos) {
+    require_once __DIR__ . '/../models/proveedores.php';
+    require_once __DIR__ . '/validar_rfc.php';
+
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -227,6 +230,13 @@ function actualizar_proveedor(int $id, array $datos) {
         $errores[] = "El RFC es obligatorio.";
     } else if (strlen($datos['rfc']) > 13) {
         $errores[] = "El RFC no puede tener más de 13 letras.";
+    } else {
+        $erroresRfc = validarRfc($datos['rfc']);
+        if (!empty($erroresRfc)) {
+            $errores = array_merge($errores, $erroresRfc);
+        } else if (existeRfc($datos['rfc'], $id)) {
+            $errores[] = "El RFC ya existe en la base de datos.";
+        }
     }
 
     if (empty($datos['telefono'])) {
