@@ -7,7 +7,7 @@ if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido']))
 }
 
 // Si sí llegaron, los guardamos con seguridad
-$id_empleado = $_GET['id'];
+$id_empleado_eliminar = $_GET['id'];
 $nombre_empleado = $_GET['nombre'];
 $apellido_empleado = $_GET['apellido'];
 ?>
@@ -38,13 +38,13 @@ $apellido_empleado = $_GET['apellido'];
 
     <form action="../controllers/eliminar_empleado.php" method="POST">
   
-      <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$id_empleado ?>">
+      <input type="hidden" id="id_empleado" name="id_empleado" value="<?= (int)$id_empleado_eliminar ?>">
 
       <fieldset>
 
         <p>
           ¿Está seguro de que desea eliminar al empleado
-          <strong><?= htmlspecialchars((string)$nombre_empleado) .' ' . htmlspecialchars((string)$apellido_empleado) . ' (ID: ' . htmlspecialchars((string)$id_empleado) . ')' ?></strong>?
+          <strong><?= htmlspecialchars((string)$nombre_empleado) .' ' . htmlspecialchars((string)$apellido_empleado) . ' (ID: ' . htmlspecialchars((string)$id_empleado_eliminar) . ')' ?></strong>?
           Esta acción no se puede deshacer.
         </p>
 
