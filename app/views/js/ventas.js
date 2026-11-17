@@ -657,6 +657,8 @@
             forma_pago: formaPago,
             recibido: Number(inputMonto.value) || 0,
             datos_pago: datosPago,
+            // Telefono del cliente (vacio es publico en general)
+            telefono_cliente: inputCliente ? inputCliente.value.trim() : '',
             items: carrito.filter(function (i) { return i.tipo === 'producto'; }).map(function (i) {
                 return {
                     id_producto: i.id_producto,

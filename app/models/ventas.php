@@ -659,5 +659,22 @@ class Ventas
             return ['ok' => false, 'error' => 'No se pudo guardar la factura.'];
         }
     }
+
+    // Busca un cliente activo por telefono (devuelve su id o null)
+    public static function buscarClientePorTelefono(string $telefono): ?int
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_cliente FROM clientes
+                 WHERE telefono = ? AND esta_activo = 1 AND id_cliente <> 11
+                 ORDER BY id_cliente LIMIT 1"
+            );
+            $stmt->execute([$telefono]);
+            $id = $stmt->fetchColumn();
+            return $id === false ? null : (int)$id;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
 }
-                
