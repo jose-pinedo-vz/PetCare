@@ -6,7 +6,8 @@
     //     require_once __DIR__ . '/../../conexion_db.php';
     // }
 
-    require_once 'conexion_db.php';
+    //require_once 'conexion_db.php';
+    require_once __DIR__ . '/conexion_db.php';
 
     // nueva base de datos instalada
     class ConexionesClientes

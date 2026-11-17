@@ -2,6 +2,9 @@
 declare(strict_types=1);
 class ConexionDB 
 {
+    // se agrega esta variable para guardar la única conexión por petición
+    private static ?PDO $instancia = null;
+
     private static function cargarEntorno(string $ruta):void
     {
         if(!file_exists($ruta))
@@ -10,10 +13,10 @@ class ConexionDB
         }
 
         $lineas=file($ruta, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lineas as $linea) 
+        foreach ($lineas as$linea) 
         {
             $lineaTrime=trim($linea);
-            if($lineaTrime=='' || str_starts_with($lineaTrime, '#'))
+            if ($lineaTrime === '' or str_starts_with($lineaTrime, '#'))
             {
                 continue;
             }
@@ -33,28 +36,35 @@ class ConexionDB
 
     public static function obtenerConexion(): PDO
     {
-        try {
+        // si ya hay una conexión abierta, la reutiliza y no abre otra
+        if (self::$instancia !== null) 
+        {
+            return self::$instancia;
+        }
+
+        try 
+        {
             // Cargamos el .env ubicado en la misma carpeta raíz
             self::cargarEntorno(__DIR__ . '/../../.env');
 
-            $host = getenv('DB_HOST');
-            $db   = getenv('DB_NAME');
-            $user = getenv('DB_USER');
-            $pass = getenv('DB_PASS');
+            $host = getenv('DB_HOST');$db   = getenv('DB_NAME');
+            $user = getenv('DB_USER');$pass = getenv('DB_PASS');
 
             $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
             
-            $conexion = new PDO($dsn, $user, $pass);
-            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            // ---> [CAMBIO 3]: Guardamos el PDO en $instancia en lugar de una variable local
+            self::$instancia = new PDO($dsn, $user,$pass);
+            self::$instancia->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
-            return $conexion;
+            return self::$instancia;
 
         } catch (PDOException $e) {
             // Si falla la base de datos, relanzamos la excepción con un mensaje más claro
             throw new Exception("Error de conexión a la Base de Datos: " . $e->getMessage());
         }
     }
-    public static function buscarUsuarioPorNombre(PDO $conexion, string $usuario)
+
+    public static function buscarUsuarioPorNombre(PDO $conexion, string$usuario)
     {
         $sql = "SELECT u.id_usuario, u.contrasena, u.rol, u.estado, u.empleado_asociado AS id_empleado,e.nombre AS nombre_empleado, e.apellido AS apellido_empleado, e.horario AS horario_empleado
                 FROM usuarios u
@@ -65,19 +75,19 @@ class ConexionDB
         return $base->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function registrarUltimoAcceso(PDO $conexion, int $id_usuario)
+    public static function registrarUltimoAcceso(PDO $conexion, int$id_usuario)
     {
         $base=$conexion->prepare("UPDATE usuarios SET ultimo_acceso = NOW() WHERE id_usuario = ?");
         $base->execute([$id_usuario]);
     }
 
-    public static function insertarUsuario(PDO $conexion, string $usuario, string $password_hash, ?int $empleado, string $rol, string $permisos, string $estado)
+    public static function insertarUsuario(PDO $conexion, string $usuario, string$password_hash, ?int $empleado, string$rol, string $permisos, string$estado)
     {
         $empleado=trim($_POST['empleado_asociado']??'');
         $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
         $base=$conexion->prepare("INSERT INTO usuarios (id_usuario, usuario, contrasena, empleado_asociado, rol, permisos, estado) 
                                     VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u), ?, ?, ?, ?, ?, ?)");
-        $base->execute([$usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado]);
+        $base->execute([$usuario,$password_hash, $empleado_asociado,$rol, $permisos,$estado]);
         return $base->rowCount();
     }
 }
