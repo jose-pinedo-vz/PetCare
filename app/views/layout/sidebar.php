@@ -34,6 +34,10 @@ $sbModulos = [
     'usuarios'      => ['Usuarios',          'usuarios.php'],
     'configuracion' => ['Configuración',     null],
 ];
+
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    unset($sbModulos['empleados'], $sbModulos['usuarios']);
+}
 ?>
     <aside class="sidebar" id="menu-principal">
       <div class="marca">

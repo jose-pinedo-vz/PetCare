@@ -1,8 +1,17 @@
 <?php
-// Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
+{
+  header("Location: inicio.php");
+  exit();
 }
 require_once __DIR__ . '/../models/usuarios_db.php';
 $empleados_disponibles=UsuariosDB::empleados_disponibles();
@@ -17,7 +26,6 @@ if ($idUsuario === false || $idUsuario === null)
 }
 $user_edi=UsuariosDB::usuario_ID($idUsuario);
 $usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
