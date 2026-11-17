@@ -171,7 +171,7 @@
         {
             try
             {
-                $query = "SELECT id_mascota, nombre FROM mascotas WHERE id_cliente = ? AND esta_activo = 0";
+                $query = "SELECT id_mascota, nombre FROM mascotas WHERE id_cliente = ? AND esta_activo = 1";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id_cliente]);

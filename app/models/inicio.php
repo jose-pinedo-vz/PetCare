@@ -39,7 +39,7 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_mascota) AS numMascotas FROM mascotas WHERE esta_activo = "1"';
+                $query = 'SELECT COUNT(id_mascota) AS numMascotas FROM mascotas WHERE esta_activo = 1';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute();

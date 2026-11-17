@@ -123,19 +123,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
-    // insertar la cita
-    $seInserto = $consultasCitas->insertarCita((int)$claveCliente,(int)$mascota,(int)$servicio, (int) $responsable, "pendiente",(int) $duracion, $motivoConsulta, "sin atender", $fechaHoraFinal,  $motivoConsulta,(string) 0);
-    if (!$seInserto)
+    try
     {
-        errorSession("Hubo un error al registrar la cita en la base de datos.");
+        $seInserto = $consultasCitas->insertarCita((int)$claveCliente,(int)$mascota,(int)$servicio, (int) $responsable, "pendiente",(int) $duracion, $motivoConsulta, "sin atender", $fechaHoraFinal,  $motivoConsulta,(string) 0);
     }
-
-    // insercin de la cita
-    // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
-    // if (!$seInserto)
-    // {
-    //     errorSession("Hubo un error en la insercino de los datos.");
-    // }
+    catch (Throwable $e)
+    {
+        errorSession("ERROR REAL: " . $e->getMessage());
+    }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");
