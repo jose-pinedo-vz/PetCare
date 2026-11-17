@@ -49,8 +49,14 @@ class UsuariosDB
         {
             $empleado=trim($_POST['empleado_asociado']??'');
             $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
-            $stmt=$conexion->prepare("UPDATE usuarios SET usuario=?, contrasena=?, empleado_asociado=?, rol=?, permisos=?, estado=? WHERE id_usuario=?");
-            $stmt->execute([$nuevo_usuario, $nueva_password, $empleado_asociado, $rol, $permisos, $estado, $id]);
+            $stmt = $conexion->prepare("UPDATE usuarios SET usuario=?, empleado_asociado=?, rol=?, permisos=?, estado=? WHERE id_usuario=?");
+            $stmt->execute([$nuevo_usuario, $empleado_asociado, $rol, $permisos, $estado, $id]);
+            if (!empty($nueva_password))
+            {
+                $password_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
+                $stmtPass = $conexion->prepare("UPDATE usuarios SET contrasena=? WHERE id_usuario=?");
+                $stmtPass->execute([$password_hash, $id]);
+            }
 
             $_SESSION['mensaje']="Usuario actualizado con éxito.";
         }

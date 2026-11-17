@@ -13,10 +13,14 @@ if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
   header("Location: inicio.php");
   exit();
 }
+
+
 require_once __DIR__ . '/../models/usuarios_db.php';
 $listaUsuarios = UsuariosDB::obtenerTodosUsuarios(ConexionDB::obtenerConexion());
 $usuario=$_SESSION['usuario'];
 ?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
