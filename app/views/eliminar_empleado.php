@@ -1,4 +1,16 @@
-<?php 
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: inicio.php");
+    exit();
+}
+
 // Validar si realmente llegaron los datos por la URL (GET)
 if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
     // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla

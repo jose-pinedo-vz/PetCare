@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: ../views/inicio.php");
+    exit();
+}
 require_once '../models/conexion_db.php';
 $conexion = ConexionDB::obtenerConexion();
 $mensaje = '';

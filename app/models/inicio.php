@@ -7,7 +7,7 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_consulta) AS citas FROM consulta_veterinaria WHERE fecha = ?';
+                $query = 'SELECT COUNT(id_cita) AS citas FROM citas WHERE fecha = ?';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$fecha]);
@@ -23,7 +23,7 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_consulta) AS numCitasPagos FROM consulta_veterinaria WHERE estado_de_pago = "Pendiente";';
+                $query = 'SELECT COUNT(id_cita) AS numCitasPagos FROM citas WHERE estado_cita = "atendida"';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute();
@@ -39,7 +39,7 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_mascota) AS numMascotas FROM mascotas';
+                $query = 'SELECT COUNT(id_mascota) AS numMascotas FROM mascotas WHERE esta_activo = "1"';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute();
@@ -55,7 +55,7 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_producto) as productoStockBajo FROM productos WHERE existencia <= existencia_maxima';
+                $query = 'SELECT COUNT(id_producto) as productoStockBajo FROM productos WHERE contenido <= existencia_minima';
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute();
@@ -71,8 +71,8 @@
         {
             try
             {
-                $query = "SELECT consulta_veterinaria.fecha, consulta_veterinaria.motivo_de_consulta, consulta_veterinaria.atendido, clientes.nombre
-                    FROM consulta_veterinaria, clientes WHERE fecha = ? AND consulta_veterinaria.id_cliente = clientes.id_cliente";
+                $query = "SELECT citas.fecha, citas.observacion, citas.estado, clientes.nombre
+                    FROM citas, clientes WHERE fecha = ? AND citas.cliente = clientes.id_cliente";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$fecha]);

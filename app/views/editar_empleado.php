@@ -1,9 +1,17 @@
 <?php
-require_once __DIR__ . '/../models/Empleados.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: inicio.php");
+    exit();
+}
+
+require_once __DIR__ . '/../models/Empleados.php';
 
 $idEmpleado = filter_input(INPUT_GET, 'id_empleado', FILTER_VALIDATE_INT);
 

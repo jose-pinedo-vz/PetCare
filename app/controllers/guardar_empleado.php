@@ -70,6 +70,10 @@ function errorSession(string $error) : void {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+        header("Location: ../views/inicio.php");
+        exit();
+    }
 
     $errores = [];
 
