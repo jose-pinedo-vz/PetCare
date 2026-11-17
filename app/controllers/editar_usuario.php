@@ -15,7 +15,57 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     $permisos=$_POST['permisos']??'todos';
     $estado=$_POST['estado']??'activo';
 
-    UsuariosDB::insertar($id, $nuevo_usuario, $nueva_password, $empleado_asociado, $rol, $permisos, $estado);
+    if (empty($nuevo_usuario) || empty($nueva_password) || empty($rol) || empty($permisos) || empty($estado))
+    {
+        $error = "Por favor, completa todos los campos obligatorios.";
+    }
+    elseif (strlen($nuevo_usuario) < 4)
+    {
+        $error = "El nombre de usuario debe tener al menos 4 caracteres.";
+    }
+    elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $nuevo_usuario))
+    {
+        $error = "El nombre de usuario solo puede contener letras, números y guiones bajos.";
+    }
+    elseif (strlen($nueva_password) < 6)
+    {
+        $error = "La contraseña debe tener al menos 6 caracteres.";
+    }
+    elseif (!in_array($rol, ['admin', 'veterinario', 'recepcionista',"vendedor","estilista","hotelero"]))
+    {
+        $error = "El rol seleccionado no es válido.";
+    }
+    elseif (!in_array($estado, ['activo', 'inactivo']))
+    {
+        $error = "El estado seleccionado no es válido.";
+    }
+    else
+    {
+        try
+        {
+            UsuariosDB::insertar($id, $nuevo_usuario, $nueva_password, $empleado_asociado, $rol, $permisos, $estado);
+            $mensaje = "Usuario '$nuevo_usuario' actualizado con éxito.";
+        }
+        catch (PDOException $e)
+        { 
+            if ($e->getCode() === '23000' || $e->getCode() === 1062) 
+            {
+                if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1062)
+                {
+                    $error = "El nombre de usuario '$nuevo_usuario' ya existe.";
+                }
+                else
+                {
+                    $error = "Error al actualizar el usuario: " . $e->getMessage();
+                }
+            }
+            else
+            {
+                $error = "Error de base de datos: " . $e->getMessage();
+            }
+        }
+    }
+    
 }
 
 header("Location: ../views/usuarios.php");
