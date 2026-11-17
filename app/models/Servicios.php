@@ -1,5 +1,10 @@
 <?php
 // Modelo de servicios
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
 require_once __DIR__ . '/conexion_db.php';
 
 class Servicios

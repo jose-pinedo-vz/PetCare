@@ -1,6 +1,11 @@
 <?php //Falta cambiar la consulta a atendido(1) si se inserto la ficha
 declare(strict_types=1);
 
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
 if (file_exists(__DIR__ . '/conexion_db.php')) {
     require_once __DIR__ . '/conexion_db.php';
 } elseif (file_exists(__DIR__ . '/../../conexion_db.php')) {
