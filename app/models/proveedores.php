@@ -155,12 +155,18 @@ function existeRazonSocial($razon_social){
     }
 }
 
-function existeRfc($rfc){
+function existeRfc($rfc, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
         $sql = "SELECT COUNT(*) FROM proveedores WHERE rfc = :rfc";
+        if ($idExcluir !== null) {
+            $sql .= " AND id_proveedor != :id";
+        }
         $stmt = $conexion->prepare($sql);
         $stmt->bindParam(":rfc", $rfc, PDO::PARAM_STR);
+        if ($idExcluir !== null) {
+            $stmt->bindParam(":id", $idExcluir, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     } catch (Exception $e) {

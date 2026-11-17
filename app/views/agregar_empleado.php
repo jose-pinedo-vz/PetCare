@@ -2,6 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: inicio.php");
+    exit();
+}
 
 // Si no venimos de un error, borra restos de intentos anteriores
 if (!isset($_SESSION['error'])) {

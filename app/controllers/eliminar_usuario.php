@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: ../views/inicio.php");
+    exit();
+}
 require_once '../models/usuarios_db.php';
 
 if (isset($_GET['id'])) {

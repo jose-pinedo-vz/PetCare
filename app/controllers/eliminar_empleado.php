@@ -13,6 +13,14 @@
 
     require_once __DIR__ . '/../models/Empleados.php';
 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+        header('Location: ../views/inicio.php');
+        exit;
+    }
+
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     header('Location: ../views/empleados.php');
     exit;
