@@ -153,12 +153,23 @@ function ventaGuardar()
         exit;
     }
 
+    // Cliente por telefono; si va vacio es publico en general
+    $telefonoCliente = preg_replace('/\D/', '', (string)($datos['telefono_cliente'] ?? ''));
+    $idCliente = ID_CLIENTE_PUBLICO;
+    if ($telefonoCliente !== '') {
+        $idCliente = Ventas::buscarClientePorTelefono($telefonoCliente);
+        if ($idCliente === null) {
+            echo json_encode(['ok' => false, 'error' => 'No existe un cliente con ese telefono. Deja el campo vacio para publico en general.']);
+            exit;
+        }
+    }
+
     $resultado = Ventas::guardarVenta(
         $items,
         $formaPago,
         $recibido,
         $idEmpleado,
-        ID_CLIENTE_PUBLICO,
+        $idCliente,
         $servicios,
         $datosPago
     );
