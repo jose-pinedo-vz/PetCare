@@ -275,11 +275,13 @@ class Hotel
         try {
             $conexion = ConexionDB::obtenerConexion();
             $stmt = $conexion->prepare("
-                SELECT tipo_vacunas, fecha_aplicacion, fecha_proxima, veterinario,
-                       lote, fabricante, observaciones
+                SELECT lista_vacunas.nombre AS tipo_vacunas, vacunas.fecha_aplicacion,
+                       vacunas.fecha_proxima, vacunas.veterinario, vacunas.lote,
+                       vacunas.fabricante, vacunas.observaciones
                 FROM vacunas
-                WHERE id_mascota = ?
-                ORDER BY tipo_vacunas, fecha_aplicacion DESC, id_vacuna DESC
+                INNER JOIN lista_vacunas ON vacunas.vacuna_puesta = lista_vacunas.id
+                WHERE vacunas.id_mascota = ?
+                ORDER BY lista_vacunas.nombre, vacunas.fecha_aplicacion DESC, vacunas.id_vacuna DESC
             ");
             $stmt->execute([$idMascota]);
             $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);

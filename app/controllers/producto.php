@@ -106,6 +106,8 @@ function validar_datos(array $datos) {
         $errores[] = "La existencia maxima debe ser un valor numerico.";
     }else if ((int)$datos['existencia_maxima'] < 0) {
         $errores[] = "La existencia maxima debe ser un valor mayor a 0.";
+    }else if ((int)$datos['existencia_maxima'] < (int)$datos['existencia_minima']) {
+        $errores[] = "La existencia maxima debe ser mayor a la existencia minima.";
     }else{
         $datos['existencia_maxima']=(int)$datos['existencia_maxima'];
     }
