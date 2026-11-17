@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
             {
                 $error="La cuenta se encuentra inactiva.";
             }
-            elseif ($password === $datosUsuario['contrasena'])
+            elseif (password_verify($password, $datosUsuario['contrasena']))
             {
                 session_regenerate_id(true);
                 ConexionDB::registrarUltimoAcceso($conexion, $datosUsuario['id_usuario']);
@@ -65,12 +65,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
             }
             else
             {
-                $error="usuario o contraseña incorrectos.";
+                $error="contraseña incorrecta.";
             }
         }
         else
         {
-            $error="usuario o contraseña incorrectos.";
+            $error="usuario incorrectos.";
         }
     }
 }
