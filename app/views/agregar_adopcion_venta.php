@@ -1,11 +1,31 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../models/Mascota.php';
+
+$razas = Mascota::obtenerRazas();
+$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+
 $errores = $_SESSION['errores'] ?? [];
 $old     = $_SESSION['old'] ?? [];
 
 unset($_SESSION['errores']);
 unset($_SESSION['old']);
+
+$especieAnterior = (string) ($old['especie'] ?? 'Perro');
+$razaAnterior = (string) ($old['raza'] ?? '');
+
+$mapaEspecieId = [
+    'Perro' => '1',
+    'Gato' => '2',
+    'Conejo' => '3',
+    'Hamster' => '4',
+    'Hurón' => '',
+    'Erizo' => '',
+    'Tortuga' => '',
+    'Ave' => '6'
+];
+$especieIdAnterior = $mapaEspecieId[$especieAnterior] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -51,23 +71,35 @@ unset($_SESSION['old']);
     <div>
       <label class="label-campo" for="especie">Especie *:</label>
       <select class="campo" id="especie" name="especie" required>
-        <option value="Perro" <?= (($old['especie'] ?? '') === 'Perro') ? 'selected' : '' ?>>Perro</option>
-        <option value="Gato" <?= (($old['especie'] ?? '') === 'Gato') ? 'selected' : '' ?>>Gato</option>
-        <option value="Conejo" <?= (($old['especie'] ?? '') === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
-        <option value="Hamster" <?= (($old['especie'] ?? '') === 'Hamster') ? 'selected' : '' ?>>Hamster</option>
-        <option value="Hurón" <?= (($old['especie'] ?? '') === 'Hurón') ? 'selected' : '' ?>>Hurón</option>
-        <option value="Erizo" <?= (($old['especie'] ?? '') === 'Erizo') ? 'selected' : '' ?>>Erizo</option>
-        <option value="Tortuga" <?= (($old['especie'] ?? '') === 'Tortuga') ? 'selected' : '' ?>>Tortuga</option>
-        <option value="Ave" <?= (($old['especie'] ?? '') === 'Ave') ? 'selected' : '' ?>>Ave</option>
+        <option value="Perro" data-especie-id="1" <?= (($old['especie'] ?? '') === 'Perro' || empty($old['especie'])) ? 'selected' : '' ?>>Perro</option>
+        <option value="Gato" data-especie-id="2" <?= (($old['especie'] ?? '') === 'Gato') ? 'selected' : '' ?>>Gato</option>
+        <option value="Conejo" data-especie-id="3" <?= (($old['especie'] ?? '') === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
+        <option value="Hamster" data-especie-id="4" <?= (($old['especie'] ?? '') === 'Hamster') ? 'selected' : '' ?>>Hamster</option>
+        <option value="Hurón" data-especie-id="" <?= (($old['especie'] ?? '') === 'Hurón') ? 'selected' : '' ?>>Hurón</option>
+        <option value="Erizo" data-especie-id="" <?= (($old['especie'] ?? '') === 'Erizo') ? 'selected' : '' ?>>Erizo</option>
+        <option value="Tortuga" data-especie-id="" <?= (($old['especie'] ?? '') === 'Tortuga') ? 'selected' : '' ?>>Tortuga</option>
+        <option value="Ave" data-especie-id="6" <?= (($old['especie'] ?? '') === 'Ave') ? 'selected' : '' ?>>Ave</option>
       </select>
     </div>
 
     <div>
       <label class="label-campo" for="raza">Raza:</label>
-      <input type="text" class="campo" id="raza" name="raza" minlength="2" maxlength="30"
-        pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ0-9]{2,})*$"
-        title="Solo letras, números y guiones (sin símbolos especiales)"
-        value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
+      <select class="campo" id="raza" name="raza">
+        <option value="">Seleccionar raza...</option>
+        <?php foreach ($razas as $registroRaza):
+          $razaCoincideConEspecie = $especieIdAnterior !== ''
+            && (string) $registroRaza['especie'] === $especieIdAnterior;
+          $razaSeleccionada = $razaCoincideConEspecie
+            && $razaAnterior === (string) $registroRaza['raza'];
+        ?>
+          <option
+            value="<?= $escapar($registroRaza['raza']) ?>"
+            data-especie-id="<?= (int) $registroRaza['especie'] ?>"
+            <?= $razaSeleccionada ? 'selected' : '' ?>
+            <?= $razaCoincideConEspecie ? '' : 'hidden disabled' ?>
+          ><?= $escapar($registroRaza['raza']) ?></option>
+        <?php endforeach; ?>
+      </select>
     </div>
 
     <div>
@@ -258,6 +290,7 @@ unset($_SESSION['old']);
       }
     })();
   </script>
+  <script src="js/mascota.js"></script>
 
 </body>
 </html>
