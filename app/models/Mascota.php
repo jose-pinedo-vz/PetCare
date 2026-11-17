@@ -211,7 +211,7 @@ class Mascota {
                 SELECT id_empleado, nombre, apellido
                 FROM empleados
                 WHERE esta_activo = 1
-                    AND LOWER(TRIM(puesto)) = 'veterinario'
+                    AND LOWER(TRIM(puesto)) LIKE 'veterinario%'
                 ORDER BY nombre, apellido
             ");
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
@@ -229,7 +229,7 @@ class Mascota {
                 FROM empleados
                 WHERE id_empleado = ?
                     AND esta_activo = 1
-                    AND LOWER(TRIM(puesto)) = 'veterinario'
+                    AND LOWER(TRIM(puesto)) LIKE 'veterinario%'
                 LIMIT 1
             ");
             $stmt->execute([$id_empleado]);
