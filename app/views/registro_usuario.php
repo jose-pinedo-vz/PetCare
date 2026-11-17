@@ -27,7 +27,7 @@ $usuario = $_SESSION['usuario'];
 </head>
 <body>
     <div class="layout">
-        <?php $paginaActiva = 'adopcion';
+        <?php $paginaActiva = 'usuarios';
         include __DIR__ . '/layout/sidebar.php'; ?>
   
         <main>
@@ -87,7 +87,6 @@ $usuario = $_SESSION['usuario'];
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Permisos:</label>
                         <select name="permisos" class="campo" multiple size="1">
-                            <option value="todos">Todo</option>
                             <option value="lectura">Lectura</option>
                             <option value="modificar">Modificar</option>
                             <option value="eliminar">Eliminar</option>
