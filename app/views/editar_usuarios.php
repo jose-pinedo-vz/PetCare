@@ -95,16 +95,6 @@ $usuario=$_SESSION['usuario'];
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Permisos:</label>
-                        <select name="permisos" class="campo" multiple size="1">
-                            <option value="lectura"     <?= ($user_edi['permisos'] === 'lectura') ? 'selected' : '' ?>>Lectura</option>
-                            <option value="modificar"   <?= ($user_edi['permisos'] === 'modificar') ? 'selected' : '' ?>>Modificcar</option>
-                            <option value="eliminar"    <?= ($user_edi['permisos'] === 'eliminar') ? 'selected' : '' ?>>Eliminar</option>
-                            <option value="insertar"    <?= ($user_edi['permisos'] === 'insertar') ? 'selected' : '' ?>>Insertar</option>
-                        </select>
-                    </div>
-
                     <div style="margin-bottom: 20px;">
                         <label class="label-campo">Estado:</label>
                         <select name="estado" class="campo">

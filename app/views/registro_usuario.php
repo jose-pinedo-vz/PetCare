@@ -86,17 +86,7 @@ $usuario = $_SESSION['usuario'];
                             <option value="hotelero">Hotelero</option>
                         </select>
                     </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Permisos:</label>
-                        <select name="permisos" class="campo" multiple size="1">
-                            <option value="lectura">Lectura</option>
-                            <option value="modificar">Modificar</option>
-                            <option value="eliminar">Eliminar</option>
-                            <option value="insertar">Insertar</option>
-                        </select>
-                    </div>
-
+                    
                     <div style="margin-bottom: 20px;">
                         <label class="label-campo">Estado:</label>
                         <select name="estado" class="campo">
