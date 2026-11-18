@@ -16,10 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     $empleado_asociado = !empty($_POST['empleado_asociado']) ? $_POST['empleado_asociado'] : null;
     
     $rol = $_POST['rol'] ?? '';
-    $permisos = $_POST['permisos'] ?? '';
     $estado = $_POST['estado'] ?? '';
 
-    if (empty($nuevo_usuario) || empty($nueva_password) || empty($rol) || empty($permisos) || empty($estado))
+    if (empty($nuevo_usuario) || empty($nueva_password) || empty($rol) || empty($estado))
     {
         $error = "Por favor, completa todos los campos obligatorios.";
     }
@@ -48,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         $password_hash=password_hash($nueva_password, PASSWORD_DEFAULT);
         try
         {
-            ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
+            ConexionDB::insertarUsuario($conexion, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $estado);
             $mensaje = "Usuario '$nuevo_usuario' creado con éxito.";
         }
         catch (PDOException $e)

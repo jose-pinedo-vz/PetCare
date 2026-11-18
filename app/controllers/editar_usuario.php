@@ -13,10 +13,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     $password_hash=password_hash($nueva_password, PASSWORD_DEFAULT);
     $empleado_asociado=!empty($_POST['empleado_asociado'])?$_POST['empleado_asociado']:null;
     $rol=$_POST['rol']??'usuario';
-    $permisos=$_POST['permisos']??'todos';
     $estado=$_POST['estado']??'activo';
 
-    UsuariosDB::insertar($id, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
+    UsuariosDB::insertar($id, $nuevo_usuario, $password_hash, $empleado_asociado, $rol, $estado);
 }
 
 header("Location: ../views/usuarios.php");

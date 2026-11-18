@@ -42,15 +42,15 @@ class UsuariosDB
         }
     }
 
-    public static function insertar(int $id, string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $permisos, string $estado)
+    public static function insertar(int $id, string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $estado)
     {
         $conexion=ConexionDB::obtenerConexion();
         try
         {
             $empleado=trim($_POST['empleado_asociado']??'');
             $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
-            $stmt = $conexion->prepare("UPDATE usuarios SET usuario=?, empleado_asociado=?, rol=?, permisos=?, estado=? WHERE id_usuario=?");
-            $stmt->execute([$nuevo_usuario, $empleado_asociado, $rol, $permisos, $estado, $id]);
+            $stmt = $conexion->prepare("UPDATE usuarios SET usuario=?, empleado_asociado=?, rol=?, estado=? WHERE id_usuario=?");
+            $stmt->execute([$nuevo_usuario, $empleado_asociado, $rol, $estado, $id]);
             if (!empty($nueva_password))
             {
                 $password_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
