@@ -6,7 +6,9 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
     require_once __DIR__ . '/../../conexion_db.php';
 }
 require_once __DIR__ . '/CorteCaja.php';
-require_once __DIR__ . '/../../banca_simulada/banco_servicio.php';
+if (file_exists(__DIR__ . '/../../banca_simulada/banco_servicio.php')) {
+    require_once __DIR__ . '/../../banca_simulada/banco_servicio.php';
+}
 
 class Ventas
 {
