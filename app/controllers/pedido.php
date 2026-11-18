@@ -94,23 +94,15 @@ try {
             }
         }
 
-        if ($detallePedido !== null && !$detallePedido['tiene_lotes']) {
+        if ($detallePedido !== null) {
             if ($datos['precio_compra'] === '') {
-                $errores[] = 'El precio de compra es obligatorio para productos sin lotes registrados.';
+                $errores[] = 'El precio de compra es obligatorio.';
             } elseif (
                 !preg_match('/^\d+(?:\.\d{1,2})?$/D', $datos['precio_compra'])
                 || (float) $datos['precio_compra'] <= 0
                 || (float) $datos['precio_compra'] > 99999999.99
             ) {
                 $errores[] = 'El precio de compra debe ser mayor que cero, tener hasta dos decimales y estar dentro del rango permitido.';
-            }
-        } elseif ($detallePedido !== null) {
-            $precioRegistrado = (float) $detallePedido['precio_unitario'];
-            if ($precioRegistrado <= 0) {
-                $precioRegistrado = (float) $detallePedido['precio_compra_lote'];
-            }
-            if ($precioRegistrado <= 0) {
-                $errores[] = 'No hay un precio de compra registrado para este producto.';
             }
         }
 
