@@ -9,6 +9,49 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 
 class Cliente
 {
+
+    public static function estaRegistrado(string $correo, string $telefono, ?int $id_cliente = null): bool {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+
+            // si se agrega un nuevo cliente
+            if ($id_cliente === null) {
+                $consulta = $conexion -> prepare(
+                    "
+                        SELECT COUNT(*)
+                        FROM clientes
+                        WHERE correo = ? OR telefono = ? 
+                    "
+                );
+                $consulta -> execute([$correo, $telefono]);
+            }
+
+            // si es edicion
+            else {
+                $consulta = $conexion -> prepare(
+                    "
+                        SELECT COUNT(*)
+                        FROM clientes
+                        WHERE (correo = ? OR telefono = ?) AND id_cliente != ?
+                    "
+                );
+                $consulta -> execute([$correo, $telefono, $id_cliente]);
+            }
+
+            $total = $consulta -> fetchColumn();
+
+            if ($total > 0) {
+                return true;
+            } else {
+                return false; 
+            }
+
+        } catch (Exception $error) {
+            error_log("Error en la funcion de que si esta registrado " . $error -> getMessage());
+            return false;
+        }
+    }
+
     public static function generarIdCliente(PDO $db): int
     {
          try {
