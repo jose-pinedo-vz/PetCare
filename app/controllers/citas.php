@@ -27,6 +27,7 @@ function estraerDatosConsultas(): array
             'motivo' => $cita['observacion'],           
             'estado_cita' => $cita['estado_cita'],
             'servicio' => $cita['servicio'],     
+            'nombre_servicio' => $cita['nombre_servicio'] ?? '',     
         ];
     }
     return $resultados;
