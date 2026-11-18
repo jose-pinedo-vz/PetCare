@@ -203,6 +203,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         errorSession("El teléfono de emergencia debe tener exactamente 10 dígitos.");
     }
 
+    if (Cliente::estaRegistrado($correo, $telefono, $id_cliente)) {
+        errorSession("Ya existe un cliente registrado con el mismo correo electrónico o numero de telefono");
+    }
+
     $datos = [
         'nombre'                => $nombre,
         'apellido'              => $apellido,
