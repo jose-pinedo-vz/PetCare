@@ -78,6 +78,7 @@ if (($_SERVER["REQUEST_METHOD"] ?? '') === "POST") {
     }
 }
 require_once __DIR__ . '/../models/Mascota.php';
+require_once __DIR__ . '/fecha.php';
 if (($_SERVER["REQUEST_METHOD"] ?? '') !== "POST") {
     $mascotas = obtenerDatosMascotas();
 }
