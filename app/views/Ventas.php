@@ -566,7 +566,7 @@ if (!empty($id_empleado)) {
                 : esEfectivo
                     ? 'El monto recibido debe cubrir el total de la venta.'
                     : esTarjeta
-                        ? 'Captura los datos para preparar la futura integración con la pasarela bancaria.'
+                        ? 'El cobro se autoriza con el banco: usa el CVV dinámico de la banca en línea (cambia cada 5 minutos).'
                         : 'La referencia de transferencia es opcional; la validación bancaria se conectará después.';
             actualizarCambio();
         }
@@ -595,6 +595,7 @@ if (!empty($id_empleado)) {
         });
 
         document.getElementById('vencimientoTarjeta').min = new Date().toISOString().slice(0, 7);
+        document.getElementById('vencimientoTarjeta').max = (new Date().getFullYear() + 15) + '-12';
 
         function limpiarDatosTarjeta() {
             [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta].forEach((campo) => {

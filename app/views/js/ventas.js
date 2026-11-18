@@ -701,7 +701,8 @@
                 const texto = modalConfirmado.querySelector('.resultado-mensaje');
                 if (texto) {
                     texto.textContent = 'Venta ' + r.folio + ' guardada correctamente.' +
-                        (r.cambio > 0 ? ' Cambio: ' + dinero(r.cambio) : '');
+                        (r.cambio > 0 ? ' Cambio: ' + dinero(r.cambio) : '') +
+                        (r.autorizacion ? ' Autorización del banco: ' + r.autorizacion + '.' : '');
                 }
                 const totalReal = document.getElementById('totalVentaDemostracion');
                 if (totalReal) totalReal.textContent = dinero(r.total);
@@ -741,6 +742,19 @@
             });
         }
     });
+
+    // Ticket de la ultima venta guardada (incluye el comprobante del banco si fue con tarjeta)
+    const btnTicket = document.getElementById('btnImprimirTicket');
+    if (btnTicket) {
+        btnTicket.addEventListener('click', function () {
+            if (!ultimaVentaId) {
+                alert('No hay una venta guardada para imprimir.');
+                return;
+            }
+            const w = window.open('ticket_venta.php?id=' + encodeURIComponent(ultimaVentaId), '_blank', 'width=420,height=640');
+            if (!w) alert('Permite las ventanas emergentes para imprimir el ticket.');
+        });
+    }
 
     // Factura de la ultima venta guardada.
     // El listener inline de Ventas.php corre antes (cierra el modal y pone su texto);
