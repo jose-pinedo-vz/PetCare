@@ -132,40 +132,6 @@
             }
         }
 
-        // cantidad de citas por fecha
-        public static function cantidadCitasFecha($valor)
-        {
-            try
-            {
-                // Comparamos año, mes, día y hora:minuto, ignorando segundos o microsegundos
-                $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND estado_cita = "pendiente"';
-                $db = ConexionDB::obtenerConexion();
-                $stml = $db->prepare($query);
-                $stml->execute([$valor]);
-                return $stml->fetchColumn();
-            }
-            catch (Exception $e)
-            {
-                return 0;
-            }
-        }
-
-        public static function duracionCita($fecha)
-        {
-            try
-            {
-                $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND estado_cita = 'pendiente'";
-                $db = ConexionDB::obtenerConexion();
-                $stml = $db->prepare($query);
-                $stml->execute([$fecha]);
-                return $stml->fetchColumn();
-            }
-            catch (Exception $e)
-            {
-                return 0;
-            }
-        }
-
         // mostrar mascotas de un usuario
         public static function consultaMascota($id_cliente)
         {
@@ -491,6 +457,41 @@
             {
                 return false;
             }
+        }
+
+        public function hayMasCitas($idResponsable, $fecha)
+        {
+            try
+            {
+                $query = "SELECT * FROM citas WHERE empleado = ? and fecha = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stmt = $db->prepare($query);
+                $stmt->execute([$idResponsable, $fecha]);
+                return (bool) $stmt->fetchColumn();
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }   
+        }
+        // 
+
+        public static function citasDelDia(string $fecha, int $empleado)
+        {
+            $query = "SELECT TIME(fecha) AS hora, duracion_estimada
+                    FROM citas
+                    WHERE empleado = ?
+                        AND fecha >= ? AND fecha < DATE_ADD(?, INTERVAL 1 DAY)
+                        AND estado_cita <> 'cancelada'";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$empleado, $fecha, $fecha]);
+
+            $mapa = [];
+            foreach ($stml->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                $mapa[$f['hora']] = (int)$f['duracion_estimada'];   // ej: '10:00:00' => 90
+            }
+            return $mapa;
         }
     }
 ?>

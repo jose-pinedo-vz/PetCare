@@ -128,6 +128,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal);
+    if ($HayMasHoras === true)
+    {
+        errorSession("Ya hay una consulta en ese horario.");
+        exit();
+    }
+
     try
     {
         $seInserto = $consultasCitas->insertarCita((int)$claveCliente,(int)$mascota,(int)$servicio, (int) $responsable, "pendiente",(int) $duracion, $motivoConsulta, "sin atender", $fechaHoraFinal,  $motivoConsulta,(string) 0);
@@ -143,8 +150,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
 }
 
-$accion = $_GET['accion'] ?? '';
 
+$accion = $_GET['accion'] ?? '';
 if ($accion === 'horario' || $accion === 'orario')
 {
     horarios();
@@ -163,7 +170,7 @@ function horarios()
     // con media hora entonces seria 12:30. sera complicado, espero terminarlo en esta tarde
 
     $fechaSeleccionada = $_GET['fecha'] ?? '';
-    $empleado = $_GET['empleado'] ?? '';
+    $empleado = (int)($_GET['responsable'] ?? 0);
     $Horarios = [];
     $entradaMatutino = 9;
     $salidaMatutino = 13;
@@ -177,6 +184,8 @@ function horarios()
     //$Veterinarios = ConexionesClientes::rescatarVeterinarios();
     $Veterinarios = true;
 
+    $arrayConFechas = ConexionesClientes::citasDelDia($fechaSeleccionada, $empleado);
+
     if ($Veterinarios)
     {
         $currentMatutino = DateTime::createFromFormat('H:i:s', '09:00:00');
@@ -184,12 +193,15 @@ function horarios()
         while ($currentMatutino < $limiteMatutino)
         {
             $fechaHoraActual = $fechaSeleccionada . " " . $currentMatutino->format('H:i:s');
-            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+            $hora = $currentMatutino->format('H:i:s'); 
+            //$cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
 
-            if ($cantidadCitasPorFecha > 0)
+            if (isset($arrayConFechas[$hora]))
             {
-                $duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
-                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+                //$duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+                //$duracionMinutos = ($duracion > 0) ? $duracion : 60;\
+                //$duracion = ($arrayConFechas[$hora] > 0) ? $arrayConFechas[$hora] : 60;
+                $duracionMinutos = ($arrayConFechas[$hora] > 0) ? $arrayConFechas[$hora] : 60;
                 $currentMatutino->modify("+{$duracionMinutos} minutes");
             }
             else
@@ -204,19 +216,19 @@ function horarios()
             }
         }
 
-
-
         $currentVespertino = DateTime::createFromFormat('H:i:s', '16:00:00');
         $limiteVespertino = DateTime::createFromFormat('H:i:s', '19:00:00');
         while ($currentVespertino < $limiteVespertino)
         {
             $fechaHoraActual = $fechaSeleccionada . " " . $currentVespertino->format('H:i:s');
-            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+            $hora = $currentVespertino->format('H:i:s');
+            //$cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
 
-            if ($cantidadCitasPorFecha > 0)
+            if (isset($arrayConFechas[$hora]))
             {
-                $duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
-                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+                //$duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+                //$hora = $currentVespertino->format('H:i:s');
+                $duracionMinutos = ($arrayConFechas[$hora] > 0) ? $arrayConFechas[$hora] : 60;
                 
                 $currentVespertino->modify("+{$duracionMinutos} minutes");
             }
