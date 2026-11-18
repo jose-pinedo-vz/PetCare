@@ -82,13 +82,12 @@
         }
 
 
-        // rescatar la base de datos
         public function datosCitas():array
         {
-            // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio, s.nombre AS nombre_servicio
               FROM citas c
-              INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente
+              LEFT JOIN servicios s ON c.servicio = s.id_servicio";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
@@ -165,12 +164,11 @@
             }
         }
 
-        // mostrar mascotas de un usuario
         public static function consultaMascota($id_cliente)
         {
             try
             {
-                $query = "SELECT id_mascota, nombre FROM mascotas WHERE id_cliente = ? AND esta_activo = 0";
+                $query = "SELECT id_mascota, nombre FROM mascotas WHERE id_cliente = ? AND esta_activo = 1";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute([$id_cliente]);

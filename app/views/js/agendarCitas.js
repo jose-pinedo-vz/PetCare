@@ -57,10 +57,16 @@ document.addEventListener("DOMContentLoaded", async function()
             }
         };
 
-        fecha.addEventListener('input', actualizarHorarios);
+        let timerActualizar = null;
+        const debouncedActualizarHorarios = () => {
+            clearTimeout(timerActualizar);
+            timerActualizar = setTimeout(actualizarHorarios, 300);
+        };
+
+        fecha.addEventListener('input', debouncedActualizarHorarios);
         fecha.addEventListener('change', actualizarHorarios);
 
-        responsable.addEventListener('input', actualizarHorarios);
+        responsable.addEventListener('input', debouncedActualizarHorarios);
         responsable.addEventListener('change', actualizarHorarios);
     }
 });
@@ -324,7 +330,13 @@ document.addEventListener("DOMContentLoaded", async function()
             }
         };
 
-        fecha.addEventListener('input', actualizarHorarios);
+        let timerReprogramar = null;
+        const debouncedReprogramar = () => {
+            clearTimeout(timerReprogramar);
+            timerReprogramar = setTimeout(actualizarHorarios, 300);
+        };
+
+        fecha.addEventListener('input', debouncedReprogramar);
         fecha.addEventListener('change', actualizarHorarios);
 
         // responsable.addEventListener('input', actualizarHorarios);

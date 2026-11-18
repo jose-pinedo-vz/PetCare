@@ -2,6 +2,8 @@
 declare(strict_types=1);
 class ConexionDB 
 {
+    private static ?PDO $conexion = null;
+
     private static function cargarEntorno(string $ruta):void
     {
         if(!file_exists($ruta))
@@ -33,8 +35,12 @@ class ConexionDB
 
     public static function obtenerConexion(): PDO
     {
+        if (self::$conexion !== null)
+        {
+            return self::$conexion;
+        }
+
         try {
-            // Cargamos el .env ubicado en la misma carpeta raíz
             self::cargarEntorno(__DIR__ . '/../../.env');
 
             $host = getenv('DB_HOST');
@@ -44,13 +50,12 @@ class ConexionDB
 
             $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
             
-            $conexion = new PDO($dsn, $user, $pass);
-            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$conexion = new PDO($dsn, $user, $pass);
+            self::$conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
-            return $conexion;
+            return self::$conexion;
 
         } catch (PDOException $e) {
-            // Si falla la base de datos, relanzamos la excepción con un mensaje más claro
             throw new Exception("Error de conexión a la Base de Datos: " . $e->getMessage());
         }
     }
