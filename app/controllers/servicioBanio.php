@@ -9,6 +9,16 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita)
 {
     $_SESSION['error'] = $mensaje;
+
+    $_SESSION['oldTipoBanio'] = trim($_POST['Tipo'] ?? '');
+    $_SESSION['oldShanpoo'] = trim($_POST['Shampoo'] ?? '');
+    $_SESSION['oldTratamientoAdicional'] = trim($_POST['TratamientoAdicional'] ?? '');
+    $_SESSION['oldCepillado'] = trim($_POST['Cepillado'] ?? ''); 
+    $_SESSION['oldObservaciones'] = trim($_POST['observaciones'] ?? ''); 
+    $_SESSION['oldCondiciones_recibidas'] = trim($_POST['Condiciones_recibidas'] ?? ''); 
+    $_SESSION['oldCondiciones_entrega'] = trim($_POST['Condiciones_entrega'] ?? ''); 
+    $_SESSION['oldSecado'] = trim($_POST['Secado'] ?? ''); 
+
     $url = "../views/servicioBanio.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
     header("Location: " . $url);
     exit();

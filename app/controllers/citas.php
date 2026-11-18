@@ -269,7 +269,7 @@ if ($accion === "mostrarMascota")
 }
 function mostrarMascotas()
 {
-    $id_cliente = $_GET['id_cliente'];
+    $id_cliente = $_GET['id_cliente' ?? ''];
     $mascotas =  ConexionesClientes::consultaMascota($id_cliente);
 
     echo json_encode($mascotas);
@@ -297,9 +297,7 @@ if ($accion === "mostrarResponsable")
 {
     mostrarResponsable();
 }
-
 // editar para mostrar servicio
-
 function mostrarResponsable()
 {
     $servicio = $_GET['servicio'];
@@ -318,12 +316,14 @@ function mostrarResponsable()
     exit();
 }
 
+
+
+// a tratar
 $accion = $_GET['accion'] ?? '';
 if ($accion === "cancelarCita")
 {
     cancelarCita();
 }
-
 function cancelarCita()
 {
     $idCita = $_GET['id_cita'];
@@ -332,6 +332,9 @@ function cancelarCita()
     echo json_encode($res);
     exit();
 }
+
+
+
 
 function consultarServicio(int $idServicio)
 {
@@ -426,7 +429,7 @@ if ($accion === "mostrarDuracion")
 
 function duracionServicio()
 {
-    $idServicio = $_GET['servicio'];
+    $idServicio = $_GET['servicio' ?? ''];
     $res = ConexionesClientes::consutltarDuracinoServicio($idServicio);
     header('Content-Type: application/json');
     echo json_encode(['duracion' => $res]);

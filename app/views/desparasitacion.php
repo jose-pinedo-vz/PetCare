@@ -65,7 +65,12 @@ function old(string $clave): string
         <div>
             <label class="label-campo" for="Tipo">Tipo de desparasitación *:</label>
             <select class="campo" name="Tipo" id="Tipo" required>
-              <option value="">Selecciona un tipo</option>
+
+              <?php if ($_SESSION['oldTipo']) { ?>
+              <option value="<?php echo htmlspecialchars((string)($_SESSION['oldTipo'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldTipo'] ?? '')); unset($_SESSION['oldTipo']); ?></option>
+              <?php } else { ?> <option value="">Selecciona un tipo</option> <?php }?> 
+
+              
               <option value="Interno">Interno</option>
               <option value="Externo">Externo</option>
             </select>
@@ -75,7 +80,11 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="ProductoUtilizado">Producto utilizado *:</label>
             <select class="campo" name="ProductoUtilizado" id="ProductoUtilizado" required>
-              <option value="">Selecciona un producto</option>
+
+              <?php if ($_SESSION['oldProductoUtilizado']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldProductoUtilizado'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldProductoUtilizado'] ?? '')); unset($_SESSION['oldProductoUtilizado']); ?></option>
+              <?php } else { ?> <option value="">Selecciona un producto</option> <?php }?> 
+
               <option value="Producto 1">producto 1</option>
             </select>
           </div>
@@ -90,7 +99,7 @@ function old(string $clave): string
           </div>
 
            <div>
-            <label class="label-campo" for="fecha">Próxima cita:</label>
+            <label class="label-campo" for="fecha">Próxima aplicacion:</label>
             <input type="date" class="campo" id="fecha" name="fecha"
               min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+2 years')) ?>" value="<?= old('oldFecha') ?>">
           </div>
@@ -111,9 +120,7 @@ function old(string $clave): string
         </div>
       </fieldset>
 
-      
-
-     
+    
     </form>
 
       </div>

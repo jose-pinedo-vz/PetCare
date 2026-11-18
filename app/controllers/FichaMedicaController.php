@@ -2,14 +2,20 @@
 declare(strict_types=1);
 date_default_timezone_set('America/Mexico_City');
 //requiere_once hace que se cargue el archivo que se le pone en este
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 require_once __DIR__ . '/../models/fichaMedicaModelo.php';
 
 require_once __DIR__ . '/../models/citas.php';
 require_once __DIR__ . '/../controllers/ImagenController.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-};
+// if (session_status() === PHP_SESSION_NONE) {
+//     session_start();
+// };
 
 $ficha = new FichaMedica();
 $idUsuario = (int)($_SESSION['id_usuario'] ?? 0);

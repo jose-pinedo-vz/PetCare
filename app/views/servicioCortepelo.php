@@ -65,7 +65,11 @@ function old(string $clave): string
         <div>
             <label class="label-campo" for="Tipo">Tipo de corte *:</label>
             <select class="campo" name="Tipo" id="Tipo" required>
-              <option value="">Selecciona un tipo de corte</option>
+
+              <?php if ($_SESSION['oldTipo']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldTipo'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldTipo'] ?? '')); unset($_SESSION['oldTipo']); ?></option>
+              <?php } else { ?> <option value="">Selecciona un tipo de corte</option> <?php }?>
+
               <option value="Corte león">Corte león</option>
               <option value="Corte de mantenimiento">Corte de mantenimiento</option>
               <option value="Rapado">Rapado</option>
@@ -77,13 +81,17 @@ function old(string $clave): string
           
           <div>
             <label class="label-campo" for="Longitud">Longitud (cm) *:</label>
-            <input type="number" class="campo" id="Longitud" name="Longitud" step="0.01" min="0" placeholder="Ej. 5.50" value="<?= old('oldLongitud') ?>">
+            <input type="number" class="campo" id="Longitud" name="Longitud" step="0.01" min="0" placeholder="Ej. 5.50" value="<?= old('oldLongitud'); unset($_SESSION['oldLongitud']);?>">
           </div>
 
           <div>
             <label class="label-campo" for="corte_higienico">Corte higienico *:</label>
             <select class="campo" name="corte_higienico" id="corte_higienico" required>
-              <option value="">Selecciona una obcion</option>
+
+              <?php if ($_SESSION['oldCorte_higienico']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldCorte_higienico'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldCorte_higienico'] ?? '')); unset($_SESSION['oldCorte_higienico']); ?></option>
+              <?php } else { ?> <option value="">Selecciona una obcion</option> <?php }?>
+
               <option value="Si">Si</option>
               <option value="No">No</option>
             </select>
@@ -92,7 +100,11 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="corteCara">Corte de la cara *:</label>
             <select class="campo" name="corteCara" id="corteCara" required>
-              <option value="">Selecciona una obcion</option>
+
+              <?php if ($_SESSION['oldCorteCara']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldCorteCara'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldCorteCara'] ?? '')); unset($_SESSION['oldCorteCara']); ?></option>
+              <?php } else { ?> <option value="">Selecciona una obcion</option> <?php }?>
+
               <option value="No requerido">No requerido</option>
               <option value="Despeje de pelo alrededor de los ojos">Despeje de pelo alrededor de los ojos</option>
               <option value="Limpieza y recorte estético general">Limpieza y recorte estético general</option>
@@ -106,7 +118,11 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="cortePatas">Corte de las patas *:</label>
             <select class="campo" name="cortePatas" id="cortePatas" required>
-              <option value="">Selecciona una obcion</option>
+
+              <?php if ($_SESSION['oldCortePatas']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldCortePatas'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldCortePatas'] ?? '')); unset($_SESSION['oldCortePatas']); ?></option>
+              <?php } else { ?> <option value="">Selecciona una obcion</option> <?php }?>
+
               <option value="No requerido">No requerido</option>
               <option value="Despeje de pelo en cojinetes y entre los dedos">Despeje de pelo en cojinetes y entre los dedos</option>
               <option value="Recorte estético de contorno de patas">Recorte estético de contorno de patas</option>
@@ -116,7 +132,11 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="Cepillado">Cepillado *:</label>
             <select class="campo" name="Cepillado" id="Cepillado" required>
-              <option value="">Selecciona cepillado</option>
+
+              <?php if ($_SESSION['oldCepillado']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldCepillado'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldCepillado'] ?? '')); unset($_SESSION['oldCepillado']); ?></option>
+              <?php } else { ?> <option value="">Selecciona cepillado</option> <?php }?>
+
               <option value="Si">Si</option>
               <option value="No">No</option>
             </select>
@@ -125,7 +145,11 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="Deslanado">Deslanado *:</label>
             <select class="campo" name="Deslanado" id="Deslanado" required>
-              <option value="">Selecciona una obcion</option>
+
+              <?php if ($_SESSION['oldDeslanado']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldDeslanado'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldDeslanado'] ?? '')); unset($_SESSION['oldDeslanado']); ?></option>
+              <?php } else { ?> <option value="">Selecciona una obcion</option> <?php }?>
+
               <option value="Si">Si</option>
               <option value="No">No</option>
             </select>
@@ -137,13 +161,13 @@ function old(string $clave): string
           <div class="campo-completo">
             <label class="label-campo" for="accesorios">Accesorios:</label>
             <input type="text" class="campo" id="accesorios" name="accesorios" maxlength="100"
-              placeholder="Ej. Moño, pañoleta o ninguno" value="<?= old('oldAccesorios') ?>">
+              placeholder="Ej. Moño, pañoleta o ninguno" value="<?= old('oldAccesorios'); unset($_SESSION['oldAccesorios']);?>">
           </div>
 
         <div class="campo-completo">
             <label class="label-campo" for="Observaciones">Observaciones:</label>
             <textarea class="campo" id="Observaciones" name="Observaciones" rows="3" maxlength="1000"
-              placeholder="Observaciones"><?= old('oldCondiciones_entrega') ?></textarea>
+              placeholder="Observaciones"><?= old('oldObservaciones'); unset($_SESSION['oldObservaciones']);?></textarea>
           </div>
 
          <div class="acciones-formulario">

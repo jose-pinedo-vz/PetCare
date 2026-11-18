@@ -9,11 +9,12 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita = '')
 {
     $_SESSION['error'] = $mensaje;
-    $url = "../views/corte_unias.php?error=" . urlencode($mensaje);
-    if ($id_cita !== '' && $id_cita > 0) {
-        $url .= "&id_consulta=" . $id_cita;
-    }
-    header("Location: " . $url);
+
+    $_SESSION['oldComportamiento'] = trim($_POST['comportamiento'] ?? '');
+    $_SESSION['oldObserbaciones'] = trim($_POST['observaciones'] ?? '');
+
+    $id_cita = (int)($_POST['id_cita'] ?? 0);  
+    header("Location: ../views/corte_unias.php?id_consulta=" . $id_cita . "&error=" . urlencode($mensaje));
     exit();
 }
 

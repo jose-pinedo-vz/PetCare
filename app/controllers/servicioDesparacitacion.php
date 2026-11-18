@@ -12,7 +12,16 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje)
 {
     $_SESSION['error'] = $mensaje;
-    header("Location: ../views/desparasitacion.php?error=" . urlencode($mensaje));
+
+    $_SESSION['oldTipo'] = trim($_POST['Tipo'] ?? '');
+    $_SESSION['oldProductoUtilizado'] = trim($_POST['ProductoUtilizado'] ?? '');
+    $_SESSION['oldFecha'] = trim($_POST['fecha'] ?? '');
+    $_SESSION['oldDicis'] = trim($_POST['Dicis'] ?? '');
+    $_SESSION['oldObservaciones'] = trim($_POST['observaciones'] ?? '');
+
+
+    $id_cita = (int)($_POST['id_cita'] ?? 0);  
+    header("Location: ../views/desparasitacion.php?id_consulta=" . $id_cita . "&error=" . urlencode($mensaje));
     exit();
 }
 
@@ -21,7 +30,7 @@ function errorSession($mensaje)
 if ($_SERVER["REQUEST_METHOD"] === "POST")
 {
 
-    $id_cita = $_POST['id_cita'];
+    $id_cita = $_POST['id_cita'] ?? '';
 
     // datos 
     $TipoDesparacitacion = trim($_POST['Tipo'] ?? '');
@@ -81,6 +90,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         header("Location: ../views/desparasitacion.php");
         exit();
     }
+
+    ConexionesClientes::marcarCitaAtendida((int)$id_cita);
 
     header("Location: ../views/citas.php");
     exit();
