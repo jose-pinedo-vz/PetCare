@@ -46,6 +46,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         exit();
     }
 
+    if ($Docies > 0 && $Docies < 10000)
+    {
+        errorSession("La docis no puede ser negativa ni mayor a 10000.");
+        header("Location: ../views/desparasitacion.php");
+        exit(); 
+    }
+
 
     // validaciones
     $d = DateTime::createFromFormat('Y-m-d', $ProximaCita);
@@ -94,6 +101,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     ConexionesClientes::marcarCitaAtendida((int)$id_cita);
 
     header("Location: ../views/citas.php");
+    exit();
+}
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === 'mostrarProductos')
+{
+    $mostrarProductos = ConexionesClientes::productosDesparasitantes();
+    echo json_encode($mostrarProductos);
     exit();
 }
 ?>

@@ -533,5 +533,24 @@
                 return [];
             }
         }
+
+        public static function productosDesparasitantes()
+        {
+            try
+            {
+                $conexion = ConexionDB::obtenerConexion();   // FALTABA
+                $query = "SELECT p.id_producto, p.nombre
+                        FROM productos p
+                        INNER JOIN categoria_productos c ON p.id_categoria = c.id_categoria
+                        WHERE c.nombre = 'Desparasitante' AND c.estado = 'Activo'";
+                $stml = $conexion->prepare($query);
+                $stml->execute();
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Throwable $e)                          
+            {
+                return [];
+            }
+        }
     }
 ?>

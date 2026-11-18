@@ -260,8 +260,6 @@ document.addEventListener("DOMContentLoaded", async function()
 
 
 // reprogramar horarios 
-
-
 document.addEventListener("DOMContentLoaded", async function()
 {
     const fecha = document.getElementById('reprogramar_fecha');
@@ -329,5 +327,72 @@ document.addEventListener("DOMContentLoaded", async function()
 
         // responsable.addEventListener('input', actualizarHorarios);
         // responsable.addEventListener('change', actualizarHorarios);
+    }
+});
+
+
+
+
+
+// mostrar las mascotas de cada cliente en el select de mascotas
+document.addEventListener("DOMContentLoaded", async function()
+{
+    const cliente = document.getElementById('claveCliente');
+    //console.log("¿Qué encontró el DOM?:", cliente);
+
+    if (cliente)
+    {
+
+        const elegir_mascota = async (mostrarMascotas) =>
+        {
+            //console.log("se ejecuta");
+            const mascota = document.getElementById("mascota");
+
+            if (!mostrarMascotas) {
+                mascota.innerHTML = '<option value="">Seleccione un cliente primero</option>';
+                return;
+            }
+
+            let datos = [];
+
+            try
+            {
+                const respuesta = await fetch(`../controllers/citas.php?accion=mostrarMascota&id_cliente=${encodeURIComponent(mostrarMascotas)}`, {
+                    method: "GET"
+                });
+                datos = await respuesta.json();
+
+                console.log(datos);
+            }
+            catch (error)
+            {
+                // console.log(error)
+                mascota.innerHTML = '<option value="">Error al cargar las mascotas</option>';
+            }
+
+            mascota.innerHTML = "";
+
+            if (datos.length === 0)
+            {
+                mascota.innerHTML = '<option value="">El usuario no tiene mascotas registradas</option>';
+            }
+            else
+            {
+                for (const item of datos)
+                {
+                    const option = document.createElement("option");
+                    option.value = item.id_mascota;
+                    option.textContent = item.nombre;
+                    mascota.appendChild(option);
+                }
+            }
+        }
+        cliente.addEventListener('input', (event) =>
+        {
+            elegir_mascota(event.target.value.trim());
+        });
+        if (cliente.value.trim() !== "") {
+            elegir_mascota(cliente.value.trim());
+        }
     }
 });

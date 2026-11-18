@@ -27,6 +27,8 @@ function old(string $clave): string
   <base href="../views/">
   <title>Veterinaria PetCare - Desparasitación</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/desparasitacion.js"></script>
+
 </head>
 <body>
 
@@ -85,7 +87,7 @@ function old(string $clave): string
                 <option value="<?php echo htmlspecialchars((string)($_SESSION['oldProductoUtilizado'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldProductoUtilizado'] ?? '')); unset($_SESSION['oldProductoUtilizado']); ?></option>
               <?php } else { ?> <option value="">Selecciona un producto</option> <?php }?> 
 
-              <option value="Producto 1">producto 1</option>
+              
             </select>
           </div>
       </fieldset>

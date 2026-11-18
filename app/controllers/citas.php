@@ -394,6 +394,8 @@ function erroresDeReprogramarCitas(string $error, $nuevaFecha, $responsable, $nu
     $_SESSION['oldResponsable'] = $responsable;
     $_SESSION['oldHorario'] = $nuevoHorario;
 
+    
+
     header("Location: ../views/reprogramar_cita.php?id_consulta=" . $idConsulta);
     exit();
 }
@@ -422,6 +424,20 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
     $horaLimpia = $objetoHora->format('H:i:s');
     $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;
     $fecha = $horaLimpia . " " . $nuevaFecha;
+
+    $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
+    if (!$objetoHora) { errorSession("Formato de hora inválido."); } 
+    $horaLimpia = $objetoHora->format('H:i:s');
+    $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+
+    
+    $consultasCitas = new ConexionesClientes();                                          
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal);
+    if ($HayMasHoras)
+    {
+        erroresDeReprogramarCitas("Ya hay una consulta en ese horario.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+        exit();
+    }
 
     // actualisar en base  datos
     $resultado = ConexionesClientes::actualizarCita((int)$idConsulta, (string)$fechaHoraFinal);
