@@ -65,8 +65,8 @@ $usuario = $_SESSION['usuario'];
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
                                 <?php foreach ($empleados_disponibles as $emp): ?>
-                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>">
-                                        <?= htmlspecialchars($emp['nombre']); ?>
+                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>" data-puesto="<?= htmlspecialchars($emp['puesto']); ?>">
+                                        <?= htmlspecialchars($emp['nombre']); ?> — <?= htmlspecialchars($emp['puesto']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -79,6 +79,7 @@ $usuario = $_SESSION['usuario'];
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
                             <option value="admin">Administrador</option>
+                            <option value="gerente">Gerente</option>
                             <option value="veterinario">Veterinario</option>
                             <option value="vendedor">Vendedor</option>
                             <option value="estilista">Estilista</option>
@@ -104,6 +105,35 @@ $usuario = $_SESSION['usuario'];
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    (() => {
+      const rol = document.querySelector('[name="rol"]');
+      const empleado = document.querySelector('[name="empleado_asociado"]');
+      const puestosPorRol = {
+        admin: ['Gerente'],
+        gerente: ['Gerente'],
+        veterinario: ['Veterinario', 'Veterinario/a'],
+        vendedor: ['Vendedor'],
+        estilista: ['Estilista'],
+        recepcionista: ['Recepcionista'],
+        hotelero: ['Hotelero']
+      };
 
+      function filtrarEmpleados() {
+        const puestosPermitidos = puestosPorRol[rol.value] || [];
+        let seleccionadoVisible = false;
+        empleado.querySelectorAll('option[data-puesto]').forEach((opcion) => {
+          const visible = puestosPermitidos.includes(opcion.dataset.puesto);
+          opcion.hidden = !visible;
+          opcion.disabled = !visible;
+          if (visible && opcion.selected) seleccionadoVisible = true;
+        });
+        if (!seleccionadoVisible) empleado.value = '';
+      }
+
+      rol.addEventListener('change', filtrarEmpleados);
+      filtrarEmpleados();
+    })();
+  </script>
 </body>
 </html>

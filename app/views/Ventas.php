@@ -15,9 +15,15 @@ require_once __DIR__ . '/../models/conexion_db.php';
 require_once __DIR__ . '/../models/CorteCaja.php';
 
 $tieneCajaAbierta = false;
+$puedeOperarCaja = false;
 if (!empty($id_empleado)) {
     try {
         $dbCorte = ConexionDB::obtenerConexion();
+        $puedeOperarCaja = CorteCaja::puedeOperarCaja(
+            $dbCorte,
+            (int)$id_empleado,
+            strtolower(trim((string)($_SESSION['rol'] ?? '')))
+        );
         $tieneCajaAbierta = CorteCaja::obtenerCorteAbierto($dbCorte, (int)$id_empleado) !== null;
     } catch (Exception $e) {
         $tieneCajaAbierta = false;
@@ -123,7 +129,9 @@ if (!empty($id_empleado)) {
                     <section class="tarjeta venta-herramientas" aria-labelledby="tituloHerramientasVenta">
                         <h2 id="tituloHerramientasVenta">Accesos</h2>
                         <div class="venta-reportes">
-                            <a class="btn btn-secundario btn-chico" href="corte_caja.php">Corte de caja</a>
+                            <?php if ($puedeOperarCaja): ?>
+                                <a class="btn btn-secundario btn-chico" href="corte_caja.php">Corte de caja</a>
+                            <?php endif; ?>
                             <a class="btn btn-secundario btn-chico" href="historial_ventas.php">Historial de ventas</a>
                         </div>
                     </section>

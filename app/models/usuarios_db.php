@@ -10,6 +10,39 @@ elseif (file_exists(__DIR__ . '/../../conexion_db.php'))
 }
 class UsuariosDB
 {
+    public static function validarCombinacionRolPuesto(PDO $conexion, ?int $empleado, string $rol): bool
+    {
+        $rolNormalizado = strtolower(trim($rol));
+
+        if ($rolNormalizado === 'cliente') {
+            return $empleado === null;
+        }
+        if ($empleado === null || $empleado < 1) {
+            return false;
+        }
+
+        $stmt = $conexion->prepare(
+            'SELECT puesto FROM empleados WHERE id_empleado = :empleado AND esta_activo = 1 LIMIT 1'
+        );
+        $stmt->execute([':empleado' => $empleado]);
+        $puesto = $stmt->fetchColumn();
+        if (!is_string($puesto)) {
+            return false;
+        }
+
+        $combinaciones = [
+            'admin' => ['Gerente'],
+            'gerente' => ['Gerente'],
+            'veterinario' => ['Veterinario', 'Veterinario/a'],
+            'vendedor' => ['Vendedor'],
+            'estilista' => ['Estilista'],
+            'recepcionista' => ['Recepcionista'],
+            'hotelero' => ['Hotelero'],
+        ];
+
+        return isset($combinaciones[$rolNormalizado])
+            && in_array($puesto, $combinaciones[$rolNormalizado], true);
+    }
     
     public static function obtenerTodosUsuarios(PDO $conexion): array
     {
@@ -70,7 +103,10 @@ class UsuariosDB
     {
         $conexion=ConexionDB::obtenerConexion();
         try {
-            $query="SELECT id_empleado,nombre FROM empleados WHERE nombre NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado=nombre) and esta_activo=1";
+            $query="SELECT e.id_empleado, e.nombre, e.puesto
+                    FROM empleados e 
+                    LEFT JOIN usuarios u ON e.id_empleado = u.empleado_asociado 
+                    WHERE u.empleado_asociado IS NULL AND e.esta_activo = 1";
             $stmt = $conexion->query($query);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -78,6 +114,26 @@ class UsuariosDB
         }
     }
 
+    public static function empleados_disponibles_editar(int $id_usuario)
+    {
+        $conexion = ConexionDB::obtenerConexion();
+        try {
+            // Trae los empleados activos que no tienen usuario, 
+            // OR (o bien) el empleado que ya tiene asignado este usuario en específico.
+            $query =   "SELECT id_empleado, nombre, puesto FROM empleados 
+                        WHERE (id_empleado NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado IS NOT NULL)
+                        OR id_empleado = (SELECT empleado_asociado FROM usuarios WHERE id_usuario = :id_usuario))
+                        AND esta_activo = 1";
+            
+            $stmt = $conexion->prepare($query);
+            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
     public static function insertar_clientes(string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $permisos, string $estado)
     {
         $conexion=ConexionDB::obtenerConexion();

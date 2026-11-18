@@ -72,8 +72,8 @@ $usuario=$_SESSION['usuario'];
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
                                 <?php foreach ($empleados_disponibles as $emp): ?>
-                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>" <?= ($user_edi['empleado_asociado'] === $emp['nombre']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($emp['nombre']); ?>
+                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>" data-puesto="<?= htmlspecialchars($emp['puesto']); ?>" <?= ($user_edi['empleado_asociado'] === $emp['nombre']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($emp['nombre']); ?> — <?= htmlspecialchars($emp['puesto']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -86,6 +86,7 @@ $usuario=$_SESSION['usuario'];
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
                             <option value="admin"           <?= ($user_edi['rol'] === 'admin') ? 'selected' : '' ?>>Administrador</option>
+                            <option value="gerente"         <?= ($user_edi['rol'] === 'gerente') ? 'selected' : '' ?>>Gerente</option>
                             <option value="veterinario"     <?= ($user_edi['rol'] === 'veterinario') ? 'selected' : '' ?>>Veterinario</option>
                             <option value="vendedor"        <?= ($user_edi['rol'] === 'vendedor') ? 'selected' : '' ?>>Vendedor</option>
                             <option value="cliente"         <?= ($user_edi['rol'] === 'cliente') ? 'selected' : '' ?>>Cliente</option>
@@ -112,6 +113,36 @@ $usuario=$_SESSION['usuario'];
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    (() => {
+      const rol = document.querySelector('[name="rol"]');
+      const empleado = document.querySelector('[name="empleado_asociado"]');
+      const puestosPorRol = {
+        admin: ['Gerente'],
+        gerente: ['Gerente'],
+        veterinario: ['Veterinario', 'Veterinario/a'],
+        vendedor: ['Vendedor'],
+        cliente: [],
+        estilista: ['Estilista'],
+        recepcionista: ['Recepcionista'],
+        hotelero: ['Hotelero']
+      };
 
+      function filtrarEmpleados() {
+        const puestosPermitidos = puestosPorRol[rol.value] || [];
+        let seleccionadoVisible = false;
+        empleado.querySelectorAll('option[data-puesto]').forEach((opcion) => {
+          const visible = puestosPermitidos.includes(opcion.dataset.puesto);
+          opcion.hidden = !visible;
+          opcion.disabled = !visible;
+          if (visible && opcion.selected) seleccionadoVisible = true;
+        });
+        if (!seleccionadoVisible) empleado.value = '';
+      }
+
+      rol.addEventListener('change', filtrarEmpleados);
+      filtrarEmpleados();
+    })();
+  </script>
 </body>
 </html>

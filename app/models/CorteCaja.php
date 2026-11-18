@@ -6,6 +6,36 @@ final class CorteCaja
     public const FONDO_INICIAL = 1000.00;
     private const IMPORTE_MAXIMO = 99999999.99;
 
+    public static function puedeOperarCaja(PDO $db, int $empleado, string $rol): bool
+    {
+        if ($empleado < 1) {
+            return false;
+        }
+
+        $rolNormalizado = strtolower(trim($rol));
+        $stmt = $db->prepare(
+            'SELECT puesto, esta_activo
+             FROM empleados
+             WHERE id_empleado = :empleado
+             LIMIT 1'
+        );
+        $stmt->execute([':empleado' => $empleado]);
+        $empleadoDatos = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$empleadoDatos || (int)$empleadoDatos['esta_activo'] !== 1) {
+            return false;
+        }
+
+        $puestoNormalizado = strtolower(trim((string)$empleadoDatos['puesto']));
+        $rolesPorPuesto = [
+            'gerente' => ['admin', 'gerente'],
+            'vendedor' => ['vendedor'],
+            'recepcionista' => ['recepcionista'],
+        ];
+
+        return isset($rolesPorPuesto[$puestoNormalizado])
+            && in_array($rolNormalizado, $rolesPorPuesto[$puestoNormalizado], true);
+    }
+
     public static function obtenerCorteAbierto(PDO $db, int $empleado): ?array
     {
         $stmt = $db->prepare(
