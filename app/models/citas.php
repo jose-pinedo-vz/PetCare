@@ -482,14 +482,14 @@
                     FROM citas
                     WHERE empleado = ?
                         AND fecha >= ? AND fecha < DATE_ADD(?, INTERVAL 1 DAY)
-                        AND estado_cita <> 'cancelada'";
+                        AND estado_cita != 'cancelada'";
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
             $stml->execute([$empleado, $fecha, $fecha]);
 
             $mapa = [];
             foreach ($stml->fetchAll(PDO::FETCH_ASSOC) as $f) {
-                $mapa[$f['hora']] = (int)$f['duracion_estimada'];   // ej: '10:00:00' => 90
+                $mapa[$f['hora']] = (int)$f['duracion_estimada'];   
             }
             return $mapa;
         }

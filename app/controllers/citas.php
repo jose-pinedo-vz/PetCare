@@ -122,9 +122,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
 
     // validacion de fecha
-    $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
-    $horaLimpia = $objetoHora->format('H:i:s');
-    $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+    try
+    {
+        $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
+        $horaLimpia = $objetoHora->format('H:i:s');
+        $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+    }
+    catch (Exception $e)
+    {
+        errorSession("La fecha intregada se enceunta mal. Revise formato.");
+    }
+    
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
@@ -141,7 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
     }
     catch (Throwable $e)
     {
-        errorSession("ERROR REAL: " . $e->getMessage());
+        errorSession("Se encontro un error en la insercion de los datos, revise sus datos, intente de nuevo o consulte a un profecional.");
     }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
