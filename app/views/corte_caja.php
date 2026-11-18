@@ -59,6 +59,8 @@ $anchoGrafica = static function ($valor, $maximo): float {
 
             <?php if (!$idEmpleado): ?>
                 <p class="corte-form-error" role="alert">Tu usuario no está asociado a un empleado. No puedes abrir ni operar una caja.</p>
+            <?php elseif (!$puedeOperarCaja): ?>
+                <p class="corte-form-error" role="alert">Tu rol no coincide con tu puesto de empleado o no tienes permiso para operar caja. Para caja se permite: administrador/gerente con puesto Gerente, vendedor con puesto Vendedor y recepcionista con puesto Recepcionista.</p>
             <?php endif; ?>
 
             <nav class="corte-tabs" role="tablist" aria-label="Secciones de corte de caja">
@@ -79,7 +81,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                     <span class="corte-estado <?= $hayCorteAbierto ? 'abierto' : 'cerrado' ?>"><?= $hayCorteAbierto ? 'Abierto' : 'Sin corte abierto' ?></span>
                 </div>
 
-                <?php if (!$hayCorteAbierto && $idEmpleado): ?>
+                <?php if (!$hayCorteAbierto && $idEmpleado && $puedeOperarCaja): ?>
                     <section class="corte-apertura tarjeta">
                         <div class="corte-apertura-campos">
                             <form method="post" action="../controllers/corte_caja.php" class="corte-dialog-campos">
@@ -109,7 +111,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                             <span class="corte-apertura-detalle"><strong>Sin corte abierto</strong><small>El corte quedará asociado a tu usuario.</small></span>
                         </div>
                     </section>
-                <?php elseif ($hayCorteAbierto): ?>
+                <?php elseif ($hayCorteAbierto && $puedeOperarCaja): ?>
                     <section class="corte-apertura tarjeta">
                         <div class="corte-apertura-campos">
                             <div class="corte-campo"><span class="label-campo">Folio</span><strong><?= htmlspecialchars($corteAbierto['folio']) ?></strong></div>
@@ -200,7 +202,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                     </section>
                 <?php endif; ?>
 
-                <?php if ($corteAbierto && $arqueoPendiente): ?>
+                <?php if ($corteAbierto && $arqueoPendiente && $puedeOperarCaja): ?>
                     <section class="tarjeta corte-auditoria" aria-labelledby="tituloArqueoDeclarado">
                         <div><h2 id="tituloArqueoDeclarado">Declaración de efectivo recibida</h2><p>Confirma el resultado calculado en el servidor para cerrar el corte.</p></div>
                         <div class="corte-confirmacion-resumen">

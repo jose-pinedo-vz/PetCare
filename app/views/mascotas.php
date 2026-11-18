@@ -69,7 +69,7 @@ $usuario=$_SESSION['usuario'];
                     <td><?= htmlspecialchars($mascota['especie']) ?></td>
                     <td><?= htmlspecialchars($mascota['raza']) ?></td>
                     <td><?= htmlspecialchars($mascota['sexo']) ?></td>
-                    <td><?= htmlspecialchars((string)$mascota['edad']) ?></td>
+                    <td><?= htmlspecialchars(calcularEdad((string)($mascota['edad'] ?? ''), false)) ?></td>
                     <td class="acciones">
                       <a class="btn btn-chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>
                       <a class="btn btn-peligro btn-chico" href="eliminar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Eliminar</a>

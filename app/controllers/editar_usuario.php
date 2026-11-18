@@ -5,6 +5,7 @@ if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
     exit();
 }
 require_once '../models/usuarios_db.php';
+require_once '../models/conexion_db.php';
 
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     $id=$_POST['id']??null;
@@ -31,13 +32,21 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     {
         $error = "La contraseña debe tener al menos 6 caracteres.";
     }
-    elseif (!in_array($rol, ['admin', 'veterinario', 'recepcionista',"vendedor","estilista","hotelero"]))
+    elseif (!in_array($rol, ['admin', 'gerente', 'veterinario', 'recepcionista', 'vendedor', 'estilista', 'hotelero']))
     {
         $error = "El rol seleccionado no es válido.";
     }
     elseif (!in_array($estado, ['activo', 'inactivo']))
     {
         $error = "El estado seleccionado no es válido.";
+    }
+    elseif (!UsuariosDB::validarCombinacionRolPuesto(
+        ConexionDB::obtenerConexion(),
+        $empleado_asociado !== null ? (int)$empleado_asociado : null,
+        $rol
+    ))
+    {
+        $error = "El rol no coincide con el puesto del empleado asociado.";
     }
     else
     {
