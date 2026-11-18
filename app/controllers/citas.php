@@ -326,13 +326,27 @@ if ($accion === "cancelarCita")
 }
 function cancelarCita()
 {
-    $idCita = $_GET['id_cita'];
+    $idCita = $_GET['id_cita'] ?? '';
     $res = ConexionesClientes::cancelarCita($idCita);
 
     echo json_encode($res);
     exit();
 }
 
+$accion = $_GET['accion'] ?? '';
+if ($accion === "noAsistio")
+{
+    noAsistio();
+}
+function noAsistio()
+{
+    $idCita = (int)($_GET['id_cita'] ?? 0);              
+    $res = ConexionesClientes::noAsistioCita($idCita);
+
+    if (!$res) { http_response_code(500); }            
+    echo json_encode($res);
+    exit();
+}
 
 
 
@@ -434,6 +448,12 @@ function duracionServicio()
     header('Content-Type: application/json');
     echo json_encode(['duracion' => $res]);
     exit();
+}
+
+
+function serviciosIdYNombre()
+{
+    return ConexionesClientes::serviciosIdYNombreModel();
 }
 
 

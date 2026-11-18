@@ -89,7 +89,7 @@
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
             $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio
               FROM citas c
-              INNER JOIN clientes cl ON c.cliente = cl.id_cliente";
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente WHERE c.estado_cita IN ('pendiente', 'atendida')";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
@@ -220,6 +220,25 @@
             }
         }
 
+        public static function noAsistioCita($id_cita)
+        {
+            try
+            {
+                $query = "UPDATE citas
+                    SET estado_cita = 'cancelada',  estado = 'No asistio'
+                    WHERE id_cita = ?";
+
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id_cita]);
+                return true;
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+
         public static function consultarServicio(int $idServicio)
         {
             $query = "SELECT nombre FROM servicios WHERE id_servicio = ?";
@@ -286,7 +305,7 @@
             {
                 $query = "SELECT empleados.id_empleado, CONCAT(empleados.nombre, ' ', empleados.apellido) AS nombre 
                   FROM empleados 
-                  WHERE puesto = ?
+                  WHERE puesto = ? AND esta_activo = 1
                   ";
                   
                 $db = ConexionDB::obtenerConexion();
@@ -463,7 +482,7 @@
         {
             try
             {
-                $query = "SELECT * FROM citas WHERE empleado = ? and fecha = ?";
+                $query = "SELECT * FROM citas WHERE empleado = ? and fecha = ? AND estado_cita != 'cancelada'";
                 $db = ConexionDB::obtenerConexion();
                 $stmt = $db->prepare($query);
                 $stmt->execute([$idResponsable, $fecha]);
@@ -492,6 +511,27 @@
                 $mapa[$f['hora']] = (int)$f['duracion_estimada'];   
             }
             return $mapa;
+        }
+
+        public static function serviciosIdYNombreModel()
+        {
+            try
+            {
+                $query = "SELECT id_servicio, nombre FROM servicios";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute();                                  
+
+                $mapa = [];
+                foreach ($stml->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                    $mapa[$f['id_servicio']] = $f['nombre'];        
+                }
+                return $mapa;
+            }
+            catch (Exception $e)
+            {
+                return [];
+            }
         }
     }
 ?>

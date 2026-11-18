@@ -10,9 +10,13 @@ if (session_status() === PHP_SESSION_NONE)
 <?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  function mostrarProximasCitas()
+
+  $datos = estraerDatosConsultas();
+  $servicios = serviciosIdYNombre();
+
+
+  function mostrarProximasCitas(array $datos,array $servicios)
   {
-    $datos = estraerDatosConsultas();
     // echo $datos[0]['atendido'];
     foreach ($datos as $d)
     {
@@ -20,49 +24,41 @@ if (session_status() === PHP_SESSION_NONE)
       if ($estadocita == "pendiente")
       {?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
-          <td><?php echo $d['nombre']; ?> </td>
-          <td><?php echo $d['fecha']; ?> </td>
-          <td><?php echo $d['motivo']; ?></td>
-          <td><?php 
-            $serv = consultarServicio($d['servicio']);
-            echo htmlspecialchars($serv['nombre'] ?? 'Sin servicio'); 
-          ?></td>
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
 
           <td>
             <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
             <a class="btn btn-chico btn-aviso btn-chico" href="reprogramar_cita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
-            <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
+            <a class="btn btn-chico btn-peligro" onclick="noAsistioCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
 
           </td>
-
         </tr>
       <?php }
     }
   }
-?>
 
-<!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
-<?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  function mostrarCitasAtendidas()
+  function mostrarCitasAtendidas(array $datos,array $servicios)
   {
-    $datos = estraerDatosConsultas();
+    // $datos = estraerDatosConsultas();
 
+    // arregl oque traiga todos los servicios del servidor, una sola consluta
+    // junto con los servidores sera tambine el id, con esos 2 datos
     foreach ($datos as $d)
     {
       $estadocita = trim($d['estado_cita'] ?? '');
       if ($estadocita == "atendida")
       {?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
-          <td><?php echo $d['nombre']; ?> </td>
-          <td><?php echo $d['fecha']; ?> </td>
-          <td><?php echo $d['motivo']; ?></td>
-          <td><?php 
-            $serv = consultarServicio($d['servicio']);
-            echo htmlspecialchars($serv['nombre'] ?? 'Sin servicio'); 
-          ?></td>
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
           <td>
             <a class="btn">Pagar</a>
           </td>
@@ -82,7 +78,7 @@ if (session_status() === PHP_SESSION_NONE)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Citas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/citas.js?v=2"></script>
+  <script src="js/citas.js?v=3"></script>
 </head>
 
 <body>
@@ -171,7 +167,7 @@ if (session_status() === PHP_SESSION_NONE)
                     </tr>
                   </thead>
                   <tbody>
-                    <?php mostrarProximasCitas(); ?>
+                    <?php mostrarProximasCitas($datos, $servicios); ?>
                   </tbody>
                 </table>
               </div>
@@ -193,7 +189,7 @@ if (session_status() === PHP_SESSION_NONE)
                     </tr>
                   </thead>
                   <tbody>
-                    <?php mostrarCitasAtendidas(); ?>
+                    <?php mostrarCitasAtendidas($datos, $servicios); ?>
                   </tbody>
                 </table>
               </div>
