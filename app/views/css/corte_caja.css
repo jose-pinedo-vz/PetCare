@@ -811,6 +811,7 @@
   width: min(560px, calc(100vw - 28px));
   max-width: 100%;
   max-height: min(88vh, 850px);
+  box-sizing: border-box;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--border-light);
@@ -1071,6 +1072,16 @@
     flex-direction: column;
     gap: 12px;
     padding: 16px;
+  }
+
+  .corte-apertura-estado {
+    flex-wrap: wrap;
+  }
+
+  .corte-apertura-estado > .btn {
+    flex: 1 1 100%;
+    min-width: 0;
+    text-align: center;
   }
 
   .corte-apertura-campos,

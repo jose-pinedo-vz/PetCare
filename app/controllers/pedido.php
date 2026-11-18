@@ -94,23 +94,15 @@ try {
             }
         }
 
-        if ($detallePedido !== null && !$detallePedido['tiene_lotes']) {
+        if ($detallePedido !== null) {
             if ($datos['precio_compra'] === '') {
-                $errores[] = 'El precio de compra es obligatorio para productos sin lotes registrados.';
+                $errores[] = 'El precio de compra es obligatorio.';
             } elseif (
                 !preg_match('/^\d+(?:\.\d{1,2})?$/D', $datos['precio_compra'])
                 || (float) $datos['precio_compra'] <= 0
                 || (float) $datos['precio_compra'] > 99999999.99
             ) {
                 $errores[] = 'El precio de compra debe ser mayor que cero, tener hasta dos decimales y estar dentro del rango permitido.';
-            }
-        } elseif ($detallePedido !== null) {
-            $precioRegistrado = (float) $detallePedido['precio_unitario'];
-            if ($precioRegistrado <= 0) {
-                $precioRegistrado = (float) $detallePedido['precio_compra_lote'];
-            }
-            if ($precioRegistrado <= 0) {
-                $errores[] = 'No hay un precio de compra registrado para este producto.';
             }
         }
 
@@ -134,8 +126,8 @@ try {
             $errores[] = 'La ubicación es obligatoria.';
         } elseif (strlen($datos['ubicacion']) > 20) {
             $errores[] = 'La ubicación no puede tener más de 20 caracteres.';
-        } elseif (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ\-_]+$/', $datos['ubicacion'])) {
-            $errores[] = 'La ubicación debe contener al menos una letra, un número y sin caracteres especiales.';
+        } elseif (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+$/', $datos['ubicacion'])) {
+            $errores[] = 'La ubicación debe contener al menos una letra, un número y solo se permiten guiones (-) o guiones bajos (_) ejemplo: A-001/estante-1A.';
         }
 
         if ($datos['fecha_caducidad'] !== '') {

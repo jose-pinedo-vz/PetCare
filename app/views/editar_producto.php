@@ -23,6 +23,7 @@ $categorias = Categoria::obtenerCategoriasActivas();
 require_once __DIR__ . '/../models/Productos.php';
 $id_producto = (int)($_GET['id'] ?? $old['id'] ?? 0);
 $producto = Productos::obtenerProductoPorId((int)($id_producto));
+$precioCompraLote = Productos::obtenerPrecioCompra($id_producto);
 
 
 ?>
@@ -218,6 +219,9 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
             name="precio_venta"
             value="<?= htmlspecialchars($old['precio_venta'] ?? $producto['precio_venta'] ?? '') ?>"
             required placeholder="0.00">
+            <?php if ($precioCompraLote > 0): ?>
+              <small>Precio de compra registrado en lotes: $<?= number_format($precioCompraLote, 2, '.', ',') ?>. La venta no puede ser menor.</small>
+            <?php endif; ?>
           </div>
 
           <div>
@@ -279,7 +283,7 @@ $producto = Productos::obtenerProductoPorId((int)($id_producto));
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-producto.js"></script>
-  <script src="js/modal-categoria.js"></script>
+  <script src="js/modal_categoria.js"></script>
 </body>
 
 </html>
