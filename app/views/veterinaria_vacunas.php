@@ -1,5 +1,6 @@
 <?php
 $vacunas          = $vacunas ?? [];
+$lista_vacunas = $lista_vacunas ?? [];
 $desparasitaciones = $desparasitaciones ?? [];
 $catalogoVacunas = $catalogoVacunas ?? [];
 ?>
@@ -26,37 +27,37 @@ $catalogoVacunas = $catalogoVacunas ?? [];
     <!-- Columna Izquierda -->
         <div class="columna-lateral">
           <div class="tarjeta"> <!-- Al darle clic en agregar te va a abrir un text ahi pones el nombre de la nueva vacuna y ya, despues veo como se hace eso-->
-            <h2>Vacunas</h2>
-            <ul class="lista-vacunas" id="listaVacunas">
-              <!-- De aqui es codigo de ejemplo hasta.... -->
-              <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">Rabia
-              <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
-
-              <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">Pargovirus
-              <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
-
-              <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">Tetanos
-              <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
-
-              <!-- Aca -->
-              </li>
-                <?php if (!empty($catalogoVacunas)): ?>
-                    <?php foreach ($catalogoVacunas as $vacuna): ?>
-                        <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;"><?= htmlspecialchars($vacuna['nombre']) ?>
-                        <button type="button" class="btn" id="eliminarVacuna">Eliminar</button>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?> 
-                    <li>No hay vacunas registradas</li>
-                <?php endif; ?>
-            </ul>
-
+            <h2>Lista de Vacunas</h2>
+            
+            <table id="listaVacuna">
+              <thead>
+                <tr>
+                  <th>Vacunas</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                <td>Pargovirus</td>
+                <td><button type="button" class="btn" id="guardarVacuna">Eliminar</button></td>
+                </tr>
+                <?php foreach ($lista_vacunas as $v): ?>
+                      <tr>
+                        <td><?= htmlspecialchars($v['mascota']) ?></td>
+                        <td><?= htmlspecialchars($v['fecha_aplicacion']) ?></td>
+                        <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
+                        <td><?= htmlspecialchars($v['lote']) ?></td>
+                        <td><?= htmlspecialchars($v['fecha_proxima']) ?></td>
+                        <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
+                      </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>                
+            <button type="button" class="btn" id="agregarVacuna">Agregar vacuna</button>
             <div id="formularioVacuna" style="display: none;">
                 <input type="text" id="nombreVacuna" placeholder="Nombre de la vacuna">
                 <button type="button" class="btn" id="guardarVacuna">Guardar</button>
             </div>
-                
-            <button type="button" class="btn" id="agregarVacuna">Agregar vacuna</button>
           </div>
         </div>
 
