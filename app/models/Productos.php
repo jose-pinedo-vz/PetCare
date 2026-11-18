@@ -108,6 +108,11 @@ function obtenerDatosProductosActivos(): array {
         $conexion = ConexionDB::obtenerConexion();
         $sql = "SELECT p.id_producto, p.codigo, p.nombre, p.id_categoria, p.id_proveedor,
                        p.descripcion, p.contenido, p.unidad_medida, p.precio_venta,
+                       COALESCE((
+                           SELECT MAX(lp.precio_compra)
+                           FROM lote_productos AS lp
+                           WHERE lp.id_producto = p.id_producto
+                       ), 0) AS precio_compra,
                        COALESCE(l.existencia, 0) AS existencia,
                        p.existencia_minima, p.existencia_maxima, p.fecha_ingreso, p.imagen, p.estado
                 FROM productos AS p

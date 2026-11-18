@@ -15,9 +15,13 @@ require_once __DIR__ . '/../models/Productos.php';
 require_once __DIR__ . '/../models/Movimientos.php';
 
 $productos = Productos::obtenerDatosProductosActivos();
+$productosConPerdida = array_values(array_filter(
+  $productos,
+  static fn ($producto): bool => (float) ($producto['precio_compra'] ?? 0) > (float) $producto['precio_venta']
+));
 $productosEnRiesgo = array_values(array_filter(
   $productos,
-  static fn ($producto): bool => (int) $producto['existencia'] <= (int) $producto['existencia_minima']
+  static fn ($producto): bool => (int) $producto['existencia'] >= 1 && (int) $producto['existencia'] <= (int) $producto['existencia_minima']
 ));
 $movimientosHoy = null;
 
@@ -53,6 +57,23 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
         <a href="lotes.php">2. Gestión de lotes</a>
         <a href="pedidos.php#pedidos">3. Pedidos pendientes</a>
       </nav>
+
+      <?php if ($productosConPerdida !== []): ?>
+        <div class="msg-error" role="alert">
+          <h2>Productos con posible pérdida</h2>
+          <p>El precio de compra de estos productos supera su precio de venta. Cambia el precio de venta para evitar pérdidas:</p>
+          <ul>
+            <?php foreach ($productosConPerdida as $productoConPerdida): ?>
+              <li>
+                <?= $escaparInventario($productoConPerdida['nombre']) ?>:
+                compra $<?= number_format((float) $productoConPerdida['precio_compra'], 2, '.', ',') ?>,
+                venta $<?= number_format((float) $productoConPerdida['precio_venta'], 2, '.', ',') ?>.
+                <a href="editar_producto.php?id=<?= (int) $productoConPerdida['id_producto'] ?>">Cambiar precio de venta</a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
 
       <section id="catalogo" aria-label="Catálogo de productos">
         <div class="inventario-resumen">
