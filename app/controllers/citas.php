@@ -422,13 +422,7 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
 
     // juntar fecha con horas 
     $horaLimpia = $objetoHora->format('H:i:s');
-    $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;
-    $fecha = $horaLimpia . " " . $nuevaFecha;
-
-    $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
-    if (!$objetoHora) { errorSession("Formato de hora inválido."); } 
-    $horaLimpia = $objetoHora->format('H:i:s');
-    $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+    $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;  
 
     
     $consultasCitas = new ConexionesClientes();                                          
