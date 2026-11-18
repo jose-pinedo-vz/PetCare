@@ -189,6 +189,8 @@ unset($_SESSION['error']);
               <option value="Veterinario" <?= $puestoViejo === 'Veterinario' ? 'selected' : '' ?>>Veterinario</option>
               <option value="Vendedor"      <?= $puestoViejo === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
               <option value="Estilista"     <?= $puestoViejo === 'Estilista'     ? 'selected' : '' ?>>Estilista</option>
+              <option value="Recepcionista" <?= $puestoViejo === 'Recepcionista' ? 'selected' : '' ?>>Recepcionista</option>
+              <option value="Hotelero"      <?= $puestoViejo === 'Hotelero'      ? 'selected' : '' ?>>Hotelero</option>
             </select>
           </div>
 

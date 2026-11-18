@@ -15,6 +15,17 @@ $horario_empleado = $_SESSION['horario_empleado'] ?? null;
 
 $sbActiva = $paginaActiva ?? '';
 
+$rolSidebar = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+$puestoSidebar = strtolower(trim((string)($_SESSION['puesto_empleado'] ?? '')));
+$puestosPorRol = [
+    'admin' => ['gerente'],
+    'gerente' => ['gerente'],
+    'vendedor' => ['vendedor'],
+    'recepcionista' => ['recepcionista'],
+];
+$puedeOperarCajaSidebar = isset($puestosPorRol[$rolSidebar])
+    && in_array($puestoSidebar, $puestosPorRol[$rolSidebar], true);
+
 $sbModulos = [
     'inicio'        => ['Inicio',            'inicio.php'],
     'clientes'      => ['Clientes',          'clientes.php'],
@@ -37,6 +48,9 @@ $sbModulos = [
 
 if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
     unset($sbModulos['empleados'], $sbModulos['usuarios']);
+}
+if (!$puedeOperarCajaSidebar) {
+    unset($sbModulos['corte_caja']);
 }
 ?>
     <aside class="sidebar" id="menu-principal">

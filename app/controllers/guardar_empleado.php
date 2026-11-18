@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $soloCodigo_postal = '/^[0-9]{5}$/';
 
-    $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista'];
+    $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista', 'Recepcionista', 'Hotelero'];
     $horariosValidos = ['Matutino', 'Vespertino'];
 
     $patronNumero = '/^[a-zA-Z0-9\-\/]{1,15}$/';
