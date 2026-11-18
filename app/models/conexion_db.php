@@ -8,10 +8,14 @@ class ConexionDB
     {
         if(!file_exists($ruta))
         {
-            throw new Exception("El archivo de configuracion (.env) no se ha encontrado"); 
+            return;
         }
 
         $lineas=file($ruta, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lineas === false)
+        {
+            return;
+        }
         foreach ($lineas as $linea) 
         {
             $lineaTrime=trim($linea);
@@ -26,7 +30,10 @@ class ConexionDB
                 $valor=trim($partes[1]);
 
                 $valor=trim($valor,"\"'");
-                putenv("{$clave}={$valor}");
+                if (function_exists('putenv'))
+                {
+                    @putenv("{$clave}={$valor}");
+                }
                 $_ENV[$clave]=$valor;
                 $_SERVER[$clave]=$valor;
             }
@@ -41,14 +48,23 @@ class ConexionDB
         }
 
         try {
-            self::cargarEntorno(__DIR__ . '/../../.env');
+            $rutaEnv = __DIR__ . '/../../.env';
+            if (!file_exists($rutaEnv))
+            {
+                $rutaEnv = dirname(__DIR__, 2) . '/.env';
+            }
+            if (file_exists($rutaEnv))
+            {
+                self::cargarEntorno($rutaEnv);
+            }
 
-            $host = getenv('DB_HOST');
-            $db   = getenv('DB_NAME');
-            $user = getenv('DB_USER');
-            $pass = getenv('DB_PASS');
+            $host = $_ENV['DB_HOST'] ?? $_SERVER['DB_HOST'] ?? (function_exists('getenv') ? getenv('DB_HOST') : null) ?: 'localhost';
+            $db   = $_ENV['DB_NAME'] ?? $_SERVER['DB_NAME'] ?? (function_exists('getenv') ? getenv('DB_NAME') : null) ?: '';
+            $user = $_ENV['DB_USER'] ?? $_SERVER['DB_USER'] ?? (function_exists('getenv') ? getenv('DB_USER') : null) ?: 'root';
+            $pass = $_ENV['DB_PASS'] ?? $_SERVER['DB_PASS'] ?? (function_exists('getenv') ? getenv('DB_PASS') : null) ?: '';
+            $port = $_ENV['DB_PORT'] ?? $_SERVER['DB_PORT'] ?? (function_exists('getenv') ? getenv('DB_PORT') : null) ?: '3306';
 
-            $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+            $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
             
             self::$conexion = new PDO($dsn, $user, $pass);
             self::$conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
