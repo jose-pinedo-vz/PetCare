@@ -15,7 +15,9 @@ require_once __DIR__ . '/../models/CorteCaja.php';
 
 $db = ConexionDB::obtenerConexion();
 $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
-$esAdministrador = strtolower((string)($_SESSION['rol'] ?? '')) === 'admin';
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+$esAdministrador = $rolSesion === 'admin';
+$puedeOperarCaja = CorteCaja::puedeOperarCaja($db, $idEmpleado, $rolSesion);
 $periodo = $_POST['periodo'] ?? $_GET['periodo'] ?? date('Y-m');
 if (!is_string($periodo) || !preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $periodo)) {
     $periodo = date('Y-m');
@@ -79,6 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $accion = $leerTexto($_POST, 'accion');
+        if (!$puedeOperarCaja) {
+            throw new DomainException('Tu usuario no tiene permiso para abrir ni operar una caja.');
+        }
         if ($idEmpleado < 1 && !$esAdministrador) {
             throw new DomainException('Tu usuario no está asociado a un empleado.');
         }
