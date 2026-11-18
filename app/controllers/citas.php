@@ -10,6 +10,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['usuario'])) {
+    http_response_code(401);
+    exit();
+}
+
 
 // intermediario entre front y base de datos
 function estraerDatosConsultas(): array

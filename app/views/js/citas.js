@@ -186,7 +186,7 @@ function mostrarModalCancelarCita(idCita)
             </fieldset>
             <div class="acciones-formulario">
                 <button type="button" class="btn-secundario" onclick="window.location.reload()">Regresar</button>
-                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Contirunar</button>
+                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Continuar</button>
             </div>
         </div>
     `;
