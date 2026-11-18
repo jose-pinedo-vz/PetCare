@@ -134,8 +134,8 @@ try {
             $errores[] = 'La ubicación es obligatoria.';
         } elseif (strlen($datos['ubicacion']) > 20) {
             $errores[] = 'La ubicación no puede tener más de 20 caracteres.';
-        } elseif (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ\-_]+$/', $datos['ubicacion'])) {
-            $errores[] = 'La ubicación debe contener al menos una letra, un número y sin caracteres especiales.';
+        } elseif (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+$/', $datos['ubicacion'])) {
+            $errores[] = 'La ubicación debe contener al menos una letra, un número y solo se permiten guiones (-) o guiones bajos (_) ejemplo: A-001/estante-1A.';
         }
 
         if ($datos['fecha_caducidad'] !== '') {
