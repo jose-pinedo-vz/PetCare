@@ -165,15 +165,7 @@ class Pedidos
             }
 
             $stmtDetalle = $conexion->prepare(
-                "SELECT d.id_producto, d.cantidad, d.precio_unitario, r.cantidad_recibida,
-                        EXISTS (
-                            SELECT 1 FROM lote_productos lp
-                            WHERE lp.id_producto = d.id_producto
-                        ) AS tiene_lotes,
-                        (
-                            SELECT MAX(lp.precio_compra) FROM lote_productos lp
-                            WHERE lp.id_producto = d.id_producto
-                        ) AS precio_compra_lote
+                "SELECT d.id_producto, d.cantidad, r.cantidad_recibida
                  FROM detalle_orden_compra d
                  LEFT JOIN recepciones_detalle_orden r ON r.id_detalle = d.id_detalle
                  WHERE d.id_detalle = ? AND d.clave_compra = ?"
@@ -186,12 +178,7 @@ class Pedidos
                 return false;
             }
 
-            $precioCompra = (string) $detalle['precio_unitario'];
-            if (!(bool) $detalle['tiene_lotes']) {
-                $precioCompra = trim((string) ($datosLote['precio_compra'] ?? '0'));
-            } elseif ((float) $precioCompra <= 0) {
-                $precioCompra = (string) ($detalle['precio_compra_lote'] ?? '0');
-            }
+            $precioCompra = trim((string) ($datosLote['precio_compra'] ?? '0'));
             if ((float) $precioCompra <= 0) {
                 $conexion->rollBack();
                 return false;
