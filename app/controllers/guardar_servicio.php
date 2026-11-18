@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../models/Servicios.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+require_once __DIR__ . '/../models/Servicios.php';
 
 // Guarda el error y lo escrito, y regresa al formulario (agregar o editar)
 function errorSession(string $error)

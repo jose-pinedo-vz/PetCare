@@ -10,6 +10,7 @@ if (!isset($_SESSION['usuario'])) {
 
 require_once __DIR__ . '/../models/Servicios.php';
 $servicios = Servicios::obtenerTodos();
+$historial = Servicios::obtenerHistorial();
 // Lee y limpia el error de sesion
 $error = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
@@ -108,66 +109,27 @@ unset($_SESSION['error']);
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php if (empty($historial)): ?>
+                                    <tr><td colspan="10">Sin citas registradas.</td></tr>
+                                <?php endif; ?>
+                                <?php foreach ($historial as $h):
+                                    $est = strtolower((string)$h['estado']);
+                                    $clase = (strpos($est, 'cancel') !== false || strpos($est, 'no asist') !== false) ? 'cancelada'
+                                        : ((strpos($est, 'atend') !== false || strpos($est, 'complet') !== false) ? 'pagada' : 'pendiente');
+                                ?>
                                 <tr>
-                                    <td>1</td>
-                                    <td>2026-10-27</td>
-                                    <td>10:00</td>
-                                    <td>María López</td>
-                                    <td>Luna</td>
-                                    <td>Baño</td>
-                                    <td>Ana Torres</td>
-                                    <td>60 min</td>
-                                    <td><span class="historial-estado pendiente">Programada</span></td>
-                                    <td>Piel sensible</td>
+                                    <td><?php echo (int)$h['id_cita']; ?></td>
+                                    <td><?php echo htmlspecialchars($h['fecha']); ?></td>
+                                    <td><?php echo htmlspecialchars(substr((string)$h['hora'], 0, 5)); ?></td>
+                                    <td><?php echo htmlspecialchars($h['cliente']); ?></td>
+                                    <td><?php echo htmlspecialchars($h['mascota']); ?></td>
+                                    <td><?php echo htmlspecialchars($h['servicio']); ?></td>
+                                    <td><?php echo htmlspecialchars($h['empleado']); ?></td>
+                                    <td><?php echo (int)$h['duracion_estimada']; ?> min</td>
+                                    <td><span class="historial-estado <?php echo $clase; ?>"><?php echo htmlspecialchars(ucfirst((string)$h['estado'])); ?></span></td>
+                                    <td><?php echo htmlspecialchars(($h['observacion'] ?? '') !== '' ? $h['observacion'] : '—'); ?></td>
                                 </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>2026-10-27</td>
-                                    <td>12:30</td>
-                                    <td>Carlos Ramírez</td>
-                                    <td>Michi</td>
-                                    <td>Corte de uñas</td>
-                                    <td>Ana Torres</td>
-                                    <td>20 min</td>
-                                    <td><span class="historial-estado pendiente">Confirmada</span></td>
-                                    <td>—</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>2026-10-24</td>
-                                    <td>09:00</td>
-                                    <td>Sofía Herrera</td>
-                                    <td>Rocky</td>
-                                    <td>Corte de pelo</td>
-                                    <td>Luis Medina</td>
-                                    <td>90 min</td>
-                                    <td><span class="historial-estado pagada">Completada</span></td>
-                                    <td>Corte tipo cachorro</td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>2026-10-23</td>
-                                    <td>16:00</td>
-                                    <td>Jorge Díaz</td>
-                                    <td>Thor</td>
-                                    <td>Desparasitación</td>
-                                    <td>Dra. Pérez</td>
-                                    <td>30 min</td>
-                                    <td><span class="historial-estado cancelada">Cancelada</span></td>
-                                    <td>Canceló el cliente</td>
-                                </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>2026-10-22</td>
-                                    <td>11:00</td>
-                                    <td>Elena Ruiz</td>
-                                    <td>Nala</td>
-                                    <td>Baño</td>
-                                    <td>Luis Medina</td>
-                                    <td>60 min</td>
-                                    <td><span class="historial-estado cancelada">No asistió</span></td>
-                                    <td>—</td>
-                                </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>

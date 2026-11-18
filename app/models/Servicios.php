@@ -25,6 +25,30 @@ class Servicios
             return [];
         }
     }
+    // Historial de citas de servicios (datos reales de la BD)
+    public static function obtenerHistorial(): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $sql = "SELECT ci.id_cita, ci.fecha, ci.hora,
+                           CONCAT(cl.nombre, ' ', cl.apellido) AS cliente,
+                           m.nombre AS mascota,
+                           s.nombre AS servicio,
+                           CONCAT(e.nombre, ' ', e.apellido) AS empleado,
+                           ci.duracion_estimada, ci.estado, ci.observacion
+                    FROM citas ci
+                    INNER JOIN clientes cl ON cl.id_cliente = ci.cliente
+                    INNER JOIN mascotas m ON m.id_mascota = ci.mascota
+                    INNER JOIN servicios s ON s.id_servicio = ci.servicio
+                    INNER JOIN empleados e ON e.id_empleado = ci.empleado
+                    ORDER BY ci.fecha DESC, ci.hora DESC";
+            $r = $db->query($sql);
+            return $r ? $r->fetchAll(PDO::FETCH_ASSOC) : [];
+        } catch (Exception $e) {
+            error_log("Error en Servicios::obtenerHistorial: " . $e->getMessage());
+            return [];
+        }
+    }
         // Siguiente id (la tabla no es autoincremental)
     private static function siguienteId(PDO $db): int
     {

@@ -3,6 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../models/Servicios.php';
+require_once __DIR__ . '/../models/Empleados.php';
+$empleadosActivos = Empleados::Listar_empleados_activos();
 
 // Busca el servicio por el id de la URL
 $id = (int)($_GET['id_servicio'] ?? 0);
@@ -105,9 +107,9 @@ unset(
                 <label class="label-campo" for="id_empleados">Empleado responsable:</label>
                 <select class="campo" id="id_empleados" name="id_empleados">
                   <option value="">Seleccionar...</option>
-                  <option value="1" <?php echo $f['id_empleados'] === '1' ? 'selected' : ''; ?>>Ana Torres</option>
-                  <option value="2" <?php echo $f['id_empleados'] === '2' ? 'selected' : ''; ?>>Luis Medina</option>
-                  <option value="3" <?php echo $f['id_empleados'] === '3' ? 'selected' : ''; ?>>Dra. Pérez</option>
+                  <?php foreach ($empleadosActivos as $emp): ?>
+                    <option value="<?php echo (int)$emp['id_empleado']; ?>" <?php echo (string)$f['id_empleados'] === (string)$emp['id_empleado'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($emp['nombre'] . ' ' . $emp['apellido']); ?></option>
+                  <?php endforeach; ?>
                 </select>
               </div>
 
