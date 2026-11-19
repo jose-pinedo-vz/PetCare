@@ -25,10 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $TipoDesparacitacion = trim($_POST['Tipo'] ?? '');
     $ProductoUtilizado = trim($_POST['ProductoUtilizado'] ?? '');
     $ProximaCita = trim($_POST['fecha'] ?? '');
-    $Docies = trim($_POST['Dicis'] ?? $_POST['Dosis'] ?? '');
+    $Docies = trim($_POST['dosis'] ?? $_POST['Dosis'] ?? $_POST['Dicis'] ?? '');
     $Observaciones = trim($_POST['observaciones'] ?? '');
 
 
+    $_SESSION['oldDosis'] = $Docies;
     $_SESSION['oldDicis'] = $Docies;
     $_SESSION['oldFecha'] = $ProximaCita;
     $_SESSION['oldObservaciones'] = $Observaciones;
@@ -122,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
 
     ConexionesClientes::marcarCitaAtendida($id_cita);
     
-    unset($_SESSION['oldDicis'], $_SESSION['oldFecha'], $_SESSION['oldObservaciones'], $_SESSION['oldTipo'], $_SESSION['oldProducto'], $_SESSION['error']);
+    unset($_SESSION['oldDosis'], $_SESSION['oldDicis'], $_SESSION['oldFecha'], $_SESSION['oldObservaciones'], $_SESSION['oldTipo'], $_SESSION['oldProducto'], $_SESSION['error']);
 
     header("Location: ../views/citas.php");
     exit();
