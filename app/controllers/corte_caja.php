@@ -18,6 +18,14 @@ $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 
 $rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
 $esAdministrador = $rolSesion === 'admin';
 $puedeOperarCaja = CorteCaja::puedeOperarCaja($db, $idEmpleado, $rolSesion);
+
+if (!$puedeOperarCaja && !$esAdministrador && $rolSesion !== 'gerente') {
+    $redirectUrl = (strpos($_SERVER['REQUEST_URI'] ?? '', 'controllers') !== false)
+        ? '../views/inicio.php'
+        : 'inicio.php';
+    header('Location: ' . $redirectUrl);
+    exit();
+}
 $periodo = $_POST['periodo'] ?? $_GET['periodo'] ?? date('Y-m');
 if (!is_string($periodo) || !preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $periodo)) {
     $periodo = date('Y-m');

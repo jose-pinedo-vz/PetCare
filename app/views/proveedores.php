@@ -8,6 +8,11 @@ if (!isset($_SESSION['usuario']))
 }
 $usuario=$_SESSION['usuario'];
 // Mostrar nombre del usuario
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente'], true)) {
+    header("Location: inicio.php");
+    exit();
+}
 require_once __DIR__ . '/../controllers/proveedor.php';
 $proveedores = listar_proveedores();
 ?>
