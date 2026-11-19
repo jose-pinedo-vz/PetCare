@@ -51,8 +51,11 @@ function old(string $clave): string
       <div class="tarjeta">
 
       <?php
-        $id_consulta = $_GET['id_consulta'] ?? '';
+        $id_consulta = $_GET['id_consulta'] ?? $_SESSION['id_consulta_error'] ?? '';
+        unset($_SESSION['id_consulta_error']);
         $id_cita = (int)$id_consulta;
+        $oldTipo = old('oldTipo');
+        $oldProducto = old('oldProducto');
       ?>
 
     <form action="../controllers/servicioDesparacitacion.php" method="POST" enctype="multipart/form-data">
@@ -66,8 +69,8 @@ function old(string $clave): string
             <label class="label-campo" for="Tipo">Tipo de desparasitación *:</label>
             <select class="campo" name="Tipo" id="Tipo" required>
               <option value="">Selecciona un tipo</option>
-              <option value="Interno">Interno</option>
-              <option value="Externo">Externo</option>
+              <option value="Interno" <?= $oldTipo === 'Interno' ? 'selected' : '' ?>>Interno</option>
+              <option value="Externo" <?= $oldTipo === 'Externo' ? 'selected' : '' ?>>Externo</option>
             </select>
           </div>
 
@@ -76,7 +79,7 @@ function old(string $clave): string
             <label class="label-campo" for="ProductoUtilizado">Producto utilizado *:</label>
             <select class="campo" name="ProductoUtilizado" id="ProductoUtilizado" required>
               <option value="">Selecciona un producto</option>
-              <option value="Producto 1">producto 1</option>
+              <option value="Producto 1" <?= $oldProducto === 'Producto 1' ? 'selected' : '' ?>>producto 1</option>
             </select>
           </div>
       </fieldset>

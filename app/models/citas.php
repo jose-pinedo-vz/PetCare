@@ -357,10 +357,21 @@
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
-                return $stml->execute([$id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones]);
+                $fechaProxima = (!empty($ProximaCita)) ? $ProximaCita : null;
+                $idVet = (!empty($empleado) && (int)$empleado > 0) ? (int)$empleado : null;
+                return $stml->execute([
+                    (int)$id_cita,
+                    $TipoDesparacitacion,
+                    $ProductoUtilizado,
+                    $fechaProxima,
+                    (float)$Docies,
+                    $idVet,
+                    ($Observaciones !== '' && $Observaciones !== null) ? $Observaciones : null
+                ]);
             }
-            catch (Exception $e)
+            catch (Throwable $e)
             {
+                error_log("Error en insertarDesparacitacion: " . $e->getMessage());
                 return false;
             }
         }
