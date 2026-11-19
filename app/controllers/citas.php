@@ -94,11 +94,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
         errorSession("El formato de la fecha no es válido.");
     }
 
-    // validar que no sea fecha pasada
+    // validar que no sea fecha pasada ni excesivamente futura (maximo 1 año)
     $fechaActual = date('Y-m-d');
+    $fechaMaxima = date('Y-m-d', strtotime('+1 year'));
     if ($fecha < $fechaActual)
     {
         errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");
+    }
+    if ($fecha > $fechaMaxima)
+    {
+        errorSession("La fecha de la cita no puede exceder el límite permitido (máximo un año en adelante: $fechaMaxima).");
     }
 
     // verificar que el cliente exista en la base de datos
@@ -109,6 +114,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
         errorSession("El cliente con clave #$claveCliente no se encuentra registrado en el sistema.");
     }
 
+    // validar que la mascota sea numérica, exista y pertenezca al cliente especificado
+    if (!ctype_digit($mascota) || (int)$mascota <= 0)
+    {
+        errorSession("Debe seleccionar una mascota válida.");
+    }
+    if (!ConexionesClientes::validarMascotaCliente((int)$mascota, (int)$claveCliente))
+    {
+        errorSession("La mascota seleccionada no pertenece al cliente especificado o no se encuentra activa.");
+    }
+
+    // validar servicio y responsable
+    if (!ctype_digit($servicio) || (int)$servicio <= 0)
+    {
+        errorSession("Debe seleccionar un servicio válido.");
+    }
+    if (!ctype_digit($responsable) || (int)$responsable <= 0)
+    {
+        errorSession("Debe seleccionar un responsable válido.");
+    }
+
+    // validar duración estimada (positiva, entre 1 y 480 minutos)
+    if (!ctype_digit($duracion) || (int)$duracion <= 0 || (int)$duracion > 480)
+    {
+        errorSession("La duración estimada debe ser un número entero válido en minutos (entre 1 y 480).");
+    }
+    $duracionServicio = ConexionesClientes::consutltarDuracinoServicio((int)$servicio);
+    if ($duracionServicio !== null && (int)$duracion !== (int)$duracionServicio)
+    {
+        errorSession("La duración especificada no coincide con la duración oficial del servicio.");
+    }
+
     // Longitud minima y maxima
     $longitud = mb_strlen($motivoConsulta);
     if ($longitud < 5 || $longitud > 250)
@@ -116,9 +152,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
         errorSession("El motivo de la consulta debe tener entre 5 y 250 caracteres.");
     }
 
-
-    // validacion de fecha
+    // validacion de formato y disponibilidad de horario
     $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
+    if (!$objetoHora)
+    {
+        errorSession("El horario de consulta no tiene un formato válido.");
+    }
+
+    $horariosDisponibles = calcularHorariosDisponibles($fecha, (string)$responsable);
+    if (!in_array($horarioConsulta, $horariosDisponibles, true))
+    {
+        errorSession("El horario seleccionado ($horarioConsulta) no está disponible o se encuentra fuera del horario de atención.");
+    }
+
     $horaLimpia = $objetoHora->format('H:i:s');
     $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
 
@@ -150,90 +196,71 @@ if ($accion === 'horario' || $accion === 'orario')
 {
     horarios();
 }
-function horarios()
+function calcularHorariosDisponibles(string $fechaSeleccionada, string $empleado = ''): array
 {
-    // primero, tengo que encontrar la fomra de contjltar la cita, responsable y horario
-    // despues saco el horario
-    // lo agrego a una lista y eso ya esta, despues tengo que asegurarme de si ese dia ahay citas
-    // ocultar al ahora a la que hay citas
-
-    // una ves logrado eso, tengo que agregar una opcion para sumarle el tiempo
-     // de demora a esa hora empesada, y el proximo horario a mostrar
-    // sera cuando el termine, por ejempllo, cita a las 11 duracion de 40 minutos, proximo horario
-    // a las 11:40, y el proximo de ese que saa a las 12, pero si yo agarro 11:40
-    // con media hora entonces seria 12:30. sera complicado, espero terminarlo en esta tarde
-
-    $fechaSeleccionada = $_GET['fecha'] ?? '';
-    $empleado = $_GET['empleado'] ?? '';
     $Horarios = [];
-    $entradaMatutino = 9;
-    $salidaMatutino = 13;
-    $entradaVespertino = 16;
-    $salidaVespertino = 18;
-    $horasPorConsulta = 1;
+    if (empty($fechaSeleccionada)) {
+        return $Horarios;
+    }
 
-    // echo "la fecha es" . $fechaSeleccionada;
-
-    // $Veterinarios = ConexionesClientes::rescatarVeterinarios();
-    //$Veterinarios = ConexionesClientes::rescatarVeterinarios();
-    $Veterinarios = true;
-
-    if ($Veterinarios)
+    $currentMatutino = DateTime::createFromFormat('H:i:s', '09:00:00');
+    $limiteMatutino = DateTime::createFromFormat('H:i:s', '13:00:00');
+    while ($currentMatutino < $limiteMatutino)
     {
-        $currentMatutino = DateTime::createFromFormat('H:i:s', '09:00:00');
-        $limiteMatutino = DateTime::createFromFormat('H:i:s', '13:00:00');
-        while ($currentMatutino < $limiteMatutino)
-        {
-            $fechaHoraActual = $fechaSeleccionada . " " . $currentMatutino->format('H:i:s');
-            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+        $fechaHoraActual = $fechaSeleccionada . " " . $currentMatutino->format('H:i:s');
+        $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
 
-            if ($cantidadCitasPorFecha > 0)
-            {
-                $duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
-                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
-                $currentMatutino->modify("+{$duracionMinutos} minutes");
-            }
-            else
-            {
-                $Horarios[] = $currentMatutino->format('g:i A');
-                if ((int)$currentMatutino->format('i') > 0) {
-                    $currentMatutino->setTime((int)$currentMatutino->format('H'), 0, 0);
-                    $currentMatutino->modify('+1 hour');
-                } else {
-                    $currentMatutino->modify('+1 hour');
-                }
-            }
+        if ($cantidadCitasPorFecha > 0)
+        {
+            $duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+            $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+            $currentMatutino->modify("+{$duracionMinutos} minutes");
         }
-
-
-
-        $currentVespertino = DateTime::createFromFormat('H:i:s', '16:00:00');
-        $limiteVespertino = DateTime::createFromFormat('H:i:s', '19:00:00');
-        while ($currentVespertino < $limiteVespertino)
+        else
         {
-            $fechaHoraActual = $fechaSeleccionada . " " . $currentVespertino->format('H:i:s');
-            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
-
-            if ($cantidadCitasPorFecha > 0)
-            {
-                $duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
-                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
-                
-                $currentVespertino->modify("+{$duracionMinutos} minutes");
-            }
-            else
-            {
-                $Horarios[] = $currentVespertino->format('g:i A');
-                
-                if ((int)$currentVespertino->format('i') > 0) {
-                    $currentVespertino->setTime((int)$currentVespertino->format('H'), 0, 0);
-                    $currentVespertino->modify('+1 hour');
-                } else {
-                    $currentVespertino->modify('+1 hour');
-                }
+            $Horarios[] = $currentMatutino->format('g:i A');
+            if ((int)$currentMatutino->format('i') > 0) {
+                $currentMatutino->setTime((int)$currentMatutino->format('H'), 0, 0);
+                $currentMatutino->modify('+1 hour');
+            } else {
+                $currentMatutino->modify('+1 hour');
             }
         }
     }
+
+    $currentVespertino = DateTime::createFromFormat('H:i:s', '16:00:00');
+    $limiteVespertino = DateTime::createFromFormat('H:i:s', '19:00:00');
+    while ($currentVespertino < $limiteVespertino)
+    {
+        $fechaHoraActual = $fechaSeleccionada . " " . $currentVespertino->format('H:i:s');
+        $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+
+        if ($cantidadCitasPorFecha > 0)
+        {
+            $duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+            $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+            $currentVespertino->modify("+{$duracionMinutos} minutes");
+        }
+        else
+        {
+            $Horarios[] = $currentVespertino->format('g:i A');
+            if ((int)$currentVespertino->format('i') > 0) {
+                $currentVespertino->setTime((int)$currentVespertino->format('H'), 0, 0);
+                $currentVespertino->modify('+1 hour');
+            } else {
+                $currentVespertino->modify('+1 hour');
+            }
+        }
+    }
+
+    return $Horarios;
+}
+
+function horarios()
+{
+    $fechaSeleccionada = $_GET['fecha'] ?? '';
+    $empleado = $_GET['responsable'] ?? $_GET['empleado'] ?? '';
+    $Horarios = calcularHorariosDisponibles((string)$fechaSeleccionada, (string)$empleado);
 
     echo json_encode($Horarios);   
     exit();
@@ -370,16 +397,33 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
         erroresDeReprogramarCitas("Todos los campos son obligatorios.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
 
+    $d = DateTime::createFromFormat('Y-m-d', $nuevaFecha);
+    if (!$d || $d->format('Y-m-d') !== $nuevaFecha)
+    {
+        erroresDeReprogramarCitas("El formato de la fecha no es válido.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+    }
+
+    $fechaActual = date('Y-m-d');
+    $fechaMaxima = date('Y-m-d', strtotime('+1 year'));
+    if ($nuevaFecha < $fechaActual)
+    {
+        erroresDeReprogramarCitas("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+    }
+    if ($nuevaFecha > $fechaMaxima)
+    {
+        erroresDeReprogramarCitas("La fecha de la cita no puede exceder el límite permitido (máximo un año en adelante: $fechaMaxima).", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+    }
+
     $objetoHora = DateTime::createFromFormat('g:i A', $nuevoHorario);
     if (!$objetoHora) 
     {
         erroresDeReprogramarCitas("Formato de hora inválido.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
 
-    $fechaActual = date('Y-m-d');
-    if ($nuevaFecha < $fechaActual)
+    $horariosDisponibles = calcularHorariosDisponibles($nuevaFecha, (string)$responsable);
+    if (!in_array($nuevoHorario, $horariosDisponibles, true))
     {
-        erroresDeReprogramarCitas("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+        erroresDeReprogramarCitas("El horario seleccionado ($nuevoHorario) no está disponible o se encuentra fuera del horario de atención.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
 
     // juntar fecha con horas 

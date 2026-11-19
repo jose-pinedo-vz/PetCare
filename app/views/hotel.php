@@ -2,6 +2,15 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente', 'hotelero', 'recepcionista'], true)) {
+    header("Location: inicio.php");
+    exit();
+}
 
 require_once __DIR__ . '/../models/Hotel.php';
 

@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../controllers/corte_caja.php';
 
+if (!$puedeOperarCaja && !$esAdministrador && $rolSesion !== 'gerente') {
+    header('Location: inicio.php');
+    exit();
+}
+
 $moneda = static fn($importe): string => '$' . number_format((float)$importe, 2);
 $monedaConSigno = static function ($importe) use ($moneda): string {
     $importe = (float)$importe;

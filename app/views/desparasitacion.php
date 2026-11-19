@@ -3,9 +3,16 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Esta vista se carga desde controllers/FichaMedicaController.php,
-// asi que puede que estas variables no existan si se entra directo.
+require_once __DIR__ . '/../models/conexion_db.php';
 
+$listaProductos = [];
+try {
+    $dbProd = ConexionDB::obtenerConexion();
+    $stmtProd = $dbProd->query("SELECT id_producto, nombre FROM productos WHERE estado = 1 OR estado = 'activo' ORDER BY nombre ASC");
+    $listaProductos = $stmtProd ? $stmtProd->fetchAll(PDO::FETCH_ASSOC) : [];
+} catch (Exception $e) {
+    error_log("Error al cargar productos en desparasitacion: " . $e->getMessage());
+}
 
 // Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
 function old(string $clave): string
@@ -56,6 +63,7 @@ function old(string $clave): string
         $id_cita = (int)$id_consulta;
         $oldTipo = old('oldTipo');
         $oldProducto = old('oldProducto');
+        $oldDosis = old('oldDosis') ?: old('oldDicis');
       ?>
 
     <form action="../controllers/servicioDesparacitacion.php" method="POST" enctype="multipart/form-data">
@@ -79,7 +87,12 @@ function old(string $clave): string
             <label class="label-campo" for="ProductoUtilizado">Producto utilizado *:</label>
             <select class="campo" name="ProductoUtilizado" id="ProductoUtilizado" required>
               <option value="">Selecciona un producto</option>
-              <option value="Producto 1" <?= $oldProducto === 'Producto 1' ? 'selected' : '' ?>>producto 1</option>
+              <?php foreach ($listaProductos as $prod): ?>
+                <?php $nombreProd = $prod['nombre']; ?>
+                <option value="<?= htmlspecialchars($nombreProd) ?>" <?= ($oldProducto === $nombreProd) ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($nombreProd) ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
       </fieldset>
@@ -87,9 +100,9 @@ function old(string $clave): string
       <fieldset>
         <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="Dicis">Dicis (mg por kg) *:</label>
-            <input type="number" class="campo" id="Dicis" name="Dicis" min="0" max="1000" step="0.1"
-              placeholder="Ej. 10.5" required value="<?= old('oldDicis') ?>">
+            <label class="label-campo" for="dosis">Dosis (mg por kg) *:</label>
+            <input type="number" class="campo" id="dosis" name="dosis" min="0" max="1000" step="0.1"
+              placeholder="Ej. 10.5" required value="<?= $oldDosis ?>">
           </div>
 
            <div>

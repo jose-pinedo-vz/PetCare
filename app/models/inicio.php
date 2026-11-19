@@ -55,7 +55,16 @@
         {
             try
             {
-                $query = 'SELECT COUNT(id_producto) as productoStockBajo FROM productos WHERE contenido <= existencia_minima';
+                $query = "SELECT COUNT(p.id_producto) AS productoStockBajo
+                          FROM productos p
+                          LEFT JOIN (
+                              SELECT id_producto, SUM(cantidad) AS existencia
+                              FROM lote_productos
+                              WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                              GROUP BY id_producto
+                          ) l ON l.id_producto = p.id_producto
+                          WHERE (p.estado = 1 OR p.estado = 'activo')
+                            AND COALESCE(l.existencia, 0) <= p.existencia_minima";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
                 $stml->execute();
@@ -63,7 +72,7 @@
             }
             catch (Exception $e)
             {
-
+                return [['productoStockBajo' => 0, 0 => 0]];
             }
         }
 

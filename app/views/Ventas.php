@@ -6,6 +6,11 @@ if (!isset($_SESSION['usuario']))
   header("Location: ../views/login.php");
   exit();
 }
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente', 'vendedor', 'recepcionista'], true)) {
+  header("Location: inicio.php");
+  exit();
+}
 $usuario=$_SESSION['usuario'];
 $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
 $horario_empleado = $_SESSION['horario_empleado'] ?? null;

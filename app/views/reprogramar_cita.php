@@ -72,6 +72,7 @@
         <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="reprogramar_fecha" name="reprogramar_fecha" data-fecha="reprogramar_fecha" required
+              min="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime('+1 year')); ?>"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
         </div>
 
