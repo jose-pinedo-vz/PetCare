@@ -63,6 +63,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                 <p class="corte-form-error" role="alert">Tu rol no coincide con tu puesto de empleado o no tienes permiso para operar caja. Para caja se permite: administrador/gerente con puesto Gerente, vendedor con puesto Vendedor y recepcionista con puesto Recepcionista.</p>
             <?php endif; ?>
 
+            <?php if ($puedeOperarCaja): ?>
             <nav class="corte-tabs" role="tablist" aria-label="Secciones de corte de caja">
                 <button class="corte-tab <?= $activePanel === 'diario' ? 'activa' : '' ?>" id="tab-diario" type="button" role="tab" aria-selected="<?= $activePanel === 'diario' ? 'true' : 'false' ?>" aria-controls="panel-diario" tabindex="<?= $activePanel === 'diario' ? '0' : '-1' ?>" data-tab="diario">1. Corte diario</button>
                 <button class="corte-tab <?= $activePanel === 'historial' ? 'activa' : '' ?>" id="tab-historial" type="button" role="tab" aria-selected="<?= $activePanel === 'historial' ? 'true' : 'false' ?>" aria-controls="panel-historial" tabindex="<?= $activePanel === 'historial' ? '0' : '-1' ?>" data-tab="historial">2. Historial de Cortes Z</button>
@@ -559,6 +560,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                         </section>
                     </div>
                 </section>
+            <?php endif; ?>
             <?php endif; ?>
 
             <p class="corte-aviso" id="avisoCorte" role="status" aria-live="polite" hidden></p>

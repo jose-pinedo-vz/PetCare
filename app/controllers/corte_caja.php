@@ -16,8 +16,8 @@ require_once __DIR__ . '/../models/CorteCaja.php';
 $db = ConexionDB::obtenerConexion();
 $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
 $rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
-$esAdministrador = $rolSesion === 'admin';
 $puedeOperarCaja = CorteCaja::puedeOperarCaja($db, $idEmpleado, $rolSesion);
+$esAdministrador = $rolSesion === 'admin' && $puedeOperarCaja;
 $periodo = $_POST['periodo'] ?? $_GET['periodo'] ?? date('Y-m');
 if (!is_string($periodo) || !preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $periodo)) {
     $periodo = date('Y-m');
@@ -197,7 +197,9 @@ if (empty($_SESSION['csrf_corte'])) {
     $_SESSION['csrf_corte'] = bin2hex(random_bytes(32));
 }
 $csrfToken = $_SESSION['csrf_corte'];
-$corteAbierto = $idEmpleado > 0 ? CorteCaja::obtenerCorteAbierto($db, $idEmpleado) : null;
+$corteAbierto = $puedeOperarCaja && $idEmpleado > 0
+    ? CorteCaja::obtenerCorteAbierto($db, $idEmpleado)
+    : null;
 $movimientosCorte = $corteAbierto
     ? CorteCaja::listarMovimientos($db, (int)$corteAbierto['id'])
     : [];
@@ -216,7 +218,7 @@ $estadoHistorial = is_string($_GET['estado'] ?? null) && in_array($_GET['estado'
     ? $_GET['estado']
     : 'todos';
 $empleadoHistorial = $esAdministrador ? ($leerEntero($_GET, 'empleado') ?: null) : null;
-$historialCortes = $idEmpleado > 0 || $esAdministrador
+$historialCortes = $puedeOperarCaja && ($idEmpleado > 0 || $esAdministrador)
     ? CorteCaja::listarCortes(
         $db,
         $inicioPeriodo,
@@ -298,7 +300,7 @@ $pagosMensuales = $esAdministrador
 $detalleCorte = null;
 $movimientosDetalle = [];
 $detalleId = $leerEntero($_GET, 'detalle');
-if ($detalleId) {
+if ($detalleId && $puedeOperarCaja) {
     $detalleCorte = CorteCaja::obtenerDetalle($db, $detalleId, $idEmpleado, $esAdministrador);
     if ($detalleCorte) {
         $movimientosDetalle = CorteCaja::listarMovimientos($db, $detalleId);
