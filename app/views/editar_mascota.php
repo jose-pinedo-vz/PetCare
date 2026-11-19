@@ -264,7 +264,7 @@ foreach ($especies as $registroEspecie) {
             value="<?= $clienteSeleccionado ? $escapar('Id: ' . $clienteSeleccionado['id_cliente'] . ' - ' . $clienteSeleccionado['nombre'] . ' ' . $clienteSeleccionado['apellido']) : '' ?>" 
             required 
             >
-            <ul id="lista_clientes_mascota" class="lista-resultados">
+            <ul id="lista_clientes_mascota" class="lista-resultados" style="display: none;">
             <?php foreach ($clientes as $registroCliente): ?>
                 <li data-id="<?= (int) $registroCliente['id_cliente'] ?>">
                     <?= $escapar('Id: ' . $registroCliente['id_cliente'] . ' - ' . $registroCliente['nombre'] . ' ' . $registroCliente['apellido']) ?>
@@ -289,7 +289,7 @@ foreach ($especies as $registroEspecie) {
                 placeholder="Seleccionar veterinario..."
                 value="<?= $veterinarioSeleccionado ? $escapar('Id: ' . $veterinarioSeleccionado['id_empleado'] . ' - ' . $veterinarioSeleccionado['nombre'] . ' ' . $veterinarioSeleccionado['apellido']) : '' ?>"
             >
-            <ul id="lista_veterinarios_mascota" class="lista-resultados">
+            <ul id="lista_veterinarios_mascota" class="lista-resultados" style="display: none;">
                 <?php foreach ($veterinarios as $registroVeterinario): ?>
                 <li data-id="<?= (int) $registroVeterinario['id_empleado'] ?>">
                         <?= $escapar('Id: ' . $registroVeterinario['id_empleado'] . ' - ' . $registroVeterinario['nombre'] . ' ' . $registroVeterinario['apellido']) ?>
