@@ -1,11 +1,6 @@
 <?php
 require_once __DIR__ . '/../controllers/corte_caja.php';
 
-if (!$puedeOperarCaja && !$esAdministrador && $rolSesion !== 'gerente') {
-    header('Location: inicio.php');
-    exit();
-}
-
 $moneda = static fn($importe): string => '$' . number_format((float)$importe, 2);
 $monedaConSigno = static function ($importe) use ($moneda): string {
     $importe = (float)$importe;
@@ -27,6 +22,37 @@ $anchoGrafica = static function ($valor, $maximo): float {
 
     return max(0.0, min(100.0, ((float)$valor / (float)$maximo) * 100));
 };
+$bienvenidasCaja = [
+    'admin' => [
+        'rol' => 'Administrador',
+        'descripcion' => 'Puedes operar tu corte diario y consultar los cortes de todos los empleados, además del corte mensual y las estadísticas.',
+        'accesos' => ['Corte diario propio', 'Historial general', 'Corte mensual', 'Estadísticas con filtros por empleado'],
+    ],
+    'gerente' => [
+        'rol' => 'Gerente',
+        'descripcion' => 'Puedes abrir y operar tu corte diario y revisar el historial de tus propios cortes.',
+        'accesos' => ['Corte diario propio', 'Historial de tus cortes'],
+    ],
+    'vendedor' => [
+        'rol' => 'Vendedor',
+        'descripcion' => 'Puedes abrir y operar tu corte diario y revisar el historial de tus propios cortes.',
+        'accesos' => ['Corte diario propio', 'Historial de tus cortes'],
+    ],
+    'recepcionista' => [
+        'rol' => 'Recepcionista',
+        'descripcion' => 'Puedes abrir y operar tu corte diario y revisar el historial de tus propios cortes.',
+        'accesos' => ['Corte diario propio', 'Historial de tus cortes'],
+    ],
+];
+$bienvenidaCaja = $bienvenidasCaja[$rolSesion] ?? null;
+$motivosAccesoCaja = [
+    'sin_empleado' => 'Tu cuenta no está asociada a un empleado. Pide a un administrador que vincule tu usuario con un empleado activo.',
+    'empleado_no_encontrado' => 'No se encontró el empleado asociado a tu cuenta. Pide a un administrador que revise la asociación.',
+    'empleado_inactivo' => 'El empleado asociado a tu cuenta está inactivo. Contacta a un administrador para revisar tu acceso.',
+    'puesto_no_autorizado' => 'El puesto de tu empleado no está habilitado para operar caja.',
+    'rol_puesto_no_coincide' => 'El rol de tu usuario no coincide con el puesto de tu empleado para operar caja.',
+];
+$mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tiene acceso para operar caja. Contacta a un administrador.';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -62,10 +88,32 @@ $anchoGrafica = static function ($valor, $maximo): float {
                 <p class="corte-aviso" role="status"><?= htmlspecialchars($avisoFlash['mensaje']) ?></p>
             <?php endif; ?>
 
-            <?php if (!$idEmpleado): ?>
-                <p class="corte-form-error" role="alert">Tu usuario no está asociado a un empleado. No puedes abrir ni operar una caja.</p>
+            <?php if ($puedeOperarCaja && $bienvenidaCaja): ?>
+                <section class="corte-acceso corte-acceso--bienvenida" aria-labelledby="tituloBienvenidaCaja" role="status">
+                    <div class="corte-acceso-contenido">
+                        <span class="corte-kicker">Bienvenido, <?= htmlspecialchars((string)$nombreEmpleado) ?></span>
+                        <h2 id="tituloBienvenidaCaja">Acceso de <?= htmlspecialchars($bienvenidaCaja['rol']) ?></h2>
+                        <p><?= htmlspecialchars($bienvenidaCaja['descripcion']) ?></p>
+                    </div>
+                    <div class="corte-acceso-secciones">
+                        <strong>Secciones disponibles</strong>
+                        <ul>
+                            <?php foreach ($bienvenidaCaja['accesos'] as $acceso): ?>
+                                <li><?= htmlspecialchars($acceso) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </section>
             <?php elseif (!$puedeOperarCaja): ?>
-                <p class="corte-form-error" role="alert">Tu rol no coincide con tu puesto de empleado o no tienes permiso para operar caja. Para caja se permite: administrador/gerente con puesto Gerente, vendedor con puesto Vendedor y recepcionista con puesto Recepcionista.</p>
+                <section class="corte-acceso corte-acceso--denegado" aria-labelledby="tituloAccesoCaja" role="alert">
+                    <div class="corte-acceso-contenido">
+                        <span class="corte-kicker">Acceso no disponible</span>
+                        <h2 id="tituloAccesoCaja">No puedes operar caja todavía</h2>
+                        <p><?= htmlspecialchars($mensajeMotivoCaja) ?></p>
+                        <p class="corte-acceso-reglas">Acceso permitido: rol <strong>admin</strong> o <strong>gerente</strong> con puesto <strong>Gerente</strong>; rol <strong>vendedor</strong> con puesto <strong>Vendedor</strong>; o rol <strong>recepcionista</strong> con puesto <strong>Recepcionista</strong>. El empleado debe estar activo.</p>
+                    </div>
+                    <a class="btn btn-secundario btn-chico" href="inicio.php">Volver al inicio</a>
+                </section>
             <?php endif; ?>
 
             <?php if ($puedeOperarCaja): ?>

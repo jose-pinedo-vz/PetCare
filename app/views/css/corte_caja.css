@@ -74,6 +74,57 @@
   border-bottom: 1px solid var(--border-light);
 }
 
+.corte-acceso {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.corte-acceso--bienvenida {
+  border-left: 4px solid var(--primary-dark);
+}
+
+.corte-acceso--denegado {
+  align-items: center;
+  border-color: #efc7c3;
+  background: #fff8f7;
+}
+
+.corte-acceso h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.corte-acceso p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.corte-acceso-reglas {
+  margin-top: 8px !important;
+  color: var(--texto-suave);
+  font-size: 12px !important;
+}
+
+.corte-acceso-secciones {
+  min-width: 220px;
+  font-size: 12px;
+}
+
+.corte-acceso-secciones ul {
+  display: grid;
+  gap: 4px;
+  margin: 7px 0 0;
+  padding-left: 18px;
+}
+
 .corte-tab {
   flex: 0 0 auto;
   padding: 12px 16px;
@@ -1020,6 +1071,19 @@
 @media (max-width: 800px) {
   .corte-pagina {
     padding: 22px 18px 34px;
+  }
+
+  .corte-acceso {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .corte-acceso-secciones {
+    min-width: 0;
+  }
+
+  .corte-acceso--denegado {
+    align-items: flex-start;
   }
 
   .corte-kpis {

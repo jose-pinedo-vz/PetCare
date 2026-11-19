@@ -8,8 +8,13 @@ final class CorteCaja
 
     public static function puedeOperarCaja(PDO $db, int $empleado, string $rol): bool
     {
+        return self::motivoDenegacionAcceso($db, $empleado, $rol) === null;
+    }
+
+    public static function motivoDenegacionAcceso(PDO $db, int $empleado, string $rol): ?string
+    {
         if ($empleado < 1) {
-            return false;
+            return 'sin_empleado';
         }
 
         $rolNormalizado = strtolower(trim($rol));
@@ -21,8 +26,11 @@ final class CorteCaja
         );
         $stmt->execute([':empleado' => $empleado]);
         $empleadoDatos = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$empleadoDatos || (int)$empleadoDatos['esta_activo'] !== 1) {
-            return false;
+        if (!$empleadoDatos) {
+            return 'empleado_no_encontrado';
+        }
+        if ((int)$empleadoDatos['esta_activo'] !== 1) {
+            return 'empleado_inactivo';
         }
 
         $puestoNormalizado = strtolower(trim((string)$empleadoDatos['puesto']));
@@ -32,8 +40,14 @@ final class CorteCaja
             'recepcionista' => ['recepcionista'],
         ];
 
-        return isset($rolesPorPuesto[$puestoNormalizado])
-            && in_array($rolNormalizado, $rolesPorPuesto[$puestoNormalizado], true);
+        if (!isset($rolesPorPuesto[$puestoNormalizado])) {
+            return 'puesto_no_autorizado';
+        }
+        if (!in_array($rolNormalizado, $rolesPorPuesto[$puestoNormalizado], true)) {
+            return 'rol_puesto_no_coincide';
+        }
+
+        return null;
     }
 
     public static function obtenerCorteAbierto(PDO $db, int $empleado): ?array

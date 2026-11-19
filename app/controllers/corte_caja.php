@@ -16,7 +16,8 @@ require_once __DIR__ . '/../models/CorteCaja.php';
 $db = ConexionDB::obtenerConexion();
 $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
 $rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
-$puedeOperarCaja = CorteCaja::puedeOperarCaja($db, $idEmpleado, $rolSesion);
+$motivoAccesoCaja = CorteCaja::motivoDenegacionAcceso($db, $idEmpleado, $rolSesion);
+$puedeOperarCaja = $motivoAccesoCaja === null;
 $esAdministrador = $rolSesion === 'admin' && $puedeOperarCaja;
 $periodo = $_POST['periodo'] ?? $_GET['periodo'] ?? date('Y-m');
 if (!is_string($periodo) || !preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $periodo)) {
