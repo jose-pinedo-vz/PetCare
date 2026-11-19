@@ -112,6 +112,17 @@ class Hotel
         }
     }
 
+    private static function tieneColumna(PDO $conexion, string $tabla, string $columna): bool
+    {
+        try {
+            $stmt = $conexion->prepare("SHOW COLUMNS FROM `{$tabla}` LIKE ?");
+            $stmt->execute([$columna]);
+            return (bool)$stmt->fetch();
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
     public static function desactivarReservacionesVencidas(): array
     {
         try {
@@ -127,33 +138,60 @@ class Hotel
             $stmt->execute();
             $reservacionesActualizadas = $stmt->rowCount();
 
-            $jaulas = $conexion->prepare("
-                UPDATE jaula j
-                SET estado = 'disponible'
-                WHERE LOWER(TRIM(j.estado)) = 'ocupado'
-                    AND EXISTS (
-                        SELECT 1
-                        FROM hotel h
-                        WHERE h.id_jaula = j.id
-                            AND LOWER(TRIM(h.estado)) = 'inactivo'
-                            AND DATE(h.fecha_salida) <= CURRENT_DATE()
-                    )
-                    AND NOT EXISTS (
-                        SELECT 1
-                        FROM hotel h
-                        WHERE h.id_jaula = j.id
-                            AND LOWER(TRIM(h.estado)) = 'activo'
-                    )
-            ");
-            $jaulas->execute();
-            $jaulasLiberadas = $jaulas->rowCount();
+            $jaulasLiberadas = 0;
+            $tieneIdJaula = self::tieneColumna($conexion, 'hotel', 'id_jaula');
+            $tieneHotelEnJaula = self::tieneColumna($conexion, 'jaula', 'hotel');
+
+            if ($tieneIdJaula) {
+                $jaulas = $conexion->prepare("
+                    UPDATE jaula j
+                    SET estado = 'disponible'
+                    WHERE LOWER(TRIM(j.estado)) = 'ocupado'
+                        AND EXISTS (
+                            SELECT 1
+                            FROM hotel h
+                            WHERE h.id_jaula = j.id
+                                AND LOWER(TRIM(h.estado)) = 'inactivo'
+                                AND DATE(h.fecha_salida) <= CURRENT_DATE()
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM hotel h
+                            WHERE h.id_jaula = j.id
+                                AND LOWER(TRIM(h.estado)) = 'activo'
+                        )
+                ");
+                $jaulas->execute();
+                $jaulasLiberadas = $jaulas->rowCount();
+            } elseif ($tieneHotelEnJaula) {
+                $jaulas = $conexion->prepare("
+                    UPDATE jaula j
+                    SET estado = 'disponible'
+                    WHERE LOWER(TRIM(j.estado)) = 'ocupado'
+                        AND EXISTS (
+                            SELECT 1
+                            FROM hotel h
+                            WHERE h.id_reservacion = j.hotel
+                                AND LOWER(TRIM(h.estado)) = 'inactivo'
+                                AND DATE(h.fecha_salida) <= CURRENT_DATE()
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM hotel h
+                            WHERE h.id_reservacion = j.hotel
+                                AND LOWER(TRIM(h.estado)) = 'activo'
+                        )
+                ");
+                $jaulas->execute();
+                $jaulasLiberadas = $jaulas->rowCount();
+            }
 
             $conexion->commit();
             return [
                 'actualizadas' => $reservacionesActualizadas,
                 'jaulas_liberadas' => $jaulasLiberadas,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             if (isset($conexion) && $conexion->inTransaction()) {
                 $conexion->rollBack();
             }
@@ -172,9 +210,12 @@ class Hotel
                 WHERE LOWER(estado) = 'disponible'
                 ORDER BY tamano, id
             ");
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            return ["Error BD", htmlspecialchars($e->getMessage())];
+            if ($stmt instanceof PDOStatement) {
+                return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            }
+            return [];
+        } catch (Throwable $e) {
+            return [];
         }
     }
 
@@ -182,45 +223,95 @@ class Hotel
     {
         try {
             $conexion = ConexionDB::obtenerConexion();
-            $stmt = $conexion->query("
-                SELECT j.id, j.tamano, j.estado,
-                    (
-                        SELECT m.nombre
-                        FROM hotel h
-                        INNER JOIN mascotas m ON m.id_mascota = h.mascota
-                        WHERE h.id_jaula = j.id
-                            AND LOWER(TRIM(h.estado)) = 'activo'
-                            AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                            AND CURRENT_DATE() < DATE(h.fecha_salida)
-                        ORDER BY DATE(h.fecha_salida) DESC, h.id_reservacion DESC
-                        LIMIT 1
-                    ) AS mascota_actual,
-                    (
-                        SELECT MAX(DATE(h.fecha_salida))
-                        FROM hotel h
-                        WHERE h.id_jaula = j.id
-                            AND LOWER(TRIM(h.estado)) = 'activo'
-                            AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                            AND CURRENT_DATE() < DATE(h.fecha_salida)
-                    ) AS libre_a_partir,
-                    CASE
-                        WHEN LOWER(TRIM(j.estado)) = 'mantenimiento' THEN 'mantenimiento'
-                        WHEN LOWER(TRIM(j.estado)) = 'ocupado'
-                            OR EXISTS (
-                                SELECT 1
-                                FROM hotel h
-                                WHERE h.id_jaula = j.id
-                                    AND LOWER(TRIM(h.estado)) = 'activo'
-                                    AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                                    AND CURRENT_DATE() < DATE(h.fecha_salida)
-                            ) THEN 'ocupado'
-                        ELSE LOWER(TRIM(j.estado))
-                    END AS estado_actual
-                FROM jaula j
-                ORDER BY j.id
-            ");
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            $tieneIdJaula = self::tieneColumna($conexion, 'hotel', 'id_jaula');
+            $tieneHotelEnJaula = self::tieneColumna($conexion, 'jaula', 'hotel');
+
+            if ($tieneIdJaula) {
+                $sql = "
+                    SELECT j.id, j.tamano, j.estado,
+                        (
+                            SELECT m.nombre
+                            FROM hotel h
+                            INNER JOIN mascotas m ON m.id_mascota = h.mascota
+                            WHERE h.id_jaula = j.id
+                                AND LOWER(TRIM(h.estado)) = 'activo'
+                                AND CURRENT_DATE() >= DATE(h.fecha_entrada)
+                                AND CURRENT_DATE() < DATE(h.fecha_salida)
+                            ORDER BY DATE(h.fecha_salida) DESC, h.id_reservacion DESC
+                            LIMIT 1
+                        ) AS mascota_actual,
+                        (
+                            SELECT MAX(DATE(h.fecha_salida))
+                            FROM hotel h
+                            WHERE h.id_jaula = j.id
+                                AND LOWER(TRIM(h.estado)) = 'activo'
+                                AND CURRENT_DATE() >= DATE(h.fecha_entrada)
+                                AND CURRENT_DATE() < DATE(h.fecha_salida)
+                        ) AS libre_a_partir,
+                        CASE
+                            WHEN LOWER(TRIM(j.estado)) = 'mantenimiento' THEN 'mantenimiento'
+                            WHEN LOWER(TRIM(j.estado)) = 'ocupado'
+                                OR EXISTS (
+                                    SELECT 1
+                                    FROM hotel h
+                                    WHERE h.id_jaula = j.id
+                                        AND LOWER(TRIM(h.estado)) = 'activo'
+                                        AND CURRENT_DATE() >= DATE(h.fecha_entrada)
+                                        AND CURRENT_DATE() < DATE(h.fecha_salida)
+                                ) THEN 'ocupado'
+                            ELSE LOWER(TRIM(j.estado))
+                        END AS estado_actual
+                    FROM jaula j
+                    ORDER BY j.id
+                ";
+            } elseif ($tieneHotelEnJaula) {
+                $sql = "
+                    SELECT j.id, j.tamano, j.estado,
+                        (
+                            SELECT m.nombre
+                            FROM hotel h
+                            INNER JOIN mascotas m ON m.id_mascota = h.mascota
+                            WHERE h.id_reservacion = j.hotel
+                                AND LOWER(TRIM(h.estado)) = 'activo'
+                                AND CURRENT_DATE() >= DATE(h.fecha_entrada)
+                                AND CURRENT_DATE() < DATE(h.fecha_salida)
+                            ORDER BY DATE(h.fecha_salida) DESC, h.id_reservacion DESC
+                            LIMIT 1
+                        ) AS mascota_actual,
+                        (
+                            SELECT MAX(DATE(h.fecha_salida))
+                            FROM hotel h
+                            WHERE h.id_reservacion = j.hotel
+                                AND LOWER(TRIM(h.estado)) = 'activo'
+                                AND CURRENT_DATE() >= DATE(h.fecha_entrada)
+                                AND CURRENT_DATE() < DATE(h.fecha_salida)
+                        ) AS libre_a_partir,
+                        CASE
+                            WHEN LOWER(TRIM(j.estado)) = 'mantenimiento' THEN 'mantenimiento'
+                            WHEN LOWER(TRIM(j.estado)) = 'ocupado'
+                                OR EXISTS (
+                                    SELECT 1
+                                    FROM hotel h
+                                    WHERE h.id_reservacion = j.hotel
+                                        AND LOWER(TRIM(h.estado)) = 'activo'
+                                        AND CURRENT_DATE() >= DATE(h.fecha_entrada)
+                                        AND CURRENT_DATE() < DATE(h.fecha_salida)
+                                ) THEN 'ocupado'
+                            ELSE LOWER(TRIM(j.estado))
+                        END AS estado_actual
+                    FROM jaula j
+                    ORDER BY j.id
+                ";
+            } else {
+                $sql = "SELECT j.id, j.tamano, j.estado, j.estado AS estado_actual, NULL AS mascota_actual, NULL AS libre_a_partir FROM jaula j ORDER BY j.id";
+            }
+
+            $stmt = $conexion->query($sql);
+            if ($stmt instanceof PDOStatement) {
+                return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            }
+            return [];
+        } catch (Throwable $e) {
             error_log('Error al cargar jaulas del hotel: ' . $e->getMessage());
             return ['error' => 'No fue posible cargar la disponibilidad de jaulas.'];
         }
@@ -230,25 +321,70 @@ class Hotel
     {
         try {
             $conexion = ConexionDB::obtenerConexion();
-            $stmt = $conexion->query("
-                SELECT h.id_reservacion,
-                    COALESCE(CONCAT_WS(' ', c.nombre, c.apellido), 'Cliente no disponible') AS cliente,
-                    COALESCE(m.nombre, 'Mascota no disponible') AS mascota,
-                    h.id_jaula,
-                    j.tamano AS tamano_jaula,
-                    h.fecha_entrada,
-                    h.fecha_salida,
-                    h.num_noches,
-                    h.saldo,
-                    h.estado
-                FROM hotel h
-                LEFT JOIN clientes c ON c.id_cliente = h.cliente
-                LEFT JOIN mascotas m ON m.id_mascota = h.mascota
-                LEFT JOIN jaula j ON j.id = h.id_jaula
-                ORDER BY h.fecha_entrada DESC, h.id_reservacion DESC
-            ");
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            $tieneIdJaula = self::tieneColumna($conexion, 'hotel', 'id_jaula');
+            $tieneHotelEnJaula = self::tieneColumna($conexion, 'jaula', 'hotel');
+
+            if ($tieneIdJaula) {
+                $sql = "
+                    SELECT h.id_reservacion,
+                        COALESCE(CONCAT_WS(' ', c.nombre, c.apellido), 'Cliente no disponible') AS cliente,
+                        COALESCE(m.nombre, 'Mascota no disponible') AS mascota,
+                        h.id_jaula,
+                        j.tamano AS tamano_jaula,
+                        h.fecha_entrada,
+                        h.fecha_salida,
+                        h.num_noches,
+                        h.saldo,
+                        h.estado
+                    FROM hotel h
+                    LEFT JOIN clientes c ON c.id_cliente = h.cliente
+                    LEFT JOIN mascotas m ON m.id_mascota = h.mascota
+                    LEFT JOIN jaula j ON j.id = h.id_jaula
+                    ORDER BY h.fecha_entrada DESC, h.id_reservacion DESC
+                ";
+            } elseif ($tieneHotelEnJaula) {
+                $sql = "
+                    SELECT h.id_reservacion,
+                        COALESCE(CONCAT_WS(' ', c.nombre, c.apellido), 'Cliente no disponible') AS cliente,
+                        COALESCE(m.nombre, 'Mascota no disponible') AS mascota,
+                        j.id AS id_jaula,
+                        j.tamano AS tamano_jaula,
+                        h.fecha_entrada,
+                        h.fecha_salida,
+                        h.num_noches,
+                        h.saldo,
+                        h.estado
+                    FROM hotel h
+                    LEFT JOIN clientes c ON c.id_cliente = h.cliente
+                    LEFT JOIN mascotas m ON m.id_mascota = h.mascota
+                    LEFT JOIN jaula j ON j.hotel = h.id_reservacion
+                    ORDER BY h.fecha_entrada DESC, h.id_reservacion DESC
+                ";
+            } else {
+                $sql = "
+                    SELECT h.id_reservacion,
+                        COALESCE(CONCAT_WS(' ', c.nombre, c.apellido), 'Cliente no disponible') AS cliente,
+                        COALESCE(m.nombre, 'Mascota no disponible') AS mascota,
+                        NULL AS id_jaula,
+                        NULL AS tamano_jaula,
+                        h.fecha_entrada,
+                        h.fecha_salida,
+                        h.num_noches,
+                        h.saldo,
+                        h.estado
+                    FROM hotel h
+                    LEFT JOIN clientes c ON c.id_cliente = h.cliente
+                    LEFT JOIN mascotas m ON m.id_mascota = h.mascota
+                    ORDER BY h.fecha_entrada DESC, h.id_reservacion DESC
+                ";
+            }
+
+            $stmt = $conexion->query($sql);
+            if ($stmt instanceof PDOStatement) {
+                return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            }
+            return [];
+        } catch (Throwable $e) {
             error_log('Error al cargar reservaciones del hotel: ' . $e->getMessage());
             return ['error' => 'No fue posible cargar las reservaciones.'];
         }

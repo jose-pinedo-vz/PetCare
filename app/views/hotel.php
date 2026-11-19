@@ -18,15 +18,15 @@ $resultadoActualizacion = Hotel::desactivarReservacionesVencidas();
 $errorActualizacion = isset($resultadoActualizacion['error']);
 $jaulas = Hotel::obtenerJaulasParaListado();
 $reservaciones = Hotel::obtenerReservacionesParaListado();
-$errorJaulas = isset($jaulas['error']);
-$errorReservaciones = isset($reservaciones['error']);
+$errorJaulas = is_array($jaulas) && isset($jaulas['error']);
+$errorReservaciones = is_array($reservaciones) && isset($reservaciones['error']);
 
-if ($errorJaulas) {
-    $mensajeErrorJaulas = $jaulas['error'];
+if ($errorJaulas || !is_array($jaulas)) {
+    $mensajeErrorJaulas = is_array($jaulas) && isset($jaulas['error']) ? $jaulas['error'] : 'No fue posible cargar la disponibilidad de jaulas.';
     $jaulas = [];
 }
-if ($errorReservaciones) {
-    $mensajeErrorReservaciones = $reservaciones['error'];
+if ($errorReservaciones || !is_array($reservaciones)) {
+    $mensajeErrorReservaciones = is_array($reservaciones) && isset($reservaciones['error']) ? $reservaciones['error'] : 'No fue posible cargar las reservaciones.';
     $reservaciones = [];
 }
 

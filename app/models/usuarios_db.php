@@ -47,13 +47,34 @@ class UsuariosDB
     
     public static function obtenerTodosUsuarios(PDO $conexion): array
     {
-        $base=$conexion->prepare("SELECT u.id_usuario, u.usuario, e.nombre AS empleado_asociado, u.rol, u.permisos, u.fecha_creacion, u.ultimo_acceso, u.estado
-                                    FROM usuarios u
-                                    LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
-                                    WHERE u.estado='activo'
-                                    ORDER BY u.id_usuario DESC");
-        $base->execute();
-        return $base->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $base = $conexion->prepare("SELECT u.id_usuario, u.usuario, e.nombre AS empleado_asociado, u.rol, u.fecha_creacion, u.ultimo_acceso, u.estado
+                                        FROM usuarios u
+                                        LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
+                                        WHERE u.estado = 'activo'
+                                        ORDER BY u.id_usuario DESC");
+            $base->execute();
+            return $base->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Throwable $error) {
+            try {
+                $base = $conexion->prepare("SELECT u.*, e.nombre AS empleado_asociado
+                                            FROM usuarios u
+                                            LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
+                                            ORDER BY u.id_usuario DESC");
+                $base->execute();
+                return $base->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            } catch (Throwable $e) {
+                try {
+                    $base = $conexion->query("SELECT * FROM usuarios");
+                    if ($base instanceof PDOStatement) {
+                        return $base->fetchAll(PDO::FETCH_ASSOC) ?: [];
+                    }
+                    return [];
+                } catch (Throwable $e2) {
+                    return [];
+                }
+            }
+        }
     }
 
     public static function eliminar (int $id) : bool
