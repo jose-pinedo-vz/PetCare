@@ -21,7 +21,7 @@ $productosConPerdida = array_values(array_filter(
 ));
 $productosEnRiesgo = array_values(array_filter(
   $productos,
-  static fn ($producto): bool => (int) $producto['existencia'] >= 1 && (int) $producto['existencia'] <= (int) $producto['existencia_minima']
+  static fn ($producto): bool => (int) $producto['existencia'] <= (int) $producto['existencia_minima']
 ));
 $movimientosHoy = null;
 
