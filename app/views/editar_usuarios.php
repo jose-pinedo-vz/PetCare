@@ -62,8 +62,8 @@ $usuario=$_SESSION['usuario'];
                     </div>
 
                     <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Contraseña (Obligatorio):</label>
-                        <input type="password" name="nueva_password" class="campo" value="<?= htmlspecialchars($user_edi['contrasena']) ?>" required>
+                        <label class="label-campo">Contraseña (dejar en blanco para mantener la actual):</label>
+                        <input type="password" name="nueva_password" class="campo" value="">
                     </div>
 
                     <div style="margin-bottom: 12px;">
