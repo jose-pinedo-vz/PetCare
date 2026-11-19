@@ -85,6 +85,7 @@ $usuario = $_SESSION['usuario'];
                             <option value="estilista">Estilista</option>
                             <option value="recepcionista">Recepcionista</option>
                             <option value="hotelero">Hotelero</option>
+                            <option value="cajero">Cajero</option>
                         </select>
                     </div>
                     
@@ -109,30 +110,36 @@ $usuario = $_SESSION['usuario'];
     (() => {
       const rol = document.querySelector('[name="rol"]');
       const empleado = document.querySelector('[name="empleado_asociado"]');
-      const puestosPorRol = {
-        admin: ['Gerente'],
-        gerente: ['Gerente'],
-        veterinario: ['Veterinario', 'Veterinario/a'],
-        vendedor: ['Vendedor'],
-        estilista: ['Estilista'],
-        recepcionista: ['Recepcionista'],
-        hotelero: ['Hotelero']
+      if (!rol || !empleado) return;
+
+      const rolPorPuesto = {
+        'administrador': 'admin',
+        'gerente': 'gerente',
+        'veterinario': 'veterinario',
+        'veterinario/a': 'veterinario',
+        'vendedor': 'vendedor',
+        'estilista': 'estilista',
+        'recepcionista': 'recepcionista',
+        'hotelero': 'hotelero',
+        'cajero': 'cajero'
       };
 
-      function filtrarEmpleados() {
-        const puestosPermitidos = puestosPorRol[rol.value] || [];
-        let seleccionadoVisible = false;
-        empleado.querySelectorAll('option[data-puesto]').forEach((opcion) => {
-          const visible = puestosPermitidos.includes(opcion.dataset.puesto);
-          opcion.hidden = !visible;
-          opcion.disabled = !visible;
-          if (visible && opcion.selected) seleccionadoVisible = true;
-        });
-        if (!seleccionadoVisible) empleado.value = '';
+      function sincronizarRolConEmpleado() {
+        const opcionSeleccionada = empleado.options[empleado.selectedIndex];
+        const puesto = (opcionSeleccionada?.dataset?.puesto || '').trim().toLowerCase();
+        const rolDetectado = rolPorPuesto[puesto];
+
+        if (rolDetectado && rol.querySelector(`option[value="${rolDetectado}"]`)) {
+          rol.value = rolDetectado;
+        }
       }
 
-      rol.addEventListener('change', filtrarEmpleados);
-      filtrarEmpleados();
+      empleado.addEventListener('change', sincronizarRolConEmpleado);
+
+      // Si al abrir el formulario ya viene un empleado seleccionado, sincroniza el rol
+      if (empleado.value) {
+        sincronizarRolConEmpleado();
+      }
     })();
   </script>
 </body>

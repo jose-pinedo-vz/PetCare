@@ -31,13 +31,14 @@ class UsuariosDB
         }
 
         $combinaciones = [
-            'admin' => ['Gerente'],
+            'admin' => ['Administrador'],
             'gerente' => ['Gerente'],
             'veterinario' => ['Veterinario', 'Veterinario/a'],
             'vendedor' => ['Vendedor'],
             'estilista' => ['Estilista'],
             'recepcionista' => ['Recepcionista'],
             'hotelero' => ['Hotelero'],
+            'cajero' => ['Cajero']
         ];
 
         return isset($combinaciones[$rolNormalizado])
@@ -119,7 +120,7 @@ class UsuariosDB
         $conexion = ConexionDB::obtenerConexion();
         try {
             // Trae los empleados activos que no tienen usuario, 
-            // OR (o bien) el empleado que ya tiene asignado este usuario en específico.
+            // OR (o bien) el empleado que ya tiene asignado este usuario en específic.
             $query =   "SELECT id_empleado, nombre, puesto FROM empleados 
                         WHERE (id_empleado NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado IS NOT NULL)
                         OR id_empleado = (SELECT empleado_asociado FROM usuarios WHERE id_usuario = :id_usuario))

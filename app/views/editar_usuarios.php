@@ -14,17 +14,17 @@ if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
   exit();
 }
 require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles=UsuariosDB::empleados_disponibles();
 $mensaje=$_SESSION['mensaje']??'';
 $error=$_SESSION['error']??'';
 unset($_SESSION['mensaje'],$_SESSION['error']);
 $idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
-if ($idUsuario === false || $idUsuario === null)
-{
+$idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
+if ($idUsuario === false || $idUsuario === null) {
     header('Location: usuarios.php');
     exit();
 }
-$user_edi=UsuariosDB::usuario_ID($idUsuario);
+$user_edi = UsuariosDB::usuario_ID($idUsuario);
+$empleados_disponibles = UsuariosDB::empleados_disponibles_editar($idUsuario);
 $usuario=$_SESSION['usuario'];
 ?>
 <!DOCTYPE html>
@@ -40,7 +40,7 @@ $usuario=$_SESSION['usuario'];
     <div class="layout">
         <?php $paginaActiva = 'usuarios'; include __DIR__ . '/layout/sidebar.php'; ?>
         <main>
-            <div class="migaja"><a href="usuarios.php" class="link-tenue">Gestión de usuarios</a> / Agregar usuarios</div>
+            <div class="migaja"><a href="usuarios.php" class="link-tenue">Gestión de usuarios</a> / Editar usuarios</div>
             <div class="encabezado-pagina">
             <h1>Editar usuarios</h1>
             </div>
@@ -72,7 +72,7 @@ $usuario=$_SESSION['usuario'];
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
                                 <?php foreach ($empleados_disponibles as $emp): ?>
-                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>" data-puesto="<?= htmlspecialchars($emp['puesto']); ?>" <?= ($user_edi['empleado_asociado'] === $emp['nombre']) ? 'selected' : '' ?>>
+                                    <option value="<?= htmlspecialchars((string)$emp['id_empleado']); ?>" data-puesto="<?= htmlspecialchars($emp['puesto']); ?>" <?= ((int)($user_edi['empleado_asociado'] ?? 0) === (int)$emp['id_empleado']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($emp['nombre']); ?> — <?= htmlspecialchars($emp['puesto']); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -88,6 +88,7 @@ $usuario=$_SESSION['usuario'];
                             <option value="admin"           <?= ($user_edi['rol'] === 'admin') ? 'selected' : '' ?>>Administrador</option>
                             <option value="gerente"         <?= ($user_edi['rol'] === 'gerente') ? 'selected' : '' ?>>Gerente</option>
                             <option value="veterinario"     <?= ($user_edi['rol'] === 'veterinario') ? 'selected' : '' ?>>Veterinario</option>
+                            <option value="cajero"          <?= ($user_edi['rol'] === 'cajero') ? 'selected' : '' ?>>Cajero</option>
                             <option value="vendedor"        <?= ($user_edi['rol'] === 'vendedor') ? 'selected' : '' ?>>Vendedor</option>
                             <option value="cliente"         <?= ($user_edi['rol'] === 'cliente') ? 'selected' : '' ?>>Cliente</option>
                             <option value="estilista"       <?= ($user_edi['rol'] === 'estilista') ? 'selected' : '' ?>>Estilista</option>
@@ -117,31 +118,36 @@ $usuario=$_SESSION['usuario'];
     (() => {
       const rol = document.querySelector('[name="rol"]');
       const empleado = document.querySelector('[name="empleado_asociado"]');
-      const puestosPorRol = {
-        admin: ['Gerente'],
-        gerente: ['Gerente'],
-        veterinario: ['Veterinario', 'Veterinario/a'],
-        vendedor: ['Vendedor'],
-        cliente: [],
-        estilista: ['Estilista'],
-        recepcionista: ['Recepcionista'],
-        hotelero: ['Hotelero']
+      if (!rol || !empleado) return;
+
+      const rolPorPuesto = {
+        'administrador': 'admin',
+        'gerente': 'gerente',
+        'veterinario': 'veterinario',
+        'veterinario/a': 'veterinario',
+        'vendedor': 'vendedor',
+        'estilista': 'estilista',
+        'recepcionista': 'recepcionista',
+        'hotelero': 'hotelero',
+        'cajero': 'cajero'
       };
 
-      function filtrarEmpleados() {
-        const puestosPermitidos = puestosPorRol[rol.value] || [];
-        let seleccionadoVisible = false;
-        empleado.querySelectorAll('option[data-puesto]').forEach((opcion) => {
-          const visible = puestosPermitidos.includes(opcion.dataset.puesto);
-          opcion.hidden = !visible;
-          opcion.disabled = !visible;
-          if (visible && opcion.selected) seleccionadoVisible = true;
-        });
-        if (!seleccionadoVisible) empleado.value = '';
+      function sincronizarRolConEmpleado() {
+        const opcionSeleccionada = empleado.options[empleado.selectedIndex];
+        const puesto = (opcionSeleccionada?.dataset?.puesto || '').trim().toLowerCase();
+        const rolDetectado = rolPorPuesto[puesto];
+
+        if (rolDetectado && rol.querySelector(`option[value="${rolDetectado}"]`)) {
+          rol.value = rolDetectado;
+        }
       }
 
-      rol.addEventListener('change', filtrarEmpleados);
-      filtrarEmpleados();
+      empleado.addEventListener('change', sincronizarRolConEmpleado);
+
+      // Si al abrir el formulario ya viene un empleado seleccionado, sincroniza el rol
+      if (empleado.value) {
+        sincronizarRolConEmpleado();
+      }
     })();
   </script>
 </body>
