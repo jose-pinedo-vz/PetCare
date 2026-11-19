@@ -31,13 +31,14 @@ class UsuariosDB
         }
 
         $combinaciones = [
-            'admin' => ['Gerente'],
+            'admin' => ['Administrador'],
             'gerente' => ['Gerente'],
             'veterinario' => ['Veterinario', 'Veterinario/a'],
             'vendedor' => ['Vendedor'],
             'estilista' => ['Estilista'],
             'recepcionista' => ['Recepcionista'],
             'hotelero' => ['Hotelero'],
+            'cajero' => ['Cajero']
         ];
 
         return isset($combinaciones[$rolNormalizado])
@@ -77,25 +78,28 @@ class UsuariosDB
 
     public static function insertar(int $id, string $nuevo_usuario, string $nueva_password, ?int $empleado, string $rol, string $estado)
     {
-        $conexion=ConexionDB::obtenerConexion();
+        $conexion = ConexionDB::obtenerConexion();
         try
         {
-            $empleado=trim($_POST['empleado_asociado']??'');
-            $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
-            $stmt = $conexion->prepare("UPDATE usuarios SET usuario=?, empleado_asociado=?, rol=?, estado=? WHERE id_usuario=?");
-            $stmt->execute([$nuevo_usuario, $empleado_asociado, $rol, $estado, $id]);
-            if (!empty($nueva_password))
+            $empleado_asociado = ($empleado !== null && $empleado > 0) ? $empleado : null;
+            $passwordLimpia = trim($nueva_password);
+            if ($passwordLimpia !== '')
             {
-                $password_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
-                $stmtPass = $conexion->prepare("UPDATE usuarios SET contrasena=? WHERE id_usuario=?");
-                $stmtPass->execute([$password_hash, $id]);
+                $password_hash = password_hash($passwordLimpia, PASSWORD_DEFAULT);
+                $stmt = $conexion->prepare("UPDATE usuarios SET usuario = ?, contrasena = ?, empleado_asociado = ?, rol = ?, estado = ? WHERE id_usuario = ?");
+                $stmt->execute([$nuevo_usuario, $password_hash, $empleado_asociado, $rol, $estado, $id]);
+            }
+            else
+            {
+                $stmt = $conexion->prepare("UPDATE usuarios SET usuario = ?, empleado_asociado = ?, rol = ?, estado = ? WHERE id_usuario = ?");
+                $stmt->execute([$nuevo_usuario, $empleado_asociado, $rol, $estado, $id]);
             }
 
-            $_SESSION['mensaje']="Usuario actualizado con éxito.";
+            $_SESSION['mensaje'] = "Usuario actualizado con éxito.";
         }
         catch (PDOException $e)
         {
-            $_SESSION['error']="Error al actualizar el usuario: " . $e->getMessage();
+            $_SESSION['error'] = "Error al actualizar el usuario: " . $e->getMessage();
         }
     }
 
@@ -119,7 +123,7 @@ class UsuariosDB
         $conexion = ConexionDB::obtenerConexion();
         try {
             // Trae los empleados activos que no tienen usuario, 
-            // OR (o bien) el empleado que ya tiene asignado este usuario en específico.
+            // OR (o bien) el empleado que ya tiene asignado este usuario en específic.
             $query =   "SELECT id_empleado, nombre, puesto FROM empleados 
                         WHERE (id_empleado NOT IN (SELECT empleado_asociado FROM usuarios WHERE empleado_asociado IS NOT NULL)
                         OR id_empleado = (SELECT empleado_asociado FROM usuarios WHERE id_usuario = :id_usuario))
