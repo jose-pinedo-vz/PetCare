@@ -131,16 +131,21 @@
         }
 
         // cantidad de citas por fecha
-        public static function cantidadCitasFecha($valor)
+        public static function cantidadCitasFecha($valor, $empleado = null)
         {
             try
             {
-                // Comparamos año, mes, día y hora:minuto, ignorando segundos o microsegundos
-                $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND estado_cita = "pendiente"';
                 $db = ConexionDB::obtenerConexion();
-                $stml = $db->prepare($query);
-                $stml->execute([$valor]);
-                return $stml->fetchColumn();
+                if (!empty($empleado) && is_numeric($empleado) && (int)$empleado > 0) {
+                    $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND empleado = ? AND estado_cita IN ("pendiente", "confirmada")';
+                    $stml = $db->prepare($query);
+                    $stml->execute([$valor, (int)$empleado]);
+                } else {
+                    $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND estado_cita IN ("pendiente", "confirmada")';
+                    $stml = $db->prepare($query);
+                    $stml->execute([$valor]);
+                }
+                return (int)$stml->fetchColumn();
             }
             catch (Exception $e)
             {
@@ -148,15 +153,21 @@
             }
         }
 
-        public static function duracionCita($fecha)
+        public static function duracionCita($fecha, $empleado = null)
         {
             try
             {
-                $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND estado_cita = 'pendiente'";
                 $db = ConexionDB::obtenerConexion();
-                $stml = $db->prepare($query);
-                $stml->execute([$fecha]);
-                return $stml->fetchColumn();
+                if (!empty($empleado) && is_numeric($empleado) && (int)$empleado > 0) {
+                    $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND empleado = ? AND estado_cita IN ('pendiente', 'confirmada') LIMIT 1";
+                    $stml = $db->prepare($query);
+                    $stml->execute([$fecha, (int)$empleado]);
+                } else {
+                    $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND estado_cita IN ('pendiente', 'confirmada') LIMIT 1";
+                    $stml = $db->prepare($query);
+                    $stml->execute([$fecha]);
+                }
+                return (int)$stml->fetchColumn();
             }
             catch (Exception $e)
             {
@@ -178,6 +189,22 @@
             {
                 return [];
 
+            }
+        }
+
+        public static function validarMascotaCliente(int $idMascota, int $idCliente): bool
+        {
+            try
+            {
+                $query = "SELECT COUNT(*) FROM mascotas WHERE id_mascota = ? AND id_cliente = ? AND esta_activo = 1";
+                $db = ConexionDB::obtenerConexion();
+                $stmt = $db->prepare($query);
+                $stmt->execute([$idMascota, $idCliente]);
+                return ((int)$stmt->fetchColumn()) > 0;
+            }
+            catch (Exception $e)
+            {
+                return false;
             }
         }
 
