@@ -122,8 +122,8 @@ unset(
           </fieldset>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="servicios.php">Cancelar</a>
-            <button type="submit">Guardar</button>
+            <a class="btn btn-secundario btn-chico" href="servicios.php">Cancelar</a>
+            <button type="submit" class="btn btn-chico">Guardar</button>
           </div>
         </form>
       </div>

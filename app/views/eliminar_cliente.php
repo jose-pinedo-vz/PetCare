@@ -57,8 +57,8 @@ $apellido_cliente = $_GET['apellido'];
         </fieldset>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="clientes.php">Cancelar</a>
-            <button type="submit" class="btn">Eliminar</button>
+            <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+            <button type="submit" class="btn btn-chico">Eliminar</button>
           </div>
 
         </div>
