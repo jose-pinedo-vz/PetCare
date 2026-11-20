@@ -257,8 +257,8 @@ $valorCampo = static function (string $campo, string $porDefecto = '') use ($old
           </fieldset>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="hotel.php">Cancelar</a>
-            <button type="submit" id="guardar_reservacion" disabled>Guardar reservación</button>
+            <a class="btn btn-secundario btn-chico" href="hotel.php">Cancelar</a>
+            <button type="submit" id="guardar_reservacion" class="btn btn-chico" disabled>Guardar reservación</button>
           </div>
           <span class="nota-campo" style="text-align:right;">Solo se puede guardar cuando las vacunas están vigentes hasta la fecha de salida.</span>
         </form>

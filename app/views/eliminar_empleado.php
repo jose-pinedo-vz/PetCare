@@ -63,8 +63,8 @@ $apellido_empleado = $_GET['apellido'];
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn">Eliminar</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Eliminar</button>
       </div>
     </form>
   
