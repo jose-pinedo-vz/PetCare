@@ -89,7 +89,8 @@
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
             $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio, c.empleado
               FROM citas c
-              INNER JOIN clientes cl ON c.cliente = cl.id_cliente WHERE c.estado_cita IN ('pendiente', 'atendida')";
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente WHERE c.estado_cita IN ('pendiente', 'atendida')
+              ORDER BY fecha ASC";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
@@ -575,19 +576,23 @@
             }
         }
 
-        public static function empleadoDelUsuario($idUsuario)
+        public static function empleadoDelUsuario(string $usuario): string
         {
             try
             {
-                $query = "SELECT empleado_asociado FROM usuarios WHERE is_usuario = ?";
+                $query = "SELECT CONCAT(e.nombre, ' ', e.apellido) AS completo
+                        FROM usuarios u
+                        INNER JOIN empleados e ON e.id_empleado = u.empleado_asociado
+                        WHERE u.usuario = ?
+                        LIMIT 1";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
-                $stml->execute([$idUsuario]);
-                return $stml->fetchAll(PDO::FETCH_ASSOC);
+                $stml->execute([$usuario]);
+                return (string)$stml->fetchColumn();  
             }
             catch (Exception $e)
             {
-                return [];
+                return '';
             }
         }
     }

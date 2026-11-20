@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     // validar que no sea fecha pasada
     $fechaActual = date('Y-m-d');
-    if ($fecha < $fechaActual)
+    if ($fecha <= $fechaActual)
     {
         errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");
     }
@@ -473,9 +473,9 @@ function responsablesNombreEId()
     return ConexionesClientes::ReponsableIdNombre();
 }
 
-function consultarEmpleado(int $id_usuarios)
+function nombreDelUsuario(string $usuario)
 {
-    return ConexionesClientes::empleadoDelUsuario($id_usuarios);
+    return ConexionesClientes::empleadoDelUsuario($usuario);
 }
 
 

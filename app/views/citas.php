@@ -10,17 +10,18 @@ if (session_status() === PHP_SESSION_NONE)
 <?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
-  echo "Empleado: " . $empleado_asociado;
+  // $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+  // echo "Empleado: " . $empleado_asociado;
 
-  echo $usuario="User: " . $_SESSION['usuario'];
+  // echo $usuario="User: " . $_SESSION['usuario'];
 
-  $consultarEmpleado = consultarEmpleado((int)$usuario);
+  // $consultarEmpleado = consultarEmpleado($usuario);
   $datos = estraerDatosConsultas();
   $servicios = serviciosIdYNombre();
+  $miNombre = strtolower(nombreDelUsuario((string)($_SESSION['usuario'] ?? '')));
 
 
-  function mostrarProximasCitas(array $datos,array $servicios,string $consultarEmpleado)
+  function mostrarProximasCitas(array $datos,array $servicios,string $miNombre)
   {
     // echo $datos[0]['atendido'];
     $responsables = responsablesNombreEId();
@@ -37,7 +38,7 @@ if (session_status() === PHP_SESSION_NONE)
           <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
 
 
-          <?php if ((int)$d['empleado'] === $consultarEmpleado) { ?>
+          <?php if ($miNombre !== '' && strtolower($responsables[$d['empleado']] ?? '') === $miNombre) { ?>
           <td>
             <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
@@ -47,7 +48,7 @@ if (session_status() === PHP_SESSION_NONE)
           <?php
           }else
               {
-                ?><td><h3>Solo el responsable puede ejecutar esat accion.</h3></td><?php
+                ?><td><h3>Solo el responsable puede ejecutar esta accion.</h3></td><?php
               }
           ?>
         </tr>
@@ -74,7 +75,7 @@ if (session_status() === PHP_SESSION_NONE)
           <td><?php echo htmlspecialchars($d['motivo']); ?></td>
           <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
           <td>
-            <a class="btn">Pagar</a>
+            <a class="btn" href="Ventas.php">Pagar</a>
           </td>
 
         </tr>
@@ -182,7 +183,7 @@ if (session_status() === PHP_SESSION_NONE)
                     </tr>
                   </thead>
                   <tbody>
-                    <?php mostrarProximasCitas($datos, $servicios, (int)$consultarEmpleado); ?>
+                    <?php mostrarProximasCitas($datos, $servicios, $miNombre); ?>
                   </tbody>
                 </table>
               </div>

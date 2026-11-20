@@ -1,6 +1,14 @@
 <?php
     // Iniciar la sesión al principio
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) 
+    {
+        session_start();
+    }
+    if (!isset($_SESSION['usuario']))
+    {
+        header("Location: ../views/login.php");
+        exit();
+    }
 
     // Obtener errores y datos enviados previamente (si existen)
     $errores = $_SESSION['errores'] ?? [];
