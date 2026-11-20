@@ -87,7 +87,7 @@
         public function datosCitas():array
         {
             // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
-            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio, c.empleado
               FROM citas c
               INNER JOIN clientes cl ON c.cliente = cl.id_cliente WHERE c.estado_cita IN ('pendiente', 'atendida')";
 
@@ -548,6 +548,44 @@
                 return $stml->fetchAll(PDO::FETCH_ASSOC);
             }
             catch (Throwable $e)                          
+            {
+                return [];
+            }
+        }
+
+        public static function ReponsableIdNombre()
+        {
+            try
+            {
+                //$query = "SELECT id_empleado, nombre FROM empleados";
+                $query = "SELECT id_empleado, nombre, apellido FROM empleados";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute();                                  
+
+                $mapa = [];
+                foreach ($stml->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                    $mapa[$f['id_empleado']] = $f['nombre'] . ' ' . $f['apellido'];     
+                }
+                return $mapa;
+            }
+            catch (Exception $e)
+            {
+                return [];
+            }
+        }
+
+        public static function empleadoDelUsuario($idUsuario)
+        {
+            try
+            {
+                $query = "SELECT empleado_asociado FROM usuarios WHERE is_usuario = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$idUsuario]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Exception $e)
             {
                 return [];
             }

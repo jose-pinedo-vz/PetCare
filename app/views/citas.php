@@ -10,14 +10,20 @@ if (session_status() === PHP_SESSION_NONE)
 <?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
+  $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+  echo "Empleado: " . $empleado_asociado;
 
+  echo $usuario="User: " . $_SESSION['usuario'];
+
+  $consultarEmpleado = consultarEmpleado((int)$usuario);
   $datos = estraerDatosConsultas();
   $servicios = serviciosIdYNombre();
 
 
-  function mostrarProximasCitas(array $datos,array $servicios)
+  function mostrarProximasCitas(array $datos,array $servicios,string $consultarEmpleado)
   {
     // echo $datos[0]['atendido'];
+    $responsables = responsablesNombreEId();
     foreach ($datos as $d)
     {
       $estadocita = trim($d['estado_cita'] ?? '');
@@ -28,14 +34,22 @@ if (session_status() === PHP_SESSION_NONE)
           <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
           <td><?php echo htmlspecialchars($d['motivo']); ?></td>
           <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
 
+
+          <?php if ((int)$d['empleado'] === $consultarEmpleado) { ?>
           <td>
             <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
             <a class="btn btn-chico btn-aviso btn-chico" href="reprogramar_cita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
             <a class="btn btn-chico btn-peligro" onclick="noAsistioCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
-
           </td>
+          <?php
+          }else
+              {
+                ?><td><h3>Solo el responsable puede ejecutar esat accion.</h3></td><?php
+              }
+          ?>
         </tr>
       <?php }
     }
@@ -163,11 +177,12 @@ if (session_status() === PHP_SESSION_NONE)
                       <th>Fecha:</th>
                       <th>Motivo de consulta:</th>
                       <th>Servicio:</th>
+                      <th>Responsable:</th>
                       <th>Acciones:</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php mostrarProximasCitas($datos, $servicios); ?>
+                    <?php mostrarProximasCitas($datos, $servicios, (int)$consultarEmpleado); ?>
                   </tbody>
                 </table>
               </div>

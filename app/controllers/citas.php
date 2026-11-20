@@ -31,7 +31,9 @@ function estraerDatosConsultas(): array
             'fecha' => $cita['fecha'],
             'motivo' => $cita['observacion'],           
             'estado_cita' => $cita['estado_cita'],
-            'servicio' => $cita['servicio'],     
+            'servicio' => $cita['servicio'],
+            'empleado' => $cita['empleado'],     
+
         ];
     }
     return $resultados;
@@ -466,7 +468,15 @@ function serviciosIdYNombre()
     return ConexionesClientes::serviciosIdYNombreModel();
 }
 
+function responsablesNombreEId()
+{
+    return ConexionesClientes::ReponsableIdNombre();
+}
 
+function consultarEmpleado(int $id_usuarios)
+{
+    return ConexionesClientes::empleadoDelUsuario($id_usuarios);
+}
 
 
 
