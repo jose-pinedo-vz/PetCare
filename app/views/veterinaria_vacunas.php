@@ -39,41 +39,28 @@ $catalogoVacunas = $catalogoVacunas ?? [];
               </thead>
               <tbody>
                 <tr>
-                <td>Pargovirus</td>
-                <td>Aves</td>
-                <td><button type="button" class="btn" id="editarVacuna">Editar</button> <button type="button" class="btn" id="eliminarVacuna">Eliminar</button></td>
+                  <td>Parvovirus</td>
+                  <td>Perros</td>
+                  <td> 
+                    <button type="button" class="btn" onclick="abrirEditar('Parvovirus','Perros')">Editar</button> 
+                    <button type="button" class="btn" onclick="abrirEliminar('Parvovirus')"> Eliminar</button>
+                  </td>
                 </tr>
                 <?php foreach ($lista_vacunas as $v): ?>
                       <tr>
                         <td><?= htmlspecialchars($v['Vacuna']) ?></td>
                         <td><?= htmlspecialchars($v['Especie']) ?></td>
-                        <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
+                        <td> 
+                          <button type="button" class="btn" onclick='abrirEditar(<?= json_encode($v["Vacuna"]) ?>,<?= json_encode($v["Especie"]) ?>)'>Editar</button> 
+                          <button type="button" class="btn" onclick='abrirEliminar(     <?= json_encode($v["Vacuna"]) ?> )'> Eliminar</button>
+                        </td>
                       </tr>
                 <?php endforeach; ?>
               </tbody>
-            </table>                
-          </div>
-          <div class="tarjeta">
-            <h2>Agregar vacuna</h2>
-            <table id="Nueva Vacuna">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Especie</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td><input type="text" id="NuevaVacunaNombre" placeholder="Nombre de la vacuna" requiered></input></td>
-                  <td><input type="text" id="NuevaVacunaEspecie" placeholder="Especie" requiered></input></td>
-                </tr>
-              </tbody>
-            </table>
-              <button type="button" class="btn">Agregar</button>
+            </table>  
+            <button type="button" class="btn" onclick="abrirAgregar()">Agregar vacuna</button>              
           </div>
         </div>
-
 
       <!-- Columna Derecha -->
         <div class="columna-principal">
@@ -91,11 +78,13 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                     </tr>
                   </thead>
                   <tbody id="tablaMascotas">
-                    <td>Free of lies</td>
-                    <td>02/07/2026</td>
-                    <td>Pargovirus</td>
-                    <td>024024</td>
-                    <td>11/11/2026</td>
+                    <tr>
+                      <td>Free of lies</td>
+                      <td>02/07/2026</td>
+                      <td>Pargovirus</td>
+                      <td>024024</td>
+                      <td>11/11/2026</td>
+                    </tr>
                     <?php foreach ($vacunas as $v): ?>
                       <tr>
                         <td><?= htmlspecialchars($v['mascota']) ?></td>
@@ -150,11 +139,116 @@ $catalogoVacunas = $catalogoVacunas ?? [];
     </main>
 </div>
 
+
+<!-- Modal para agregar -->
+<dialog id="modalAgregar" class="inventario-dialog">
+
+    <h3>Nueva vacuna</h3>
+
+    <form id="formAgregar">
+      <label class="label-campo">Nombre:</label>
+      <input type="text" class="campo" id="nombreAgregar" placeholder="Nombre de la vacuna" required>
+
+      <label class="label-campo">Especie:</label>
+      <select class="campo" id="especieAgregar" required>
+          <option value="" selected disabled>Elige una especie</option>
+      </select>
+
+      <div class="inventario-dialog-acciones">
+        <button type="button" class="btn-secundario" onclick="cerrarAgregar()">Cancelar</button>
+        <button type="submit" class="btn">Guardar vacuna</button>
+      </div>
+    </form>
+</dialog>
+
+
+<!-- Modal para editar -->
+<dialog id="modalEditar" class="inventario-dialog">
+
+    <h2>Editar vacuna</h2>
+
+    <form id="formEditar">
+      <label class="label-campo">Nombre:</label>
+      <input type="text" class="campo" id="nombreEditar" required>
+
+      <label class="label-campo">Especie:</label>
+      <select class="campo" id="especieEditar" required>
+          <option value="" selected disabled>Elige una especie</option>
+      </select>
+
+      <div class="inventario-dialog-acciones">
+        <button type="button" class="btn-secundario" onclick="cerrarEditar()"> Cancelar </button>
+        <button type="submit" class="btn">Guardar cambios</button>
+      </div>
+    </form>
+</dialog>
+
+
+<!-- Modal para eliminar -->
+<dialog id="modalEliminar" class="inventario-dialog">
+  <h2>Eliminar vacuna</h2>
+  <div class="confirmacion">
+    <p>¿Seguro que deseas eliminar esta vacuna?</p>
+    <strong id="vacunaEliminar"></strong>
+  </div>
+  
+  <div class="inventario-dialog-acciones">
+      <button type="button" class="btn-secundario" onclick="cerrarEliminar()">No</button>
+      <button type="button" class="btn btn-eliminar" id="confirmarEliminar">Sí, eliminar</button>
+  </div>
+</dialog>
+
 </body>
 </html>
 
 <script>
-document.getElementById('agregarVacuna').addEventListener('click', function() {
-    document.getElementById('formularioVacuna').style.display = 'block';
-});
+//agregar
+function abrirAgregar() {
+    document.getElementById('formAgregar').reset();
+    document.getElementById('modalAgregar').showModal();
+}
+
+function cerrarAgregar() {document.getElementById('modalAgregar').close();}
+
+
+// editar
+function abrirEditar(nombre, especie) {
+    document.getElementById('nombreEditar').value = nombre;
+    document.getElementById('especieEditar').value = especie;
+
+    document.getElementById('modalEditar').showModal();
+}
+
+function cerrarEditar() {document.getElementById('modalEditar').close();}
+
+
+//eliminar
+function abrirEliminar(nombre) {
+    document.getElementById('vacunaEliminar').textContent = nombre;
+
+    document.getElementById('modalEliminar').showModal();
+}
+
+function cerrarEliminar() {
+    document.getElementById('modalEliminar').close();
+}
+
+
+// EVITAR ENVÍOS HASTA CONECTAR PHP
+document.getElementById('formAgregar')
+    .addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Pendiente conectar con la base de datos');
+    });
+
+document.getElementById('formEditar')
+    .addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Pendiente conectar con la base de datos');
+    });
+
+document.getElementById('confirmarEliminar')
+    .addEventListener('click', function() {
+        alert('Pendiente conectar con la base de datos');
+    });
 </script>
