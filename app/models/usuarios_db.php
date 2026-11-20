@@ -120,7 +120,16 @@ class UsuariosDB
         }
         catch (PDOException $e)
         {
-            $_SESSION['error'] = "Error al actualizar el usuario: " . $e->getMessage();
+            if ((string)$e->getCode() === '23000' && isset($e->errorInfo[1]) && (int)$e->errorInfo[1] === 1062)
+            {
+                $_SESSION['error'] = "El nombre de usuario '$nuevo_usuario' ya existe.";
+            }
+            else
+            {
+                $_SESSION['error'] = "Error al actualizar el usuario: " . $e->getMessage();
+            }
+            header("Location: ../views/editar_usuarios.php?id_usuario=" . $id);
+            exit();
         }
     }
 
