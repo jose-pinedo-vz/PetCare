@@ -9,10 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita = 0)
 {
     $_SESSION['error'] = $mensaje;
-    $url = "../views/desparasitacion.php?error=" . urlencode($mensaje);
-    if ((int)$id_cita > 0) {
-        $url .= "&id_consulta=" . (int)$id_cita;
-    }
+    $url = "../views/desparasitacion.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
     header("Location: " . $url);
     exit();
 }
