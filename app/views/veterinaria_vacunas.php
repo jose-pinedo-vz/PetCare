@@ -33,31 +33,44 @@ $catalogoVacunas = $catalogoVacunas ?? [];
               <thead>
                 <tr>
                   <th>Vacunas</th>
+                  <th>Especie</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                 <td>Pargovirus</td>
-                <td><button type="button" class="btn" id="guardarVacuna">Eliminar</button></td>
+                <td>Aves</td>
+                <td><button type="button" class="btn" id="editarVacuna">Editar</button> <button type="button" class="btn" id="eliminarVacuna">Eliminar</button></td>
                 </tr>
                 <?php foreach ($lista_vacunas as $v): ?>
                       <tr>
-                        <td><?= htmlspecialchars($v['mascota']) ?></td>
-                        <td><?= htmlspecialchars($v['fecha_aplicacion']) ?></td>
-                        <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
-                        <td><?= htmlspecialchars($v['lote']) ?></td>
-                        <td><?= htmlspecialchars($v['fecha_proxima']) ?></td>
+                        <td><?= htmlspecialchars($v['Vacuna']) ?></td>
+                        <td><?= htmlspecialchars($v['Especie']) ?></td>
                         <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
                       </tr>
                 <?php endforeach; ?>
               </tbody>
             </table>                
-            <button type="button" class="btn" id="agregarVacuna">Agregar vacuna</button>
-            <div id="formularioVacuna" style="display: none;">
-                <input type="text" id="nombreVacuna" placeholder="Nombre de la vacuna">
-                <button type="button" class="btn" id="guardarVacuna">Guardar</button>
-            </div>
+          </div>
+          <div class="tarjeta">
+            <h2>Agregar vacuna</h2>
+            <table id="Nueva Vacuna">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Especie</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td><input type="text" id="NuevaVacunaNombre" placeholder="Nombre de la vacuna" requiered></input></td>
+                  <td><input type="text" id="NuevaVacunaEspecie" placeholder="Especie" requiered></input></td>
+                </tr>
+              </tbody>
+            </table>
+              <button type="button" class="btn">Agregar</button>
           </div>
         </div>
 
