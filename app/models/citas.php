@@ -6,7 +6,8 @@
     //     require_once __DIR__ . '/../../conexion_db.php';
     // }
 
-    require_once 'conexion_db.php';
+    //require_once 'conexion_db.php';
+    require_once __DIR__ . '/conexion_db.php';
 
     // nueva base de datos instalada
     class ConexionesClientes
@@ -82,12 +83,13 @@
         }
 
 
+        // rescatar la base de datos
         public function datosCitas():array
         {
-            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio, s.nombre AS nombre_servicio
+            // $query2 = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?"
+            $query = "SELECT c.id_cita, c.cliente, c.fecha, c.observacion, cl.nombre, cl.apellido, c.atendido, c.estado_cita, c.servicio
               FROM citas c
-              INNER JOIN clientes cl ON c.cliente = cl.id_cliente
-              LEFT JOIN servicios s ON c.servicio = s.id_servicio";
+              INNER JOIN clientes cl ON c.cliente = cl.id_cliente WHERE c.estado_cita IN ('pendiente', 'atendida')";
 
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
@@ -130,51 +132,7 @@
             }
         }
 
-        // cantidad de citas por fecha
-        public static function cantidadCitasFecha($valor, $empleado = null)
-        {
-            try
-            {
-                $db = ConexionDB::obtenerConexion();
-                if (!empty($empleado) && is_numeric($empleado) && (int)$empleado > 0) {
-                    $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND empleado = ? AND estado_cita IN ("pendiente", "confirmada")';
-                    $stml = $db->prepare($query);
-                    $stml->execute([$valor, (int)$empleado]);
-                } else {
-                    $query = 'SELECT COUNT(*) AS total_citas FROM citas WHERE fecha = ? AND estado_cita IN ("pendiente", "confirmada")';
-                    $stml = $db->prepare($query);
-                    $stml->execute([$valor]);
-                }
-                return (int)$stml->fetchColumn();
-            }
-            catch (Exception $e)
-            {
-                return 0;
-            }
-        }
-
-        public static function duracionCita($fecha, $empleado = null)
-        {
-            try
-            {
-                $db = ConexionDB::obtenerConexion();
-                if (!empty($empleado) && is_numeric($empleado) && (int)$empleado > 0) {
-                    $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND empleado = ? AND estado_cita IN ('pendiente', 'confirmada') LIMIT 1";
-                    $stml = $db->prepare($query);
-                    $stml->execute([$fecha, (int)$empleado]);
-                } else {
-                    $query = "SELECT duracion_estimada FROM citas WHERE fecha = ? AND estado_cita IN ('pendiente', 'confirmada') LIMIT 1";
-                    $stml = $db->prepare($query);
-                    $stml->execute([$fecha]);
-                }
-                return (int)$stml->fetchColumn();
-            }
-            catch (Exception $e)
-            {
-                return 0;
-            }
-        }
-
+        // mostrar mascotas de un usuario
         public static function consultaMascota($id_cliente)
         {
             try
@@ -189,22 +147,6 @@
             {
                 return [];
 
-            }
-        }
-
-        public static function validarMascotaCliente(int $idMascota, int $idCliente): bool
-        {
-            try
-            {
-                $query = "SELECT COUNT(*) FROM mascotas WHERE id_mascota = ? AND id_cliente = ? AND esta_activo = 1";
-                $db = ConexionDB::obtenerConexion();
-                $stmt = $db->prepare($query);
-                $stmt->execute([$idMascota, $idCliente]);
-                return ((int)$stmt->fetchColumn()) > 0;
-            }
-            catch (Exception $e)
-            {
-                return false;
             }
         }
 
@@ -270,6 +212,25 @@
                 $stml = $db->prepare($query);
                 $stml->execute([$id_cita]);
                 $stml->fetchColumn();
+                return true;
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }
+        }
+
+        public static function noAsistioCita($id_cita)
+        {
+            try
+            {
+                $query = "UPDATE citas
+                    SET estado_cita = 'cancelada',  estado = 'No asistio'
+                    WHERE id_cita = ?";
+
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id_cita]);
                 return true;
             }
             catch (Exception $e)
@@ -344,7 +305,7 @@
             {
                 $query = "SELECT empleados.id_empleado, CONCAT(empleados.nombre, ' ', empleados.apellido) AS nombre 
                   FROM empleados 
-                  WHERE puesto = ?
+                  WHERE puesto = ? AND esta_activo = 1
                   ";
                   
                 $db = ConexionDB::obtenerConexion();
@@ -384,21 +345,10 @@
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
-                $fechaProxima = (!empty($ProximaCita)) ? $ProximaCita : null;
-                $idVet = (!empty($empleado) && (int)$empleado > 0) ? (int)$empleado : null;
-                return $stml->execute([
-                    (int)$id_cita,
-                    $TipoDesparacitacion,
-                    $ProductoUtilizado,
-                    $fechaProxima,
-                    (float)$Docies,
-                    $idVet,
-                    ($Observaciones !== '' && $Observaciones !== null) ? $Observaciones : null
-                ]);
+                return $stml->execute([$id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones]);
             }
-            catch (Throwable $e)
+            catch (Exception $e)
             {
-                error_log("Error en insertarDesparacitacion: " . $e->getMessage());
                 return false;
             }
         }
@@ -525,6 +475,81 @@
             catch (Exception $e)
             {
                 return false;
+            }
+        }
+
+        public function hayMasCitas($idResponsable, $fecha)
+        {
+            try
+            {
+                $query = "SELECT * FROM citas WHERE empleado = ? and fecha = ? AND estado_cita != 'cancelada'";
+                $db = ConexionDB::obtenerConexion();
+                $stmt = $db->prepare($query);
+                $stmt->execute([$idResponsable, $fecha]);
+                return (bool) $stmt->fetchColumn();
+            }
+            catch (Exception $e)
+            {
+                return false;
+            }   
+        }
+        // 
+
+        public static function citasDelDia(string $fecha, int $empleado)
+        {
+            $query = "SELECT TIME(fecha) AS hora, duracion_estimada
+                    FROM citas
+                    WHERE empleado = ?
+                        AND fecha >= ? AND fecha < DATE_ADD(?, INTERVAL 1 DAY)
+                        AND estado_cita != 'cancelada'";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$empleado, $fecha, $fecha]);
+
+            $mapa = [];
+            foreach ($stml->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                $mapa[$f['hora']] = (int)$f['duracion_estimada'];   
+            }
+            return $mapa;
+        }
+
+        public static function serviciosIdYNombreModel()
+        {
+            try
+            {
+                $query = "SELECT id_servicio, nombre FROM servicios";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute();                                  
+
+                $mapa = [];
+                foreach ($stml->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                    $mapa[$f['id_servicio']] = $f['nombre'];        
+                }
+                return $mapa;
+            }
+            catch (Exception $e)
+            {
+                return [];
+            }
+        }
+
+        public static function productosDesparasitantes()
+        {
+            try
+            {
+                $conexion = ConexionDB::obtenerConexion();   // FALTABA
+                $query = "SELECT p.id_producto, p.nombre
+                        FROM productos p
+                        INNER JOIN categoria_productos c ON p.id_categoria = c.id_categoria
+                        WHERE c.nombre = 'Desparasitante' AND c.estado = 'Activo'";
+                $stml = $conexion->prepare($query);
+                $stml->execute();
+                return $stml->fetchAll(PDO::FETCH_ASSOC);
+            }
+            catch (Throwable $e)                          
+            {
+                return [];
             }
         }
     }
