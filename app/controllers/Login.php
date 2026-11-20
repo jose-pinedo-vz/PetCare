@@ -61,8 +61,16 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
                 $_SESSION['id_empleado']=$datosUsuario['id_empleado'] ?? null;
                 $_SESSION['usuario']=$usuario;
                 $_SESSION['rol']=$datosUsuario['rol'];
-                header("Location: ../views/inicio.php");
-                exit();
+                if ($_SESSION['rol'] === 'cliente')
+                {
+                    header("Location: ../views/cliente/index.php");
+                    exit();
+                }
+                else
+                {
+                    header("Location: ../views/inicio.php");
+                    exit();
+                }
             }
             else
             {
