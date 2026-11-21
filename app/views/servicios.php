@@ -11,6 +11,22 @@ if (!isset($_SESSION['usuario'])) {
 require_once __DIR__ . '/../models/Servicios.php';
 $servicios = Servicios::obtenerTodos();
 $historial = Servicios::obtenerHistorial();
+// Filtros del historial (buscar, fecha y estado)
+$fBuscar = trim((string)($_GET['buscar'] ?? ''));
+$fFecha = (string)($_GET['fecha'] ?? '');
+$fEstado = strtolower(trim((string)($_GET['estado'] ?? '')));
+$historial = array_values(array_filter($historial, function ($h) use ($fBuscar, $fFecha, $fEstado) {
+    if ($fBuscar !== '' && stripos($h['cliente'] . ' ' . $h['mascota'] . ' ' . $h['servicio'], $fBuscar) === false) {
+        return false;
+    }
+    if ($fFecha !== '' && $h['fecha'] !== $fFecha) {
+        return false;
+    }
+    if ($fEstado !== '' && strtolower((string)$h['estado']) !== $fEstado) {
+        return false;
+    }
+    return true;
+}));
 // Lee y limpia el error de sesion
 $error = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
@@ -86,16 +102,18 @@ $esAdmin = in_array($rolSesion, ['admin', 'gerente'], true);
                     <h2>Historial de servicios</h2>
  
                     <form class="inventario-pedidos-toolbar" action="servicios.php" method="GET">
-                        <input type="text" class="campo" name="buscar" placeholder="Buscar por cliente o mascota" aria-label="Buscar por cliente o mascota">
-                        <input type="date" class="campo pedidos-filtro-estado" name="fecha" aria-label="Fecha">
-                        <select class="campo pedidos-filtro-estado" name="estado" aria-label="Estado">
+                        <input type="text" class="campo" name="buscar" value="<?= htmlspecialchars($fBuscar) ?>" placeholder="Buscar por cliente, mascota o servicio" aria-label="Buscar por cliente, mascota o servicio">
+                        <input type="date" class="campo pedidos-filtro-estado" name="fecha" value="<?= htmlspecialchars($fFecha) ?>" aria-label="Fecha" onchange="this.form.submit()">
+                        <select class="campo pedidos-filtro-estado" name="estado" aria-label="Estado" onchange="this.form.submit()">
                             <option value="">Todos los estados</option>
-                            <option value="Programada">Programada</option>
-                            <option value="Confirmada">Confirmada</option>
-                            <option value="Completada">Completada</option>
-                            <option value="Cancelada">Cancelada</option>
-                            <option value="No asistió">No asistió</option>
+                            <?php foreach (['pendiente' => 'Pendiente', 'atendida' => 'Atendida', 'cancelada' => 'Cancelada'] as $v => $t): ?>
+                                <option value="<?= $v ?>" <?= $fEstado === $v ? 'selected' : '' ?>><?= $t ?></option>
+                            <?php endforeach; ?>
                         </select>
+                        <button class="btn btn-chico" type="submit">Filtrar</button>
+                        <?php if ($fBuscar !== '' || $fFecha !== '' || $fEstado !== ''): ?>
+                            <a class="btn btn-secundario btn-chico" href="servicios.php">Limpiar</a>
+                        <?php endif; ?>
                     </form>
  
                     <div class="tabla-envoltura">
@@ -116,7 +134,7 @@ $esAdmin = in_array($rolSesion, ['admin', 'gerente'], true);
                             </thead>
                             <tbody>
                                 <?php if (empty($historial)): ?>
-                                    <tr><td colspan="10">Sin citas registradas.</td></tr>
+                                    <tr><td colspan="10"><?= ($fBuscar !== '' || $fFecha !== '' || $fEstado !== '') ? 'Ninguna cita coincide con el filtro.' : 'Sin citas registradas.' ?></td></tr>
                                 <?php endif; ?>
                                 <?php foreach ($historial as $h):
                                     $est = strtolower((string)$h['estado']);

@@ -28,5 +28,17 @@
             </table>
         </div>
         <p class="busqueda-mensaje" id="mensajeBusquedaServicio" role="status" aria-live="polite"></p>
+
+        <h2 style="margin-top: 16px;">Citas con saldo por cobrar</h2>
+        <div class="tabla-envoltura busqueda-tabla" style="max-height: 30vh; overflow-y: auto;">
+            <table class="servicio-tabla">
+                <thead>
+                    <tr><th>Folio</th><th>Cliente / mascota</th><th>Servicio</th><th>Saldo</th><th>Acción</th></tr>
+                </thead>
+                <tbody id="resultadosCitas">
+                    <tr><td colspan="5" class="vacio">Cargando citas...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </dialog>

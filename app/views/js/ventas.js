@@ -248,6 +248,7 @@
     btnAgregarServicio.addEventListener('click', function () {
         inputBuscarServ.value = '';
         buscarServicios('');
+        cargarCitasPorCobrar();
     });
 
     // Carrito
@@ -343,6 +344,10 @@
             const desc = filaControl();
             const inputDesc = inputMini('0', '100', item.descuento);
             inputDesc.title = 'Porcentaje de descuento';
+            if (item.id_cita) {
+                inputDesc.disabled = true;
+                inputDesc.title = 'El cobro de una cita no admite descuento';
+            }
             inputDesc.addEventListener('change', function () {
                 item.descuento = Number(inputDesc.value) || 0;
                 ajustarDescuento(item);
@@ -431,6 +436,60 @@
             descuento: 0
         });
         dibujarCarrito();
+    }
+
+    // Agrega el saldo de una cita por cobrar (IVA incluido en el saldo)
+    function agregarCita(ci) {
+        mensajeVenta.textContent = '';
+        if (carrito.some(function (i) { return i.id_cita === Number(ci.id_cita); })) {
+            mensajeVenta.textContent = 'Esa cita ya esta en la venta.';
+            return;
+        }
+        carrito.push({
+            tipo: 'servicio',
+            id_servicio: Number(ci.id_servicio),
+            id_cita: Number(ci.id_cita),
+            codigo: ci.folio + ' · ' + ci.mascota,
+            nombre: ci.servicio + ' (saldo ' + ci.folio + ')',
+            precio: Math.round(Number(ci.saldo) / 1.16 * 100) / 100,
+            cantidad: 1,
+            descuento: 0
+        });
+        dibujarCarrito();
+    }
+
+    // Citas por cobrar en el modal de servicios
+    async function cargarCitasPorCobrar() {
+        const tb = document.getElementById('resultadosCitas');
+        if (!tb) return;
+        try {
+            const resp = await fetch(URL_VENTAS + '?accion=citas_por_cobrar');
+            const lista = await resp.json();
+            tb.innerHTML = '';
+            if (!Array.isArray(lista) || lista.length === 0) {
+                const tr = document.createElement('tr');
+                const td = celda('No hay citas con saldo pendiente.');
+                td.colSpan = 5;
+                td.className = 'vacio';
+                tr.appendChild(td);
+                tb.appendChild(tr);
+                return;
+            }
+            lista.forEach(function (ci) {
+                const tr = document.createElement('tr');
+                tr.appendChild(celda(ci.folio));
+                tr.appendChild(celda(ci.cliente + ' · ' + ci.mascota));
+                tr.appendChild(celda(ci.servicio));
+                tr.appendChild(celda(dinero(Number(ci.saldo))));
+                tr.appendChild(celda(boton('Cobrar saldo', 'btn btn-info', function () {
+                    agregarCita(ci);
+                    modalBuscarServ.close();
+                })));
+                tb.appendChild(tr);
+            });
+        } catch (e) {
+            tb.innerHTML = '';
+        }
     }
 
     // Codigo de barras: agrega el producto al dar Enter
@@ -669,6 +728,7 @@
             servicios: carrito.filter(function (i) { return i.tipo === 'servicio'; }).map(function (i) {
                 return {
                     id_servicio: i.id_servicio,
+                    id_cita: i.id_cita || 0,
                     descuento: i.descuento
                 };
             })
@@ -809,6 +869,7 @@
 
                 if (r.ok) {
                     avisarFactura('Factura solicitada para la venta ' + folio + '.');
+                    window.open('../controllers/pdf_factura.php?id=' + encodeURIComponent(ultimaVentaId), '_blank');
                 } else {
                     errorFactura(r.error || 'No se pudo guardar la factura.');
                 }

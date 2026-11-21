@@ -25,6 +25,27 @@ if ($accion === 'buscar_productos') {
     ventaGuardarFactura();
 } elseif ($accion === 'estado_caja') {
     ventaEstadoCaja();
+} elseif ($accion === 'citas_por_cobrar') {
+    ventaCitasPorCobrar();
+}
+
+// Citas con saldo pendiente para cobrarlas desde el punto de venta
+function ventaCitasPorCobrar()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    try {
+        require_once __DIR__ . '/../models/PagosAdmin.php';
+        $lista = PagosAdmin::citasPorCobrar(ConexionDB::obtenerConexion());
+        echo json_encode(array_map(fn($f) => [
+            'id_cita' => (int)$f['id'], 'id_servicio' => (int)$f['id_servicio'], 'folio' => $f['folio'],
+            'cliente' => $f['cliente'], 'mascota' => $f['mascota'], 'servicio' => $f['servicio'],
+            'categoria' => $f['categoria'], 'saldo' => $f['saldo']
+        ], $lista));
+    } catch (Throwable $e) {
+        error_log('citas_por_cobrar: ' . $e->getMessage());
+        echo json_encode([]);
+    }
+    exit;
 }
 
 // Lista el historial con filtros y paginas

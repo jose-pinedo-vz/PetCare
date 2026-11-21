@@ -192,6 +192,13 @@
             btnFactura.disabled = !pagada || !!v.tiene_factura;
             acciones.appendChild(btnFactura);
 
+            if (v.tiene_factura) {
+                const btnPdf = boton('Factura PDF', 'btn btn-chico', 'Descargar factura en PDF de la venta ' + folio, function () {
+                    window.open('../controllers/pdf_factura.php?id=' + encodeURIComponent(v.id_venta), '_blank');
+                });
+                acciones.appendChild(btnPdf);
+            }
+
             tr.appendChild(celda(acciones));
             tbody.appendChild(tr);
         });

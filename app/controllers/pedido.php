@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../models/Pedidos.php';
+require_once __DIR__ . '/../models/CorteCaja.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -180,11 +181,35 @@ try {
             $responder(409, ['ok' => false, 'mensaje' => 'El pedido ya no está pendiente o la cantidad supera lo que falta por recibir.']);
         }
 
+        // El pago al proveedor sale de la caja abierta como 'gasto' (si no hay caja abierta, solo se avisa)
+        $avisoCaja = '';
+        $idEmpleadoCaja = (int) ($_SESSION['id_empleado'] ?? 0);
+        $gasto = round($cantidad * (float) $datos['precio_compra'], 2);
+        if ($idEmpleadoCaja > 0 && $gasto > 0) {
+            try {
+                $dbCaja = ConexionDB::obtenerConexion();
+                $corteCaja = CorteCaja::obtenerCorteAbierto($dbCaja, $idEmpleadoCaja);
+                if ($corteCaja) {
+                    CorteCaja::registrarMovimiento(
+                        $dbCaja, (int) $corteCaja['id'], $idEmpleadoCaja, 'gasto',
+                        'Compra a proveedor, pedido #' . $idPedido, $gasto, null,
+                        'Recepción de ' . $cantidad . ' pza(s), lote ' . $datos['lote']
+                    );
+                    $avisoCaja = ' Se registró un gasto de $' . number_format($gasto, 2) . ' en caja.';
+                } else {
+                    $avisoCaja = ' No hay caja abierta: el gasto de $' . number_format($gasto, 2) . ' no se registró en caja.';
+                }
+            } catch (Throwable $e) {
+                error_log('Gasto de pedido #' . $idPedido . ': ' . $e->getMessage());
+                $avisoCaja = ' No se pudo registrar el gasto en caja.';
+            }
+        }
+
         $pedidoActualizado = Pedidos::obtenerPedido($idPedido);
         $productosPendientes = Pedidos::obtenerDetalles($idPedido, true);
         $responder(200, [
             'ok' => true,
-            'mensaje' => 'Producto recibido y agregado al inventario.',
+            'mensaje' => 'Producto recibido y agregado al inventario.' . $avisoCaja,
             'pedido' => $pedidoActualizado,
             'productos_pendientes' => $productosPendientes,
         ]);

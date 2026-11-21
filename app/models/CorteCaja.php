@@ -114,10 +114,11 @@ final class CorteCaja
         $stmt->execute([':corte' => $corte]);
         $resumen = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
         $resumen['efectivo'] = (float)($resumen['efectivo'] ?? 0);
-        $resumen['tarjeta'] = (float)($resumen['tarjeta'] ?? 0);
-        $resumen['transferencia'] = (float)($resumen['transferencia'] ?? 0);
+        $citas = self::pagosCitaNoEfectivo($db, $corte);
+        $resumen['tarjeta'] = (float)($resumen['tarjeta'] ?? 0) + $citas['tarjeta'];
+        $resumen['transferencia'] = (float)($resumen['transferencia'] ?? 0) + $citas['transferencia'];
         $resumen['general'] = round($resumen['efectivo'] + $resumen['tarjeta'] + $resumen['transferencia'], 2);
-        $resumen['pagos'] = (int)($resumen['pagos'] ?? 0);
+        $resumen['pagos'] = (int)($resumen['pagos'] ?? 0) + $citas['pagos'];
         $resumen['ventas'] = (int)($resumen['ventas'] ?? 0);
 
         return $resumen;
@@ -647,6 +648,12 @@ final class CorteCaja
         return $fila;
     }
 
+    // Efectivo que hay ahora en la caja del corte (fondo + cobros en efectivo +/- movimientos)
+    public static function efectivoDisponible(PDO $db, int $corte): float
+    {
+        return self::calcularEfectivoEsperado($db, $corte);
+    }
+
     private static function calcularEfectivoEsperado(PDO $db, int $corte): float
     {
         $stmt = $db->prepare(
@@ -685,6 +692,35 @@ final class CorteCaja
         return round((float)$fondo + $pagosEfectivo + $impactoMovimientos, 2);
     }
 
+    // Pagos de citas con tarjeta o transferencia cobrados en este corte (el efectivo ya entra como movimiento)
+    private static function pagosCitaNoEfectivo(PDO $db, int $corte): array
+    {
+        $res = ['tarjeta' => 0.0, 'transferencia' => 0.0, 'pagos' => 0];
+        try {
+            foreach (['pagos_cita', 'pagos_hotel'] as $tabla) {
+                if (!$db->query("SHOW TABLES LIKE '$tabla'")->fetch()
+                    || !$db->query("SHOW COLUMNS FROM $tabla LIKE 'devuelto'")->fetch()) {
+                    continue;
+                }
+                $stmt = $db->prepare(
+                    "SELECT metodo, COALESCE(SUM(monto), 0) AS total, COUNT(*) AS n
+                     FROM $tabla
+                     WHERE corte = :corte AND metodo IN ('tarjeta', 'transferencia')
+                       AND id_venta IS NULL AND devuelto = 0
+                     GROUP BY metodo"
+                );
+                $stmt->execute([':corte' => $corte]);
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                    $res[$f['metodo']] = round($res[$f['metodo']] + (float)$f['total'], 2);
+                    $res['pagos'] += (int)$f['n'];
+                }
+            }
+        } catch (Throwable $e) {
+            error_log('CorteCaja::pagosCitaNoEfectivo ' . $e->getMessage());
+        }
+        return $res;
+    }
+
     private static function obtenerTotalesPagos(PDO $db, int $corte): array
     {
         $stmt = $db->prepare(
@@ -701,6 +737,9 @@ final class CorteCaja
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
             $totales[$fila['forma_pago']] = round((float)$fila['total'], 2);
         }
+        $citas = self::pagosCitaNoEfectivo($db, $corte);
+        $totales['tarjeta'] = round($totales['tarjeta'] + $citas['tarjeta'], 2);
+        $totales['transferencia'] = round($totales['transferencia'] + $citas['transferencia'], 2);
         $totales['general'] = round(array_sum($totales), 2);
 
         return $totales;
