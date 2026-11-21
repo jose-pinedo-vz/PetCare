@@ -186,7 +186,7 @@ function mostrarModalCancelarCita(idCita)
             </fieldset>
             <div class="acciones-formulario">
                 <button type="button" class="btn-secundario" onclick="window.location.reload()">Regresar</button>
-                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Contirunar</button>
+                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Continuar</button>
             </div>
         </div>
     `;
@@ -197,6 +197,47 @@ async function ejecutarFetchCancelacion(idCita) {
         method: "GET"
     });
     
+    if (respuesta.ok) {
+        window.location.reload();
+    }
+}
+
+
+
+
+
+// no asistio algien
+async function noAsistioCita(idCita, event)
+{
+    event.preventDefault();
+    mostrarModalNoAsistio(idCita);
+}
+
+function mostrarModalNoAsistio(idCita)
+{
+    const contenedor = document.getElementById('contenedor-modal');
+    const main = document.getElementById('mainAOcultar');
+
+    main.classList.add('oculto');
+    contenedor.innerHTML = `
+        <div class="tarjeta">
+            <fieldset>
+                <p>¿Marcar esta cita como "No asistió"?
+                    Esta acción no se puede deshacer.
+                </p>
+            </fieldset>
+            <div class="acciones-formulario">
+                <button type="button" class="btn-secundario" onclick="window.location.reload()">Regresar</button>
+                <button type="button" class="btn" onclick="ejecutarFetchNoAsistio(${idCita})">Continuar</button>
+            </div>
+        </div>
+    `;
+}
+
+async function ejecutarFetchNoAsistio(idCita) {
+    const respuesta = await fetch(`../controllers/citas.php?accion=noAsistio&id_cita=${encodeURIComponent(idCita)}`, {
+        method: "GET"
+    });
     if (respuesta.ok) {
         window.location.reload();
     }
