@@ -427,6 +427,70 @@ document.addEventListener("DOMContentLoaded", () => {
         boton.addEventListener('click', () => seleccionarMetodoPago(boton.dataset.metodoPago));
     });
 
+    const btnConfirmar = modalPagarVenta.querySelector('.pago-confirmar');
+    const totalPagar = modalPagarVenta.querySelector('.pago-calculo-monto > strong');
+    const inputMonto = document.getElementById('montoRecibido');
+    const totalesPago = modalPagarVenta.querySelectorAll('.pago-totales strong');
+    let totalIva = 0;
+
+
+          // datos para mandar a servidor
+    btnConfirmar?.addEventListener('click', () => 
+        {
+            const metodoSeleccionado = document.querySelector('.pago-metodo.seleccionado')?.dataset.metodoPago;
+
+            // montos elegidos 
+            const total = Number(totalPagar.textContent.replace('$', '')) || 0;
+            const MontoResivido = Number(inputMonto.value) || 0;
+
+            // estraer datos segun metodo seleccionardo
+
+            let referencia = '';
+            let numTarjeta = '';
+            let titular = '';
+
+            if (metodoSeleccionado === "Transferencia")
+            {
+                referencia = document.querySelector('#detallesTransferencia input')?.value.text.trim() || '';
+            }
+            else if (metodoSeleccionado === "Tarjeta")
+            { 
+                var inputsTarjeta = document.querySelectorAll('#detallesTarjeta input');
+                numTarjeta = inputsTarjeta[0]?.value.replace(/\s+/g, '') || '';
+                var terminacion = numTarjeta.slice(-4); // Solo últimos 4 dígitos por seguridad
+                titular = inputsTarjeta[1]?.value.trim() || '';
+                referencia = `${titular} (****${terminacion})`;
+            }
+
+            const iva = Number(totalesPago[1].textContent.replace('$', '')) || 0;
+
+            if (total === 0) {alert("Ingrese un total valido por favor."); return;}
+            if (MontoResivido === 0) {alert("Ingrese un monto valido por favor."); return;}
+            // if (iva === 0) {alert("Ingrese un monto valido por favor."); return;}
+            if (MontoResivido < total) { alert("El monto recibido es menor al total."); return; }
+
+            
+
+            if (metodoSeleccionado === "Tarjeta")
+            {
+                //if (inputsTarjeta === "") {alert("Ingrese una tarjeta por favor."); return;}
+                if (numTarjeta === "") {alert("Ingrese una tarjeta por favor."); return;}
+                if (titular === "") {alert("Ingrese un titular valido por favor."); return;}
+            }
+            console.log("Listo para enviar:", { metodoSeleccionado, total, MontoResivido, iva, referencia });
+        })
+
+    // mostrar el cambio devuelro de el pago
+    inputMonto?.addEventListener('input', () => {
+        const recibido = Number(inputMonto.value) || 0;
+        const total = Number(totalPagar?.textContent.replace('$', '')) || totalIva || 0;
+        const cambio = Math.max(0, recibido - total);
+        const cambioEl = document.getElementById('cambioPago');
+        if (cambioEl) {
+            cambioEl.innerHTML = `$${cambio.toFixed(2)} <small>MXN</small>`;
+        }
+    });
+
     botonAnticipo?.addEventListener('click', async () => {
         const idServicio = document.getElementById('servicio').value;
 
@@ -439,7 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const precio = Number(respuestaServicio?.precio ?? respuestaServicio);
 
         // precio ottal iva izqu
-        var totalIva = precio * 1.16; 
+        totalIva = precio * 1.16; 
         var iva = precio * 0.16;
         const totalesPago = modalPagarVenta.querySelectorAll('.pago-totales strong');
         if (totalesPago.length >= 3) {
@@ -448,8 +512,8 @@ document.addEventListener("DOMContentLoaded", () => {
             totalesPago[2].textContent = '$' + totalIva.toFixed(2);
         }
 
-        const totalPagar = modalPagarVenta.querySelector('.pago-calculo-monto > strong');
-        const inputMonto = document.getElementById('montoRecibido');
+        // const totalPagar = modalPagarVenta.querySelector('.pago-calculo-monto > strong');
+        // const inputMonto = document.getElementById('montoRecibido');
 
         if (totalPagar) totalPagar.textContent = '$' + totalIva.toFixed(2);
         if (inputMonto) inputMonto.value = totalIva.toFixed(2);
@@ -470,26 +534,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const nombreServicio = selectServicio.options[selectServicio.selectedIndex].text;
         document.querySelector('#tablaResumenPago .pago-producto-detalle strong').textContent = nombreServicio;
         document.querySelector('#tablaResumenPago tbody td:nth-child(4)').textContent = '$' + precio;
-
-        // metodo de pago
-        const metodoSeleccionado = document.querySelector('.pago-metodo.seleccionado')?.dataset.metodoPago;
-
-        // feria
-
-        inputMonto?.addEventListener('input', () => {
-            const recibido = Number(inputMonto.value) || 0;
-            const total = totalIva;
-            const cambio = Math.max(0, recibido - total);
-
-            // if (cambioTexto) {
-            //     cambioTexto.textContent = '$' + cambio.toFixed(2);
-            // }
-
-            document.getElementById('cambioPago').innerHTML = `$${cambio.toFixed(2)} <small>MXN</small>`;
-        });
-
-        
-
         modalPagarVenta.showModal();
     });
     document.getElementById('cerrarModalPago')?.addEventListener('click', () => modalPagarVenta.close());
@@ -497,3 +541,6 @@ document.addEventListener("DOMContentLoaded", () => {
     modalPagarVenta.querySelector('.pago-cerrar')?.addEventListener('click', () => modalPagarVenta.close());
     modalPagarVenta.querySelector('.pago-cancelar')?.addEventListener('click', () => modalPagarVenta.close());
 });
+
+
+
