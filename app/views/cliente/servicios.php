@@ -1,6 +1,16 @@
 <?php
 session_start();
 $paginaActiva = 'servicios';
+
+require_once __DIR__ . '/../../models/Servicios.php';
+$todos = Servicios::obtenerTodos();
+
+$servicios = [];
+foreach ($todos as $s) {
+    if ((int) $s['estado'] === 1) {
+        $servicios[] = $s;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,82 +26,34 @@ $paginaActiva = 'servicios';
     <main class="contenedor">
         <div>
             <h1 class="titulo-pagina">Nuestros servicios</h1>
-            <p class="subtitulo-pagina">Elige el que necesita tu mascota y agenda tu cita. Los precios son de ejemplo.</p>
+            <p class="subtitulo-pagina">Elige el que necesita tu mascota y agenda tu cita.</p>
         </div>
 
         <section>
 
-            <article class="tarjeta-servicio">
-                <div class="foto-marcador tarjeta-servicio__foto">Foto: baño</div>
+            <?php if (empty($servicios)): ?>
+                <p class="subtitulo-pagina">Por ahora no hay servicios para mostrar.</p>
+            <?php endif; ?>
 
-                <div class="tarjeta-servicio__descripcion">
-                    <h2 class="tarjeta-servicio__titulo">Baño</h2>
-                    <p class="tarjeta-servicio__texto">Baño y secado para tu mascota. Puede incluir tratamientos especiales si lo necesita.</p>
-                    <div class="grupo-etiquetas">
-                        <span class="etiqueta">60 min</span>
-                        <span class="etiqueta">Estética</span>
+            <?php foreach ($servicios as $servicio): ?>
+                <article class="tarjeta-servicio">
+                    <div class="foto-marcador tarjeta-servicio__foto"><?= htmlspecialchars($servicio['nombre']) ?></div>
+
+                    <div class="tarjeta-servicio__descripcion">
+                        <h2 class="tarjeta-servicio__titulo"><?= htmlspecialchars($servicio['nombre']) ?></h2>
+                        <p class="tarjeta-servicio__texto"><?= htmlspecialchars($servicio['descripcion'] ?? '') ?></p>
+                        <div class="grupo-etiquetas">
+                            <span class="etiqueta"><?= (int) $servicio['duracion'] ?> min</span>
+                            <span class="etiqueta"><?= htmlspecialchars($servicio['categoria']) ?></span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="tarjeta-servicio__precio">
-                    <p class="tarjeta-servicio__monto">$150</p>
-                    <a class="boton" href="agendar_cita.php?servicio=bano">Agendar</a>
-                </div>
-            </article>
-
-            <article class="tarjeta-servicio">
-                <div class="foto-marcador tarjeta-servicio__foto">Foto: corte de pelo</div>
-
-                <div class="tarjeta-servicio__descripcion">
-                    <h2 class="tarjeta-servicio__titulo">Corte de pelo</h2>
-                    <p class="tarjeta-servicio__texto">Corte según el tipo de pelaje y el estilo que prefieras.</p>
-                    <div class="grupo-etiquetas">
-                        <span class="etiqueta">90 min</span>
-                        <span class="etiqueta">Estética</span>
+                    <div class="tarjeta-servicio__precio">
+                        <p class="tarjeta-servicio__monto">$<?= number_format((float) $servicio['precio'], 2) ?></p>
+                        <a class="boton" href="agendar_cita.php?id_servicio=<?= (int) $servicio['id_servicio'] ?>">Agendar</a>
                     </div>
-                </div>
-
-                <div class="tarjeta-servicio__precio">
-                    <p class="tarjeta-servicio__monto">$250</p>
-                    <a class="boton" href="agendar_cita.php?servicio=corte_pelo">Agendar</a>
-                </div>
-            </article>
-
-            <article class="tarjeta-servicio">
-                <div class="foto-marcador tarjeta-servicio__foto">Foto: corte de uñas</div>
-
-                <div class="tarjeta-servicio__descripcion">
-                    <h2 class="tarjeta-servicio__titulo">Corte de uñas</h2>
-                    <p class="tarjeta-servicio__texto">Corte y limado seguro de uñas.</p>
-                    <div class="grupo-etiquetas">
-                        <span class="etiqueta">20 min</span>
-                        <span class="etiqueta">Estética</span>
-                    </div>
-                </div>
-
-                <div class="tarjeta-servicio__precio">
-                    <p class="tarjeta-servicio__monto">$60</p>
-                    <a class="boton" href="agendar_cita.php?servicio=corte_unas">Agendar</a>
-                </div>
-            </article>
-
-            <article class="tarjeta-servicio">
-                <div class="foto-marcador tarjeta-servicio__foto">Foto: desparasitación</div>
-
-                <div class="tarjeta-servicio__descripcion">
-                    <h2 class="tarjeta-servicio__titulo">Desparasitación</h2>
-                    <p class="tarjeta-servicio__texto">Aplicación del desparasitante adecuado a su peso y especie, a cargo de nuestro veterinario.</p>
-                    <div class="grupo-etiquetas">
-                        <span class="etiqueta">30 min</span>
-                        <span class="etiqueta">Veterinaria</span>
-                    </div>
-                </div>
-
-                <div class="tarjeta-servicio__precio">
-                    <p class="tarjeta-servicio__monto">$120</p>
-                    <a class="boton" href="agendar_cita.php?servicio=desparasitacion">Agendar</a>
-                </div>
-            </article>
+                </article>
+            <?php endforeach; ?>
 
             <article class="tarjeta-servicio tarjeta-servicio--destacada">
                 <div class="foto-marcador foto-marcador--oscura tarjeta-servicio__foto">Foto: hotel</div>
