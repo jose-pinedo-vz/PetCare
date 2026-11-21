@@ -30,18 +30,22 @@ class Servicios
     {
         try {
             $db = ConexionDB::obtenerConexion();
-            $sql = "SELECT ci.id_cita, ci.fecha, ci.hora,
-                           CONCAT(cl.nombre, ' ', cl.apellido) AS cliente,
-                           m.nombre AS mascota,
-                           s.nombre AS servicio,
-                           CONCAT(e.nombre, ' ', e.apellido) AS empleado,
-                           ci.duracion_estimada, ci.estado, ci.observacion
+            // Las bases no son iguales: la hora puede venir en la columna hora o dentro de fecha
+            $cols = $db->query("SHOW COLUMNS FROM citas")->fetchAll(PDO::FETCH_COLUMN);
+            $horaSql = in_array('hora', $cols, true) ? 'ci.hora' : 'TIME(ci.fecha)';
+            $estadoSql = in_array('estado_cita', $cols, true) ? 'ci.estado_cita' : 'ci.estado';
+            $sql = "SELECT ci.id_cita, DATE(ci.fecha) AS fecha, $horaSql AS hora,
+                           COALESCE(CONCAT(cl.nombre, ' ', cl.apellido), 'Sin cliente') AS cliente,
+                           COALESCE(m.nombre, '-') AS mascota,
+                           COALESCE(s.nombre, '-') AS servicio,
+                           COALESCE(CONCAT(e.nombre, ' ', e.apellido), 'Sin asignar') AS empleado,
+                           ci.duracion_estimada, $estadoSql AS estado, ci.observacion
                     FROM citas ci
-                    INNER JOIN clientes cl ON cl.id_cliente = ci.cliente
-                    INNER JOIN mascotas m ON m.id_mascota = ci.mascota
-                    INNER JOIN servicios s ON s.id_servicio = ci.servicio
-                    INNER JOIN empleados e ON e.id_empleado = ci.empleado
-                    ORDER BY ci.fecha DESC, ci.hora DESC";
+                    LEFT JOIN clientes cl ON cl.id_cliente = ci.cliente
+                    LEFT JOIN mascotas m ON m.id_mascota = ci.mascota
+                    LEFT JOIN servicios s ON s.id_servicio = ci.servicio
+                    LEFT JOIN empleados e ON e.id_empleado = ci.empleado
+                    ORDER BY ci.fecha DESC, $horaSql DESC";
             $r = $db->query($sql);
             return $r ? $r->fetchAll(PDO::FETCH_ASSOC) : [];
         } catch (Exception $e) {

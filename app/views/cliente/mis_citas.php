@@ -4,7 +4,14 @@ if (empty($_SESSION['id_cliente'])) {
     header('Location: iniciar_sesion.php');
     exit;
 }
+require_once __DIR__ . '/../../models/CitasCliente.php';
+require_once __DIR__ . '/../../models/PagosAdmin.php';
+$dbCitas = ConexionDB::obtenerConexion();
 $paginaActiva = 'citas';
+$ver = ($_GET['ver'] ?? 'proximas') === 'anteriores' ? 'anteriores' : 'proximas';
+$citas = CitasCliente::listar((int)$_SESSION['id_cliente'], $ver);
+$msg = $_SESSION['exito_cita'] ?? '';
+unset($_SESSION['exito_cita']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -27,66 +34,50 @@ $paginaActiva = 'citas';
         </div>
 
         <nav class="pestanas">
-            <a class="pestanas__opcion es-activo" href="mis_citas.php?ver=proximas">Próximas</a>
-            <a class="pestanas__opcion" href="mis_citas.php?ver=anteriores">Anteriores</a>
+            <a class="pestanas__opcion<?= $ver === 'proximas' ? ' es-activo' : '' ?>" href="mis_citas.php?ver=proximas">Próximas</a>
+            <a class="pestanas__opcion<?= $ver === 'anteriores' ? ' es-activo' : '' ?>" href="mis_citas.php?ver=anteriores">Anteriores</a>
         </nav>
 
+        <?php if ($msg !== ''): ?>
+            <div class="aviso aviso--exito"><p><?= htmlspecialchars($msg) ?></p></div>
+        <?php endif; ?>
         <section>
-
-            <article class="tarjeta-cita">
+            <?php if (empty($citas)): ?>
+                <p class="aviso">No tienes citas en esta sección.</p>
+            <?php endif; ?>
+            <?php foreach ($citas as $ci):
+                $ts = strtotime($ci['fecha']);
+                $est = strtolower((string)$ci['estado_cita']);
+                $mod = CitasCliente::modificable($ci);
+                $meses = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+                $clase = $est === 'cancelada' ? 'cancelada' : ($est === 'atendida' ? 'atendida' : 'pendiente');
+                $texto = $est === 'cancelada' ? 'Cancelada' : ($est === 'atendida' ? 'Atendida' : 'Pendiente');
+                $total = (float)$ci['precio'];
+                $pagadoCita = PagosAdmin::pagadoCita($dbCitas, (int)$ci['id_cita']);
+                $anticipoOk = $pagadoCita >= CitasCliente::anticipo($total);
+                if ($clase === 'pendiente' && $anticipoOk) { $clase = 'confirmada'; $texto = 'Confirmada'; }
+                elseif ($clase === 'pendiente') { $texto = 'Falta anticipo'; }
+            ?>
+            <article class="tarjeta-cita<?= $ver === 'anteriores' ? ' tarjeta-cita--pasada' : '' ?>">
                 <div class="tarjeta-cita__fecha">
-                    <span class="tarjeta-cita__dia">12</span>
-                    <span class="tarjeta-cita__mes">NOV</span>
+                    <span class="tarjeta-cita__dia"><?= date('d', $ts) ?></span>
+                    <span class="tarjeta-cita__mes"><?= $meses[(int)date('n', $ts) - 1] ?></span>
                 </div>
-
                 <div class="tarjeta-cita__informacion">
-                    <h2 class="tarjeta-cita__titulo">Baño · Luna</h2>
-                    <p class="tarjeta-cita__detalle">11:00 · 60 min · Atiende: Ana Torres</p>
-                    <p class="tarjeta-cita__detalle">Anticipo pagado: $50.00 · Total: $150.00</p>
+                    <h2 class="tarjeta-cita__titulo"><?= htmlspecialchars($ci['servicio'] . ' · ' . $ci['mascota']) ?></h2>
+                    <p class="tarjeta-cita__detalle"><?= date('H:i', $ts) ?> · <?= (int)$ci['duracion_estimada'] ?> min · Atiende: <?= htmlspecialchars((string)$ci['empleado']) ?></p>
+                    <p class="tarjeta-cita__detalle">Total: $<?= number_format($total, 2) ?> · Anticipo: $<?= number_format(CitasCliente::anticipo($total), 2) ?><?= $anticipoOk ? ' (pagado)' : '' ?></p>
                 </div>
-
-                <span class="estado-cita estado-cita--confirmada">Confirmada</span>
-
+                <span class="estado-cita estado-cita--<?= $clase ?>"><?= $texto ?></span>
+                <?php if ($mod): ?>
                 <div class="tarjeta-cita__acciones">
-                    <a class="boton boton--contorno boton--chico" href="reprogramar_cita.php?id_cita=1">Reprogramar</a>
-                    <a class="boton boton--contorno boton--chico" href="cancelar_cita.php?id_cita=1">Cancelar</a>
+                    <?php if (!$anticipoOk): ?><a class="boton boton--chico" href="pagar_anticipo.php?id_cita=<?= (int)$ci['id_cita'] ?>">Pagar anticipo</a><?php endif; ?>
+                    <a class="boton boton--contorno boton--chico" href="reprogramar_cita.php?id_cita=<?= (int)$ci['id_cita'] ?>">Reprogramar</a>
+                    <a class="boton boton--contorno boton--chico" href="cancelar_cita.php?id_cita=<?= (int)$ci['id_cita'] ?>">Cancelar</a>
                 </div>
+                <?php endif; ?>
             </article>
-
-            <article class="tarjeta-cita">
-                <div class="tarjeta-cita__fecha">
-                    <span class="tarjeta-cita__dia">20</span>
-                    <span class="tarjeta-cita__mes">NOV</span>
-                </div>
-
-                <div class="tarjeta-cita__informacion">
-                    <h2 class="tarjeta-cita__titulo">Desparasitación · Michi</h2>
-                    <p class="tarjeta-cita__detalle">15:00 · 30 min · Atiende: Dra. Pérez</p>
-                    <p class="tarjeta-cita__detalle">Anticipo pendiente: $40.00 · Total: $120.00</p>
-                </div>
-
-                <span class="estado-cita estado-cita--pendiente">Falta anticipo</span>
-
-                <div class="tarjeta-cita__acciones">
-                    <a class="boton boton--chico" href="pagar_anticipo.php?id_cita=2">Pagar anticipo</a>
-                    <a class="boton boton--contorno boton--chico" href="cancelar_cita.php?id_cita=2">Cancelar</a>
-                </div>
-            </article>
-
-            <article class="tarjeta-cita tarjeta-cita--pasada">
-                <div class="tarjeta-cita__fecha">
-                    <span class="tarjeta-cita__dia">28</span>
-                    <span class="tarjeta-cita__mes">OCT</span>
-                </div>
-
-                <div class="tarjeta-cita__informacion">
-                    <h2 class="tarjeta-cita__titulo">Corte de uñas · Luna</h2>
-                    <p class="tarjeta-cita__detalle">10:00 · 20 min · Atendida por: Luis Medina</p>
-                </div>
-
-                <span class="estado-cita estado-cita--atendida">Atendida</span>
-            </article>
-
+            <?php endforeach; ?>
         </section>
 
     </main>

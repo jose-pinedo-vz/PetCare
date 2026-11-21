@@ -85,7 +85,7 @@ class UsuariosDB
             $consulta = $conexion -> prepare(
             "
             UPDATE usuarios
-            SET estado = 'inactivo'
+            SET estado = 'inactivo',empleado_asociado = NULL
             WHERE id_usuario = ?
             AND estado = 'activo'
             "

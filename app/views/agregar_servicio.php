@@ -71,7 +71,7 @@ unset(
             <div class="grid-formulario">
               <div>
                 <label class="label-campo" for="nombre">Nombre *:</label>
-                <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required placeholder="Ej. Baño medicado"
+                <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" minlength="2" required placeholder="Ej. Baño medicado" title="Solo letras y espacios"
                   value="<?php echo htmlspecialchars((string)$old['nombre']); ?>">
               </div>
 
@@ -116,7 +116,7 @@ unset(
 
               <div class="campo-completo">
                 <label class="label-campo" for="descripcion">Descripción:</label>
-                <textarea class="campo" id="descripcion" name="descripcion" rows="3" placeholder="¿Qué incluye el servicio?"><?php echo htmlspecialchars((string)$old['descripcion']); ?></textarea>
+                <textarea class="campo" id="descripcion" name="descripcion" rows="3" maxlength="250" placeholder="¿Qué incluye el servicio?"><?php echo htmlspecialchars((string)$old['descripcion']); ?></textarea>
               </div>
             </div>
           </fieldset>
@@ -133,6 +133,27 @@ unset(
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    // Validacion en pantalla: nombre solo letras y descripcion con texto real
+    (function () {
+      var n = document.getElementById('nombre');
+      var d = document.getElementById('descripcion');
+      function validarNombre() {
+        var ok = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/.test(n.value.trim());
+        n.setCustomValidity(ok ? '' : 'El nombre solo puede llevar letras y espacios.');
+      }
+      function validarDescripcion() {
+        var v = d.value.trim();
+        var letras = (v.match(/\p{L}/gu) || []).length;
+        var ok = v === '' || (/^[\p{L}\p{N}\s.,;:()¿?¡!\-\/]+$/u.test(v) && letras >= 3);
+        d.setCustomValidity(ok ? '' : 'Escribe texto (minimo 3 letras); no se permiten solo numeros ni simbolos especiales.');
+      }
+      n.addEventListener('input', validarNombre);
+      d.addEventListener('input', validarDescripcion);
+      validarNombre();
+      validarDescripcion();
+    })();
+  </script>
 </body>
 
 </html>

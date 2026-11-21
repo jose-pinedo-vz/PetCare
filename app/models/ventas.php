@@ -6,6 +6,7 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
     require_once __DIR__ . '/../../conexion_db.php';
 }
 require_once __DIR__ . '/CorteCaja.php';
+require_once __DIR__ . '/PagosAdmin.php';
 if (file_exists(__DIR__ . '/../../banca_simulada/banco_servicio.php')) {
     require_once __DIR__ . '/../../banca_simulada/banco_servicio.php';
 }
@@ -125,7 +126,12 @@ class Ventas
         $idCorte = (int)$corteAbierto['id'];
 
         try {
+            // Tablas de pagos de citas (el ALTER hace commit, va antes de la transaccion)
+            PagosAdmin::preparar($db);
             $db->beginTransaction();
+
+            // El cliente debe existir (en algunas bases falta "Publico en general")
+            self::asegurarCliente($db, $idCliente);
 
             $lineas = [];
             $vistos = [];
@@ -214,15 +220,43 @@ class Ventas
                     throw new Exception('Servicio o descuento no validos.');
                 }
                 $idServicio = (int)($serv['id_servicio'] ?? 0);
+                $idCita = (int)($serv['id_cita'] ?? 0);
                 $descServ = (float)($serv['descuento'] ?? 0);
 
                 if ($idServicio <= 0 || $descServ < 0 || $descServ > 100) {
                     throw new Exception('Servicio o descuento no validos.');
                 }
-                if (isset($vistosServ[$idServicio])) {
+                $clave = $idCita > 0 ? 'c' . $idCita : 's' . $idServicio;
+                if (isset($vistosServ[$clave])) {
                     throw new Exception('Un servicio esta repetido en la venta.');
                 }
-                $vistosServ[$idServicio] = true;
+                $vistosServ[$clave] = true;
+
+                if ($idCita > 0) {
+                    // Cobro del saldo de una cita: el monto sale de Pagos de servicios (IVA incluido)
+                    $cita = PagosAdmin::citaPorCobrar($db, $idCita);
+                    if (!$cita || (int)$cita['id_servicio'] !== $idServicio) {
+                        throw new Exception('La cita ya no tiene saldo por cobrar.');
+                    }
+                    if ($descServ > 0) {
+                        throw new Exception('El cobro de una cita no admite descuento.');
+                    }
+                    $totalLinea = round((float)$cita['saldo'], 2);
+                    $subtotal = round($totalLinea / 1.16, 2);
+                    $iva = round($totalLinea - $subtotal, 2);
+                    $subtotalVenta += $subtotal;
+                    $ivaVenta += $iva;
+                    $lineasServ[] = [
+                        'id' => $idServicio,
+                        'precio' => $subtotal,
+                        'descuento' => 0,
+                        'subtotal' => $subtotal,
+                        'iva' => $iva,
+                        'id_cita' => $idCita,
+                        'total_cita' => $totalLinea
+                    ];
+                    continue;
+                }
 
                 $stmt = $db->prepare(
                     "SELECT precio FROM servicios WHERE id_servicio = ? AND estado = 1"
@@ -339,6 +373,13 @@ class Ventas
             );
             $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $referenciaPago, $idEmpleado, $montoRecibido, $cambio, $observacionesPago, $idCorte]);
 
+            // Las citas cobradas aqui quedan abonadas en Pagos de servicios
+            foreach ($lineasServ as $s2) {
+                if (!empty($s2['id_cita'])) {
+                    PagosAdmin::registrarCobroPos($db, (int)$s2['id_cita'], (float)$s2['total_cita'], $formaPago, $folio, $idVenta, $idEmpleado, $idCorte);
+                }
+            }
+
             $db->commit();
             return ['ok' => true, 'id_venta' => $idVenta, 'folio' => $folio, 'total' => $total, 'cambio' => $cambio, 'autorizacion' => $folioBanco];
         } catch (Exception $e) {
@@ -351,6 +392,32 @@ class Ventas
             }
             error_log("Error en Ventas::guardarVenta: " . $e->getMessage());
             return ['ok' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    // Revisa que el cliente exista; si es el publico en general (id 11) y falta, lo crea
+    private static function asegurarCliente(PDO $db, int $idCliente): void
+    {
+        $stmt = $db->prepare("SELECT 1 FROM clientes WHERE id_cliente = ?");
+        $stmt->execute([$idCliente]);
+        if ($stmt->fetchColumn()) {
+            return;
+        }
+        if ($idCliente !== 11) {
+            throw new Exception('El cliente de la venta no existe.');
+        }
+        try {
+            $stmt = $db->prepare(
+                "INSERT INTO clientes
+                 (id_cliente, nombre, apellido, telefono, correo, calle, numero_exterior, colonia, ciudad, estado,
+                  codigo_postal, contacto_emergencia, telefono_emergencia, esta_activo)
+                 VALUES (11, 'Publico', 'en general', '0000000000', 'publico@petcare.local', 'N/A', 'S/N', 'N/A', 'N/A', 'N/A',
+                         '00000', 'N/A', '0000000000', 1)"
+            );
+            $stmt->execute();
+        } catch (Exception $e) {
+            error_log("No se pudo crear el cliente publico: " . $e->getMessage());
+            throw new Exception('No existe el cliente "Publico en general" (id 11) en la base de datos.');
         }
     }
 
