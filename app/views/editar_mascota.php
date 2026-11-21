@@ -65,7 +65,7 @@ $especies = Mascota::obtenerEspecies();
 $razas = Mascota::obtenerRazas();
 $escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 
-$clienteIdAnterior = (string) ($old['id_cliente'] ?? $_GET['id_cliente'] ?? '');
+$clienteIdAnterior = (string) ($old['id_cliente'] ?? $mascota['id_cliente'] ?? '');
 $clienteSeleccionado = null;
 foreach ($clientes as $registroCliente) {
   if ((string) $registroCliente['id_cliente'] === $clienteIdAnterior) {
@@ -74,7 +74,7 @@ foreach ($clientes as $registroCliente) {
   }
 }
 
-$veterinarioIdAnterior = (string) ($old['id_veterinario'] ?? '');
+$veterinarioIdAnterior = (string) ($old['id_veterinario'] ?? $mascota['id_veterinario'] ?? '');
 $veterinarioSeleccionado = null;
 foreach ($veterinarios as $registroVeterinario) {
   if ((string) $registroVeterinario['id_empleado'] === $veterinarioIdAnterior) {
@@ -83,11 +83,11 @@ foreach ($veterinarios as $registroVeterinario) {
   }
 }
 
-$especieAnterior = (string) ($old['especie'] ?? '');
-$razaAnterior = (string) ($old['raza'] ?? '');
+$especieActual = (string)($old['especie'] ?? $mascota['especie'] ?? '');
+$razaAnterior = (string) ($old['raza'] ?? $mascota['raza'] ?? '');
 $especieIdAnterior = '';
 foreach ($especies as $registroEspecie) {
-  if ((string) $registroEspecie['especie'] === $especieAnterior) {
+  if ((string) $registroEspecie['especie'] === $especieActual) {
     $especieIdAnterior = (string) $registroEspecie['id'];
     break;
   }
@@ -166,15 +166,40 @@ foreach ($especies as $registroEspecie) {
             <label class="label-campo" for="especie">Especie *:</label>
             <select class="campo" id="especie" name="especie" required>
               <option value="">Seleccionar...</option>
-              <?php foreach ($especies as $opcionEspecie): ?>
-                <option value="<?= htmlspecialchars($opcionEspecie) ?>" <?= $especieActual === $opcionEspecie ? 'selected' : '' ?>><?= htmlspecialchars($opcionEspecie) ?></option>
+              <?php foreach ($especies as $registroEspecie): ?>
+                <option 
+                value="<?= $escapar($registroEspecie['especie']) ?>" 
+                data-especie-id="<?= (int) $registroEspecie['id'] ?>"
+                <?= $especieActual === (string) $registroEspecie['especie'] ? 'selected' : '' ?>
+                ><?= $escapar($registroEspecie['especie']) ?></option>
               <?php endforeach; ?>
+            <?php if (!$especies): ?>
+                <small>No hay especies registradas en el catálogo.</small>
+            <?php endif; ?>
             </select>
           </div>
 
           <div>
             <label class="label-campo" for="raza">Raza *:</label>
-            <input type="text" class="campo" id="raza" name="raza" value="<?= dato($old, $mascota, 'raza') ?>">
+            <select class="campo" id="raza" name="raza" required <?= $especieIdAnterior === '' ? 'disabled' : ''?>>
+                <option value="">Selecciona primero una especie...</option>
+                <?php foreach ($razas as $registroRaza): 
+                $razaCoincideConEspecie = $especieIdAnterior !== '' 
+                    && (string) $registroRaza['especie'] === $especieIdAnterior;
+                $razaSeleccionada = $razaCoincideConEspecie 
+                    && $razaAnterior === (string) $registroRaza['raza'];
+                ?>
+                    <option 
+                        value="<?= $escapar($registroRaza['raza']) ?>"
+                        data-especie-id="<?= (int) $registroRaza['especie'] ?>" 
+                        <?= $razaSeleccionada ? 'selected' : '' ?>
+                        <?= $razaCoincideConEspecie ? '' : 'hidden disabled' ?>
+                    ><?= $escapar($registroRaza['raza']) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <?php if ($especies && !$razas): ?>
+                <small>No hay razas registradas en el catálogo.</small>
+            <?php endif; ?>
           </div>
 
           <div>
@@ -224,14 +249,55 @@ foreach ($especies as $registroEspecie) {
             </select>
           </div>
 
-          <div>
-            <label class="label-campo" for="id_cliente">Dueño (ID cliente) *:</label>
-            <input type="number" class="campo" id="id_cliente" name="id_cliente" value="<?= dato($old, $mascota, 'id_cliente') ?>" required placeholder="ID del Cliente">
+          <div class="contenedor-buscador">
+            <label class="label-campo" for="cliente_busqueda">Dueño (cliente) *:</label>
+            <input 
+            type="text" 
+            class="campo" 
+            id="cliente_busqueda" 
+            autocomplete="off"
+            placeholder="Seleccione cliente..."
+            value="<?= $clienteSeleccionado ? $escapar('Id: ' . $clienteSeleccionado['id_cliente'] . ' - ' . $clienteSeleccionado['nombre'] . ' ' . $clienteSeleccionado['apellido']) : '' ?>" 
+            required 
+            >
+            <ul id="lista_clientes_mascota" class="lista-resultados">
+            <?php foreach ($clientes as $registroCliente): ?>
+                <li data-id="<?= (int) $registroCliente['id_cliente'] ?>">
+                    <?= $escapar('Id: ' . $registroCliente['id_cliente'] . ' - ' . $registroCliente['nombre'] . ' ' . $registroCliente['apellido']) ?>
+                </li>
+            <?php endforeach; ?>
+            </ul>
+            <input
+                type="hidden"
+                id="id_cliente"
+                name="id_cliente"
+                value="<?= $clienteSeleccionado ? (int) $clienteSeleccionado['id_cliente'] : '' ?>"
+            >
           </div>
 
-          <div>
-            <label class="label-campo" for="id_veterinario">Veterinario asignado (ID):</label>
-            <input type="number" class="campo" id="id_veterinario" name="id_veterinario" value="<?= dato($old, $mascota, 'id_veterinario') ?>" placeholder="ID del Veterinario">
+          <div class="contenedor-buscador">
+            <label class="label-campo" for="veterinario_busqueda">Veterinario asignado:</label>
+            <input
+                type="text"
+                class="campo"
+                id="veterinario_busqueda"
+                autocomplete="off"
+                placeholder="Seleccionar veterinario..."
+                value="<?= $veterinarioSeleccionado ? $escapar('Id: ' . $veterinarioSeleccionado['id_empleado'] . ' - ' . $veterinarioSeleccionado['nombre'] . ' ' . $veterinarioSeleccionado['apellido']) : '' ?>"
+            >
+            <ul id="lista_veterinarios_mascota" class="lista-resultados">
+                <?php foreach ($veterinarios as $registroVeterinario): ?>
+                <li data-id="<?= (int) $registroVeterinario['id_empleado'] ?>">
+                        <?= $escapar('Id: ' . $registroVeterinario['id_empleado'] . ' - ' . $registroVeterinario['nombre'] . ' ' . $registroVeterinario['apellido']) ?>
+                </li>
+            <?php endforeach; ?>
+            </ul>
+            <input
+                type="hidden"
+                id="id_veterinario"
+                name="id_veterinario"
+                value="<?= $veterinarioSeleccionado ? (int) $veterinarioSeleccionado['id_empleado'] : '' ?>"
+            >
           </div>
         </div>
 
@@ -350,6 +416,7 @@ foreach ($especies as $registroEspecie) {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-mascota.js"></script>
+  <script src="js/mascota.js"></script>
 
   <script>
     const previewImg = document.getElementById('preview-crop');
