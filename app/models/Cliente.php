@@ -120,7 +120,7 @@ class Cliente
                 $datos['apellido'],
                 $datos['telefono'],
                 $datos['correo'],
-                !empty($datos['direccion']) ? $datos['direccion'] : null,
+                !empty($datos['direccion']) ? $datos['direccion'] : '',
                 $datos['contacto_emergencia'],
                 $datos['telefono_emergencia'],
                 $datos['usuario'],
