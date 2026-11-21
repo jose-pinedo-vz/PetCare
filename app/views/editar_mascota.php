@@ -59,41 +59,38 @@ if ($colorActual !== '' && $colorActual !== 'Otro' && !in_array($colorActual, $c
 }
 
 
-$clientes     = Cliente::obtenerTodos();
+$clientes = Cliente::obtenerTodos();
 $veterinarios = Mascota::obtenerVeterinariosActivos();
-$especies     = Mascota::obtenerEspecies();
-$razas        = Mascota::obtenerRazas();
-$escapar      = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+$especies = Mascota::obtenerEspecies();
+$razas = Mascota::obtenerRazas();
+$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 
-// Cliente actual: lo escrito antes del error o, si no hay, lo de la BD
-$clienteIdAnterior   = (string) ($old['id_cliente'] ?? $mascota['id_cliente'] ?? '');
+$clienteIdAnterior = (string) ($old['id_cliente'] ?? $mascota['id_cliente'] ?? '');
 $clienteSeleccionado = null;
 foreach ($clientes as $registroCliente) {
-    if ((string) $registroCliente['id_cliente'] === $clienteIdAnterior) {
-        $clienteSeleccionado = $registroCliente;
-        break;
-    }
+  if ((string) $registroCliente['id_cliente'] === $clienteIdAnterior) {
+    $clienteSeleccionado = $registroCliente;
+    break;
+  }
 }
 
-// Veterinario actual
-$veterinarioIdAnterior   = (string) ($old['id_veterinario'] ?? $mascota['id_veterinario'] ?? '');
+$veterinarioIdAnterior = (string) ($old['id_veterinario'] ?? $mascota['id_veterinario'] ?? '');
 $veterinarioSeleccionado = null;
 foreach ($veterinarios as $registroVeterinario) {
-    if ((string) $registroVeterinario['id_empleado'] === $veterinarioIdAnterior) {
-        $veterinarioSeleccionado = $registroVeterinario;
-        break;
-    }
+  if ((string) $registroVeterinario['id_empleado'] === $veterinarioIdAnterior) {
+    $veterinarioSeleccionado = $registroVeterinario;
+    break;
+  }
 }
 
-// Especie y raza actuales
-$especieActual     = (string)($old['especie'] ?? $mascota['especie'] ?? '');
-$razaAnterior      = (string)($old['raza'] ?? $mascota['raza'] ?? '');
+$especieActual = (string)($old['especie'] ?? $mascota['especie'] ?? '');
+$razaAnterior = (string) ($old['raza'] ?? $mascota['raza'] ?? '');
 $especieIdAnterior = '';
 foreach ($especies as $registroEspecie) {
-    if ((string) $registroEspecie['especie'] === $especieActual) {
-        $especieIdAnterior = (string) $registroEspecie['id'];
-        break;
-    }
+  if ((string) $registroEspecie['especie'] === $especieActual) {
+    $especieIdAnterior = (string) $registroEspecie['id'];
+    break;
+  }
 }
 
 ?>
@@ -176,10 +173,10 @@ foreach ($especies as $registroEspecie) {
                 <?= $especieActual === (string) $registroEspecie['especie'] ? 'selected' : '' ?>
                 ><?= $escapar($registroEspecie['especie']) ?></option>
               <?php endforeach; ?>
-            </select>
             <?php if (!$especies): ?>
                 <small>No hay especies registradas en el catálogo.</small>
             <?php endif; ?>
+            </select>
           </div>
 
           <div>
@@ -192,7 +189,6 @@ foreach ($especies as $registroEspecie) {
                 $razaSeleccionada = $razaCoincideConEspecie 
                     && $razaAnterior === (string) $registroRaza['raza'];
                 ?>
-
                     <option 
                         value="<?= $escapar($registroRaza['raza']) ?>"
                         data-especie-id="<?= (int) $registroRaza['especie'] ?>" 

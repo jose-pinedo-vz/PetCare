@@ -15,6 +15,17 @@ $horario_empleado = $_SESSION['horario_empleado'] ?? null;
 
 $sbActiva = $paginaActiva ?? '';
 
+$rolSidebar = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+$puestoSidebar = strtolower(trim((string)($_SESSION['puesto_empleado'] ?? '')));
+$puestosPorRol = [
+    'admin' => ['gerente'],
+    'gerente' => ['gerente'],
+    'vendedor' => ['vendedor'],
+    'recepcionista' => ['recepcionista'],
+];
+$puedeOperarCajaSidebar = isset($puestosPorRol[$rolSidebar])
+    && in_array($puestoSidebar, $puestosPorRol[$rolSidebar], true);
+
 $sbModulos = [
     'inicio'        => ['Inicio',            'inicio.php'],
     'clientes'      => ['Clientes',          'clientes.php'],
@@ -27,7 +38,7 @@ $sbModulos = [
     'corte_caja'    => ['Corte de caja',      'corte_caja.php'],
     'servicios'     => ['Servicios',         'servicios.php'],
     'adopcion'      => ['Adopción y venta',  'adopcion_venta.php'],
-    'hotel'      => ['Hotel',  'hotel.php'],
+    'hotel'         => ['Hotel',             'hotel.php'],
     'veterinaria'   => ['Veterinaria',       'veterinaria_Inicio.php'],
     'pagos'         => ['Pagos de servicios','Ventas.php#pagos'],
     'pagos_tarjeta' => ['Pagos con tarjeta', null],
@@ -35,8 +46,49 @@ $sbModulos = [
     'configuracion' => ['Configuración',     null],
 ];
 
-if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+$modulosPorRol = [
+    'admin' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'empleados', 'proveedores',
+        'inventario', 'ventas', 'corte_caja', 'servicios', 'adopcion', 'hotel',
+        'veterinaria', 'usuarios'
+    ],
+    'gerente' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'proveedores', 'inventario',
+        'ventas', 'corte_caja', 'servicios', 'adopcion', 'hotel', 'veterinaria'
+    ],
+    'veterinario' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'servicios', 'veterinaria'
+    ],
+    'estilista' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'servicios'
+    ],
+    'vendedor' => [
+        'inicio', 'clientes', 'mascotas', 'inventario', 'ventas', 'corte_caja',
+        'adopcion', 'servicios'
+    ],
+    'recepcionista' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'ventas', 'corte_caja',
+        'servicios', 'hotel', 'adopcion'
+    ],
+    'hotelero' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'hotel'
+    ],
+];
+
+if (isset($modulosPorRol[$rolSidebar])) {
+    $permitidos = $modulosPorRol[$rolSidebar];
+    foreach (array_keys($sbModulos) as $clave) {
+        if (!in_array($clave, $permitidos, true)) {
+            unset($sbModulos[$clave]);
+        }
+    }
+}
+
+if ($rolSidebar !== 'admin') {
     unset($sbModulos['empleados'], $sbModulos['usuarios']);
+}
+if (!$puedeOperarCajaSidebar) {
+    unset($sbModulos['corte_caja']);
 }
 ?>
     <aside class="sidebar" id="menu-principal">

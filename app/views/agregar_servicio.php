@@ -2,6 +2,15 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente'], true)) {
+    header("Location: servicios.php");
+    exit();
+}
 require_once __DIR__ . '/../models/Empleados.php';
 $empleadosActivos = Empleados::Listar_empleados_activos();
 // Lee y limpia el error y los datos guardados en sesion
@@ -113,8 +122,8 @@ unset(
           </fieldset>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="servicios.php">Cancelar</a>
-            <button type="submit">Guardar</button>
+            <a class="btn btn-secundario btn-chico" href="servicios.php">Cancelar</a>
+            <button type="submit" class="btn btn-chico">Guardar</button>
           </div>
         </form>
       </div>

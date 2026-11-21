@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $soloCodigo_postal = '/^[0-9]{5}$/';
 
-    $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista'];
+    $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista', 'Recepcionista', 'Hotelero'];
     $horariosValidos = ['Matutino', 'Vespertino'];
 
     $patronNumero = '/^[a-zA-Z0-9\-\/]{1,15}$/';
@@ -254,15 +254,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($esVeterinario) {
         if ($num_cedula_profesional === '') {
-            $errores[] = "El número de cédula profesional es obligatorio para el puesto de Veterinario/a.";
+            $errores[] = "El número de cédula profesional es obligatorio para el puesto de Veterinario.";
+        }
+        if ($especialidad === '') {
+            $errores[] = "La especialidad es obligatoria para el puesto de Veterinario.";
         }
     } else {
         if ($num_cedula_profesional !== '') {
-            $errores[] = "El número de cédula profesional solo aplica para el puesto de Veterinario/a.";
+            $errores[] = "El número de cédula profesional solo aplica para el puesto de Veterinario.";
             $num_cedula_profesional = '';
         }
         if ($especialidad !== '') {
-            $errores[] = "La especialidad solo aplica para el puesto de Veterinario/a.";
+            $errores[] = "La especialidad solo aplica para el puesto de Veterinario.";
             $especialidad = '';
         }
     }

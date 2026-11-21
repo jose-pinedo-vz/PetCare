@@ -8,7 +8,7 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 
-require_once __DIR__ . '/../models/Ventas.php';
+require_once __DIR__ . '/../models/ventas.php';
 
 function h($texto): string
 {

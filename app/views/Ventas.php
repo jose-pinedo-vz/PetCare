@@ -6,6 +6,11 @@ if (!isset($_SESSION['usuario']))
   header("Location: ../views/login.php");
   exit();
 }
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente', 'vendedor', 'recepcionista'], true)) {
+  header("Location: inicio.php");
+  exit();
+}
 $usuario=$_SESSION['usuario'];
 $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
 $horario_empleado = $_SESSION['horario_empleado'] ?? null;
@@ -15,9 +20,15 @@ require_once __DIR__ . '/../models/conexion_db.php';
 require_once __DIR__ . '/../models/CorteCaja.php';
 
 $tieneCajaAbierta = false;
+$puedeOperarCaja = false;
 if (!empty($id_empleado)) {
     try {
         $dbCorte = ConexionDB::obtenerConexion();
+        $puedeOperarCaja = CorteCaja::puedeOperarCaja(
+            $dbCorte,
+            (int)$id_empleado,
+            strtolower(trim((string)($_SESSION['rol'] ?? '')))
+        );
         $tieneCajaAbierta = CorteCaja::obtenerCorteAbierto($dbCorte, (int)$id_empleado) !== null;
     } catch (Exception $e) {
         $tieneCajaAbierta = false;
@@ -123,7 +134,9 @@ if (!empty($id_empleado)) {
                     <section class="tarjeta venta-herramientas" aria-labelledby="tituloHerramientasVenta">
                         <h2 id="tituloHerramientasVenta">Accesos</h2>
                         <div class="venta-reportes">
-                            <a class="btn btn-secundario btn-chico" href="corte_caja.php">Corte de caja</a>
+                            <?php if ($puedeOperarCaja): ?>
+                                <a class="btn btn-secundario btn-chico" href="corte_caja.php">Corte de caja</a>
+                            <?php endif; ?>
                             <a class="btn btn-secundario btn-chico" href="historial_ventas.php">Historial de ventas</a>
                         </div>
                     </section>

@@ -77,7 +77,7 @@ class ConexionDB
     }
     public static function buscarUsuarioPorNombre(PDO $conexion, string $usuario)
     {
-        $sql = "SELECT u.id_usuario, u.contrasena, u.rol, u.estado, u.empleado_asociado AS id_empleado,e.nombre AS nombre_empleado, e.apellido AS apellido_empleado, e.horario AS horario_empleado
+        $sql = "SELECT u.id_usuario, u.contrasena, u.rol, u.estado, u.empleado_asociado AS id_empleado,e.nombre AS nombre_empleado, e.apellido AS apellido_empleado, e.horario AS horario_empleado, e.puesto AS puesto_empleado
                 FROM usuarios u
                 LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
                 WHERE u.usuario = ?";
@@ -97,7 +97,7 @@ class ConexionDB
         $empleado=trim($_POST['empleado_asociado']??'');
         $empleado_asociado=($empleado !== '' && $empleado !== '0')?(int)$empleado : null;
         $base=$conexion->prepare("INSERT INTO usuarios (id_usuario, usuario, contrasena, empleado_asociado, rol, estado) 
-                                    VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u), ?, ?, ?, ?, ?, ?)");
+                                    VALUES ((SELECT COALESCE(MAX(id_usuario), 0) + 1 FROM usuarios AS u), ?, ?, ?, ?, ?)");
         $base->execute([$usuario, $password_hash, $empleado_asociado, $rol, $estado]);
         return $base->rowCount();
     }

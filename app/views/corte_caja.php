@@ -22,6 +22,37 @@ $anchoGrafica = static function ($valor, $maximo): float {
 
     return max(0.0, min(100.0, ((float)$valor / (float)$maximo) * 100));
 };
+$bienvenidasCaja = [
+    'admin' => [
+        'rol' => 'Administrador',
+        'descripcion' => 'Puedes operar tu corte diario y consultar los cortes de todos los empleados, además del corte mensual y las estadísticas.',
+        'accesos' => ['Corte diario propio', 'Historial general', 'Corte mensual', 'Estadísticas con filtros por empleado'],
+    ],
+    'gerente' => [
+        'rol' => 'Gerente',
+        'descripcion' => 'Puedes abrir y operar tu corte diario y revisar el historial de tus propios cortes.',
+        'accesos' => ['Corte diario propio', 'Historial de tus cortes'],
+    ],
+    'vendedor' => [
+        'rol' => 'Vendedor',
+        'descripcion' => 'Puedes abrir y operar tu corte diario y revisar el historial de tus propios cortes.',
+        'accesos' => ['Corte diario propio', 'Historial de tus cortes'],
+    ],
+    'recepcionista' => [
+        'rol' => 'Recepcionista',
+        'descripcion' => 'Puedes abrir y operar tu corte diario y revisar el historial de tus propios cortes.',
+        'accesos' => ['Corte diario propio', 'Historial de tus cortes'],
+    ],
+];
+$bienvenidaCaja = $bienvenidasCaja[$rolSesion] ?? null;
+$motivosAccesoCaja = [
+    'sin_empleado' => 'Tu cuenta no está asociada a un empleado. Pide a un administrador que vincule tu usuario con un empleado activo.',
+    'empleado_no_encontrado' => 'No se encontró el empleado asociado a tu cuenta. Pide a un administrador que revise la asociación.',
+    'empleado_inactivo' => 'El empleado asociado a tu cuenta está inactivo. Contacta a un administrador para revisar tu acceso.',
+    'puesto_no_autorizado' => 'El puesto de tu empleado no está habilitado para operar caja.',
+    'rol_puesto_no_coincide' => 'El rol de tu usuario no coincide con el puesto de tu empleado para operar caja.',
+];
+$mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tiene acceso para operar caja. Contacta a un administrador.';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -57,10 +88,35 @@ $anchoGrafica = static function ($valor, $maximo): float {
                 <p class="corte-aviso" role="status"><?= htmlspecialchars($avisoFlash['mensaje']) ?></p>
             <?php endif; ?>
 
-            <?php if (!$idEmpleado): ?>
-                <p class="corte-form-error" role="alert">Tu usuario no está asociado a un empleado. No puedes abrir ni operar una caja.</p>
+            <?php if ($puedeOperarCaja && $bienvenidaCaja): ?>
+                <section class="corte-acceso corte-acceso--bienvenida" aria-labelledby="tituloBienvenidaCaja" role="status">
+                    <div class="corte-acceso-contenido">
+                        <span class="corte-kicker">Bienvenido, <?= htmlspecialchars((string)$nombreEmpleado) ?></span>
+                        <h2 id="tituloBienvenidaCaja">Acceso de <?= htmlspecialchars($bienvenidaCaja['rol']) ?></h2>
+                        <p><?= htmlspecialchars($bienvenidaCaja['descripcion']) ?></p>
+                    </div>
+                    <div class="corte-acceso-secciones">
+                        <strong>Secciones disponibles</strong>
+                        <ul>
+                            <?php foreach ($bienvenidaCaja['accesos'] as $acceso): ?>
+                                <li><?= htmlspecialchars($acceso) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </section>
+            <?php elseif (!$puedeOperarCaja): ?>
+                <section class="corte-acceso corte-acceso--denegado" aria-labelledby="tituloAccesoCaja" role="alert">
+                    <div class="corte-acceso-contenido">
+                        <span class="corte-kicker">Acceso no disponible</span>
+                        <h2 id="tituloAccesoCaja">No puedes operar caja todavía</h2>
+                        <p><?= htmlspecialchars($mensajeMotivoCaja) ?></p>
+                        <p class="corte-acceso-reglas">Acceso permitido: rol <strong>admin</strong> o <strong>gerente</strong> con puesto <strong>Gerente</strong>; rol <strong>vendedor</strong> con puesto <strong>Vendedor</strong>; o rol <strong>recepcionista</strong> con puesto <strong>Recepcionista</strong>. El empleado debe estar activo.</p>
+                    </div>
+                    <a class="btn btn-secundario btn-chico" href="inicio.php">Volver al inicio</a>
+                </section>
             <?php endif; ?>
 
+            <?php if ($puedeOperarCaja): ?>
             <nav class="corte-tabs" role="tablist" aria-label="Secciones de corte de caja">
                 <button class="corte-tab <?= $activePanel === 'diario' ? 'activa' : '' ?>" id="tab-diario" type="button" role="tab" aria-selected="<?= $activePanel === 'diario' ? 'true' : 'false' ?>" aria-controls="panel-diario" tabindex="<?= $activePanel === 'diario' ? '0' : '-1' ?>" data-tab="diario">1. Corte diario</button>
                 <button class="corte-tab <?= $activePanel === 'historial' ? 'activa' : '' ?>" id="tab-historial" type="button" role="tab" aria-selected="<?= $activePanel === 'historial' ? 'true' : 'false' ?>" aria-controls="panel-historial" tabindex="<?= $activePanel === 'historial' ? '0' : '-1' ?>" data-tab="historial">2. Historial de Cortes Z</button>
@@ -79,7 +135,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                     <span class="corte-estado <?= $hayCorteAbierto ? 'abierto' : 'cerrado' ?>"><?= $hayCorteAbierto ? 'Abierto' : 'Sin corte abierto' ?></span>
                 </div>
 
-                <?php if (!$hayCorteAbierto && $idEmpleado): ?>
+                <?php if (!$hayCorteAbierto && $idEmpleado && $puedeOperarCaja): ?>
                     <section class="corte-apertura tarjeta">
                         <div class="corte-apertura-campos">
                             <form method="post" action="../controllers/corte_caja.php" class="corte-dialog-campos">
@@ -109,7 +165,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                             <span class="corte-apertura-detalle"><strong>Sin corte abierto</strong><small>El corte quedará asociado a tu usuario.</small></span>
                         </div>
                     </section>
-                <?php elseif ($hayCorteAbierto): ?>
+                <?php elseif ($hayCorteAbierto && $puedeOperarCaja): ?>
                     <section class="corte-apertura tarjeta">
                         <div class="corte-apertura-campos">
                             <div class="corte-campo"><span class="label-campo">Folio</span><strong><?= htmlspecialchars($corteAbierto['folio']) ?></strong></div>
@@ -200,7 +256,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                     </section>
                 <?php endif; ?>
 
-                <?php if ($corteAbierto && $arqueoPendiente): ?>
+                <?php if ($corteAbierto && $arqueoPendiente && $puedeOperarCaja): ?>
                     <section class="tarjeta corte-auditoria" aria-labelledby="tituloArqueoDeclarado">
                         <div><h2 id="tituloArqueoDeclarado">Declaración de efectivo recibida</h2><p>Confirma el resultado calculado en el servidor para cerrar el corte.</p></div>
                         <div class="corte-confirmacion-resumen">
@@ -557,6 +613,7 @@ $anchoGrafica = static function ($valor, $maximo): float {
                         </section>
                     </div>
                 </section>
+            <?php endif; ?>
             <?php endif; ?>
 
             <p class="corte-aviso" id="avisoCorte" role="status" aria-live="polite" hidden></p>

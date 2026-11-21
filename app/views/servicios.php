@@ -14,6 +14,8 @@ $historial = Servicios::obtenerHistorial();
 // Lee y limpia el error de sesion
 $error = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+$esAdmin = in_array($rolSesion, ['admin', 'gerente'], true);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -56,6 +58,7 @@ unset($_SESSION['error']);
         </h3>
         <p><?= htmlspecialchars($s['categoria']) ?> · <?= (int)$s['duracion'] ?> min</p>
         <p class="servicio-precio">$<?= number_format((float)$s['precio'], 2) ?></p>
+        <?php if ($esAdmin): ?>
         <div class="servicio-acciones">
             <a class="btn btn-chico" href="editar_servicio.php?id_servicio=<?= (int)$s['id_servicio'] ?>">Editar</a>
             <form action="../controllers/guardar_servicio.php" method="POST">
@@ -64,14 +67,17 @@ unset($_SESSION['error']);
                 <button type="submit" class="btn btn-chico <?= $activo ? 'btn-peligro' : 'btn-activar' ?>"><?= $activo ? 'Desactivar' : 'Activar' ?></button>
             </form>
         </div>
+        <?php endif; ?>
     </div>
 <?php endforeach; ?>
  
+                    <?php if ($esAdmin): ?>
                     <div class="inventario-tarjeta servicio-nuevo">
                         <h3>Nuevo servicio</h3>
                         <p>Agrega otro servicio al catálogo</p>
                         <a class="btn inventario-btn-contactar btn-chico" href="agregar_servicio.php">+ Agregar servicio</a>
                     </div>
+                    <?php endif; ?>
                 </div>
  
                 <p class="servicio-nota">Los servicios no se borran; se desactivan para conservar el historial. Solo el administrador puede editarlos.</p>

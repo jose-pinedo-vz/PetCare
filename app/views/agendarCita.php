@@ -82,16 +82,14 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="fecha" name="fecha" data-fecha="fecha" required
-
+              min="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime('+1 year')); ?>"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
-
           </div>
 
           <div>
-            <label class="label-campo" for="Duración">Duración estimada (minutos) *:</label>
-            <input type="number" class="campo" id="duracion" name="duracion" required placeholder="Ej. 60" readonly
+            <label class="label-campo" for="duracion">Duración estimada (minutos) *:</label>
+            <input type="number" class="campo" id="duracion" name="duracion" required min="1" max="480" placeholder="Ej. 60" readonly
               value="<?php echo htmlspecialchars((string)($_SESSION['oldDuracion'] ?? '')); unset($_SESSION['oldDuracion']); ?>">
-
           </div>
 
           <div>

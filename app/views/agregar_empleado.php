@@ -166,13 +166,13 @@ unset($_SESSION['error']);
 
           <div>
             <label class="label-campo" for="ciudad">Ciudad *:</label>
-            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required readonly
+            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required readonly placeholder="Se completa automáticamente"
               value="<?= viejo('oldciudad') ?>">
           </div>
 
           <div>
             <label class="label-campo" for="estado">Estado *:</label>
-            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required readonly
+            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required readonly placeholder="Se completa automáticamente"
               value="<?= viejo('oldestado') ?>">
           </div>
         </div>
@@ -189,11 +189,13 @@ unset($_SESSION['error']);
               <option value="Veterinario" <?= $puestoViejo === 'Veterinario' ? 'selected' : '' ?>>Veterinario</option>
               <option value="Vendedor"      <?= $puestoViejo === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
               <option value="Estilista"     <?= $puestoViejo === 'Estilista'     ? 'selected' : '' ?>>Estilista</option>
+              <option value="Recepcionista" <?= $puestoViejo === 'Recepcionista' ? 'selected' : '' ?>>Recepcionista</option>
+              <option value="Hotelero"      <?= $puestoViejo === 'Hotelero'      ? 'selected' : '' ?>>Hotelero</option>
             </select>
           </div>
 
           <div>
-            <label class="label-campo" for="especialidad">Especialidad:</label>
+            <label class="label-campo" for="especialidad">Especialidad<span id="ast_especialidad"></span>:</label>
             <input type="text" class="campo" id="especialidad" name="especialidad" minlength="3" maxlength="50"
               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
               title="Solo letras y espacios (sin números ni símbolos especiales)"
@@ -201,7 +203,7 @@ unset($_SESSION['error']);
           </div>
 
           <div>
-            <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional:</label>
+            <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional<span id="ast_num_cedula"></span>:</label>
             <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" minlength="6" maxlength="10"
               pattern="^[0-9]{6,10}$" title="Entre 6 y 10 dígitos numéricos"
               value="<?= viejo('oldnum_cedula_profesional') ?>">
@@ -239,6 +241,31 @@ unset($_SESSION['error']);
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const puesto = document.getElementById('puesto');
+    const especialidad = document.getElementById('especialidad');
+    const cedula = document.getElementById('num_cedula_profesional');
+    const astEsp = document.getElementById('ast_especialidad');
+    const astCedu = document.getElementById('ast_num_cedula');
+
+    function actualizarCamposVeterinario(){
+        const esVet = puesto.value === 'Veterinario';
+
+        especialidad.required = esVet;
+        cedula.required = esVet;
+
+        astEsp.textContent = esVet ? ' *' : '';
+        astCedu.textContent = esVet ? ' *' : '';
+
+        especialidad.placeholder = esVet ? 'Obligatorio' : 'Solo aplica para veterinarios';
+        cedula.placeholder = esVet ? 'Obligatorio' : 'Solo aplica para veterinarios';
+    }
+    puesto.addEventListener('change', actualizarCamposVeterinario);
+    actualizarCamposVeterinario();
+});
+</script>
 
 </body>
 </html>

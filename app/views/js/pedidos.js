@@ -152,7 +152,7 @@
             campoCantidad.removeAttribute('max');
             return;
         }
-        campoPrecio.readOnly = Boolean(producto.tiene_lotes);
+        campoPrecio.readOnly = false;
         if (producto.tiene_lotes) {
             let precio = Number(producto.precio_unitario);
             if (precio <= 0) precio = Number(producto.precio_compra_lote);

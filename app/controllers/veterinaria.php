@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../models/Veterinaria.php';
+require_once __DIR__ . '/fecha.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -54,45 +55,6 @@ function extraerDatosMascota(): array {
         'edad' => $edad
     ];
 }
-
-function calcularEdad(string $fechaNacimiento): string {
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}/', $fechaNacimiento)) {
-        return $fechaNacimiento;
-    }
-    try {
-        $diferencia = (new DateTime($fechaNacimiento)) -> diff(new DateTime());
-        $fechaEsp = formatearFechaEsp($fechaNacimiento);
-
-        $difYear = $diferencia -> y;
-        $difMes = $diferencia -> m;
-        $difDia = $diferencia -> d;
-
-        if ($difYear >= 1) {
-            return $difYear . ' año(s)  /  ' . $fechaEsp;
-        } else if ($difMes >= 1) {
-            return $difMes . ' mes(es)  /  ' . $fechaEsp;
-        } else if ($difDia >= 1) {
-            return $difDia . ' dia(s)  /  ' . $fechaEsp;
-        } else {
-            return 'Recien nacido / ' . $fechaEsp;
-        }
-    } catch (Exception $error) {
-        error_log("Error en calcular la edad de la mascota " . $error -> getMessage());
-        return $fechaNacimiento;
-    }
-}
-
-// combierte la fecha en formato en español (dia, mes, año)
-function formatearFechaEsp(string $fecha) {
-    $fechaDateTime = DateTime::createFromFormat('Y-m-d', substr($fecha, 0, 10));
-
-    if (!$fechaDateTime) {
-        return $fecha;
-    }
-
-    return $fechaDateTime -> format('d/m/Y');
-}
-
 
 function extraerCitasHoy(): array {
     return Veterinaria::citasHoyVeterinaria(date('Y-m-d'));

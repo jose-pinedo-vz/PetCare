@@ -10,6 +10,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['usuario'])) {
+    http_response_code(401);
+    exit();
+}
+
 
 // intermediario entre front y base de datos
 function estraerDatosConsultas(): array
@@ -26,8 +31,9 @@ function estraerDatosConsultas(): array
             'fecha' => $cita['fecha'],
             'motivo' => $cita['observacion'],           
             'estado_cita' => $cita['estado_cita'],
-            'servicio' => $cita['servicio'],     
-            'nombre_servicio' => $cita['nombre_servicio'] ?? '',     
+            'servicio' => $cita['servicio'],
+            'empleado' => $cita['empleado'],     
+
         ];
     }
     return $resultados;
@@ -96,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     // validar que no sea fecha pasada
     $fechaActual = date('Y-m-d');
-    if ($fecha < $fechaActual)
+    if ($fecha <= $fechaActual)
     {
         errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");
     }
@@ -118,25 +124,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
 
     // validacion de fecha
-    $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
-    $horaLimpia = $objetoHora->format('H:i:s');
-    $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+    try
+    {
+        $objetoHora = DateTime::createFromFormat('g:i A', $horarioConsulta);
+        $horaLimpia = $objetoHora->format('H:i:s');
+        $fechaHoraFinal = $fecha . ' ' . $horaLimpia;
+    }
+    catch (Exception $e)
+    {
+        errorSession("La fecha intregada se enceunta mal. Revise formato.");
+    }
+    
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
-    // insertar la cita
-    $seInserto = $consultasCitas->insertarCita((int)$claveCliente,(int)$mascota,(int)$servicio, (int) $responsable, "pendiente",(int) $duracion, $motivoConsulta, "sin atender", $fechaHoraFinal,  $motivoConsulta,(string) 0);
-    if (!$seInserto)
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal);
+    if ($HayMasHoras === true)
     {
-        errorSession("Hubo un error al registrar la cita en la base de datos.");
+        errorSession("Ya hay una consulta en ese horario.");
+        exit();
     }
 
-    // insercin de la cita
-    // $seInserto = $consultasCitas->insertarCita((int) $claveCliente,(string) $fecha,(string) $motivoConsulta);
-    // if (!$seInserto)
-    // {
-    //     errorSession("Hubo un error en la insercino de los datos.");
-    // }
+    try
+    {
+        $seInserto = $consultasCitas->insertarCita((int)$claveCliente,(int)$mascota,(int)$servicio, (int) $responsable, "pendiente",(int) $duracion, $motivoConsulta, "sin atender", $fechaHoraFinal,  $motivoConsulta,(string) 0);
+    }
+    catch (Throwable $e)
+    {
+        errorSession("Se encontro un error en la insercion de los datos, revise sus datos, intente de nuevo o consulte a un profecional.");
+    }
 
     //$_SESSION['exito'] = "Cita agendada correctamente para el cliente #$claveCliente.";
     header("Location: ../views/citas.php?exito=1");
@@ -144,8 +160,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
 }
 
-$accion = $_GET['accion'] ?? '';
 
+$accion = $_GET['accion'] ?? '';
 if ($accion === 'horario' || $accion === 'orario')
 {
     horarios();
@@ -164,7 +180,7 @@ function horarios()
     // con media hora entonces seria 12:30. sera complicado, espero terminarlo en esta tarde
 
     $fechaSeleccionada = $_GET['fecha'] ?? '';
-    $empleado = $_GET['empleado'] ?? '';
+    $empleado = (int)($_GET['responsable'] ?? 0);
     $Horarios = [];
     $entradaMatutino = 9;
     $salidaMatutino = 13;
@@ -178,6 +194,8 @@ function horarios()
     //$Veterinarios = ConexionesClientes::rescatarVeterinarios();
     $Veterinarios = true;
 
+    $arrayConFechas = ConexionesClientes::citasDelDia($fechaSeleccionada, $empleado);
+
     if ($Veterinarios)
     {
         $currentMatutino = DateTime::createFromFormat('H:i:s', '09:00:00');
@@ -185,12 +203,15 @@ function horarios()
         while ($currentMatutino < $limiteMatutino)
         {
             $fechaHoraActual = $fechaSeleccionada . " " . $currentMatutino->format('H:i:s');
-            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+            $hora = $currentMatutino->format('H:i:s'); 
+            //$cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
 
-            if ($cantidadCitasPorFecha > 0)
+            if (isset($arrayConFechas[$hora]))
             {
-                $duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
-                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+                //$duracion = (int) ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+                //$duracionMinutos = ($duracion > 0) ? $duracion : 60;\
+                //$duracion = ($arrayConFechas[$hora] > 0) ? $arrayConFechas[$hora] : 60;
+                $duracionMinutos = ($arrayConFechas[$hora] > 0) ? $arrayConFechas[$hora] : 60;
                 $currentMatutino->modify("+{$duracionMinutos} minutes");
             }
             else
@@ -205,19 +226,19 @@ function horarios()
             }
         }
 
-
-
         $currentVespertino = DateTime::createFromFormat('H:i:s', '16:00:00');
         $limiteVespertino = DateTime::createFromFormat('H:i:s', '19:00:00');
         while ($currentVespertino < $limiteVespertino)
         {
             $fechaHoraActual = $fechaSeleccionada . " " . $currentVespertino->format('H:i:s');
-            $cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
+            $hora = $currentVespertino->format('H:i:s');
+            //$cantidadCitasPorFecha = ConexionesClientes::cantidadCitasFecha($fechaHoraActual, $empleado);
 
-            if ($cantidadCitasPorFecha > 0)
+            if (isset($arrayConFechas[$hora]))
             {
-                $duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
-                $duracionMinutos = ($duracion > 0) ? $duracion : 60;
+                //$duracion = (int)ConexionesClientes::duracionCita($fechaHoraActual, $empleado);
+                //$hora = $currentVespertino->format('H:i:s');
+                $duracionMinutos = ($arrayConFechas[$hora] > 0) ? $arrayConFechas[$hora] : 60;
                 
                 $currentVespertino->modify("+{$duracionMinutos} minutes");
             }
@@ -250,7 +271,7 @@ if ($accion === "mostrarMascota")
 }
 function mostrarMascotas()
 {
-    $id_cliente = $_GET['id_cliente'];
+    $id_cliente = $_GET['id_cliente' ?? ''];
     $mascotas =  ConexionesClientes::consultaMascota($id_cliente);
 
     echo json_encode($mascotas);
@@ -278,9 +299,7 @@ if ($accion === "mostrarResponsable")
 {
     mostrarResponsable();
 }
-
 // editar para mostrar servicio
-
 function mostrarResponsable()
 {
     $servicio = $_GET['servicio'];
@@ -299,20 +318,39 @@ function mostrarResponsable()
     exit();
 }
 
+
+
+// a tratar
 $accion = $_GET['accion'] ?? '';
 if ($accion === "cancelarCita")
 {
     cancelarCita();
 }
-
 function cancelarCita()
 {
-    $idCita = $_GET['id_cita'];
+    $idCita = $_GET['id_cita'] ?? '';
     $res = ConexionesClientes::cancelarCita($idCita);
 
     echo json_encode($res);
     exit();
 }
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === "noAsistio")
+{
+    noAsistio();
+}
+function noAsistio()
+{
+    $idCita = (int)($_GET['id_cita'] ?? 0);              
+    $res = ConexionesClientes::noAsistioCita($idCita);
+
+    if (!$res) { http_response_code(500); }            
+    echo json_encode($res);
+    exit();
+}
+
+
 
 function consultarServicio(int $idServicio)
 {
@@ -358,6 +396,8 @@ function erroresDeReprogramarCitas(string $error, $nuevaFecha, $responsable, $nu
     $_SESSION['oldResponsable'] = $responsable;
     $_SESSION['oldHorario'] = $nuevoHorario;
 
+    
+
     header("Location: ../views/reprogramar_cita.php?id_consulta=" . $idConsulta);
     exit();
 }
@@ -384,8 +424,16 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
 
     // juntar fecha con horas 
     $horaLimpia = $objetoHora->format('H:i:s');
-    $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;
-    $fecha = $horaLimpia . " " . $nuevaFecha;
+    $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;  
+
+    
+    $consultasCitas = new ConexionesClientes();                                          
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal);
+    if ($HayMasHoras)
+    {
+        erroresDeReprogramarCitas("Ya hay una consulta en ese horario.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+        exit();
+    }
 
     // actualisar en base  datos
     $resultado = ConexionesClientes::actualizarCita((int)$idConsulta, (string)$fechaHoraFinal);
@@ -407,7 +455,7 @@ if ($accion === "mostrarDuracion")
 
 function duracionServicio()
 {
-    $idServicio = $_GET['servicio'];
+    $idServicio = $_GET['servicio' ?? ''];
     $res = ConexionesClientes::consutltarDuracinoServicio($idServicio);
     header('Content-Type: application/json');
     echo json_encode(['duracion' => $res]);
@@ -415,6 +463,20 @@ function duracionServicio()
 }
 
 
+function serviciosIdYNombre()
+{
+    return ConexionesClientes::serviciosIdYNombreModel();
+}
+
+function responsablesNombreEId()
+{
+    return ConexionesClientes::ReponsableIdNombre();
+}
+
+function nombreDelUsuario(string $usuario)
+{
+    return ConexionesClientes::empleadoDelUsuario($usuario);
+}
 
 
 

@@ -6,6 +6,50 @@ final class CorteCaja
     public const FONDO_INICIAL = 1000.00;
     private const IMPORTE_MAXIMO = 99999999.99;
 
+    public static function puedeOperarCaja(PDO $db, int $empleado, string $rol): bool
+    {
+        return self::motivoDenegacionAcceso($db, $empleado, $rol) === null;
+    }
+
+    public static function motivoDenegacionAcceso(PDO $db, int $empleado, string $rol): ?string
+    {
+        if ($empleado < 1) {
+            return 'sin_empleado';
+        }
+
+        $rolNormalizado = strtolower(trim($rol));
+        $stmt = $db->prepare(
+            'SELECT puesto, esta_activo
+             FROM empleados
+             WHERE id_empleado = :empleado
+             LIMIT 1'
+        );
+        $stmt->execute([':empleado' => $empleado]);
+        $empleadoDatos = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$empleadoDatos) {
+            return 'empleado_no_encontrado';
+        }
+        if ((int)$empleadoDatos['esta_activo'] !== 1) {
+            return 'empleado_inactivo';
+        }
+
+        $puestoNormalizado = strtolower(trim((string)$empleadoDatos['puesto']));
+        $rolesPorPuesto = [
+            'gerente' => ['admin', 'gerente'],
+            'vendedor' => ['vendedor'],
+            'recepcionista' => ['recepcionista'],
+        ];
+
+        if (!isset($rolesPorPuesto[$puestoNormalizado])) {
+            return 'puesto_no_autorizado';
+        }
+        if (!in_array($rolNormalizado, $rolesPorPuesto[$puestoNormalizado], true)) {
+            return 'rol_puesto_no_coincide';
+        }
+
+        return null;
+    }
+
     public static function obtenerCorteAbierto(PDO $db, int $empleado): ?array
     {
         $stmt = $db->prepare(
