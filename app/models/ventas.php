@@ -125,6 +125,9 @@ class Ventas
         try {
             $db->beginTransaction();
 
+            // El cliente debe existir (en algunas bases falta "Publico en general")
+            self::asegurarCliente($db, $idCliente);
+
             $lineas = [];
             $vistos = [];
             $subtotalVenta = 0;
@@ -349,6 +352,32 @@ class Ventas
             }
             error_log("Error en Ventas::guardarVenta: " . $e->getMessage());
             return ['ok' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    // Revisa que el cliente exista; si es el publico en general (id 11) y falta, lo crea
+    private static function asegurarCliente(PDO $db, int $idCliente): void
+    {
+        $stmt = $db->prepare("SELECT 1 FROM clientes WHERE id_cliente = ?");
+        $stmt->execute([$idCliente]);
+        if ($stmt->fetchColumn()) {
+            return;
+        }
+        if ($idCliente !== 11) {
+            throw new Exception('El cliente de la venta no existe.');
+        }
+        try {
+            $stmt = $db->prepare(
+                "INSERT INTO clientes
+                 (id_cliente, nombre, apellido, telefono, correo, calle, numero_exterior, colonia, ciudad, estado,
+                  codigo_postal, contacto_emergencia, telefono_emergencia, esta_activo)
+                 VALUES (11, 'Publico', 'en general', '0000000000', 'publico@petcare.local', 'N/A', 'S/N', 'N/A', 'N/A', 'N/A',
+                         '00000', 'N/A', '0000000000', 1)"
+            );
+            $stmt->execute();
+        } catch (Exception $e) {
+            error_log("No se pudo crear el cliente publico: " . $e->getMessage());
+            throw new Exception('No existe el cliente "Publico en general" (id 11) en la base de datos.');
         }
     }
 

@@ -352,7 +352,7 @@ if (!empty($id_empleado)) {
             </form>
         </div>
         <div class="resultado-contenido">
-            <p class="resultado-mensaje">Simulación frontend: el cobro no se procesó ni se guardó.</p>
+            <p class="resultado-mensaje">Procesando el cobro...</p>
             <div class="venta-total">Total de la venta: <strong id="totalVentaDemostracion">$23.20 MXN</strong></div>
             <p class="resultado-factura" id="mensajeFactura" role="status" hidden></p>
             <div class="venta-carrito-acciones">

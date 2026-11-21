@@ -115,7 +115,7 @@ unset($_SESSION['error']);
                                 <?php foreach ($historial as $h):
                                     $est = strtolower((string)$h['estado']);
                                     $clase = (strpos($est, 'cancel') !== false || strpos($est, 'no asist') !== false) ? 'cancelada'
-                                        : ((strpos($est, 'atend') !== false || strpos($est, 'complet') !== false) ? 'pagada' : 'pendiente');
+                                        : ((strpos($est, 'sin atender') === false && (strpos($est, 'atendida') !== false || strpos($est, 'complet') !== false)) ? 'pagada' : 'pendiente');
                                 ?>
                                 <tr>
                                     <td><?php echo (int)$h['id_cita']; ?></td>
