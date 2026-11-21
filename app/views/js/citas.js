@@ -2,6 +2,21 @@
 // funcion encarfada de mostrar y ocultar los elemtos con el nombre espesificado
 // resice 2 datos, nombre a buscar y mostrar y las tarjetas o divs de los nombres
 
+function mostrarSeccion(nombre, evento) {
+  const secciones = {
+    espera: 'seccion_espera',
+    atendidas: 'seccion_atendidos',
+    canseladas: 'seccion_canselado',
+    no_asistio: 'seccion_no_asitio'
+  };
+  document.querySelectorAll('.seccion-panel').forEach(s => s.classList.add('oculto'));
+  document.getElementById(secciones[nombre]).classList.remove('oculto');
+  document.querySelectorAll('.btn_active').forEach(b => b.classList.remove('active'));
+  evento.currentTarget.classList.add('active');
+}
+
+
+
 function mostrarNombre(nombre,tarjetas)
 {
     if(nombre)
@@ -27,8 +42,6 @@ function mostrarNombre(nombre,tarjetas)
     }
 }
 
-
-
 // escuchardor de el nombre dentro de citas
 // manda 2 datos nombres a mostrart y los divs donde estan
 document.addEventListener('DOMContentLoaded', function()
@@ -43,23 +56,23 @@ document.addEventListener('DOMContentLoaded', function()
 
 
 // ocultar citas entre atendidas y en espera
-function mostrarSeccion(tipo, evt)
-{
-    const seccionEspera = document.getElementById("seccion_espera");
-    const seccionAtendidos = document.getElementById('seccion_atendidos');
-    const botones = document.querySelectorAll('.btn_active');
+// function mostrarSeccion(tipo, evt)
+// {
+//     const seccionEspera = document.getElementById("seccion_espera");
+//     const seccionAtendidos = document.getElementById('seccion_atendidos');
+//     const botones = document.querySelectorAll('.btn_active');
 
-    botones.forEach(btn => btn.classList.remove('active'));
-    evt.target.classList.add('active');
+//     botones.forEach(btn => btn.classList.remove('active'));
+//     evt.target.classList.add('active');
 
-    if (tipo === 'espera') {
-        seccionEspera.classList.remove('oculto');
-        seccionAtendidos.classList.add('oculto');
-    } else if (tipo === 'atendidas') {
-        seccionAtendidos.classList.remove('oculto');
-        seccionEspera.classList.add('oculto');
-    }
-}
+//     if (tipo === 'espera') {
+//         seccionEspera.classList.remove('oculto');
+//         seccionAtendidos.classList.add('oculto');
+//     } else if (tipo === 'atendidas') {
+//         seccionAtendidos.classList.remove('oculto');
+//         seccionEspera.classList.add('oculto');
+//     }
+// }
 
 
 
