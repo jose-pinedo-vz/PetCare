@@ -595,5 +595,21 @@
                 return '';
             }
         }
+
+        public static function datosServicio($id)
+        {
+            try
+            {
+                $query = "SELECT precio FROM servicios WHERE id_servicio = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id]);
+                return (string)$stml->fetchColumn();  
+            }
+            catch (Exception)
+            {
+                return [];
+            }
+        }
     }
 ?>

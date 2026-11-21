@@ -343,3 +343,157 @@ document.addEventListener("DOMContentLoaded", async function()
         // responsable.addEventListener('change', actualizarHorarios);
     }
 });
+
+
+async function datosServicio(idServicio)
+{
+    console.log("se mandan llamar los datos");
+    const respuesta = await fetch(`../controllers/citas.php?accion=datos_Servicio&id_Servicio=${encodeURIComponent(idServicio)}`, {
+        method: "GET"
+    });
+    const datos = await respuesta.json();
+    console.log(datos);
+    return datos;
+
+}
+
+
+
+// =============================================================
+// elementos del modal
+
+ // Elementos de la pagina
+    const inputBuscar = document.getElementById('buscarProducto');
+    const tbodyResultados = document.getElementById('resultadosProductos');
+    const mensajeBusqueda = document.getElementById('mensajeBusqueda');
+    const modalBuscar = document.getElementById('modalBuscarProducto');
+    const btnBuscarProducto = document.getElementById('btnBuscarProducto');
+    const tbodyCarrito = document.getElementById('cartTableBody');
+    const mensajeVenta = document.getElementById('ventaMensaje');
+    const inputCodigo = document.getElementById('barcodeInput');
+    const inputCliente = document.getElementById('clienteInput');
+    const lblItems = document.getElementById('lblItems');
+    const lblSubtotal = document.getElementById('lblSubtotal');
+    const lblIva = document.getElementById('lblIva');
+    const lblTotal = document.getElementById('lblTotal');
+    const btnNueva = document.getElementById('btnNuevaVenta');
+    const btnCancelar = document.getElementById('btnCancelarVenta');
+    const btnCobrar = document.getElementById('btnCobrar');
+
+    // Elementos del buscador de servicios
+    const inputBuscarServ = document.getElementById('buscarServicio');
+    const tbodyServicios = document.getElementById('resultadosServicios');
+    const mensajeBusquedaServ = document.getElementById('mensajeBusquedaServicio');
+    const modalBuscarServ = document.getElementById('modalBuscarServicio');
+    const btnAgregarServicio = document.getElementById('btnAgregarServicio');
+
+    // Elementos del modal de pago
+    const modalPago = document.getElementById('modalPagarVenta');
+    const inputMonto = document.getElementById('montoRecibido');
+    const btnConfirmar = modalPago.querySelector('.pago-confirmar');
+    const tbodyPago = modalPago.querySelector('.pago-tabla tbody');
+    const totalesPago = modalPago.querySelectorAll('.pago-totales strong');
+    const totalPagar = modalPago.querySelector('.pago-calculo-monto > strong');
+    const cambioPago = modalPago.querySelector('.pago-cambio > span');
+    const metodos = modalPago.querySelectorAll('.pago-metodo');
+
+
+
+
+// ================================================================================================================
+// adelanto
+// llamas modal 
+
+document.addEventListener("DOMContentLoaded", () => {
+    const modalPagarVenta = document.getElementById('modalPagarVenta');
+    if (!modalPagarVenta) return;
+
+    const metodosPago = [...document.querySelectorAll('[data-metodo-pago]')];
+    const detallesTarjeta = document.getElementById('detallesTarjeta');
+    const detallesTransferencia = document.getElementById('detallesTransferencia');
+    const botonAnticipo = document.getElementById('btnAnticipo');
+
+    function seleccionarMetodoPago(metodo) {
+        metodosPago.forEach((boton) => {
+            const sel = boton.dataset.metodoPago === metodo;
+            boton.classList.toggle('seleccionado', sel);
+            boton.setAttribute('aria-pressed', String(sel));
+        });
+        if (detallesTarjeta) detallesTarjeta.hidden = metodo !== 'Tarjeta';
+        if (detallesTransferencia) detallesTransferencia.hidden = metodo !== 'Transferencia';
+    }
+
+    metodosPago.forEach((boton) => {
+        boton.addEventListener('click', () => seleccionarMetodoPago(boton.dataset.metodoPago));
+    });
+
+    botonAnticipo?.addEventListener('click', async () => {
+        const idServicio = document.getElementById('servicio').value;
+
+        if (idServicio === '') {
+            alert('Selecciona un servicio primero.');
+            return;
+        }
+
+        const respuestaServicio = await datosServicio(idServicio);
+        const precio = Number(respuestaServicio?.precio ?? respuestaServicio);
+
+        // precio ottal iva izqu
+        var totalIva = precio * 1.16; 
+        var iva = precio * 0.16;
+        const totalesPago = modalPagarVenta.querySelectorAll('.pago-totales strong');
+        if (totalesPago.length >= 3) {
+            totalesPago[0].textContent = '$' + precio.toFixed(2); // subotoal 1
+            totalesPago[1].textContent = '$' + iva.toFixed(2);
+            totalesPago[2].textContent = '$' + totalIva.toFixed(2);
+        }
+
+        const totalPagar = modalPagarVenta.querySelector('.pago-calculo-monto > strong');
+        const inputMonto = document.getElementById('montoRecibido');
+
+        if (totalPagar) totalPagar.textContent = '$' + totalIva.toFixed(2);
+        if (inputMonto) inputMonto.value = totalIva.toFixed(2);
+
+        // precio de inva en tabla 
+        // elimina campos incesesarios para productos
+        document.querySelectorAll('#tablaResumenPago thead th:nth-child(2), #tablaResumenPago thead th:nth-child(3)')
+            .forEach(th => th.style.display = 'none');
+
+        document.querySelectorAll('#tablaResumenPago tbody td:nth-child(2), #tablaResumenPago tbody td:nth-child(3)')
+            .forEach(td => td.style.display = 'none');
+        // ocultar el "Cód. 12345"
+        const codigo = document.querySelector('#tablaResumenPago .pago-producto-detalle small');
+        if (codigo) codigo.style.display = 'none';
+
+        // datos
+        const selectServicio = document.getElementById('servicio');
+        const nombreServicio = selectServicio.options[selectServicio.selectedIndex].text;
+        document.querySelector('#tablaResumenPago .pago-producto-detalle strong').textContent = nombreServicio;
+        document.querySelector('#tablaResumenPago tbody td:nth-child(4)').textContent = '$' + precio;
+
+        // metodo de pago
+        const metodoSeleccionado = document.querySelector('.pago-metodo.seleccionado')?.dataset.metodoPago;
+
+        // feria
+
+        inputMonto?.addEventListener('input', () => {
+            const recibido = Number(inputMonto.value) || 0;
+            const total = totalIva;
+            const cambio = Math.max(0, recibido - total);
+
+            // if (cambioTexto) {
+            //     cambioTexto.textContent = '$' + cambio.toFixed(2);
+            // }
+
+            document.getElementById('cambioPago').innerHTML = `$${cambio.toFixed(2)} <small>MXN</small>`;
+        });
+
+        
+
+        modalPagarVenta.showModal();
+    });
+    document.getElementById('cerrarModalPago')?.addEventListener('click', () => modalPagarVenta.close());
+    document.getElementById('cancelarPago')?.addEventListener('click', () => modalPagarVenta.close());
+    modalPagarVenta.querySelector('.pago-cerrar')?.addEventListener('click', () => modalPagarVenta.close());
+    modalPagarVenta.querySelector('.pago-cancelar')?.addEventListener('click', () => modalPagarVenta.close());
+});

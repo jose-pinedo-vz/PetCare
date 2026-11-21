@@ -480,5 +480,11 @@ function nombreDelUsuario(string $usuario)
 }
 
 
+$accion = $_GET['accion'] ?? '';
 
-
+if ($accion === "datos_Servicio")
+{
+    $id = (int)$_GET['id_Servicio'] ?? '';
+    echo json_encode(ConexionesClientes::datosServicio($id));
+    exit();
+}
