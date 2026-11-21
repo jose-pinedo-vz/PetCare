@@ -138,6 +138,39 @@ $paginaActiva = 'mascotas';
     <footer class="pie-pagina">
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
+    <script>
+    // Vista previa: al elegir una foto se muestra de inmediato.
+    // Todavía NO se guarda; se sube hasta dar clic en el botón del formulario.
+    (function () {
+        const campo = document.getElementById('fotografia');
+        const original = document.querySelector('.foto-marcador--subir');
+        if (!campo || !original) return;
+
+        let vista = null;
+
+        campo.addEventListener('change', function () {
+            const archivo = campo.files[0];
+
+            // Si quita la foto o elige algo que no es imagen, regresamos la original
+            if (!archivo || !archivo.type.startsWith('image/')) {
+                if (vista) { vista.replaceWith(original); vista = null; }
+                return;
+            }
+
+            if (!vista) {
+                vista = document.createElement('img');
+                vista.className = original.className;
+                vista.alt = 'Vista previa de la foto';
+                vista.style.objectFit = 'cover';
+                vista.style.padding = '0';
+                original.replaceWith(vista);
+            } else {
+                URL.revokeObjectURL(vista.src);
+            }
+            vista.src = URL.createObjectURL(archivo);
+        });
+    })();
+    </script>
 </body>
 
 </html>
