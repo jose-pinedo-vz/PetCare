@@ -27,7 +27,7 @@ include 'layout/encabezado.php';
             <p class='msg-error'><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
         <?php endif; ?>
 
-        <form action="../controllers/registroCliente.php" method="POST">
+        <form action="../controllers/registrocliente.php" method="POST">
             <div style="margin-bottom: 15px;">
                 <label for="usuario" class="label-campo">Nombre de Usuario:</label>
                 <input type="text" id="usuario" name="usuario" class="campo" required>

@@ -31,7 +31,7 @@ include 'layout/encabezado.php';
             
             <div style="text-align: center; font-size: 13px;">
                 <p style="margin: 5px 0;">
-                    ¿No tienes una cuenta? <a href="registro_cliente.php" class="link-tenue">Regístrate aquí</a>
+                    ¿No tienes una cuenta? <a href="../views/cliente/crear_cuenta.php" class="link-tenue">Regístrate aquí</a>
                 </p>
                 <p style="margin: 5px 0;">
                     <a href="../views/recuperar_contraseña.php" class="link-tenue">¿Olvidaste tu contraseña?</a>

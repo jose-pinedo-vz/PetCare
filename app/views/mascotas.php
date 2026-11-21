@@ -118,7 +118,7 @@ $usuario=$_SESSION['usuario'];
     </div>
   </dialog>
 
-
+  <script src="js/buscador_inteligente.js"></script>
   <script>
     document.querySelector('tbody').addEventListener('click', (e) => {
       if (e.target.closest('a, button')) return;
