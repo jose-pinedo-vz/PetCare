@@ -427,6 +427,8 @@ document.addEventListener("DOMContentLoaded", () => {
         boton.addEventListener('click', () => seleccionarMetodoPago(boton.dataset.metodoPago));
     });
 
+    const idEmpleado = Number(document.getElementById('datosSesion')?.dataset.idEmpleado) || 0;
+
     const btnConfirmar = modalPagarVenta.querySelector('.pago-confirmar');
     const totalPagar = modalPagarVenta.querySelector('.pago-calculo-monto > strong');
     const inputMonto = document.getElementById('montoRecibido');
@@ -435,13 +437,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
           // datos para mandar a servidor
-    btnConfirmar?.addEventListener('click', () => 
+    btnConfirmar?.addEventListener('click', async () => 
         {
             const metodoSeleccionado = document.querySelector('.pago-metodo.seleccionado')?.dataset.metodoPago;
 
             // montos elegidos 
             const total = Number(totalPagar.textContent.replace('$', '')) || 0;
             const MontoResivido = Number(inputMonto.value) || 0;
+
+            const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
+            const idEmpleado = Number(document.getElementById('datosSesion')?.dataset.idEmpleado) || 0;
 
             // estraer datos segun metodo seleccionardo
 
@@ -451,7 +456,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (metodoSeleccionado === "Transferencia")
             {
-                referencia = document.querySelector('#detallesTransferencia input')?.value.text.trim() || '';
+                referencia = document.querySelector('#detallesTransferencia input')?.value.trim() || '';
+                //referencia = document.querySelector('#detallesTransferencia input')?.value.text.trim() || '';
             }
             else if (metodoSeleccionado === "Tarjeta")
             { 
@@ -477,7 +483,50 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (numTarjeta === "") {alert("Ingrese una tarjeta por favor."); return;}
                 if (titular === "") {alert("Ingrese un titular valido por favor."); return;}
             }
-            console.log("Listo para enviar:", { metodoSeleccionado, total, MontoResivido, iva, referencia });
+            console.log("Listo para enviar:", {
+                idEmpleado,
+                idCliente,
+                metodoSeleccionado,
+                total,
+                MontoResivido,
+                iva,
+                referencia
+            });
+
+
+            // mandar datos 
+
+            const datosPago = new FormData();
+            datosPago.append('id_cliente', idCliente);
+            datosPago.append('id_empleado', idEmpleado);
+            datosPago.append('metodo_pago', metodoSeleccionado ?? '');
+            datosPago.append('total', total);
+            datosPago.append('monto_recibido', MontoResivido);
+            datosPago.append('iva', iva);
+            datosPago.append('referencia', referencia);
+
+
+            try
+            {
+                const respuesta = await fetch('../controllers/abonoCitas.php', {
+                    method: 'POST',
+                    body: datosPago
+                });
+
+                const data = await respuesta.json();
+                console.log("respuerst:", data);
+
+                if (data.ok) {
+                    modalPagarVenta.close();
+                } else {
+                    alert(data.mensaje || "No se pudo registrar el anticipo.");
+                }
+            }
+            catch (error)
+            {
+                console.log("hubo un error" + error);
+                alert("Hubo un error.")
+            }
         })
 
     // mostrar el cambio devuelro de el pago

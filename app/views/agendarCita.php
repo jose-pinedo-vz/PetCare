@@ -68,6 +68,7 @@ $usuario=$_SESSION['usuario'];
     <!-- <form id="formCita" action="../controllers/citas.php" method="POST"> -->
     <form action="../controllers/citas.php?accion=agendar_cita" method="POST">
       <fieldset>
+        <div id="datosSesion" data-id-empleado="<?php echo htmlspecialchars((string)($_SESSION['id_empleado'] ?? $_SESSION['id_usuario'] ?? '')); ?>"></div>
         <legend>Datos de la cita</legend>
 
         <div class="grid-formulario">
