@@ -50,7 +50,7 @@ $mascotas = Mascota::obtenerPorCliente((int) $_SESSION['id_cliente']);
                     <?php else: ?>
                         <div class="foto-marcador foto-marcador--mascota">Foto de la mascota</div>
                     <?php endif; ?>
-                    <h3 class="tarjeta-mascota__nombre"><?= htmlspecialchars($mascota['nombre']) ?></h3>
+                    <h3 class="tarjeta-mascota__nombre"><a href="detalle_mascota.php?id_mascota=<?= (int) $mascota['id_mascota'] ?>"><?= htmlspecialchars($mascota['nombre']) ?></a></h3>
                     <p class="tarjeta-mascota__dato"><?= htmlspecialchars($mascota['especie']) ?> · <?= htmlspecialchars($mascota['raza']) ?> · <?= htmlspecialchars($mascota['sexo']) ?></p>
                     <p class="tarjeta-mascota__dato"><?= textoEdadMascota($mascota['edad']) ?> · <?= $mascota['peso'] ?> kg</p>
                     <div class="grupo-etiquetas">
