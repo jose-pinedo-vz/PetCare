@@ -141,12 +141,18 @@ function actualizarProveedor(int $id, array $datos) {
     }
 }
 
-function existeRazonSocial($razon_social){
+function existeRazonSocial($razon_social, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE razon_social = :razon_social";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE razon_social = :razon_social and esta_activo = 1";
+        if ($idExcluir !== null) {
+            $sql .= " AND id_proveedor != :id";
+        }
         $stmt = $conexion->prepare($sql);
         $stmt->bindParam(":razon_social", $razon_social, PDO::PARAM_STR);
+        if ($idExcluir !== null) {
+            $stmt->bindParam(":id", $idExcluir, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     } catch (Exception $e) {
@@ -155,12 +161,18 @@ function existeRazonSocial($razon_social){
     }
 }
 
-function existeRfc($rfc){
+function existeRfc($rfc, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE rfc = :rfc";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE rfc = :rfc and esta_activo = 1";
+        if ($idExcluir !== null) {
+            $sql .= " AND id_proveedor != :id";
+        }
         $stmt = $conexion->prepare($sql);
         $stmt->bindParam(":rfc", $rfc, PDO::PARAM_STR);
+        if ($idExcluir !== null) {
+            $stmt->bindParam(":id", $idExcluir, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     } catch (Exception $e) {
@@ -169,12 +181,18 @@ function existeRfc($rfc){
     }
 }
 
-function existeTelefono($telefono){
+function existeTelefono($telefono, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE telefono = :telefono";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE telefono = :telefono and esta_activo = 1";
+        if ($idExcluir !== null) {
+            $sql .= " AND id_proveedor != :id";
+        }
         $stmt = $conexion->prepare($sql);
         $stmt->bindParam(":telefono", $telefono, PDO::PARAM_STR);
+        if ($idExcluir !== null) {
+            $stmt->bindParam(":id", $idExcluir, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     } catch (Exception $e) {
@@ -183,12 +201,18 @@ function existeTelefono($telefono){
     }
 }
 
-function existeCorreo($correo){
+function existeCorreo($correo, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE correo = :correo";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE correo = :correo and esta_activo = 1";
+        if ($idExcluir !== null) {
+            $sql .= " AND id_proveedor != :id";
+        }
         $stmt = $conexion->prepare($sql);
         $stmt->bindParam(":correo", $correo, PDO::PARAM_STR);
+        if ($idExcluir !== null) {
+            $stmt->bindParam(":id", $idExcluir, PDO::PARAM_INT);
+        }
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     } catch (Exception $e) {

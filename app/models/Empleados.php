@@ -234,20 +234,33 @@ class Empleados {
     }
 
     public static function Listar_empleados_activos() : array {
-        $conexion = ConexionDB::obtenerConexion();
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $consulta_sql = "
+                SELECT id_empleado, nombre, apellido, telefono, correo, puesto, especialidad,
+                       num_cedula_profesional, Fecha_de_contratacion, horario
+                FROM empleados
+                WHERE esta_activo = 1
+                ORDER BY id_empleado
+            ";
 
-        // Mantener esta proyección alineada con las columnas visibles de app/views/empleados.php.
-        // La dirección se conserva para las pantallas de alta y edición, pero no se lista aquí.
-        $consulta_sql = "
-            SELECT id_empleado, nombre, apellido, telefono, correo, puesto, especialidad,
-                   num_cedula_profesional, Fecha_de_contratacion, horario
-            FROM empleados
-            WHERE esta_activo = 1
-            ORDER BY id_empleado
-        ";
-
-        $consulta = $conexion -> query($consulta_sql);
-        return $consulta -> fetchAll(PDO::FETCH_ASSOC);
+            $consulta = $conexion -> query($consulta_sql);
+            if ($consulta instanceof PDOStatement) {
+                return $consulta -> fetchAll(PDO::FETCH_ASSOC) ?: [];
+            }
+            return [];
+        } catch (Throwable $error) {
+            try {
+                $conexion = ConexionDB::obtenerConexion();
+                $consulta = $conexion -> query("SELECT * FROM empleados ORDER BY id_empleado");
+                if ($consulta instanceof PDOStatement) {
+                    return $consulta -> fetchAll(PDO::FETCH_ASSOC) ?: [];
+                }
+                return [];
+            } catch (Throwable $e) {
+                return [];
+            }
+        }
     }
 }
 

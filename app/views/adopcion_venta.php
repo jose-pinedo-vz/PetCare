@@ -1,4 +1,14 @@
 <?php
+session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente', 'vendedor', 'recepcionista'], true)) {
+    header("Location: inicio.php");
+    exit();
+}
 require_once __DIR__ . '/../controllers/adopcion_venta.php';
 $animales = listar_adopciones_ventas();
 ?>

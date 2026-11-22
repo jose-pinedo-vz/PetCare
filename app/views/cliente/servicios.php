@@ -1,16 +1,8 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../models/Publico.php';
 $paginaActiva = 'servicios';
-
-require_once __DIR__ . '/../../models/Servicios.php';
-$todos = Servicios::obtenerTodos();
-
-$servicios = [];
-foreach ($todos as $s) {
-    if ((int) $s['estado'] === 1) {
-        $servicios[] = $s;
-    }
-}
+$servicios = Publico::servicios();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,33 +18,32 @@ foreach ($todos as $s) {
     <main class="contenedor">
         <div>
             <h1 class="titulo-pagina">Nuestros servicios</h1>
-            <p class="subtitulo-pagina">Elige el que necesita tu mascota y agenda tu cita.</p>
+            <p class="subtitulo-pagina">Elige el que necesita tu mascota y agenda tu cita. </p>
         </div>
 
         <section>
 
             <?php if (empty($servicios)): ?>
-                <p class="subtitulo-pagina">Por ahora no hay servicios para mostrar.</p>
+                <p class="aviso">Por ahora no hay servicios para mostrar.</p>
             <?php endif; ?>
+            <?php foreach ($servicios as $srv): ?>
+            <article class="tarjeta-servicio">
+                <div class="foto-marcador tarjeta-servicio__foto"><?= htmlspecialchars($srv['nombre']) ?></div>
 
-            <?php foreach ($servicios as $servicio): ?>
-                <article class="tarjeta-servicio">
-                    <div class="foto-marcador tarjeta-servicio__foto"><?= htmlspecialchars($servicio['nombre']) ?></div>
-
-                    <div class="tarjeta-servicio__descripcion">
-                        <h2 class="tarjeta-servicio__titulo"><?= htmlspecialchars($servicio['nombre']) ?></h2>
-                        <p class="tarjeta-servicio__texto"><?= htmlspecialchars($servicio['descripcion'] ?? '') ?></p>
-                        <div class="grupo-etiquetas">
-                            <span class="etiqueta"><?= (int) $servicio['duracion'] ?> min</span>
-                            <span class="etiqueta"><?= htmlspecialchars($servicio['categoria']) ?></span>
-                        </div>
+                <div class="tarjeta-servicio__descripcion">
+                    <h2 class="tarjeta-servicio__titulo"><?= htmlspecialchars($srv['nombre']) ?></h2>
+                    <p class="tarjeta-servicio__texto"><?= htmlspecialchars((string)($srv['descripcion'] ?? '')) ?></p>
+                    <div class="grupo-etiquetas">
+                        <span class="etiqueta"><?= (int)$srv['duracion'] ?> min</span>
+                        <span class="etiqueta"><?= htmlspecialchars($srv['categoria']) ?></span>
                     </div>
+                </div>
 
-                    <div class="tarjeta-servicio__precio">
-                        <p class="tarjeta-servicio__monto">$<?= number_format((float) $servicio['precio'], 2) ?></p>
-                        <a class="boton" href="agendar_cita.php?id_servicio=<?= (int) $servicio['id_servicio'] ?>">Agendar</a>
-                    </div>
-                </article>
+                <div class="tarjeta-servicio__precio">
+                    <p class="tarjeta-servicio__monto">$<?= number_format((float)$srv['precio'], 2) ?></p>
+                    <a class="boton" href="agendar_cita.php?servicio=<?= (int)$srv['id_servicio'] ?>">Agendar</a>
+                </div>
+            </article>
             <?php endforeach; ?>
 
             <article class="tarjeta-servicio tarjeta-servicio--destacada">

@@ -3,6 +3,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
 // Esta vista se carga desde controllers/FichaMedicaController.php,
 // asi que puede que estas variables no existan si se entra directo.
 $mascotas             = $mascotas ?? [];

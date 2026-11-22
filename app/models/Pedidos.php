@@ -75,7 +75,15 @@ class Pedidos
         self::asegurarTablaRecepciones($conexion);
         $sql = "SELECT d.id_detalle, d.clave_compra, d.id_producto, d.cantidad,
                        d.precio_unitario, p.codigo, p.nombre, p.contenido,
-                       p.unidad_medida, r.cantidad_recibida
+                       p.unidad_medida, r.cantidad_recibida,
+                       EXISTS (
+                           SELECT 1 FROM lote_productos lp
+                           WHERE lp.id_producto = p.id_producto
+                       ) AS tiene_lotes,
+                       (
+                           SELECT MAX(lp.precio_compra) FROM lote_productos lp
+                           WHERE lp.id_producto = p.id_producto
+                       ) AS precio_compra_lote
                 FROM detalle_orden_compra d
                 INNER JOIN productos p ON p.id_producto = d.id_producto
                 LEFT JOIN recepciones_detalle_orden r ON r.id_detalle = d.id_detalle
@@ -93,6 +101,8 @@ class Pedidos
             $recibido = (int) ($producto['cantidad_recibida'] ?? 0);
             $producto['cantidad_recibida'] = $recibido;
             $producto['cantidad_pendiente'] = max((int) $producto['cantidad'] - $recibido, 0);
+            $producto['tiene_lotes'] = (bool) $producto['tiene_lotes'];
+            $producto['precio_compra_lote'] = (float) ($producto['precio_compra_lote'] ?? 0);
         }
         unset($producto);
 
@@ -129,7 +139,7 @@ class Pedidos
         $stmt = $conexion->prepare(
             "SELECT 1 FROM lote_productos WHERE lote = :lote LIMIT 1"
         );
-        $stmt->execute([$lote]);
+        $stmt->execute(['lote' => $lote]);
 
         return $stmt->fetchColumn() !== false;
     }
@@ -155,7 +165,7 @@ class Pedidos
             }
 
             $stmtDetalle = $conexion->prepare(
-                "SELECT d.id_producto, d.cantidad, d.precio_unitario, r.cantidad_recibida
+                "SELECT d.id_producto, d.cantidad, r.cantidad_recibida
                  FROM detalle_orden_compra d
                  LEFT JOIN recepciones_detalle_orden r ON r.id_detalle = d.id_detalle
                  WHERE d.id_detalle = ? AND d.clave_compra = ?"
@@ -168,6 +178,32 @@ class Pedidos
                 return false;
             }
 
+            $precioCompra = trim((string) ($datosLote['precio_compra'] ?? '0'));
+            if ((float) $precioCompra <= 0) {
+                $conexion->rollBack();
+                return false;
+            }
+
+            $stmtActualizarPrecio = $conexion->prepare(
+                "UPDATE detalle_orden_compra
+                 SET precio_unitario = ?
+                 WHERE id_detalle = ? AND clave_compra = ?"
+            );
+            $stmtActualizarPrecio->execute([$precioCompra, $idDetalle, $idPedido]);
+
+            $stmtTotal = $conexion->prepare(
+                "SELECT COALESCE(SUM(cantidad * precio_unitario), 0)
+                 FROM detalle_orden_compra
+                 WHERE clave_compra = ?"
+            );
+            $stmtTotal->execute([$idPedido]);
+            $totalPedido = $stmtTotal->fetchColumn();
+
+            $stmtActualizarTotal = $conexion->prepare(
+                "UPDATE orden_compra SET total_estimado = ? WHERE clave_compra = ?"
+            );
+            $stmtActualizarTotal->execute([$totalPedido, $idPedido]);
+
             $stmtLote = $conexion->prepare(
                 "INSERT INTO lote_productos
                     (id_producto, lote, fecha_caducidad, precio_compra, ubicacion, cantidad)
@@ -177,7 +213,7 @@ class Pedidos
                 (int) $detalle['id_producto'],
                 $datosLote['lote'],
                 $datosLote['fecha_caducidad'],
-                $detalle['precio_unitario'],
+                $precioCompra,
                 $datosLote['ubicacion'],
                 $cantidad,
             ]);

@@ -1,10 +1,19 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../models/Servicios.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente'], true)) {
+    header("Location: ../views/servicios.php");
+    exit();
+}
+
+require_once __DIR__ . '/../models/Servicios.php';
 
 // Guarda el error y lo escrito, y regresa al formulario (agregar o editar)
 function errorSession(string $error)
@@ -53,7 +62,7 @@ if ($accion !== '') {
 
 // Si trae id es editar, si no es agregar
 $id_servicio  = (int)($_POST['id_servicio'] ?? 0);
-$nombre       = trim($_POST['nombre'] ?? '');
+$nombre       = preg_replace('/\s+/u', ' ', trim($_POST['nombre'] ?? ''));
 $categoria    = trim($_POST['categoria'] ?? '');
 $duracion     = trim($_POST['duracion'] ?? '');
 $precio       = trim($_POST['precio'] ?? '');
@@ -72,8 +81,21 @@ if ($nombre === '') {
     errorSession("El nombre del servicio es obligatorio.");
 } elseif (mb_strlen($nombre) > 50) {
     errorSession("El nombre no puede pasar de 50 caracteres.");
+} elseif (!preg_match('/^\p{L}[\p{L} ]{1,49}$/u', $nombre)) {
+    errorSession("El nombre solo puede llevar letras y espacios (minimo 2 letras).");
 } elseif (Servicios::existeNombre($nombre, $id_servicio)) {
     errorSession("Ya existe un servicio con ese nombre.");
+}
+
+// Descripcion: opcional, con texto real (no solo numeros ni simbolos)
+if ($descripcion !== '') {
+    if (mb_strlen($descripcion) > 250) {
+        errorSession("La descripcion no puede pasar de 250 caracteres.");
+    } elseif (!preg_match('/^[\p{L}\p{N}\s.,;:()¿?¡!\-\/]+$/u', $descripcion)) {
+        errorSession("La descripcion tiene caracteres no permitidos. Usa letras, numeros y signos basicos (. , ; : ( ) ¿ ? ¡ ! - /).");
+    } elseif (preg_match_all('/\p{L}/u', $descripcion) < 3) {
+        errorSession("La descripcion debe llevar texto (minimo 3 letras), no solo numeros o simbolos.");
+    }
 }
 
 if (!in_array($categoria, ['Estética', 'Salud'], true)) {

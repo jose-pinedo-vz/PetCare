@@ -86,7 +86,7 @@
 
             <section class="pago-detalles-metodo" id="detallesTarjeta" hidden aria-labelledby="tituloDatosTarjeta">
                 <h3 id="tituloDatosTarjeta">Datos de tarjeta</h3>
-                <p>La pasarela bancaria deberá procesar estos datos de forma segura; esta demostración no los envía ni almacena.</p>
+                <p>El cobro se autoriza con el banco emisor. El número y el CVV no se guardan en PetCare.</p>
                 <div class="pago-tarjeta-grid">
                     <div class="pago-campo-completo">
                         <label for="numeroTarjeta">Número de tarjeta</label>
@@ -95,15 +95,15 @@
                     </div>
                     <div class="pago-campo-completo">
                         <label for="nombreTarjeta">Titular de la tarjeta</label>
-                        <input class="campo" id="nombreTarjeta" type="text" autocomplete="cc-name" maxlength="80" placeholder="Como aparece en la tarjeta">
+                        <input class="campo" id="nombreTarjeta" type="text" autocomplete="cc-name" maxlength="60" minlength="3" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ .'\-]{3,60}" title="Solo letras, espacios, punto, apóstrofe o guion (3 a 60 caracteres)" placeholder="Como aparece en la tarjeta">
                     </div>
                     <div>
                         <label for="vencimientoTarjeta">Vencimiento</label>
                         <input class="campo" id="vencimientoTarjeta" type="month" autocomplete="cc-exp">
                     </div>
                     <div>
-                        <label for="cvvTarjeta">CVV / CVC</label>
-                        <input class="campo" id="cvvTarjeta" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" pattern="[0-9]{3,4}" placeholder="3 o 4 dígitos">
+                        <label for="cvvTarjeta">CVV dinámico</label>
+                        <input class="campo" id="cvvTarjeta" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" pattern="[0-9]{3,4}" placeholder="3 dígitos" title="CVV dinámico de la banca en línea (cambia cada 5 minutos)">
                     </div>
                 </div>
             </section>

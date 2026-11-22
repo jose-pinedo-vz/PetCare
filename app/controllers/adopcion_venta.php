@@ -239,7 +239,7 @@ function validar_datos($datos) {
         header("Location: ../views/agregar_adopcion_venta.php");
         exit;
     } else {
-        $advert = insertar($datos);
+        $advert = insertar_adopcion($datos);
         if (is_array($advert) && count($advert) > 0) {
             if ($advert[0] === "Error BD") {
                 $_SESSION['errores'] = ["No se pudo conectar a la base de datos: " . $advert[1]];

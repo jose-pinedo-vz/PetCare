@@ -105,6 +105,123 @@ function citasHoyVeterinaria(string $fecha): array {
     }
 }
 
+function obtenerVacunas(): array{
+    try{
+        $conexion=ConexionDB::obtenerConexion();
+        /* $sql="select id, nombre, especie from lista_vacunas where estado=1"; */
+        $sql="
+            SELECT lv.id, lv.nombre, lv.especie, e.especie AS nombre_especie
+            FROM lista_vacunas lv, especies e
+            WHERE lv.especie = e.id AND lv.estado=1
+        ";
+
+        $resultado = $conexion -> query($sql);
+
+        if (!$resultado) {
+            return [];
+        }
+
+        return $resultado -> fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error){
+        error_log("Error al obtener las vacunas ".$error->getMessage());
+        return [];
+    }
+}
+
+function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT COUNT(*)
+            FROM lista_vacunas
+            WHERE LOWER(nombre) = LOWER(?) AND especie = ? AND estado = 1 AND id != ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$nombre, $especie, $id ?? 0]);
+
+        $resultado = (int) $consulta -> fetchColumn() > 0;
+
+        if (!$resultado) {
+            return false;
+        }
+
+        return $resultado;
+
+    } catch (Exception $error) {
+        error_log("Error en obtener si esta repedida la vacuna " . $error -> getMessage());
+        return false;
+    }
+}
+
+function agregarVacuna(string $nombre, int $especie): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "INSERT INTO lista_vacunas (nombre, especie, estado)
+                VALUES (?, ?, 1)";
+
+        $consulta = $conexion->prepare($sql);
+
+        return $consulta->execute([$nombre, $especie]);
+
+    } catch (Exception $error) {
+        error_log("Error al agregar vacuna: " . $error->getMessage());
+        return false;
+    }
+}
+
+function obtenerEspecies(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "SELECT id, especie as nombre FROM especies ORDER BY nombre ASC";
+
+        $resultado = $conexion->query($sql);
+
+        if (!$resultado) {
+            return [];
+        }
+
+        return $resultado->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error al obtener las especies " . $error->getMessage());
+        return [];
+    }
+}
+
+function editarVacuna(int $id, string $nombre, int $especie): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "update lista_vacunas set nombre = ?, especie = ? WHERE id = ? AND estado = 1";
+        $consulta = $conexion->prepare($sql);
+
+        return $consulta->execute([$nombre, $especie, $id]);
+
+    } catch (Exception $error) {
+        error_log("Error al editar vacuna: " . $error->getMessage());
+        return false;
+    }
+}
+
+function eliminarVacuna(int $id): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "update lista_vacunas set estado = 0 where id = ? and estado = 1";
+
+        $consulta = $conexion->prepare($sql);
+
+        return $consulta->execute([$id]);
+
+    } catch (Exception $error) {
+        error_log("Error al eliminar vacuna: " . $error->getMessage());
+        return false;
+    }
+}
+
 class Veterinaria {
 
     public static function listaMascotas(): array {
@@ -122,6 +239,30 @@ class Veterinaria {
 
     public static function citasHoyVeterinaria(string $fecha): array {
         return citasHoyVeterinaria($fecha);
+    }
+
+    public static function obtenerVacunas(): array {
+        return obtenerVacunas();
+    }
+
+    public static function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {
+        return estaRepetida($nombre, $especie, $id);
+    }
+
+    public static function obtenerEspecies(): array {
+        return obtenerEspecies();
+    }
+
+    public static function agregarVacuna(string $nombre, int $especie): bool {
+        return agregarVacuna($nombre, $especie);
+    }
+
+    public static function editarVacuna(int $id, string $nombre, int $especie): bool {
+    return editarVacuna($id, $nombre, $especie);
+    }
+    
+    public static function eliminarVacuna(int $id): bool {
+        return eliminarVacuna($id);
     }
 }
 ?>

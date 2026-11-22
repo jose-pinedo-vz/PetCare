@@ -5,6 +5,11 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 } elseif (file_exists(__DIR__ . '/../../conexion_db.php')) {
     require_once __DIR__ . '/../../conexion_db.php';
 }
+require_once __DIR__ . '/CorteCaja.php';
+require_once __DIR__ . '/PagosAdmin.php';
+if (file_exists(__DIR__ . '/../../banca_simulada/banco_servicio.php')) {
+    require_once __DIR__ . '/../../banca_simulada/banco_servicio.php';
+}
 
 class Ventas
 {
@@ -89,21 +94,19 @@ class Ventas
         $referenciaPago = null;
         $observacionesPago = null;
 
+        // Folio de autorizacion del banco y datos de tarjeta (solo viven hasta cobrar)
+        $folioBanco = null;
+        $cobroTarjeta = null;
+
         if ($formaPago === 'tarjeta') {
-            // Se valida y se consulta la pasarela ANTES de abrir la transaccion
+            // Se valida ANTES de abrir la transaccion; el cobro al banco se hace cuando ya se conoce el total
             $tarjeta = self::validarTarjeta($datosPago);
             if (!$tarjeta['ok']) {
                 return ['ok' => false, 'error' => $tarjeta['error']];
             }
-            $pasarela = self::simularPasarela($tarjeta['numero']);
-            $ultimos4 = substr($tarjeta['numero'], -4);
-            // El numero completo y el CVV ya no se usan
+            $observacionesPago = 'Tarjeta ****' . substr($tarjeta['numero'], -4);
+            $cobroTarjeta = $tarjeta;
             unset($tarjeta, $datosPago);
-            if (!$pasarela['ok']) {
-                return ['ok' => false, 'error' => $pasarela['error']];
-            }
-            $referenciaPago = $pasarela['autorizacion'];
-            $observacionesPago = 'Tarjeta ****' . $ultimos4;
         } elseif ($formaPago === 'transferencia') {
             $ref = $datosPago['referencia'] ?? '';
             $ref = is_scalar($ref) ? trim((string)$ref) : '';
@@ -116,8 +119,19 @@ class Ventas
 
         $db = ConexionDB::obtenerConexion();
 
+        $corteAbierto = CorteCaja::obtenerCorteAbierto($db, $idEmpleado);
+        if (!$corteAbierto) {
+            return ['ok' => false, 'error' => 'No tienes un corte de caja abierto. Debes abrir caja antes de registrar ventas.'];
+        }
+        $idCorte = (int)$corteAbierto['id'];
+
         try {
+            // Tablas de pagos de citas (el ALTER hace commit, va antes de la transaccion)
+            PagosAdmin::preparar($db);
             $db->beginTransaction();
+
+            // El cliente debe existir (en algunas bases falta "Publico en general")
+            self::asegurarCliente($db, $idCliente);
 
             $lineas = [];
             $vistos = [];
@@ -206,15 +220,43 @@ class Ventas
                     throw new Exception('Servicio o descuento no validos.');
                 }
                 $idServicio = (int)($serv['id_servicio'] ?? 0);
+                $idCita = (int)($serv['id_cita'] ?? 0);
                 $descServ = (float)($serv['descuento'] ?? 0);
 
                 if ($idServicio <= 0 || $descServ < 0 || $descServ > 100) {
                     throw new Exception('Servicio o descuento no validos.');
                 }
-                if (isset($vistosServ[$idServicio])) {
+                $clave = $idCita > 0 ? 'c' . $idCita : 's' . $idServicio;
+                if (isset($vistosServ[$clave])) {
                     throw new Exception('Un servicio esta repetido en la venta.');
                 }
-                $vistosServ[$idServicio] = true;
+                $vistosServ[$clave] = true;
+
+                if ($idCita > 0) {
+                    // Cobro del saldo de una cita: el monto sale de Pagos de servicios (IVA incluido)
+                    $cita = PagosAdmin::citaPorCobrar($db, $idCita);
+                    if (!$cita || (int)$cita['id_servicio'] !== $idServicio) {
+                        throw new Exception('La cita ya no tiene saldo por cobrar.');
+                    }
+                    if ($descServ > 0) {
+                        throw new Exception('El cobro de una cita no admite descuento.');
+                    }
+                    $totalLinea = round((float)$cita['saldo'], 2);
+                    $subtotal = round($totalLinea / 1.16, 2);
+                    $iva = round($totalLinea - $subtotal, 2);
+                    $subtotalVenta += $subtotal;
+                    $ivaVenta += $iva;
+                    $lineasServ[] = [
+                        'id' => $idServicio,
+                        'precio' => $subtotal,
+                        'descuento' => 0,
+                        'subtotal' => $subtotal,
+                        'iva' => $iva,
+                        'id_cita' => $idCita,
+                        'total_cita' => $totalLinea
+                    ];
+                    continue;
+                }
 
                 $stmt = $db->prepare(
                     "SELECT precio FROM servicios WHERE id_servicio = ? AND estado = 1"
@@ -250,6 +292,23 @@ class Ventas
                 throw new Exception('El monto recibido no alcanza el total.');
             }
             $cambio = ($formaPago === 'efectivo') ? round($recibido - $total, 2) : 0;
+
+            // Tarjeta: se cobra en la banca con el total real; si algo falla despues se reversa
+            if ($formaPago === 'tarjeta') {
+                $cobro = bancoAutorizarCobro(
+                    $cobroTarjeta['numero'],
+                    $cobroTarjeta['vencimiento'],
+                    $cobroTarjeta['cvv'],
+                    $total,
+                    'PetCare Veterinaria'
+                );
+                $cobroTarjeta = null; // el numero y el CVV ya no se usan
+                if (!$cobro['ok']) {
+                    throw new Exception($cobro['error']);
+                }
+                $folioBanco = $cobro['folio'];
+                $referenciaPago = $folioBanco;
+            }
 
             // Venta principal con folio temporal
             $folioTemp = strtoupper(substr(md5(uniqid('', true)), 0, 8));
@@ -309,23 +368,61 @@ class Ventas
             // Pago de la venta, solo efectivo lleva cambio
             $montoRecibido = ($formaPago === 'efectivo') ? round($recibido, 2) : $total;
             $stmt = $db->prepare(
-                "INSERT INTO pago (venta, cliente, fecha, importe, forma_pago, referencia_pago, empleado_receptor, estado, tipo, monto_recibido, cambio, observaciones)
-                 VALUES (?, ?, NOW(), ?, ?, ?, ?, 'aplicado', 'pago', ?, ?, ?)"
+                "INSERT INTO pago (venta, cliente, fecha, importe, forma_pago, referencia_pago, empleado_receptor, estado, tipo, monto_recibido, cambio, observaciones, corte)
+                 VALUES (?, ?, NOW(), ?, ?, ?, ?, 'aplicado', 'pago', ?, ?, ?, ?)"
             );
-            $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $referenciaPago, $idEmpleado, $montoRecibido, $cambio, $observacionesPago]);
+            $stmt->execute([$idVenta, $idCliente, $total, $formaPago, $referenciaPago, $idEmpleado, $montoRecibido, $cambio, $observacionesPago, $idCorte]);
+
+            // Las citas cobradas aqui quedan abonadas en Pagos de servicios
+            foreach ($lineasServ as $s2) {
+                if (!empty($s2['id_cita'])) {
+                    PagosAdmin::registrarCobroPos($db, (int)$s2['id_cita'], (float)$s2['total_cita'], $formaPago, $folio, $idVenta, $idEmpleado, $idCorte);
+                }
+            }
 
             $db->commit();
-            return ['ok' => true, 'id_venta' => $idVenta, 'folio' => $folio, 'total' => $total, 'cambio' => $cambio];
+            return ['ok' => true, 'id_venta' => $idVenta, 'folio' => $folio, 'total' => $total, 'cambio' => $cambio, 'autorizacion' => $folioBanco];
         } catch (Exception $e) {
             if ($db->inTransaction()) {
                 $db->rollBack();
+            }
+            // Si ya se cobro en el banco y la venta no se guardo, se devuelve el dinero
+            if ($folioBanco !== null && !bancoReversarCobro($folioBanco)) {
+                error_log("No se pudo reversar el cobro " . $folioBanco . " de una venta no guardada");
             }
             error_log("Error en Ventas::guardarVenta: " . $e->getMessage());
             return ['ok' => false, 'error' => $e->getMessage()];
         }
     }
 
-    // Valida los datos de tarjeta; nunca incluye el numero ni el CVV en los mensajes
+    // Revisa que el cliente exista; si es el publico en general (id 11) y falta, lo crea
+    private static function asegurarCliente(PDO $db, int $idCliente): void
+    {
+        $stmt = $db->prepare("SELECT 1 FROM clientes WHERE id_cliente = ?");
+        $stmt->execute([$idCliente]);
+        if ($stmt->fetchColumn()) {
+            return;
+        }
+        if ($idCliente !== 11) {
+            throw new Exception('El cliente de la venta no existe.');
+        }
+        try {
+            $stmt = $db->prepare(
+                "INSERT INTO clientes
+                 (id_cliente, nombre, apellido, telefono, correo, calle, numero_exterior, colonia, ciudad, estado,
+                  codigo_postal, contacto_emergencia, telefono_emergencia, esta_activo)
+                 VALUES (11, 'Publico', 'en general', '0000000000', 'publico@petcare.local', 'N/A', 'S/N', 'N/A', 'N/A', 'N/A',
+                         '00000', 'N/A', '0000000000', 1)"
+            );
+            $stmt->execute();
+        } catch (Exception $e) {
+            error_log("No se pudo crear el cliente publico: " . $e->getMessage());
+            throw new Exception('No existe el cliente "Publico en general" (id 11) en la base de datos.');
+        }
+    }
+
+    // Valida los datos de tarjeta; nunca incluye el numero ni el CVV en los mensajes.
+    // No se usa Luhn: las tarjetas del banco simulado no lo cumplen y el banco decide si existe.
     private static function validarTarjeta(array $datos): array
     {
         $leer = function (string $clave) use ($datos): string {
@@ -334,62 +431,34 @@ class Ventas
         };
 
         $numero = $leer('numero_tarjeta');
-        $titular = $leer('titular');
+        $titular = preg_replace('/\s+/u', ' ', $leer('titular'));
         $vencimiento = $leer('vencimiento');
         $cvv = $leer('cvv');
 
         if (!preg_match('/^\d{13,19}$/', $numero)) {
             return ['ok' => false, 'error' => 'El numero de tarjeta debe tener de 13 a 19 digitos.'];
         }
-        if (!self::luhnValido($numero)) {
-            return ['ok' => false, 'error' => 'El numero de tarjeta no es valido.'];
-        }
 
-        $largoTitular = mb_strlen($titular, 'UTF-8');
-        if ($largoTitular < 3 || $largoTitular > 60) {
-            return ['ok' => false, 'error' => 'El titular de la tarjeta debe tener de 3 a 60 caracteres.'];
+        if (!preg_match('/^\p{L}[\p{L} .\'\-]{2,59}$/u', $titular)) {
+            return ['ok' => false, 'error' => 'El titular debe tener de 3 a 60 caracteres y solo letras, espacios, punto, apostrofe o guion.'];
         }
 
         if (!preg_match('/^(\d{4})-(0[1-9]|1[0-2])$/', $vencimiento)) {
             return ['ok' => false, 'error' => 'El vencimiento debe tener el formato AAAA-MM.'];
         }
-        $mesActual = (new DateTime('now', new DateTimeZone('America/Mexico_City')))->format('Y-m');
-        if (strcmp($vencimiento, $mesActual) < 0) {
+        $ahora = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+        if (strcmp($vencimiento, $ahora->format('Y-m')) < 0) {
             return ['ok' => false, 'error' => 'La tarjeta esta vencida.'];
+        }
+        if (strcmp($vencimiento, $ahora->modify('+15 years')->format('Y-m')) > 0) {
+            return ['ok' => false, 'error' => 'La fecha de vencimiento no es valida.'];
         }
 
         if (!preg_match('/^\d{3,4}$/', $cvv)) {
             return ['ok' => false, 'error' => 'El CVV debe tener 3 o 4 digitos.'];
         }
 
-        return ['ok' => true, 'numero' => $numero];
-    }
-
-    // Algoritmo de Luhn sobre una cadena de solo digitos
-    private static function luhnValido(string $numero): bool
-    {
-        $suma = 0;
-        $doble = false;
-        for ($i = strlen($numero) - 1; $i >= 0; $i--) {
-            $d = (int)$numero[$i];
-            if ($doble) {
-                $d *= 2;
-                if ($d > 9) $d -= 9;
-            }
-            $suma += $d;
-            $doble = !$doble;
-        }
-        return $suma % 10 === 0;
-    }
-
-    // Pasarela de pago simulada: termina en 0002 = rechazada, otra = aprobada
-    private static function simularPasarela(string $numero): array
-    {
-        if (substr($numero, -4) === '0002') {
-            return ['ok' => false, 'error' => 'Tarjeta rechazada: fondos insuficientes'];
-        }
-        $codigo = 'AUT-' . str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        return ['ok' => true, 'autorizacion' => $codigo];
+        return ['ok' => true, 'numero' => $numero, 'titular' => $titular, 'vencimiento' => $vencimiento, 'cvv' => $cvv];
     }
 
     // Revisa que la fecha venga como YYYY-MM-DD y sea real
@@ -515,7 +584,7 @@ class Ventas
                              ELSE TRIM(CONCAT(COALESCE(c.nombre, ''), ' ', COALESCE(c.apellido, ''))) END AS cliente_nombre,
                         c.telefono AS cliente_telefono,
                         TRIM(CONCAT(COALESCE(e.nombre, ''), ' ', COALESCE(e.apellido, ''))) AS empleado_nombre,
-                        v.estado, p.forma_pago, p.monto_recibido, p.cambio, v.total, v.factura
+                        v.estado, p.forma_pago, p.monto_recibido, p.cambio, p.referencia_pago, v.total, v.factura
                  FROM ventas v
                  LEFT JOIN clientes c ON c.id_cliente = v.cliente
                  LEFT JOIN empleados e ON e.id_empleado = v.empleado
@@ -568,6 +637,11 @@ class Ventas
             $venta['subtotal'] = round($subtotal, 2);
             $venta['iva'] = round($iva, 2);
 
+            // Tarjeta: datos que dejo el banco al autorizar el cobro
+            if (($venta['forma_pago'] ?? '') === 'tarjeta' && trim((string)($venta['referencia_pago'] ?? '')) !== '') {
+                $venta['banco'] = self::datosBanco($db, trim((string)$venta['referencia_pago']));
+            }
+
             // Datos de factura guardados como JSON
             if ($facturaTexto !== '') {
                 $factura = json_decode($facturaTexto, true);
@@ -579,6 +653,35 @@ class Ventas
             return $venta;
         } catch (Exception $e) {
             error_log("Error en Ventas::detalleVenta: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Comprobante del banco para un folio de autorizacion (null si no se encuentra).
+    // Solo expone los ultimos 4 digitos de la tarjeta.
+    private static function datosBanco(PDO $db, string $folio): ?array
+    {
+        try {
+            $stmt = $db->prepare(
+                "SELECT folio, numero_tarjeta, monto, comercio, codigo_respuesta, estado_transaccion, fecha
+                 FROM transacciones_bancarias WHERE folio = ? LIMIT 1"
+            );
+            $stmt->execute([$folio]);
+            $t = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$t) {
+                return null;
+            }
+            return [
+                'folio' => $t['folio'],
+                'tarjeta' => '**** **** **** ' . substr((string)$t['numero_tarjeta'], -4),
+                'monto' => (float)$t['monto'],
+                'comercio' => $t['comercio'],
+                'codigo' => $t['codigo_respuesta'],
+                'estado' => $t['estado_transaccion'],
+                'fecha' => $t['fecha']
+            ];
+        } catch (Exception $e) {
+            error_log("Error en Ventas::datosBanco: " . $e->getMessage());
             return null;
         }
     }
@@ -652,5 +755,22 @@ class Ventas
             return ['ok' => false, 'error' => 'No se pudo guardar la factura.'];
         }
     }
+
+    // Busca un cliente activo por telefono (devuelve su id o null)
+    public static function buscarClientePorTelefono(string $telefono): ?int
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_cliente FROM clientes
+                 WHERE telefono = ? AND esta_activo = 1 AND id_cliente <> 11
+                 ORDER BY id_cliente LIMIT 1"
+            );
+            $stmt->execute([$telefono]);
+            $id = $stmt->fetchColumn();
+            return $id === false ? null : (int)$id;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
 }
-                

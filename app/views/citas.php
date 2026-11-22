@@ -10,68 +10,131 @@ if (session_status() === PHP_SESSION_NONE)
 <?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  function mostrarProximasCitas()
+  // $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+  // echo "Empleado: " . $empleado_asociado;
+
+  // echo $usuario="User: " . $_SESSION['usuario'];
+
+  // $consultarEmpleado = consultarEmpleado($usuario);
+  $datos = estraerDatosConsultas();
+  $servicios = serviciosIdYNombre();
+  $miNombre = strtolower(nombreDelUsuario((string)($_SESSION['usuario'] ?? '')));
+
+
+  function mostrarProximasCitas(array $datos,array $servicios,string $miNombre)
   {
-    $datos = estraerDatosConsultas();
-    // echo $datos[0]['atendido'];
+    $responsables = responsablesNombreEId();
+    $ahora = date('Y-m-d H:i:s');
     foreach ($datos as $d)
     {
       $estadocita = trim($d['estado_cita'] ?? '');
       if ($estadocita == "pendiente")
-      {?>
+      {
+        $esVencida = !empty($d['fecha']) && ($d['fecha'] < $ahora);
+        $esFutura = !empty($d['fecha']) && (strtotime((string)$d['fecha']) > time());
+        $onclickConsulta = $esFutura ? 'onclick="return confirm(\'Esta cita está programada para una fecha futura (' . htmlspecialchars($d['fecha']) . '). ¿Desea iniciar la atención ahora?\');"' : '';
+      ?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
-          <td><?php echo $d['nombre']; ?> </td>
-          <td><?php echo $d['fecha']; ?> </td>
-          <td><?php echo $d['motivo']; ?></td>
-          <td><?php 
-            $serv = consultarServicio($d['servicio']);
-            echo htmlspecialchars($serv['nombre'] ?? 'Sin servicio'); 
-          ?></td>
-
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
           <td>
-            <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
+            <?php echo htmlspecialchars($d['fecha']); ?>
+            <?php if ($esVencida): ?>
+              <span class="estado-chip" style="background:#dc3545; color:#fff; font-size:11px; padding:2px 6px; border-radius:4px; margin-left:6px;">Vencida</span>
+            <?php endif; ?>
+          </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
+
+          <?php if (($miNombre !== '' && strtolower($responsables[$d['empleado']] ?? '') === $miNombre) || strtolower((string)($_SESSION['rol'] ?? '')) === 'admin') { ?>
+          <td>
+            <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>" <?php echo $onclickConsulta; ?>>Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
             <a class="btn btn-chico btn-aviso btn-chico" href="reprogramar_cita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
-            <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
-
+            <a class="btn btn-chico btn-peligro" onclick="noAsistioCita(<?php echo $d['id_consulta']; ?>, event)">No asistió</a>
           </td>
-
+          <?php
+          }else
+              {
+                ?><td><h3>Solo el responsable puede ejecutar esta accion.</h3></td><?php
+              }
+          ?>
         </tr>
       <?php }
     }
   }
-?>
 
-<!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
-<?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  function mostrarCitasAtendidas()
+  function mostrarCitasAtendidas(array $datos,array $servicios)
   {
-    $datos = estraerDatosConsultas();
+    // $datos = estraerDatosConsultas();
 
+    // arregl oque traiga todos los servicios del servidor, una sola consluta
+    // junto con los servidores sera tambine el id, con esos 2 datos
+    //$responsables = responsablesNombreEId();
     foreach ($datos as $d)
     {
       $estadocita = trim($d['estado_cita'] ?? '');
       if ($estadocita == "atendida")
       {?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
-          <td><?php echo $d['nombre']; ?> </td>
-          <td><?php echo $d['fecha']; ?> </td>
-          <td><?php echo $d['motivo']; ?></td>
-          <td><?php 
-            $serv = consultarServicio($d['servicio']);
-            echo htmlspecialchars($serv['nombre'] ?? 'Sin servicio'); 
-          ?></td>
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          
           <td>
-            <a class="btn">Pagar</a>
+            <a class="btn" href="Ventas.php">Pagar</a>
           </td>
 
         </tr>
       <?php }
     }
   }
+
+  function mostrarCanseladas(array $datos,array $servicios, string $miNombre)
+  {
+    $responsables = responsablesNombreEId();
+    foreach ($datos as $d)
+    {
+      $estadocita = trim($d['estado_cita'] ?? '');
+      if ($estadocita == "cancelada" && $d['estado'] !== 'No asistio' && $d['estado'] !== 'No asistió')
+      {?>
+        <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
+
+        </tr>
+      <?php }
+    }
+  }
+
+    function mostrarInAsistidas(array $datos,array $servicios)
+    {
+      $responsables = responsablesNombreEId();
+      foreach ($datos as $d)
+      {
+        if ($d['estado'] === 'No asistio' || $d['estado'] === 'No asistió')
+        {?>
+          <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+            <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+            <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+            <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+            <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+            <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
+
+          </tr>
+        <?php }
+      }
+    }
+  
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -82,7 +145,7 @@ if (session_status() === PHP_SESSION_NONE)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Citas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/citas.js"></script>
+  <script src="js/citas.js?v=3"></script>
 </head>
 
 <body>
@@ -155,6 +218,9 @@ if (session_status() === PHP_SESSION_NONE)
             <div class="boton_control">
               <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
               <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
+              <button type="button" onclick="mostrarSeccion('canseladas', event)" class="btn btn_active btn-chico">Canceladas</button>
+              <button type="button" onclick="mostrarSeccion('no_asistio', event)" class="btn btn_active btn-chico">No asistió</button>
+
             </div>
 
             <div id="seccion_espera" class="seccion-panel">
@@ -167,11 +233,12 @@ if (session_status() === PHP_SESSION_NONE)
                       <th>Fecha:</th>
                       <th>Motivo de consulta:</th>
                       <th>Servicio:</th>
+                      <th>Responsable:</th>
                       <th>Acciones:</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php mostrarProximasCitas(); ?>
+                    <?php mostrarProximasCitas($datos, $servicios, $miNombre); ?>
                   </tbody>
                 </table>
               </div>
@@ -193,10 +260,49 @@ if (session_status() === PHP_SESSION_NONE)
                     </tr>
                   </thead>
                   <tbody>
-                    <?php mostrarCitasAtendidas(); ?>
+                    <?php mostrarCitasAtendidas($datos, $servicios, $miNombre); ?>
                   </tbody>
                 </table>
               </div>
+              </div>
+
+              <div id="seccion_canselado" class="seccion-panel oculto">
+              <h3>Citas canceladas</h3>
+              <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                      <th>Responsable:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarCanseladas($datos, $servicios, $miNombre); ?>
+                  </tbody>
+                </table>
+              </div>
+              </div>
+
+              <div id="seccion_no_asitio" class="seccion-panel oculto">
+              <h3>No asistió a la cita</h3>
+              <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                      <th>Responsable:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarInAsistidas($datos, $servicios); ?>
+                  </tbody>
+                </table>
               </div>
 
             </div>

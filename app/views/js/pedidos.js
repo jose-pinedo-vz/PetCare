@@ -92,13 +92,23 @@
         etiquetaPaginacion.textContent = `${visibles} de ${tarjetas.length} pedidos`;
     };
 
-    const actualizarEstadoTarjeta = (tarjeta, estado) => {
+    const actualizarEstadoTarjeta = (tarjeta, estado, totalEstimado = 0) => {
         tarjeta.dataset.estado = estado;
         const insignia = tarjeta.querySelector('.pedido-encabezado .historial-estado');
         const clase = estado === 'entregado' ? 'pagada' : estado === 'cancelado' ? 'cancelada' : 'pendiente';
         const texto = estado === 'entregado' ? 'Entregado' : estado === 'cancelado' ? 'Cancelado' : 'Pendiente';
         insignia.textContent = texto;
         insignia.className = `historial-estado ${clase}`;
+
+        const resumenTotal = tarjeta.querySelector('[data-pedido-total]');
+        if (resumenTotal) {
+            if (estado === 'entregado') {
+                resumenTotal.querySelector('strong').textContent = formatoDinero(totalEstimado);
+                establecerVisibilidad(resumenTotal, true);
+            } else {
+                establecerVisibilidad(resumenTotal, false);
+            }
+        }
 
         if (estado !== 'pendiente') {
             tarjeta.querySelector('[data-abrir-registro]')?.remove();
@@ -136,11 +146,22 @@
         const producto = productosPendientes.find((item) => String(item.id_detalle) === selectorProducto.value);
         if (!producto) {
             campoPrecio.value = '';
+            campoPrecio.readOnly = true;
+            campoPrecio.placeholder = '';
             campoCantidad.value = '';
             campoCantidad.removeAttribute('max');
             return;
         }
-        campoPrecio.value = Number(producto.precio_unitario).toFixed(2);
+        campoPrecio.readOnly = false;
+        if (producto.tiene_lotes) {
+            let precio = Number(producto.precio_unitario);
+            if (precio <= 0) precio = Number(producto.precio_compra_lote);
+            campoPrecio.value = precio > 0 ? precio.toFixed(2) : '';
+            campoPrecio.placeholder = '';
+        } else {
+            campoPrecio.value = '';
+            campoPrecio.placeholder = 'Ingresa el precio de compra';
+        }
         campoCantidad.max = producto.cantidad_pendiente;
         campoCantidad.value = producto.cantidad_pendiente;
     });
@@ -151,6 +172,8 @@
             pedidoActivo = tarjeta?.dataset.pedidoId || null;
             formularioRegistro.reset();
             campoPrecio.value = '';
+            campoPrecio.readOnly = true;
+            campoPrecio.placeholder = '';
             selectorProducto.replaceChildren(new Option('Cargando productos…', ''));
             selectorProveedor.replaceChildren(new Option('Cargando proveedor…', ''));
             formularioRegistro.querySelector('[data-pedido-mensaje]')?.remove();
@@ -181,6 +204,7 @@
             lote: document.getElementById('pedido-id').value.trim(),
             fecha_caducidad: document.getElementById('pedido-caducidad').value,
             ubicacion: document.getElementById('pedido-ubicacion').value.trim(),
+            precio_compra: campoPrecio.value.trim(),
             cantidad: campoCantidad.value
         });
 
@@ -193,6 +217,8 @@
             productosPendientes = resultado.productos_pendientes;
             renderizarOpcionesProducto();
             campoPrecio.value = '';
+            campoPrecio.readOnly = true;
+            campoPrecio.placeholder = '';
             campoCantidad.value = '';
             campoCantidad.removeAttribute('max');
             document.getElementById('pedido-id').value = '';
@@ -206,7 +232,11 @@
 
             const tarjeta = document.querySelector(`[data-pedido-id="${CSS.escape(String(pedidoActivo))}"]`);
             if (resultado.pedido.estado !== 'pendiente' && tarjeta) {
-                actualizarEstadoTarjeta(tarjeta, resultado.pedido.estado);
+                actualizarEstadoTarjeta(
+                    tarjeta,
+                    resultado.pedido.estado,
+                    resultado.pedido.total_estimado
+                );
             }
             if (productosPendientes.length === 0) {
                 window.setTimeout(() => dialogoRegistro.close(), 900);
@@ -227,6 +257,8 @@
         pedidoActivo = tarjeta.dataset.pedidoId;
         formularioRegistro.reset();
         campoPrecio.value = '';
+        campoPrecio.readOnly = true;
+        campoPrecio.placeholder = '';
         dialogoRegistro.showModal();
         cargarPedido(pedidoActivo).catch((error) => mostrarMensaje(formularioRegistro, error.message, true));
     });
@@ -252,6 +284,10 @@
                 elemento.dateTime = pedido[clave] || '';
             });
             document.getElementById('modal-pedido-total').textContent = formatoDinero(pedido.total_estimado);
+            establecerVisibilidad(
+                document.getElementById('resumen-total-pedido'),
+                pedido.estado === 'entregado'
+            );
             const estadoModal = document.getElementById('modal-pedido-estado');
             estadoModal.textContent = pedido.estado === 'entregado'
                 ? 'Entregado'
@@ -261,11 +297,16 @@
             const cuerpo = document.getElementById('modal-pedido-productos');
             cuerpo.replaceChildren(...pedido.productos.map((producto) => {
                 const fila = document.createElement('tr');
+                const precio = Number(producto.precio_unitario);
+                const precioTexto = precio > 0 ? formatoDinero(precio) : 'Por confirmar';
+                const subtotalTexto = precio > 0
+                    ? formatoDinero(precio * Number(producto.cantidad))
+                    : 'Por confirmar';
                 [
                     producto.nombre,
                     producto.cantidad,
-                    formatoDinero(producto.precio_unitario),
-                    formatoDinero(Number(producto.precio_unitario) * Number(producto.cantidad))
+                    precioTexto,
+                    subtotalTexto
                 ].forEach((valor) => {
                     const celda = document.createElement('td');
                     celda.textContent = String(valor);

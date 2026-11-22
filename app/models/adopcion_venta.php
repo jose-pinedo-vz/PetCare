@@ -14,7 +14,7 @@ function IDanimal(PDO $conexion): int {
     }
 }
 
-function insertar(array $datos) {
+function insertar_adopcion(array $datos) {
     try {
         $conexion = ConexionDB::obtenerConexion();
     } catch (Exception $e) {
@@ -152,7 +152,7 @@ function obtenerPorId(int $id): ?array {
     }
 }
 
-function eliminar(int $id): bool {
+function eliminar_adopcion(int $id): bool {
     try {
         $conexion = ConexionDB::obtenerConexion();
         $stmt = $conexion->prepare("DELETE FROM animal_venta WHERE id_animal = ?");

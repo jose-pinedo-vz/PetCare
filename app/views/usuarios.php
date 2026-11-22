@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/../models/usuarios_db.php';
-$listaUsuarios = UsuariosDB::obtenerTodosUsuarios(ConexionDB::obtenerConexion());
-// Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
@@ -11,8 +8,14 @@ if (!isset($_SESSION['usuario']))
   header("Location: ../views/login.php");
   exit();
 }
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
+{
+  header("Location: inicio.php");
+  exit();
+}
+require_once __DIR__ . '/../models/usuarios_db.php';
+$listaUsuarios = UsuariosDB::obtenerTodosUsuarios(ConexionDB::obtenerConexion());
 $usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -52,7 +55,6 @@ $usuario=$_SESSION['usuario'];
                   <th style="padding: 10px;">Usuario</th>
                   <th style="padding: 10px;">Empleado Asociado</th>
                   <th style="padding: 10px;">Rol</th>
-                  <th style="padding: 10px;">Permisos</th>
                   <th style="padding: 10px;">Fecha de creación</th>
                   <th style="padding: 10px;">Último acceso</th>
                   <th style="padding: 10px;">Estado</th>
@@ -66,7 +68,6 @@ $usuario=$_SESSION['usuario'];
                     <td style="padding: 10px;"><?php echo htmlspecialchars($u['usuario'] ?? ''); ?></td>
                     <td style="padding: 10px;"><?php echo htmlspecialchars($u['empleado_asociado'] ?? ''); ?></td>
                     <td style="padding: 10px;"><?php echo htmlspecialchars($u['rol'] ?? ''); ?></td>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($u['permisos'] ?? ''); ?></td>
                     <td style="padding: 10px;"><?php echo htmlspecialchars($u['fecha_creacion'] ?? ''); ?></td>
                     <td style="padding: 10px;"><?php echo htmlspecialchars($u['ultimo_acceso'] ?? ''); ?></td>
                     <td style="padding: 10px;"><?php echo htmlspecialchars($u['estado'] ?? ''); ?></td>

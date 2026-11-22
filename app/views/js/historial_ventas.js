@@ -192,6 +192,13 @@
             btnFactura.disabled = !pagada || !!v.tiene_factura;
             acciones.appendChild(btnFactura);
 
+            if (v.tiene_factura) {
+                const btnPdf = boton('Factura PDF', 'btn btn-chico', 'Descargar factura en PDF de la venta ' + folio, function () {
+                    window.open('../controllers/pdf_factura.php?id=' + encodeURIComponent(v.id_venta), '_blank');
+                });
+                acciones.appendChild(btnPdf);
+            }
+
             tr.appendChild(celda(acciones));
             tbody.appendChild(tr);
         });
@@ -355,102 +362,12 @@
         }
     }
 
-    // Ticket
-
+    // Ticket: lo arma ticket_venta.php (incluye el comprobante del banco si fue con tarjeta)
     function imprimirTicket(id) {
-        // Se abre en el clic para que no la bloqueen
-        const w = window.open('', '_blank', 'width=420,height=640');
+        const w = window.open('ticket_venta.php?id=' + encodeURIComponent(id), '_blank', 'width=420,height=640');
         if (!w) {
             alert('Permite las ventanas emergentes para imprimir el ticket.');
-            return;
         }
-        w.document.write(
-            '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Ticket</title>' +
-            '<style>' +
-            '@page { size: 80mm auto; margin: 4mm; }' +
-            'body { width: 72mm; margin: 0 auto; font-family: "Courier New", monospace; font-size: 12px; color: #000; }' +
-            'h1 { font-size: 16px; text-align: center; margin: 4px 0; }' +
-            'p { margin: 2px 0; }' +
-            '.linea { display: flex; justify-content: space-between; gap: 6px; }' +
-            '.sep { border-top: 1px dashed #000; margin: 6px 0; }' +
-            '.centro { text-align: center; }' +
-            '.fuerte { font-weight: bold; }' +
-            '</style></head><body><p class="centro">Cargando ticket...</p></body></html>'
-        );
-        w.document.close();
-
-        pedir(URL_VENTAS + '?accion=detalle_venta&id=' + encodeURIComponent(id))
-            .then(function (d) {
-                if (d.error) throw new Error(d.error);
-                escribirTicket(w, d);
-                w.focus();
-                w.print();
-            })
-            .catch(function () {
-                if (!w.closed) {
-                    w.document.body.textContent = 'No se pudo cargar el ticket.';
-                }
-            });
-    }
-
-    function escribirTicket(w, d) {
-        const doc = w.document;
-        const body = doc.body;
-        body.textContent = '';
-
-        function p(texto, clase) {
-            const e = doc.createElement('p');
-            e.textContent = texto;
-            if (clase) e.className = clase;
-            body.appendChild(e);
-        }
-        function linea(izq, der, clase) {
-            const e = doc.createElement('div');
-            e.className = 'linea' + (clase ? ' ' + clase : '');
-            const a = doc.createElement('span');
-            a.textContent = izq;
-            const b = doc.createElement('span');
-            b.textContent = der;
-            e.appendChild(a);
-            e.appendChild(b);
-            body.appendChild(e);
-        }
-        function sep() {
-            const e = doc.createElement('div');
-            e.className = 'sep';
-            body.appendChild(e);
-        }
-
-        const h = doc.createElement('h1');
-        h.textContent = 'PetCare';
-        body.appendChild(h);
-        sep();
-        p('Folio: ' + (d.folio || ''));
-        p('Fecha: ' + formatoFecha(d.fecha));
-        p('Cajero: ' + (d.empleado_nombre || ''));
-        p('Cliente: ' + (d.cliente_nombre || ''));
-        sep();
-
-        (d.productos || []).forEach(function (x) {
-            linea(x.cantidad + ' x ' + (x.nombre || ''), dinero(x.subtotal));
-        });
-        (d.servicios || []).forEach(function (x) {
-            linea('1 x ' + (x.nombre || ''), dinero(x.subtotal));
-        });
-        sep();
-
-        linea('Subtotal', dinero(d.subtotal));
-        linea('IVA', dinero(d.iva));
-        linea('Total', dinero(d.total), 'fuerte');
-        sep();
-        linea('Forma de pago', mayuscula(d.forma_pago));
-        if (d.forma_pago === 'efectivo') {
-            linea('Recibido', dinero(d.monto_recibido));
-            linea('Cambio', dinero(d.cambio));
-        }
-        sep();
-        p('Gracias por su compra', 'centro');
-        doc.title = 'Ticket ' + (d.folio || '');
     }
 
     // Factura

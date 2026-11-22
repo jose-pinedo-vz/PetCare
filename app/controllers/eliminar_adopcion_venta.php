@@ -13,7 +13,7 @@ if ($id === false || $id === null || $id <= 0) {
 
 require_once __DIR__ . '/../models/adopcion_venta.php';
 
-eliminar($id);
+eliminar_adopcion($id);
 
 header('Location: ../views/adopcion_venta.php');
 exit;

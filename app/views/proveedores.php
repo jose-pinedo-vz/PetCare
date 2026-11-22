@@ -8,6 +8,11 @@ if (!isset($_SESSION['usuario']))
 }
 $usuario=$_SESSION['usuario'];
 // Mostrar nombre del usuario
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente'], true)) {
+    header("Location: inicio.php");
+    exit();
+}
 require_once __DIR__ . '/../controllers/proveedor.php';
 $proveedores = listar_proveedores();
 ?>
@@ -86,6 +91,7 @@ $proveedores = listar_proveedores();
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script src="buscador_inteligente.js"></script>
   <script>
     const buscarProveedor = document.getElementById('buscarProveedor');
     const cuerpoTablaProveedores = document.querySelector('.tabla-envoltura tbody');

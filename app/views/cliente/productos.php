@@ -1,10 +1,11 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../models/Publico.php';
 
 $paginaActiva = 'productos';
+$buscar = trim((string)($_GET['q'] ?? ''));
+$productos = Publico::productos($buscar);
 
-require_once __DIR__ . '/../../models/Productos.php';
-$productos = Productos::obtenerCatalogoCliente();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,42 +27,34 @@ $productos = Productos::obtenerCatalogoCliente();
             <p class="subtitulo-pagina">Consulta lo que tenemos y su precio. La compra se hace en la tienda.</p>
         </div>
 
+        <form method="get" class="grupo-botones">
+            <input class="campo__entrada" type="search" name="q" maxlength="50" placeholder="Buscar producto" value="<?= htmlspecialchars($buscar) ?>">
+            <button class="boton boton--chico" type="submit">Buscar</button>
+        </form>
+
+        <div class="rejilla-tarjetas">
+            <?php foreach ($productos as $pr):
+                $img = trim((string)($pr['imagen'] ?? ''));
+                $hay = (float)$pr['disponible'] > 0;
+            ?>
+            <div class="tarjeta tarjeta-mascota">
+                <?php if ($img !== '' && is_file(__DIR__ . '/../../../' . ltrim($img, '/'))): ?>
+                    <img class="foto-marcador foto-marcador--mascota" src="../../../<?= htmlspecialchars(ltrim($img, '/')) ?>" alt="<?= htmlspecialchars($pr['nombre']) ?>">
+                <?php else: ?>
+                    <div class="foto-marcador foto-marcador--mascota">Foto del producto</div>
+                <?php endif; ?>
+                <h3 class="tarjeta-mascota__nombre"><?= htmlspecialchars($pr['nombre']) ?></h3>
+                <p class="tarjeta-mascota__dato"><?= htmlspecialchars((string)$pr['descripcion']) ?></p>
+                <p class="tarjeta-mascota__dato">$<?= number_format((float)$pr['precio_venta'], 2) ?></p>
+                <div class="grupo-etiquetas">
+                    <span class="etiqueta<?= $hay ? ' etiqueta--exito' : '' ?>"><?= $hay ? 'Disponible' : 'Agotado' ?></span>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
         <?php if (empty($productos)): ?>
             <p class="aviso">Por ahora no hay productos para mostrar.</p>
         <?php endif; ?>
-
-        <div class="rejilla-tarjetas">
-
-            <?php foreach ($productos as $producto): ?>
-                <?php
-                $ruta = trim($producto['imagen'] ?? '');
-                $hayImagen = $ruta !== '' && is_file(__DIR__ . '/../../../' . ltrim($ruta, '/'));
-                ?>
-                <div class="tarjeta tarjeta-mascota">
-                    <?php if ($hayImagen): ?>
-                        <img class="foto-marcador foto-marcador--mascota"
-                             src="../../../<?= htmlspecialchars(ltrim($ruta, '/')) ?>"
-                             alt="<?= htmlspecialchars($producto['nombre']) ?>"
-                             style="object-fit: cover; padding: 0;">
-                    <?php else: ?>
-                        <div class="foto-marcador foto-marcador--mascota">Foto del producto</div>
-                    <?php endif; ?>
-
-                    <h3 class="tarjeta-mascota__nombre"><?= htmlspecialchars($producto['nombre']) ?></h3>
-                    <p class="tarjeta-mascota__dato"><?= htmlspecialchars($producto['descripcion'] ?? '') ?></p>
-                    <p class="tarjeta-mascota__dato">$<?= number_format((float) $producto['precio_venta'], 2) ?></p>
-
-                    <div class="grupo-etiquetas">
-                        <?php if ((int) $producto['existencia'] > 0): ?>
-                            <span class="etiqueta etiqueta--exito">Disponible</span>
-                        <?php else: ?>
-                            <span class="etiqueta">Agotado</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-
-        </div>
     </main>
 
     <footer class="pie-pagina">

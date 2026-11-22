@@ -6,6 +6,50 @@ final class CorteCaja
     public const FONDO_INICIAL = 1000.00;
     private const IMPORTE_MAXIMO = 99999999.99;
 
+    public static function puedeOperarCaja(PDO $db, int $empleado, string $rol): bool
+    {
+        return self::motivoDenegacionAcceso($db, $empleado, $rol) === null;
+    }
+
+    public static function motivoDenegacionAcceso(PDO $db, int $empleado, string $rol): ?string
+    {
+        if ($empleado < 1) {
+            return 'sin_empleado';
+        }
+
+        $rolNormalizado = strtolower(trim($rol));
+        $stmt = $db->prepare(
+            'SELECT puesto, esta_activo
+             FROM empleados
+             WHERE id_empleado = :empleado
+             LIMIT 1'
+        );
+        $stmt->execute([':empleado' => $empleado]);
+        $empleadoDatos = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$empleadoDatos) {
+            return 'empleado_no_encontrado';
+        }
+        if ((int)$empleadoDatos['esta_activo'] !== 1) {
+            return 'empleado_inactivo';
+        }
+
+        $puestoNormalizado = strtolower(trim((string)$empleadoDatos['puesto']));
+        $rolesPorPuesto = [
+            'gerente' => ['admin', 'gerente'],
+            'vendedor' => ['vendedor'],
+            'recepcionista' => ['recepcionista'],
+        ];
+
+        if (!isset($rolesPorPuesto[$puestoNormalizado])) {
+            return 'puesto_no_autorizado';
+        }
+        if (!in_array($rolNormalizado, $rolesPorPuesto[$puestoNormalizado], true)) {
+            return 'rol_puesto_no_coincide';
+        }
+
+        return null;
+    }
+
     public static function obtenerCorteAbierto(PDO $db, int $empleado): ?array
     {
         $stmt = $db->prepare(
@@ -70,10 +114,11 @@ final class CorteCaja
         $stmt->execute([':corte' => $corte]);
         $resumen = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
         $resumen['efectivo'] = (float)($resumen['efectivo'] ?? 0);
-        $resumen['tarjeta'] = (float)($resumen['tarjeta'] ?? 0);
-        $resumen['transferencia'] = (float)($resumen['transferencia'] ?? 0);
+        $citas = self::pagosCitaNoEfectivo($db, $corte);
+        $resumen['tarjeta'] = (float)($resumen['tarjeta'] ?? 0) + $citas['tarjeta'];
+        $resumen['transferencia'] = (float)($resumen['transferencia'] ?? 0) + $citas['transferencia'];
         $resumen['general'] = round($resumen['efectivo'] + $resumen['tarjeta'] + $resumen['transferencia'], 2);
-        $resumen['pagos'] = (int)($resumen['pagos'] ?? 0);
+        $resumen['pagos'] = (int)($resumen['pagos'] ?? 0) + $citas['pagos'];
         $resumen['ventas'] = (int)($resumen['ventas'] ?? 0);
 
         return $resumen;
@@ -219,10 +264,13 @@ final class CorteCaja
         return $corte ?: null;
     }
 
-    public static function crearCorte(PDO $db, int $empleado, string $turno): int
+    public static function crearCorte(PDO $db, int $empleado, string $turno, float $fondoInicial = self::FONDO_INICIAL): int
     {
         if (!in_array($turno, ['matutino', 'vespertino', 'ambos'], true)) {
             throw new DomainException('Selecciona un turno válido.');
+        }
+        if ($fondoInicial < 0 || $fondoInicial > self::IMPORTE_MAXIMO || !is_finite($fondoInicial)) {
+            throw new DomainException('El fondo inicial debe ser igual o mayor a cero y caber en el campo monetario.');
         }
 
         for ($intento = 0; $intento < 3; $intento++) {
@@ -257,7 +305,7 @@ final class CorteCaja
                     ':folio' => $folio,
                     ':turno' => $turno,
                     ':empleado' => $empleado,
-                    ':fondo' => self::FONDO_INICIAL,
+                    ':fondo' => round($fondoInicial, 2),
                 ]);
                 $id = (int)$db->lastInsertId();
                 $db->commit();
@@ -309,6 +357,16 @@ final class CorteCaja
         $db->beginTransaction();
         try {
             self::bloquearCorteAbierto($db, $corte, $empleado);
+            if ($tipo === 'retiro') {
+                $efectivoDisponible = max(self::calcularEfectivoEsperado($db, $corte), 0);
+                if (round($importe, 2) > $efectivoDisponible) {
+                    throw new DomainException(
+                        'No puedes retirar más efectivo del disponible en caja ($'
+                        . number_format($efectivoDisponible, 2)
+                        . ').'
+                    );
+                }
+            }
             if ($beneficiario !== null) {
                 $verificarEmpleado = $db->prepare(
                     'SELECT id_empleado FROM empleados WHERE id_empleado = :id AND esta_activo = 1'
@@ -590,6 +648,12 @@ final class CorteCaja
         return $fila;
     }
 
+    // Efectivo que hay ahora en la caja del corte (fondo + cobros en efectivo +/- movimientos)
+    public static function efectivoDisponible(PDO $db, int $corte): float
+    {
+        return self::calcularEfectivoEsperado($db, $corte);
+    }
+
     private static function calcularEfectivoEsperado(PDO $db, int $corte): float
     {
         $stmt = $db->prepare(
@@ -628,6 +692,35 @@ final class CorteCaja
         return round((float)$fondo + $pagosEfectivo + $impactoMovimientos, 2);
     }
 
+    // Pagos de citas con tarjeta o transferencia cobrados en este corte (el efectivo ya entra como movimiento)
+    private static function pagosCitaNoEfectivo(PDO $db, int $corte): array
+    {
+        $res = ['tarjeta' => 0.0, 'transferencia' => 0.0, 'pagos' => 0];
+        try {
+            foreach (['pagos_cita', 'pagos_hotel'] as $tabla) {
+                if (!$db->query("SHOW TABLES LIKE '$tabla'")->fetch()
+                    || !$db->query("SHOW COLUMNS FROM $tabla LIKE 'devuelto'")->fetch()) {
+                    continue;
+                }
+                $stmt = $db->prepare(
+                    "SELECT metodo, COALESCE(SUM(monto), 0) AS total, COUNT(*) AS n
+                     FROM $tabla
+                     WHERE corte = :corte AND metodo IN ('tarjeta', 'transferencia')
+                       AND id_venta IS NULL AND devuelto = 0
+                     GROUP BY metodo"
+                );
+                $stmt->execute([':corte' => $corte]);
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $f) {
+                    $res[$f['metodo']] = round($res[$f['metodo']] + (float)$f['total'], 2);
+                    $res['pagos'] += (int)$f['n'];
+                }
+            }
+        } catch (Throwable $e) {
+            error_log('CorteCaja::pagosCitaNoEfectivo ' . $e->getMessage());
+        }
+        return $res;
+    }
+
     private static function obtenerTotalesPagos(PDO $db, int $corte): array
     {
         $stmt = $db->prepare(
@@ -644,6 +737,9 @@ final class CorteCaja
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
             $totales[$fila['forma_pago']] = round((float)$fila['total'], 2);
         }
+        $citas = self::pagosCitaNoEfectivo($db, $corte);
+        $totales['tarjeta'] = round($totales['tarjeta'] + $citas['tarjeta'], 2);
+        $totales['transferencia'] = round($totales['transferencia'] + $citas['transferencia'], 2);
         $totales['general'] = round(array_sum($totales), 2);
 
         return $totales;

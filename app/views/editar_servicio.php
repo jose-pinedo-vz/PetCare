@@ -2,7 +2,18 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente'], true)) {
+    header("Location: servicios.php");
+    exit();
+}
 require_once __DIR__ . '/../models/Servicios.php';
+require_once __DIR__ . '/../models/Empleados.php';
+$empleadosActivos = Empleados::Listar_empleados_activos();
 
 // Busca el servicio por el id de la URL
 $id = (int)($_GET['id_servicio'] ?? 0);
@@ -76,7 +87,7 @@ unset(
             <div class="grid-formulario">
               <div>
                 <label class="label-campo" for="nombre">Nombre *:</label>
-                <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" required
+                <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" minlength="2" required title="Solo letras y espacios"
                   value="<?php echo htmlspecialchars($f['nombre']); ?>">
               </div>
 
@@ -105,9 +116,9 @@ unset(
                 <label class="label-campo" for="id_empleados">Empleado responsable:</label>
                 <select class="campo" id="id_empleados" name="id_empleados">
                   <option value="">Seleccionar...</option>
-                  <option value="1" <?php echo $f['id_empleados'] === '1' ? 'selected' : ''; ?>>Ana Torres</option>
-                  <option value="2" <?php echo $f['id_empleados'] === '2' ? 'selected' : ''; ?>>Luis Medina</option>
-                  <option value="3" <?php echo $f['id_empleados'] === '3' ? 'selected' : ''; ?>>Dra. Pérez</option>
+                  <?php foreach ($empleadosActivos as $emp): ?>
+                    <option value="<?php echo (int)$emp['id_empleado']; ?>" <?php echo (string)$f['id_empleados'] === (string)$emp['id_empleado'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($emp['nombre'] . ' ' . $emp['apellido']); ?></option>
+                  <?php endforeach; ?>
                 </select>
               </div>
 
@@ -121,7 +132,7 @@ unset(
 
               <div class="campo-completo">
                 <label class="label-campo" for="descripcion">Descripción:</label>
-                <textarea class="campo" id="descripcion" name="descripcion" rows="3" placeholder="¿Qué incluye el servicio?"><?php echo htmlspecialchars($f['descripcion']); ?></textarea>
+                <textarea class="campo" id="descripcion" name="descripcion" rows="3" maxlength="250" placeholder="¿Qué incluye el servicio?"><?php echo htmlspecialchars($f['descripcion']); ?></textarea>
               </div>
             </div>
           </fieldset>
@@ -138,6 +149,27 @@ unset(
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    // Validacion en pantalla: nombre solo letras y descripcion con texto real
+    (function () {
+      var n = document.getElementById('nombre');
+      var d = document.getElementById('descripcion');
+      function validarNombre() {
+        var ok = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/.test(n.value.trim());
+        n.setCustomValidity(ok ? '' : 'El nombre solo puede llevar letras y espacios.');
+      }
+      function validarDescripcion() {
+        var v = d.value.trim();
+        var letras = (v.match(/\p{L}/gu) || []).length;
+        var ok = v === '' || (/^[\p{L}\p{N}\s.,;:()¿?¡!\-\/]+$/u.test(v) && letras >= 3);
+        d.setCustomValidity(ok ? '' : 'Escribe texto (minimo 3 letras); no se permiten solo numeros ni simbolos especiales.');
+      }
+      n.addEventListener('input', validarNombre);
+      d.addEventListener('input', validarDescripcion);
+      validarNombre();
+      validarDescripcion();
+    })();
+  </script>
 </body>
 
 </html>

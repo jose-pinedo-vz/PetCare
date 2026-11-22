@@ -20,7 +20,7 @@ $citas = extraerCitasHoy();
 
   <div class="layout">
 
-  <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
+  <?php $paginaActiva = 'veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
       <div class="migaja">Veterinaria /</div>

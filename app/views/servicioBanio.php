@@ -23,7 +23,7 @@ function old(string $clave): string
   <!-- Esta vista se muestra desde /controllers/, asi que las rutas relativas
        (css, imagenes, links del sidebar) se calculan desde /views/ -->
   <base href="../views/">
-  <title>Veterinaria PetCare - Desparasitación</title>
+  <title>Veterinaria PetCare - Baño</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
@@ -37,7 +37,7 @@ function old(string $clave): string
   <main>
       <div class="migaja"><a href="citas.php" class="link-tenue">Gestión de citas</a> / ficha veterinaria</div>
       <div class="encabezado-pagina">
-        <h1>Desparasitación</h1>
+        <h1>Baño</h1>
       </div>
 
       <?php if (isset($_SESSION['error'])): ?>
@@ -71,7 +71,7 @@ function old(string $clave): string
 
           
           <div>
-            <label class="label-campo" for="Shampoo">Tipo de Shampoo *:</label>
+            <label class="label-campo" for="Shampoo">Tipo de shampoo *:</label>
             <select class="campo" name="Shampoo" id="Shampoo" required>
               <option value="">Selecciona un producto</option>
               <option value="Shampoo hipoalergénico">Shampoo hipoalergénico</option>
@@ -82,7 +82,7 @@ function old(string $clave): string
           </div>
 
           <div>
-            <label class="label-campo" for="TratamientoAdicional">Tratamiento Adicional *:</label>
+            <label class="label-campo" for="TratamientoAdicional">Tratamiento adicional *:</label>
             <select class="campo" name="TratamientoAdicional" id="TratamientoAdicional" required>
               <option value="">Selecciona un tratamiento adicional</option>
               <option value="Ninguno">Ninguno</option>
@@ -123,14 +123,14 @@ function old(string $clave): string
         <div class="campo-completo">
             <label class="label-campo" for="Condiciones_recibidas">Condiciones recibidas:</label>
             <textarea class="campo" id="Condiciones_recibidas" name="Condiciones_recibidas" rows="3" maxlength="1000"
-              placeholder="Condiciones en las que se resivio"><?= old('oldCondiciones_recibidas') ?></textarea>
+              placeholder="Condiciones en las que se recibió"><?= old('oldCondiciones_recibidas') ?></textarea>
           </div>
 
 
         <div class="campo-completo">
             <label class="label-campo" for="Condiciones_entrega">Condiciones de entrega:</label>
             <textarea class="campo" id="Condiciones_entrega" name="Condiciones_entrega" rows="3" maxlength="1000"
-              placeholder="Condiciones en las que se entrego"><?= old('oldCondiciones_entrega') ?></textarea>
+              placeholder="Condiciones en las que se entregó"><?= old('oldCondiciones_entrega') ?></textarea>
           </div>
 
          <div class="acciones-formulario">

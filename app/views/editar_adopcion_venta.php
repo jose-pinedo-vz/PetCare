@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once __DIR__ . '/../models/adopcion_venta.php';
+require_once __DIR__ . '/../models/Mascota.php';
+
+$razas = Mascota::obtenerRazas();
+$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+
 $errores=$_SESSION['errores'] ?? [];
 $old=$_SESSION['old'] ?? [];
 unset($_SESSION['errores']);
@@ -13,6 +18,20 @@ if (!$id)
 }
 $registro=obtenerPorId($id);
 
+$especieActual = (string) ($old['especie'] ?? $registro['especie'] ?? 'Perro');
+$razaActual = (string) ($old['raza'] ?? $registro['raza'] ?? '');
+
+$mapaEspecieId = [
+    'Perro' => '1',
+    'Gato' => '2',
+    'Conejo' => '3',
+    'Hamster' => '4',
+    'Hurón' => '',
+    'Erizo' => '',
+    'Tortuga' => '',
+    'Ave' => '6'
+];
+$especieIdActual = $mapaEspecieId[$especieActual] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -59,21 +78,35 @@ $registro=obtenerPorId($id);
     <div>
         <label class="label-campo" for="especie">Especie:</label>
         <select class="campo" id="especie" name="especie" required>
-          <?php $especieActual = $old['especie'] ?? $registro['especie'] ?? ''; ?>
-          <option value="Perro" <?= ($especieActual === 'Perro') ? 'selected' : '' ?>>Perro</option>
-          <option value="Gato" <?= ($especieActual === 'Gato') ? 'selected' : '' ?>>Gato</option>
-          <option value="Conejo" <?= ($especieActual === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
-          <option value="Hamster" <?= ($especieActual === 'Hamster') ? 'selected' : '' ?>>Hamster</option>
-          <option value="Hurón" <?= ($especieActual === 'Hurón') ? 'selected' : '' ?>>Hurón</option>
-          <option value="Erizo" <?= ($especieActual === 'Erizo') ? 'selected' : '' ?>>Erizo</option>
-          <option value="Tortuga" <?= ($especieActual === 'Tortuga') ? 'selected' : '' ?>>Tortuga</option>
-          <option value="Ave" <?= ($especieActual === 'Ave') ? 'selected' : '' ?>>Ave</option>
+          <option value="Perro" data-especie-id="1" <?= ($especieActual === 'Perro') ? 'selected' : '' ?>>Perro</option>
+          <option value="Gato" data-especie-id="2" <?= ($especieActual === 'Gato') ? 'selected' : '' ?>>Gato</option>
+          <option value="Conejo" data-especie-id="3" <?= ($especieActual === 'Conejo') ? 'selected' : '' ?>>Conejo</option>
+          <option value="Hamster" data-especie-id="4" <?= ($especieActual === 'Hamster') ? 'selected' : '' ?>>Hamster</option>
+          <option value="Hurón" data-especie-id="" <?= ($especieActual === 'Hurón') ? 'selected' : '' ?>>Hurón</option>
+          <option value="Erizo" data-especie-id="" <?= ($especieActual === 'Erizo') ? 'selected' : '' ?>>Erizo</option>
+          <option value="Tortuga" data-especie-id="" <?= ($especieActual === 'Tortuga') ? 'selected' : '' ?>>Tortuga</option>
+          <option value="Ave" data-especie-id="6" <?= ($especieActual === 'Ave') ? 'selected' : '' ?>>Ave</option>
         </select>
     </div>
 
     <div>
         <label class="label-campo" for="raza">Raza:</label>
-        <input type="text" class="campo" id="raza" name="raza" maxlength="30" value="<?= htmlspecialchars($old['raza'] ?? $registro['raza'] ?? '') ?>">
+        <select class="campo" id="raza" name="raza">
+          <option value="">Seleccionar raza...</option>
+          <?php foreach ($razas as $registroRaza): 
+            $razaCoincideConEspecie = $especieIdActual !== ''
+              && (string) $registroRaza['especie'] === $especieIdActual;
+            $razaSeleccionada = $razaCoincideConEspecie
+              && $razaActual === (string) $registroRaza['raza'];
+          ?>
+            <option
+              value="<?= $escapar($registroRaza['raza']) ?>"
+              data-especie-id="<?= (int) $registroRaza['especie'] ?>"
+              <?= $razaSeleccionada ? 'selected' : '' ?>
+              <?= $razaCoincideConEspecie ? '' : 'hidden disabled' ?>
+            ><?= $escapar($registroRaza['raza']) ?></option>
+          <?php endforeach; ?>
+        </select>
     </div>
 
     <div>
@@ -214,142 +247,6 @@ $registro=obtenerPorId($id);
   </div>
 </fieldset>
 
-            </fieldset>
-
-            <fieldset>
-
-                <legend>Datos de ingreso</legend>
-
-                <div class="grid-formulario">
-
-                    <div>
-                        <label class="label-campo" for="fecha_de_ingreso">
-                            Fecha de ingreso *:
-                        </label>
-
-                        <input
-                            type="datetime-local"
-                            class="campo"
-                            id="fecha_de_ingreso"
-                            name="fecha_de_ingreso"
-                            required>
-                    </div>
-
-                    <div>
-                        <label class="label-campo" for="estado">
-                            Estado:
-                        </label>
-
-                        <input
-                            type="text"
-                            class="campo"
-                            id="estado"
-                            name="estado">
-                    </div>
-
-                    <div class="campo-completo">
-                        <label class="label-campo" for="procedencia">
-                            Procedencia *:
-                        </label>
-
-                        <textarea
-                            class="campo"
-                            id="procedencia"
-                            name="procedencia"
-                            rows="3"
-                            required></textarea>
-                    </div>
-
-                </div>
-
-            </fieldset>
-
-            <fieldset>
-
-                <legend>Información comercial</legend>
-
-                <div class="grid-formulario">
-
-                    <div>
-                        <label class="label-campo" for="costo_de_adquisicion">
-                            Costo de adquisición:
-                        </label>
-
-                        <input
-                            type="number"
-                            step="0.01"
-                            class="campo"
-                            id="costo_de_adquisicion"
-                            name="costo_de_adquisicion">
-                    </div>
-
-                    <div>
-                        <label class="label-campo" for="precio_de_venta">
-                            Precio de venta *:
-                        </label>
-
-                        <input
-                            type="number"
-                            step="0.01"
-                            class="campo"
-                            id="precio_de_venta"
-                            name="precio_de_venta"
-                            required>
-                    </div>
-
-                </div>
-
-            </fieldset>
-
-            <fieldset>
-
-                <legend>Datos clínicos</legend>
-
-                <div class="grid-formulario">
-
-                    <div>
-                        <label class="label-campo" for="desparasitacion">
-                            Desparasitación *:
-                        </label>
-
-                        <input
-                            type="date"
-                            class="campo"
-                            id="desparasitacion"
-                            name="desparasitacion"
-                            required>
-                    </div>
-
-                    <div class="campo-completo">
-                        <label class="label-campo" for="vacunas">
-                            Vacunas *:
-                        </label>
-
-                        <textarea
-                            class="campo"
-                            id="vacunas"
-                            name="vacunas"
-                            rows="3"
-                            required></textarea>
-                    </div>
-
-                    <div class="campo-completo">
-                        <label class="label-campo" for="observaciones">
-                            Observaciones *:
-                        </label>
-
-                        <textarea
-                            class="campo"
-                            id="observaciones"
-                            name="observaciones"
-                            rows="3"
-                            required></textarea>
-                    </div>
-
-                </div>
-
-            </fieldset>
-
             <div class="acciones-formulario">
         <a class="btn btn-secundario btn-chico" href="adopcion_venta.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar</button>
@@ -404,6 +301,7 @@ $registro=obtenerPorId($id);
       }
     })();
   </script>
+  <script src="js/mascota.js"></script>
 
 </body>
 </html>
