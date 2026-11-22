@@ -108,7 +108,12 @@ function citasHoyVeterinaria(string $fecha): array {
 function obtenerVacunas(): array{
     try{
         $conexion=ConexionDB::obtenerConexion();
-        $sql="select id, nombre, especie from lista_vacunas where estado=1";
+        /* $sql="select id, nombre, especie from lista_vacunas where estado=1"; */
+        $sql="
+            SELECT lv.id, lv.nombre, lv.especie, e.especie AS nombre_especie
+            FROM lista_vacunas lv, especies e
+            WHERE lv.especie = e.id AND lv.estado=1
+        ";
 
         $resultado = $conexion -> query($sql);
 
@@ -121,6 +126,31 @@ function obtenerVacunas(): array{
     } catch (Exception $error){
         error_log("Error al obtener las vacunas ".$error->getMessage());
         return [];
+    }
+}
+
+function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT COUNT(*)
+            FROM lista_vacunas
+            WHERE LOWER(nombre) = LOWER(?) AND especie = ? AND estado = 1 AND id != ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$nombre, $especie, $id ?? 0]);
+
+        $resultado = (int) $consulta -> fetchColumn() > 0;
+
+        if (!$resultado) {
+            return false;
+        }
+
+        return $resultado;
+
+    } catch (Exception $error) {
+        error_log("Error en obtener si esta repedida la vacuna " . $error -> getMessage());
+        return false;
     }
 }
 
@@ -213,6 +243,10 @@ class Veterinaria {
 
     public static function obtenerVacunas(): array {
         return obtenerVacunas();
+    }
+
+    public static function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {
+        return estaRepetida($nombre, $especie, $id);
     }
 
     public static function obtenerEspecies(): array {

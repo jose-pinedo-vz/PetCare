@@ -3,12 +3,38 @@ require_once __DIR__ . '/../controllers/veterinaria_vacunas.php';
 
 $lista_vacunas=listado_Vacunas()['listaVacunas'];
 
-$vacunas          = $vacunas ?? [];
+$vacunas = $vacunas ?? [];
 $lista_vacunas = $lista_vacunas ?? [];
 $especies = listado_Especies();
 
 $desparasitaciones = $desparasitaciones ?? [];
 $catalogoVacunas = $catalogoVacunas ?? [];
+
+
+$modalError = $_SESSION['modalError'] ?? '';
+$mensajeError = $_SESSION['error'] ?? '';
+$oldNombre = $_SESSION['oldNombre_vacunas'] ?? '';
+$oldEspecie = $_SESSION['oldEspecie_vacunas'] ?? '';
+$oldId = $_SESSION['oldId_vacunas'] ?? '';
+
+unset(
+    $_SESSION['modalError'],
+    $_SESSION['error'],
+    $_SESSION['oldNombre_vacunas'],
+    $_SESSION['oldEspecie_vacunas'],
+    $_SESSION['oldId_vacunas']
+);
+
+$nombreEliminar = '';
+if ($modalError === 'eliminar') {
+    foreach ($lista_vacunas as $v) {
+        if ((string)$v['id'] === (string)$oldId) {
+            $nombreEliminar = $v['nombre'];
+            break;
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +45,17 @@ $catalogoVacunas = $catalogoVacunas ?? [];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Vacunas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+
+  <style>
+    #modalAgregar input.campo,
+    #modalEditar input.campo {
+      margin-bottom: 14px;
+    }
+
+    .columna-lateral .tarjeta > .btn {
+      margin-top: 12px;
+    }
+  </style>
 </head>
 
 <body>
@@ -27,11 +64,6 @@ $catalogoVacunas = $catalogoVacunas ?? [];
   <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <?php if (isset($_SESSION['error'])): ?>
-          <p><?= htmlspecialchars($_SESSION['error']) ?></p>
-          <?php unset($_SESSION['error']); ?>
-      <?php endif; ?>
-
     <div class="migaja"><a href="veterinaria_Inicio.php" class="link-tenue">Veterinaria</a> / Vacunas</div>
     
     <div class="panel-inicio">
@@ -40,27 +72,29 @@ $catalogoVacunas = $catalogoVacunas ?? [];
           <div class="tarjeta"> <!-- Al darle clic en agregar te va a abrir un text ahi pones el nombre de la nueva vacuna y ya, despues veo como se hace eso-->
             <h2>Lista de Vacunas</h2>
             
-            <table id="listaVacuna">
-              <thead>
-                <tr>
-                  <th>Vacunas</th>
-                  <th>Especie</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($lista_vacunas as $v): ?>
-                      <tr>
-                        <td><?= htmlspecialchars($v['nombre']) ?></td>
-                        <td><?= htmlspecialchars($v['especie']) ?></td>
-                        <td> 
-                          <button type="button" class="btn" onclick='abrirEditar(<?= (int)$v["id"] ?>,<?= json_encode($v["nombre"], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>,<?= (int)$v["especie"] ?>)'>Editar</button>
-                          <button type="button" class="btn" onclick='abrirEliminar(<?= (int)$v["id"] ?>,<?= json_encode($v["nombre"], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>)'>Eliminar</button>
-                        </td>
-                      </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>  
+            <div class="tabla-envoltura">
+                <table id="listaVacuna">
+                  <thead>
+                    <tr>
+                      <th>Vacunas</th>
+                      <th>Especie</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($lista_vacunas as $v): ?>
+                          <tr>
+                            <td><?= htmlspecialchars($v['nombre']) ?></td>
+                            <td><?= htmlspecialchars($v['nombre_especie']) ?></td>
+                            <td> 
+                              <button type="button" class="btn" onclick='abrirEditar(<?= (int)$v["id"] ?>,<?= json_encode($v["nombre"], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>,<?= (int)$v["especie"] ?>)'>Editar</button>
+                              <button type="button" class="btn" onclick='abrirEliminar(<?= (int)$v["id"] ?>,<?= json_encode($v["nombre"] . " (" . ($v["nombre_especie"] ?? "") . ")", JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>)'>Eliminar</button>
+                            </td>
+                          </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>  
+            </div>
             <button type="button" class="btn" onclick="abrirAgregar()">Agregar vacuna</button>              
           </div>
         </div>
@@ -132,20 +166,24 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 <!-- Modal para agregar -->
 <dialog id="modalAgregar" class="inventario-dialog">
 
-    <h3>Nueva vacuna</h3>
+    <h2>Nueva vacuna</h2>
 
     <form id="formAgregar" method="POST" action="../controllers/veterinaria_vacunas.php">
       <input type="hidden" name="accion" value="agregarVacuna">
 
+    <?php if ($modalError === 'agregar' && $mensajeError !== ''): ?>
+        <div class="msg-error"> <?php echo htmlspecialchars($mensajeError) ?></div>
+    <?php endif; ?>
+
       <label class="label-campo">Nombre:</label>
-      <input type="text" class="campo" id="nombreAgregar" name="nombre" maxlength="50" placeholder="Nombre de la vacuna" required>
+          <input type="text" class="campo" id="nombreAgregar" name="nombre" maxlength="50" placeholder="Nombre de la vacuna" required value="<?php echo $modalError === 'agregar' ? htmlspecialchars($oldNombre) : '' ?>">
 
       <label class="label-campo">Especie:</label>
       <select class="campo" id="especieAgregar" name="especie" required>
           <option value="" selected disabled>Elige una especie</option>
 
           <?php foreach ($especies as $e): ?>
-            <option value="<?= (int)$e['id'] ?>">
+          <option value="<?= (int)$e['id'] ?>" <?php echo ($modalError === 'agregar' && (string)$oldEspecie === (string)$e['id']) ? 'selected' : '' ?>> 
                 <?= htmlspecialchars($e['nombre']) ?>
             </option>
           <?php endforeach; ?>
@@ -166,16 +204,20 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 
     <form id="formEditar" method="POST" action="../controllers/veterinaria_vacunas.php">
       <input type="hidden" name="accion" value="editarVacuna">
-      <input type="hidden" name="id" id="idEditar">
+      <input type="hidden" name="id" id="idEditar" value="<?php echo $modalError === 'editar' ? htmlspecialchars($oldId) : '' ?>">
+
+      <?php if ($modalError === 'editar' && $mensajeError !== ''): ?>
+        <div class="msg-error"> <?php echo htmlspecialchars($mensajeError) ?> </div>
+      <?php endif; ?>
 
       <label class="label-campo">Nombre:</label>
-      <input type="text" class="campo" id="nombreEditar" name="nombre" required>
+          <input type="text" class="campo" id="nombreEditar" name="nombre" maxlength="50" value="<?php echo $modalError === 'editar' ? htmlspecialchars($oldNombre) : '' ?>" required>
 
       <label class="label-campo">Especie:</label>
       <select class="campo" id="especieEditar" name="especie" required>
           <option value="" selected disabled>Elige una especie</option>
           <?php foreach ($especies as $e): ?>
-              <option value="<?= (int)$e['id'] ?>">
+              <option value="<?= (int)$e['id'] ?>" <?php echo ($modalError === 'editar' && (string)$oldEspecie === (string)$e['id']) ? 'selected' : '' ?>>
                   <?= htmlspecialchars($e['nombre']) ?>
               </option>
           <?php endforeach; ?>
@@ -192,14 +234,20 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 <!-- Modal para eliminar -->
 <dialog id="modalEliminar" class="inventario-dialog">
   <h2>Eliminar vacuna</h2>
+
+<?php if ($modalError === 'eliminar' && $mensajeError !== ''):  ?>
+    <div class="msg-error"> <?php echo htmlspecialchars($mensajeError) ?> </div>
+<?php endif; ?>
+
   <div class="confirmacion">
     <p>¿Seguro que deseas eliminar esta vacuna?</p>
-    <strong id="vacunaEliminar"></strong>
+    <strong id="vacunaEliminar"> <?php echo htmlspecialchars($nombreEliminar)?> </strong>
+
   </div>
   
   <form method="POST" action="../controllers/veterinaria_vacunas.php">
     <input type="hidden" name="accion" value="eliminarVacuna">
-    <input type="hidden" name="id" id="idEliminar">
+    <input type="hidden" name="id" id="idEliminar" value="<?php echo $modalError === 'eliminar' ? htmlspecialchars($oldId) : '' ?>">
     <div class="inventario-dialog-acciones">
       <button type="button" class="btn-secundario" onclick="cerrarEliminar()">No</button>
       <button type="submit" class="btn btn-eliminar">Sí, eliminar</button>
@@ -212,9 +260,19 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 
 
 <script>
+
+function limpiarError(idModal) {
+    const msj_error = document.querySelector('#' + idModal + ' .msg-error');
+    if (msj_error) {
+        msj_error.remove();
+    }
+}
+
 //agregar
 function abrirAgregar() {
-    document.getElementById('formAgregar').reset();
+    limpiarError('modalAgregar');
+    document.getElementById('nombreAgregar').value = '';
+    document.getElementById('especieAgregar').value = '';
     document.getElementById('modalAgregar').showModal();
 }
 
@@ -223,6 +281,7 @@ function cerrarAgregar() {document.getElementById('modalAgregar').close();}
 
 // editar
 function abrirEditar(id, nombre, especie) {
+    limpiarError('modalEditar');
     document.getElementById('idEditar').value = id;
     document.getElementById('nombreEditar').value = nombre;
     document.getElementById('especieEditar').value = especie;
@@ -235,6 +294,7 @@ function cerrarEditar() {document.getElementById('modalEditar').close();}
 
 //eliminar
 function abrirEliminar(id, nombre) {
+    limpiarError('modalEliminar');
     document.getElementById('idEliminar').value = id;
     document.getElementById('vacunaEliminar').textContent = nombre;
 
@@ -244,6 +304,15 @@ function abrirEliminar(id, nombre) {
 function cerrarEliminar() {
     document.getElementById('modalEliminar').close();
 }
+
+<?php if ($modalError === 'agregar'): ?>
+    document.getElementById('modalAgregar').showModal();
+<?php elseif ($modalError === 'editar'): ?>
+    document.getElementById('modalEditar').showModal();
+<?php elseif ($modalError === 'eliminar'): ?>
+    document.getElementById('modalEliminar').showModal();
+<?php endif; ?>
+
 </script>
 
 </body>
