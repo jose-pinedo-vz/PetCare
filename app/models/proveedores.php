@@ -144,7 +144,7 @@ function actualizarProveedor(int $id, array $datos) {
 function existeRazonSocial($razon_social, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE razon_social = :razon_social";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE razon_social = :razon_social and esta_activo = 1";
         if ($idExcluir !== null) {
             $sql .= " AND id_proveedor != :id";
         }
@@ -164,7 +164,7 @@ function existeRazonSocial($razon_social, ?int $idExcluir = null){
 function existeRfc($rfc, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE rfc = :rfc";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE rfc = :rfc and esta_activo = 1";
         if ($idExcluir !== null) {
             $sql .= " AND id_proveedor != :id";
         }
@@ -184,7 +184,7 @@ function existeRfc($rfc, ?int $idExcluir = null){
 function existeTelefono($telefono, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE telefono = :telefono";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE telefono = :telefono and esta_activo = 1";
         if ($idExcluir !== null) {
             $sql .= " AND id_proveedor != :id";
         }
@@ -204,7 +204,7 @@ function existeTelefono($telefono, ?int $idExcluir = null){
 function existeCorreo($correo, ?int $idExcluir = null){
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT COUNT(*) FROM proveedores WHERE correo = :correo";
+        $sql = "SELECT COUNT(*) FROM proveedores WHERE correo = :correo and esta_activo = 1";
         if ($idExcluir !== null) {
             $sql .= " AND id_proveedor != :id";
         }
