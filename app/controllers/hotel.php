@@ -31,6 +31,18 @@ function validar_datos_hotel(array $datos) {
         $errores[] = "El id de la mascota no existe en la base de datos.";
     }
 
+    // Un cliente no puede tener otra reservación activa para la misma mascota.
+    // Permite reservar cuando cambia a una mascota diferente.
+    if (
+        !empty($datos['id_cliente']) &&
+        !empty($datos['id_mascota']) &&
+        Hotel::existeCliente((int)$datos['id_cliente']) &&
+        Hotel::existeMascota((int)$datos['id_mascota']) &&
+        Hotel::existeReservaActiva((int)$datos['id_cliente'], (int)$datos['id_mascota'])
+    ) {
+        $errores[] = "El cliente ya tiene una reservación registrada para esta mascota con estado Por pagar o Pagado.";
+    }
+
     //El id_jaula es obligatorio
     if (empty($datos['id_jaula'])) {
         $errores[] = "El id de la jaula es obligatorio.";
@@ -214,18 +226,6 @@ function validar_datos_hotel(array $datos) {
         header("Location: reservacion_hotel.php");
         exit();
     } else {
-        $validacionVacunas = Hotel::validarVacunasMascota(
-            (int)$datos['id_mascota'],
-            $datos['fecha_salida']
-        );
-
-        if (!$validacionVacunas['valida']) {
-            $_SESSION['errores'] = $validacionVacunas['errores'];
-            $_SESSION['old']     = $datos;
-            header("Location: reservacion_hotel.php");
-            exit();
-        }
-
         $advertencias = Hotel::insertarHotel($datos);
         if (is_array($advertencias) && isset($advertencias['error'])) {
             $_SESSION['errores'] = [$advertencias['error']];

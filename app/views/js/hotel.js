@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const noches = document.getElementById('noches');
     const precioNoche = document.getElementById('precio_noche');
     const saldo = document.getElementById('saldo');
-    const botonGuardar = document.getElementById('guardar_reservacion');
     const tablaVacunas = document.getElementById('tabla_vacunas_body');
     const estadoVacunas = document.getElementById('estado_validacion_vacunas');
     let solicitudVacunas = 0;
@@ -141,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!vacunas.length) {
-            limpiarTablaVacunas('No hay registros de vacunas para esta mascota.');
+            limpiarTablaVacunas('No hay vacunas configuradas para la especie de esta mascota.');
             return;
         }
 
@@ -160,7 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             campos.forEach((campo) => {
                 const celda = document.createElement('td');
-                celda.textContent = vacuna[campo] || '-';
+                celda.textContent = campo === 'veterinario'
+                    ? (vacuna.veterinario
+                        ? `${vacuna.veterinario}${vacuna.veterinario_nombre ? ` - ${vacuna.veterinario_nombre}` : ''}`
+                        : '-')
+                    : (vacuna[campo] || '-');
                 fila.appendChild(celda);
             });
 
@@ -182,30 +185,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Consulta la vigencia cuando ya se eligieron mascota y fecha de salida
+    // Consulta las vacunas de la especie y calcula vigencia para salida o para hoy.
     async function validarVacunasSeleccionadas() {
         const numeroSolicitud = ++solicitudVacunas;
         const idMascota = idMascotaOculto ? idMascotaOculto.value : '';
-        const salida = fechaSalida ? fechaSalida.value : '';
-
-        if (botonGuardar) {
-            botonGuardar.disabled = true;
-        }
+        const hoy = new Date();
+        const salida = fechaSalida && fechaSalida.value
+            ? fechaSalida.value
+            : `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 
         if (!idMascota) {
             limpiarTablaVacunas('Selecciona una mascota para consultar sus vacunas.');
             if (estadoVacunas) {
                 estadoVacunas.className = 'nota-campo';
                 estadoVacunas.textContent = 'Selecciona una mascota para consultar sus vacunas.';
-            }
-            return;
-        }
-
-        if (!salida) {
-            limpiarTablaVacunas('Selecciona la fecha de salida para revisar la vigencia.');
-            if (estadoVacunas) {
-                estadoVacunas.className = 'nota-campo';
-                estadoVacunas.textContent = 'Selecciona la fecha de salida para revisar la vigencia.';
             }
             return;
         }
@@ -244,16 +237,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             mostrarVacunas(resultado.vacunas || []);
             if (estadoVacunas) {
-                if (resultado.valida) {
+                if (!resultado.vacunas || resultado.vacunas.length === 0) {
+                    estadoVacunas.className = 'nota-campo';
+                    estadoVacunas.textContent = 'No hay vacunas configuradas para la especie de esta mascota.';
+                } else if (resultado.valida) {
                     estadoVacunas.className = 'historial-estado pagada';
-                    estadoVacunas.textContent = 'Todas las vacunas requeridas están vigentes hasta la fecha de salida.';
+                    estadoVacunas.textContent = fechaSalida && fechaSalida.value
+                        ? 'Todas las vacunas requeridas están vigentes hasta la fecha de salida.'
+                        : 'Las vacunas de esta especie están vigentes a la fecha de hoy.';
                 } else {
-                    mostrarErroresVacunas(resultado.errores);
+                    mostrarErroresVacunas([
+                        //'Hay vacunas pendientes o vencidas; el sistema permite guardar la reservación.',
+                        ...(resultado.errores || []),
+                        'Si quieres tener todas las vacunas vigentes o actualizadas, dirigete al veterinario para que las aplique y actualice el historial de vacunas.'
+                    ]);
                 }
-            }
-
-            if (botonGuardar) {
-                botonGuardar.disabled = !resultado.valida;
             }
         } catch (error) {
             if (numeroSolicitud !== solicitudVacunas) {
@@ -342,17 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Una nueva fecha de salida siempre invalida y vuelve a calcular la validación.
     if (fechaSalida) {
         fechaSalida.addEventListener('change', validarVacunasSeleccionadas);
-    }
-
-    // Evita el envío con Enter u otra acción si las vacunas no fueron aprobadas.
-    const formulario = document.querySelector('form[action="guardar_hotel.php"]');
-    if (formulario) {
-        formulario.addEventListener('submit', (evento) => {
-            if (botonGuardar && botonGuardar.disabled) {
-                evento.preventDefault();
-                mostrarErroresVacunas(['Primero selecciona mascota y fecha, y espera a que las vacunas estén vigentes.']);
-            }
-        });
     }
 
     // Aplica el filtro al cargar la página, también con datos restaurados por sesion

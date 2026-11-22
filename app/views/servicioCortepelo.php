@@ -81,10 +81,10 @@ function old(string $clave): string
           </div>
 
           <div>
-            <label class="label-campo" for="corte_higienico">Corte higienico *:</label>
+            <label class="label-campo" for="corte_higienico">Corte higiénico *:</label>
             <select class="campo" name="corte_higienico" id="corte_higienico" required>
-              <option value="">Selecciona una obcion</option>
-              <option value="Si">Si</option>
+              <option value="">Selecciona una opción</option>
+              <option value="Sí">Sí</option>
               <option value="No">No</option>
             </select>
           </div>
@@ -92,7 +92,7 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="corteCara">Corte de la cara *:</label>
             <select class="campo" name="corteCara" id="corteCara" required>
-              <option value="">Selecciona una obcion</option>
+              <option value="">Selecciona una opción</option>
               <option value="No requerido">No requerido</option>
               <option value="Despeje de pelo alrededor de los ojos">Despeje de pelo alrededor de los ojos</option>
               <option value="Limpieza y recorte estético general">Limpieza y recorte estético general</option>
@@ -106,7 +106,7 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="cortePatas">Corte de las patas *:</label>
             <select class="campo" name="cortePatas" id="cortePatas" required>
-              <option value="">Selecciona una obcion</option>
+              <option value="">Selecciona una opción</option>
               <option value="No requerido">No requerido</option>
               <option value="Despeje de pelo en cojinetes y entre los dedos">Despeje de pelo en cojinetes y entre los dedos</option>
               <option value="Recorte estético de contorno de patas">Recorte estético de contorno de patas</option>
@@ -117,7 +117,7 @@ function old(string $clave): string
             <label class="label-campo" for="Cepillado">Cepillado *:</label>
             <select class="campo" name="Cepillado" id="Cepillado" required>
               <option value="">Selecciona cepillado</option>
-              <option value="Si">Si</option>
+              <option value="Sí">Sí</option>
               <option value="No">No</option>
             </select>
           </div>
@@ -125,8 +125,8 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="Deslanado">Deslanado *:</label>
             <select class="campo" name="Deslanado" id="Deslanado" required>
-              <option value="">Selecciona una obcion</option>
-              <option value="Si">Si</option>
+              <option value="">Selecciona una opción</option>
+              <option value="Sí">Sí</option>
               <option value="No">No</option>
             </select>
           </div>

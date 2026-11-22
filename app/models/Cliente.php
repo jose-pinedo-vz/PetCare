@@ -14,25 +14,23 @@ class Cliente
         try {
             $conexion = ConexionDB::obtenerConexion();
 
-            // si se agrega un nuevo cliente
             if ($id_cliente === null) {
                 $consulta = $conexion -> prepare(
                     "
                         SELECT COUNT(*)
                         FROM clientes
-                        WHERE correo = ? OR telefono = ? 
+                        WHERE (correo = ? OR telefono = ?) AND esta_activo = 1
                     "
                 );
                 $consulta -> execute([$correo, $telefono]);
             }
 
-            // si es edicion
             else {
                 $consulta = $conexion -> prepare(
                     "
                         SELECT COUNT(*)
                         FROM clientes
-                        WHERE (correo = ? OR telefono = ?) AND id_cliente != ?
+                        WHERE (correo = ? OR telefono = ?) AND id_cliente != ? AND esta_activo = 1
                     "
                 );
                 $consulta -> execute([$correo, $telefono, $id_cliente]);
@@ -245,11 +243,23 @@ class Cliente
     {
         try {
             $db = ConexionDB::obtenerConexion();
+            $db->beginTransaction();
             $stmt = $db->prepare("UPDATE clientes 
                                   SET esta_activo = 0
                                   WHERE id_cliente = ?");
-            return $stmt->execute([$id]);
+            $stmt->execute([$id]);
+
+            $stmtMascotas = $db->prepare("UPDATE mascotas 
+                                          SET esta_activo = 0 
+                                          WHERE id_cliente = ?");
+            $stmtMascotas->execute([$id]);
+
+            $db->commit();
+            return true;
         } catch (Exception $e) {
+            if (isset($db) && $db->inTransaction()) {
+                $db->rollBack();
+            }
             return false;
         }
     }

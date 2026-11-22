@@ -114,9 +114,13 @@ document.addEventListener("DOMContentLoaded", async function()
 
             mascota.innerHTML = "";
 
-            if (datos.length === 0)
+            if (datos && datos.error === 'cliente_no_existe')
             {
-                mascota.innerHTML = '<option value="">El usuario no tiene mascotas registradas</option>';
+                mascota.innerHTML = '<option value="">El cliente no se encuentra registrado</option>';
+            }
+            else if (datos.length === 0)
+            {
+                mascota.innerHTML = '<option value="">El cliente no tiene mascotas registradas</option>';
             }
             else
             {
@@ -134,6 +138,11 @@ document.addEventListener("DOMContentLoaded", async function()
 
             elegir_mascota(event.target.value.trim());
         });
+
+        if (cliente.value && cliente.value.trim() !== '')
+        {
+            elegir_mascota(cliente.value.trim());
+        }
     }
 });
 
