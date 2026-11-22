@@ -41,6 +41,11 @@ if (!$proveedor) {
     header("Location: proveedores.php");
     exit;
 }
+
+if (isset($_SESSION['old'])) {
+    $proveedor = array_merge($proveedor, $_SESSION['old']);
+    unset($_SESSION['old']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -252,13 +257,16 @@ if (!$proveedor) {
                             Condición de pago *:
                         </label>
 
-                        <input
-                            type="text"
-                            class="campo"
-                            id="condicion_pago"
-                            name="condicion_pago"
-                            maxlength="60"
-                            value="<?= htmlspecialchars($proveedor['condicion_pago'] ?? '') ?>">
+                        <select class="campo" id="condicion_pago" name="condicion_pago" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="Tarjeta" <?= (($proveedor['condicion_pago'] ?? '') === 'Tarjeta' || ($proveedor['condicion_pago'] ?? '') === 'Targeta') ? 'selected' : '' ?>>Tarjeta</option>
+                            <option value="Efectivo" <?= (strtolower($proveedor['condicion_pago'] ?? '') === 'efectivo') ? 'selected' : '' ?>>Efectivo</option>
+                            <?php 
+                            $valActual = $proveedor['condicion_pago'] ?? '';
+                            if ($valActual !== '' && !in_array(strtolower($valActual), ['tarjeta', 'targeta', 'efectivo'])): ?>
+                                <option value="<?= htmlspecialchars($valActual) ?>" selected><?= htmlspecialchars($valActual) ?></option>
+                            <?php endif; ?>
+                        </select>
                     </div>
 
                     <div>
