@@ -1,6 +1,12 @@
 <?php
+require_once __DIR__ . '/../controllers/veterinaria_vacunas.php';
+
+$lista_vacunas=listado_Vacunas()['listaVacunas'];
+
 $vacunas          = $vacunas ?? [];
 $lista_vacunas = $lista_vacunas ?? [];
+$especies = listado_Especies();
+
 $desparasitaciones = $desparasitaciones ?? [];
 $catalogoVacunas = $catalogoVacunas ?? [];
 ?>
@@ -21,6 +27,17 @@ $catalogoVacunas = $catalogoVacunas ?? [];
   <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
+
+      <?php if (isset($_SESSION['exito'])): ?>
+          <p><?= htmlspecialchars($_SESSION['exito']) ?></p>
+          <?php unset($_SESSION['exito']); ?>
+      <?php endif; ?>
+      
+      <?php if (isset($_SESSION['error'])): ?>
+          <p><?= htmlspecialchars($_SESSION['error']) ?></p>
+          <?php unset($_SESSION['error']); ?>
+      <?php endif; ?>
+
     <div class="migaja"><a href="veterinaria_Inicio.php" class="link-tenue">Veterinaria</a> / Vacunas</div>
     
     <div class="panel-inicio">
@@ -38,21 +55,13 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Parvovirus</td>
-                  <td>Perros</td>
-                  <td> 
-                    <button type="button" class="btn" onclick="abrirEditar('Parvovirus','Perros')">Editar</button> 
-                    <button type="button" class="btn" onclick="abrirEliminar('Parvovirus')"> Eliminar</button>
-                  </td>
-                </tr>
                 <?php foreach ($lista_vacunas as $v): ?>
                       <tr>
-                        <td><?= htmlspecialchars($v['Vacuna']) ?></td>
-                        <td><?= htmlspecialchars($v['Especie']) ?></td>
+                        <td><?= htmlspecialchars($v['nombre']) ?></td>
+                        <td><?= htmlspecialchars($v['especie']) ?></td>
                         <td> 
-                          <button type="button" class="btn" onclick='abrirEditar(<?= json_encode($v["Vacuna"]) ?>,<?= json_encode($v["Especie"]) ?>)'>Editar</button> 
-                          <button type="button" class="btn" onclick='abrirEliminar(     <?= json_encode($v["Vacuna"]) ?> )'> Eliminar</button>
+                          <button type="button" class="btn" onclick='abrirEditar(<?= (int)$v["id"] ?>,<?= json_encode($v["nombre"], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>,<?= (int)$v["especie"] ?>)'>Editar</button>
+                          <button type="button" class="btn" onclick='abrirEliminar(<?= (int)$v["id"] ?>,<?= json_encode($v["nombre"], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>)'>Eliminar</button>
                         </td>
                       </tr>
                 <?php endforeach; ?>
@@ -78,13 +87,6 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                     </tr>
                   </thead>
                   <tbody id="tablaMascotas">
-                    <tr>
-                      <td>Free of lies</td>
-                      <td>02/07/2026</td>
-                      <td>Pargovirus</td>
-                      <td>024024</td>
-                      <td>11/11/2026</td>
-                    </tr>
                     <?php foreach ($vacunas as $v): ?>
                       <tr>
                         <td><?= htmlspecialchars($v['mascota']) ?></td>
@@ -114,13 +116,6 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                       </tr>
                     </thead>
                     <tbody id="tablaDespara">
-                    <tr> <!-- EJEMPLO -->
-                    <td>Free of lies</td>
-                    <td>02/07/2026</td>
-                    <td>Lombrices</td>
-                    <td>Desparasitanol Iboproxido</td>
-                    <td>1/2 pastilla</td>
-                    </tr>
                       <?php foreach ($desparasitaciones as $d): ?>
                         <tr>
                           <td><?= htmlspecialchars($d['fecha']) ?></td> <!--La fecha de aqui saldra de la tabla citas-->
@@ -145,13 +140,21 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 
     <h3>Nueva vacuna</h3>
 
-    <form id="formAgregar">
+    <form id="formAgregar" method="POST" action="../controllers/veterinaria_vacunas.php">
+      <input type="hidden" name="accion" value="agregarVacuna">
+
       <label class="label-campo">Nombre:</label>
-      <input type="text" class="campo" id="nombreAgregar" placeholder="Nombre de la vacuna" required>
+      <input type="text" class="campo" id="nombreAgregar" name="nombre" maxlength="50" placeholder="Nombre de la vacuna" required>
 
       <label class="label-campo">Especie:</label>
-      <select class="campo" id="especieAgregar" required>
+      <select class="campo" id="especieAgregar" name="especie" required>
           <option value="" selected disabled>Elige una especie</option>
+
+          <?php foreach ($especies as $e): ?>
+            <option value="<?= (int)$e['id'] ?>">
+                <?= htmlspecialchars($e['nombre']) ?>
+            </option>
+          <?php endforeach; ?>
       </select>
 
       <div class="inventario-dialog-acciones">
@@ -167,13 +170,21 @@ $catalogoVacunas = $catalogoVacunas ?? [];
 
     <h2>Editar vacuna</h2>
 
-    <form id="formEditar">
+    <form id="formEditar" method="POST" action="../controllers/veterinaria_vacunas.php">
+      <input type="hidden" name="accion" value="editarVacuna">
+      <input type="hidden" name="id" id="idEditar">
+
       <label class="label-campo">Nombre:</label>
-      <input type="text" class="campo" id="nombreEditar" required>
+      <input type="text" class="campo" id="nombreEditar" name="nombre" required>
 
       <label class="label-campo">Especie:</label>
-      <select class="campo" id="especieEditar" required>
+      <select class="campo" id="especieEditar" name="especie" required>
           <option value="" selected disabled>Elige una especie</option>
+          <?php foreach ($especies as $e): ?>
+              <option value="<?= (int)$e['id'] ?>">
+                  <?= htmlspecialchars($e['nombre']) ?>
+              </option>
+          <?php endforeach; ?>
       </select>
 
       <div class="inventario-dialog-acciones">
@@ -192,14 +203,19 @@ $catalogoVacunas = $catalogoVacunas ?? [];
     <strong id="vacunaEliminar"></strong>
   </div>
   
-  <div class="inventario-dialog-acciones">
+  <form method="POST" action="../controllers/veterinaria_vacunas.php">
+    <input type="hidden" name="accion" value="eliminarVacuna">
+    <input type="hidden" name="id" id="idEliminar">
+    <div class="inventario-dialog-acciones">
       <button type="button" class="btn-secundario" onclick="cerrarEliminar()">No</button>
-      <button type="button" class="btn btn-eliminar" id="confirmarEliminar">Sí, eliminar</button>
-  </div>
+      <button type="submit" class="btn btn-eliminar">Sí, eliminar</button>
+    </div>
+  </form>
 </dialog>
 
-</body>
-</html>
+
+
+
 
 <script>
 //agregar
@@ -212,7 +228,8 @@ function cerrarAgregar() {document.getElementById('modalAgregar').close();}
 
 
 // editar
-function abrirEditar(nombre, especie) {
+function abrirEditar(id, nombre, especie) {
+    document.getElementById('idEditar').value = id;
     document.getElementById('nombreEditar').value = nombre;
     document.getElementById('especieEditar').value = especie;
 
@@ -223,7 +240,8 @@ function cerrarEditar() {document.getElementById('modalEditar').close();}
 
 
 //eliminar
-function abrirEliminar(nombre) {
+function abrirEliminar(id, nombre) {
+    document.getElementById('idEliminar').value = id;
     document.getElementById('vacunaEliminar').textContent = nombre;
 
     document.getElementById('modalEliminar').showModal();
@@ -232,23 +250,7 @@ function abrirEliminar(nombre) {
 function cerrarEliminar() {
     document.getElementById('modalEliminar').close();
 }
-
-
-// EVITAR ENVÍOS HASTA CONECTAR PHP
-document.getElementById('formAgregar')
-    .addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Pendiente conectar con la base de datos');
-    });
-
-document.getElementById('formEditar')
-    .addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Pendiente conectar con la base de datos');
-    });
-
-document.getElementById('confirmarEliminar')
-    .addEventListener('click', function() {
-        alert('Pendiente conectar con la base de datos');
-    });
 </script>
+
+</body>
+</html>
