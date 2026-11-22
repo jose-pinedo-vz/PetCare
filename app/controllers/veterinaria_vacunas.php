@@ -28,12 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($nombre === '' || mb_strlen($nombre) > 50 || !$especie || $especie <= 0) {
             $_SESSION['error'] = 'Datos inválidos para agregar la vacuna.';
-        } else {
-            $resultado = Veterinaria::agregarVacuna($nombre, $especie);
-
-            $_SESSION[$resultado ? 'exito' : 'error'] =
-                $resultado ? 'Vacuna agregada correctamente.' : 'No se pudo agregar la vacuna.';
-        }
+        } 
 
     } elseif ($accion === 'editarVacuna') {
 
@@ -43,12 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$id || $id <= 0 || $nombre === '' || mb_strlen($nombre) > 50 || !$especie || $especie <= 0) {
             $_SESSION['error'] = 'Datos inválidos para editar la vacuna.';
-        } else {
-            $resultado = Veterinaria::editarVacuna($id, $nombre, $especie);
-
-            $_SESSION[$resultado ? 'exito' : 'error'] =
-                $resultado ? 'Vacuna editada correctamente.' : 'No se pudo editar la vacuna.';
-        }
+        } 
 
     } elseif ($accion === 'eliminarVacuna') {
 
@@ -56,11 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$id || $id <= 0) {
             $_SESSION['error'] = 'Vacuna inválida.';
-        } else {
-            $resultado = Veterinaria::eliminarVacuna($id);
-
-            $_SESSION[$resultado ? 'exito' : 'error'] =
-                $resultado ? 'Vacuna eliminada correctamente.' : 'No se pudo eliminar la vacuna.';
         }
     }
 

@@ -27,12 +27,6 @@ $catalogoVacunas = $catalogoVacunas ?? [];
   <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-
-      <?php if (isset($_SESSION['exito'])): ?>
-          <p><?= htmlspecialchars($_SESSION['exito']) ?></p>
-          <?php unset($_SESSION['exito']); ?>
-      <?php endif; ?>
-      
       <?php if (isset($_SESSION['error'])): ?>
           <p><?= htmlspecialchars($_SESSION['error']) ?></p>
           <?php unset($_SESSION['error']); ?>
