@@ -108,6 +108,11 @@ function obtenerDatosProductosActivos(): array {
         $conexion = ConexionDB::obtenerConexion();
         $sql = "SELECT p.id_producto, p.codigo, p.nombre, p.id_categoria, p.id_proveedor,
                        p.descripcion, p.contenido, p.unidad_medida, p.precio_venta,
+                       COALESCE((
+                           SELECT MAX(lp.precio_compra)
+                           FROM lote_productos AS lp
+                           WHERE lp.id_producto = p.id_producto
+                       ), 0) AS precio_compra,
                        COALESCE(l.existencia, 0) AS existencia,
                        p.existencia_minima, p.existencia_maxima, p.fecha_ingreso, p.imagen, p.estado
                 FROM productos AS p
@@ -195,6 +200,32 @@ function obtenerProductoPorId(int $id): ?array {
         return $producto ?: null;
     } catch (Exception $e) {
         error_log("Error en obtenerMascotaPorId: " . $e->getMessage());
+        return null;
+    }
+}
+
+function obtenerProductoPorIdNew(int $id): ?array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT p.*, COALESCE(l.existencia, 0) AS existencia
+            FROM productos AS p
+            LEFT JOIN (
+                SELECT id_producto, SUM(cantidad) AS existencia
+                FROM lote_productos
+                WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                GROUP BY id_producto
+            ) AS l ON l.id_producto = p.id_producto
+            WHERE p.id_producto = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+        $producto = $consulta -> fetch(PDO::FETCH_ASSOC);
+
+        return $producto ?: null;
+
+    } catch (Exception $error) {
+        error_log("Error en obtenerMascotaPorIdNew: " . $error -> getMessage());
         return null;
     }
 }

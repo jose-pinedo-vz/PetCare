@@ -266,7 +266,7 @@ legend {
     overflow-y: auto;           
     z-index: 9999;              
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    list-style: none;
+    list-style: none !important;
     padding: 0;
     margin: 0;
     box-sizing: border-box;
@@ -277,6 +277,7 @@ legend {
     cursor: pointer;
     font-size: 15px;
     border-bottom: 1px solid #f2f2f2;
+    list-style: none !important;
 }
 
 .lista-resultados li:hover {
@@ -284,7 +285,15 @@ legend {
     color: white;
 }
 
-#lista_proveedores {
+#lista_proveedores,
+#lista_categorias,
+#lista_clientes_mascota,
+#lista_veterinarios_mascota,
+#lista_clientes,
+#lista_mascotas,
+#lista_jaulas,
+#lista_productos_lote {
+    display: none;
     position: absolute;       
     top: 100%;               
     left: 0;
@@ -292,63 +301,39 @@ legend {
     background: white;
     border: 1px solid #ccc;
     border-top: none;
-    
-    
     max-height: 200px;       
     overflow-y: auto;         
-    
     z-index: 9999;            
-    
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    list-style: none;
+    list-style: none !important;
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
 
-
-#lista_proveedores li {
+#lista_proveedores li,
+#lista_categorias li,
+#lista_clientes_mascota li,
+#lista_veterinarios_mascota li,
+#lista_clientes li,
+#lista_mascotas li,
+#lista_jaulas li,
+#lista_productos_lote li {
     padding: 10px;
     cursor: pointer;
     font-size: 15px;
     border-bottom: 1px solid #f2f2f2;
+    list-style: none !important;
 }
 
-#lista_proveedores li:hover {
-    background-color: #007BFF;
-    color: white;
-}
-
-
-#lista_categorias {
-    position: absolute;       
-    top: 100%;                
-    left: 0;
-    width: 100%;              
-    background: white;
-    border: 1px solid #ccc;
-    border-top: none;
-    
-    max-height: 200px;        
-    overflow-y: auto;         
-    
-    z-index: 9999;           
-    
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-#lista_categorias li {
-    padding: 10px;
-    cursor: pointer;
-    font-size: 15px;
-    border-bottom: 1px solid #f2f2f2;
-}
-
-#lista_categorias li:hover {
+#lista_proveedores li:hover,
+#lista_categorias li:hover,
+#lista_clientes_mascota li:hover,
+#lista_veterinarios_mascota li:hover,
+#lista_clientes li:hover,
+#lista_mascotas li:hover,
+#lista_jaulas li:hover,
+#lista_productos_lote li:hover {
     background-color: #007BFF;
     color: white;
 }

@@ -1,6 +1,14 @@
 <?php
     // Iniciar la sesión al principio
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) 
+    {
+        session_start();
+    }
+    if (!isset($_SESSION['usuario']))
+    {
+        header("Location: ../views/login.php");
+        exit();
+    }
 
     // Obtener errores y datos enviados previamente (si existen)
     $errores = $_SESSION['errores'] ?? [];
@@ -225,13 +233,11 @@
                             Condición de pago *:
                         </label>
 
-                        <input
-                          type="text"
-                          class="campo"
-                          id="condicion_pago"
-                          name="condicion_pago"
-                          maxlength="60"
-                          value="<?= htmlspecialchars($old['condicion_pago'] ?? '') ?>">
+                        <select class="campo" id="condicion_pago" name="condicion_pago" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="Tarjeta" <?= (($old['condicion_pago'] ?? '') === 'Tarjeta' || ($old['condicion_pago'] ?? '') === 'Targeta') ? 'selected' : '' ?>>Tarjeta</option>
+                            <option value="Efectivo" <?= (strtolower($old['condicion_pago'] ?? '') === 'efectivo') ? 'selected' : '' ?>>Efectivo</option>
+                        </select>
                     </div>
 
                     <div>

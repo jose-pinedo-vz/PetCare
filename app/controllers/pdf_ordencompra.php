@@ -36,6 +36,8 @@ foreach ($pedido['productos'] as $producto) {
     $precio = (float) $producto['precio_unitario'];
     $subtotal = $cantidad * $precio;
     $totalCalculado += $subtotal;
+    $precioPdf = $precio > 0 ? $formatearDinero($precio) : 'Por confirmar';
+    $subtotalPdf = $precio > 0 ? $formatearDinero($subtotal) : 'Por confirmar';
     $unidad = trim(implode(' ', array_filter([
         $producto['contenido'] ?? '',
         $producto['unidad_medida'] ?? '',
@@ -47,8 +49,8 @@ foreach ($pedido['productos'] as $producto) {
         $escapar($producto['nombre']),
         $escapar($unidad),
         $cantidad,
-        $formatearDinero($precio),
-        $formatearDinero($subtotal)
+        $precioPdf,
+        $subtotalPdf
     );
 }
 
@@ -73,6 +75,9 @@ $correoPdf = $escapar($pedido['correo'] ?? 'No registrado');
 $telefonoPdf = $escapar($pedido['telefono'] ?? 'No registrado');
 $clavePdf = $escapar($pedido['clave_compra']);
 $totalPdf = $formatearDinero($pedido['total_estimado'] ?? $totalCalculado);
+$totalHtml = strtolower((string) $pedido['estado']) === 'entregado'
+    ? '<p class="total">Total de compra: ' . $totalPdf . '</p>'
+    : '';
 $logoContenido = file_get_contents(__DIR__ . '/../views/img/logo3.svg');
 if ($logoContenido === false) {
     error_log('No se pudo leer el logotipo de PetCare para generar el PDF de pedido.');
@@ -147,7 +152,7 @@ $htmlPdf = <<<HTML
         </tbody>
     </table>
 
-    <p class="total">Total estimado: {$totalPdf}</p>
+    {$totalHtml}
     <p class="nota">Documento generado desde el registro del pedido {$clavePdf}.</p>
 </body>
 </html>

@@ -133,6 +133,15 @@ if (session_status() === PHP_SESSION_NONE) {
         }
     }
 
+    $precioCompraLote = Productos::obtenerPrecioCompra((int) $id);
+    if (
+        $precioCompraLote > 0
+        && is_numeric($datos['precio_venta'])
+        && (float) $datos['precio_venta'] < $precioCompraLote
+    ) {
+        $errores[] = "El precio de venta no puede ser menor que el precio de compra registrado en lotes ($"
+            . number_format($precioCompraLote, 2, '.', ',') . ").";
+    }
 
     //La existencia minima es obligatorio
     if (empty($datos['existencia_minima'])) {

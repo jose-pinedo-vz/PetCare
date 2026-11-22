@@ -1,4 +1,10 @@
 <?php
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
 if (file_exists(__DIR__ . '/conexion_db.php')) {
     require_once __DIR__ . '/conexion_db.php';
 } elseif (file_exists(__DIR__ . '/../../conexion_db.php')) {

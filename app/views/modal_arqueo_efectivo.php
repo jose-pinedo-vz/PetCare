@@ -10,6 +10,11 @@
         <input type="hidden" name="accion" value="declarar_arqueo">
         <input type="hidden" name="corte" value="<?= (int)$corteAbierto['id'] ?>">
         <input type="hidden" id="efectivoContado" name="efectivo_contado" value="">
+        <nav class="corte-tabs" role="tablist" aria-label="Modo de captura del arqueo">
+            <button class="corte-tab activa" id="modoDenominacion" type="button" role="tab" aria-selected="true" aria-controls="panelDenominacion" data-modo="denominacion">Por denominación</button>
+            <button class="corte-tab" id="modoExacto" type="button" role="tab" aria-selected="false" aria-controls="panelExacto" tabindex="-1" data-modo="exacto">Monto exacto</button>
+        </nav>
+        <div id="panelDenominacion" role="tabpanel" aria-labelledby="modoDenominacion">
         <div class="corte-tabla-envoltura corte-arqueo-tabla">
             <table class="corte-tabla">
                 <thead><tr><th>Denominación</th><th>Cantidad</th><th class="corte-monto">Subtotal</th></tr></thead>
@@ -25,9 +30,20 @@
                     <tr><th scope="row">$2</th><td><input class="campo" type="number" min="0" step="1" value="0" data-cantidad data-valor="2" aria-label="Cantidad de monedas de dos pesos"></td><td class="corte-monto" data-subtotal>$0.00</td></tr>
                     <tr><th scope="row">$1</th><td><input class="campo" type="number" min="0" step="1" value="0" data-cantidad data-valor="1" aria-label="Cantidad de monedas de un peso"></td><td class="corte-monto" data-subtotal>$0.00</td></tr>
                     <tr><th scope="row">$0.50</th><td><input class="campo" type="number" min="0" step="1" value="0" data-cantidad data-valor="0.5" aria-label="Cantidad de monedas de cincuenta centavos"></td><td class="corte-monto" data-subtotal>$0.00</td></tr>
+                    <tr><th scope="row">$0.10</th><td><input class="campo" type="number" min="0" step="1" value="0" data-cantidad data-valor="0.1" aria-label="Cantidad de monedas de diez centavos"></td><td class="corte-monto" data-subtotal>$0.00</td></tr>
+                    <tr><th scope="row">$0.05</th><td><input class="campo" type="number" min="0" step="1" value="0" data-cantidad data-valor="0.05" aria-label="Cantidad de monedas de cinco centavos"></td><td class="corte-monto" data-subtotal>$0.00</td></tr>
+                    <tr><th scope="row">$0.01</th><td><input class="campo" type="number" min="0" step="1" value="0" data-cantidad data-valor="0.01" aria-label="Cantidad de monedas de un centavo"></td><td class="corte-monto" data-subtotal>$0.00</td></tr>
                 </tbody>
                 <tfoot><tr><th colspan="2">Total declarado</th><th class="corte-monto" id="totalArqueo">$0.00</th></tr></tfoot>
             </table>
+        </div>
+        </div>
+        <div id="panelExacto" role="tabpanel" aria-labelledby="modoExacto" hidden>
+            <div class="corte-dialog-campos">
+                <label class="label-campo" for="montoExacto">Total de efectivo contado</label>
+                <input class="campo" type="number" id="montoExacto" min="0" step="0.01" inputmode="decimal" placeholder="Ej. 1540.50" aria-describedby="ayudaMontoExacto">
+                <p class="corte-dialog-descripcion" id="ayudaMontoExacto">Escribe el total físico sin desglosar. Acepta centavos.</p>
+            </div>
         </div>
         <div class="corte-dialog-campos">
             <label class="label-campo" for="observacionesCorte">Observaciones (opcional)</label>

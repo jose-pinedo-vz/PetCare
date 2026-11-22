@@ -23,6 +23,27 @@ if (!$cliente) {
     header("Location: clientes.php");
     exit();
 }
+
+if (isset($_SESSION['oldnombre_clientes'])) {
+    $cliente['nombre'] = $_SESSION['oldnombre_clientes']; unset($_SESSION['oldnombre_clientes']);
+    $cliente['apellido'] = $_SESSION['oldApellido_clientes'] ?? $cliente['apellido']; unset($_SESSION['oldApellido_clientes']);
+    $cliente['fecha_nacimiento'] = $_SESSION['oldFechaNacimiento_clientes'] ?? $cliente['fecha_nacimiento']; unset($_SESSION['oldFechaNacimiento_clientes']);
+    $cliente['sexo'] = $_SESSION['oldSexo_clientes'] ?? $cliente['sexo']; unset($_SESSION['oldSexo_clientes']);
+    $cliente['rfc'] = $_SESSION['oldRfc_clientes'] ?? $cliente['rfc']; unset($_SESSION['oldRfc_clientes']);
+    $cliente['telefono'] = $_SESSION['oldTelefono_clientes'] ?? $cliente['telefono']; unset($_SESSION['oldTelefono_clientes']);
+    $cliente['telefono_alternativo'] = $_SESSION['oldTelefonoAlternativo_clientes'] ?? $cliente['telefono_alternativo']; unset($_SESSION['oldTelefonoAlternativo_clientes']);
+    $cliente['correo'] = $_SESSION['oldCorreo_clientes'] ?? $cliente['correo']; unset($_SESSION['oldCorreo_clientes']);
+    $cliente['calle'] = $_SESSION['oldCalle_clientes'] ?? $cliente['calle']; unset($_SESSION['oldCalle_clientes']);
+    $cliente['numero_exterior'] = $_SESSION['oldNumeroExterior_clientes'] ?? $cliente['numero_exterior']; unset($_SESSION['oldNumeroExterior_clientes']);
+    $cliente['numero_interior'] = $_SESSION['oldNumeroInterior_clientes'] ?? $cliente['numero_interior']; unset($_SESSION['oldNumeroInterior_clientes']);
+    $cliente['colonia'] = $_SESSION['oldColonia_clientes'] ?? $cliente['colonia']; unset($_SESSION['oldColonia_clientes']);
+    $cliente['ciudad'] = $_SESSION['oldCiudad_clientes'] ?? $cliente['ciudad']; unset($_SESSION['oldCiudad_clientes']);
+    $cliente['estado'] = $_SESSION['oldEstado_clientes'] ?? $cliente['estado']; unset($_SESSION['oldEstado_clientes']);
+    $cliente['codigo_postal'] = $_SESSION['oldCodigoPostal_clientes'] ?? $cliente['codigo_postal']; unset($_SESSION['oldCodigoPostal_clientes']);
+    $cliente['contacto_emergencia'] = $_SESSION['oldContactoEmergencia_clientes'] ?? $cliente['contacto_emergencia']; unset($_SESSION['oldContactoEmergencia_clientes']);
+    $cliente['telefono_emergencia'] = $_SESSION['oldTelefonoEmergencia_clientes'] ?? $cliente['telefono_emergencia']; unset($_SESSION['oldTelefonoEmergencia_clientes']);
+    $cliente['observaciones'] = $_SESSION['oldObservaciones_clientes'] ?? $cliente['observaciones']; unset($_SESSION['oldObservaciones_clientes']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -30,6 +51,7 @@ if (!$cliente) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Editar cliente</title>
+  <script src="js/codigo_Postal.js?v=2"></script>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 <body>
@@ -123,6 +145,17 @@ if (!$cliente) {
         <legend> Dirección / Domicilio</legend>
         <div class="grid-formulario">
           <div>
+            <label class="label-campo" for="codigo_postal">Código postal:</label>
+            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required 
+              value="<?php echo htmlspecialchars($cliente['codigo_postal']); ?>">
+          </div>
+
+          <div>
+            <label class="oculto" for="codigo_postal">Validar codigo postal</label><br>
+            <button type="button" onclick="codigoPostal(event)" class="btn" id="validar_codigo_postal">Validar codigo postal</button>
+          </div>
+
+          <div>
             <label class="label-campo" for="calle">Calle:</label>
             <input type="text" class="campo" id="calle" name="calle" maxlength="100" required 
               value="<?php echo htmlspecialchars($cliente['calle']); ?>">
@@ -142,14 +175,9 @@ if (!$cliente) {
 
           <div>
             <label class="label-campo" for="colonia">Colonia:</label>
-            <input type="text" class="campo" id="colonia" name="colonia" maxlength="60" required 
-              value="<?php echo htmlspecialchars($cliente['colonia']); ?>">
-          </div>
-
-          <div>
-            <label class="label-campo" for="codigo_postal">Código postal:</label>
-            <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required 
-              value="<?php echo htmlspecialchars($cliente['codigo_postal']); ?>">
+            <select class="campo" id="colonia" name="colonia" maxlength="60" required>
+              <option value="<?php echo htmlspecialchars($cliente['colonia']); ?>"><?php echo htmlspecialchars($cliente['colonia']); ?></option>
+            </select>
           </div>
 
           <div>
@@ -189,8 +217,8 @@ if (!$cliente) {
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="clientes.php">Cancelar</a>
-        <button type="submit" class="btn">Guardar cambios</button>
+        <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cambios</button>
       </div>
     </form>
   

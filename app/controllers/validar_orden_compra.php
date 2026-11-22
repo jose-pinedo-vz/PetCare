@@ -20,7 +20,7 @@ function validarCantidadesOrdenCompra(array $productos, array $cantidades): arra
     $errores = [];
 
     foreach ($productos as $id_prod => $p) {
-        $actual = obtenerProductoPorId((int) $id_prod);
+        $actual = obtenerProductoPorIdNew((int) $id_prod);
         if ($actual === null) {
             continue;
         }
@@ -34,7 +34,7 @@ function validarCantidadesOrdenCompra(array $productos, array $cantidades): arra
         $limiteMaximo = $limite['maximo'];
 
         if ($cantidad > $limite['maximo']) {
-            if ($limite === 0) {
+            if ($limiteMaximo === 0) {
                 $errores[$id_prod] = "El producto {$nombreProducto}, ya está en su existencia máxima ({$maxima}); no se puede pedir más.";
             } else {
                 $errores[$id_prod] = "No se puede pedir {$cantidad} del producto {$nombreProducto}: tiene {$existencia} en existencia y el máximo es {$maxima}, así que solo puedes pedir hasta {$limiteMaximo}.";

@@ -18,6 +18,11 @@
         $id_proveedor = (int) $_GET['proveedor'];
     }
 
+    if ($id_proveedor === null || $id_proveedor <= 0) {
+        header("Location: inventario.php");
+        exit;
+    }
+
     if (!isset($_SESSION['orden_proveedor']) || $_SESSION['orden_proveedor'] !== $id_proveedor) {
         $_SESSION['orden_proveedor'] = $id_proveedor;
         $_SESSION['orden_productos'] = [];
@@ -94,7 +99,7 @@
         $total += Productos::obtenerPrecioCompra((int) $id_prod) * $cant;
     }
 
-    $existencia_Minima = Productos::obtenerExistenciaMinima($id_proveedor);
+    $existencia_Minima = ($id_proveedor !== null && $id_proveedor > 0) ? Productos::obtenerExistenciaMinima($id_proveedor) : [];
 
     $mensajeError = $_SESSION['error_orden'] ?? null;
     unset($_SESSION['error_orden']);

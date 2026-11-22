@@ -1,6 +1,15 @@
 <?php
-// Mostrar nombre del usuario
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: inicio.php");
+    exit();
+}
 
 require_once __DIR__ . '/../models/Empleados.php';
 $empleados = Empleados::Listar_empleados_activos();

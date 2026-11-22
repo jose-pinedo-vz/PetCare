@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../controllers/citas.php';
+require_once __DIR__ . '/../models/PagosAdmin.php';
+include __DIR__ . '/pagar_vents.php'; 
+
 // Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
@@ -23,6 +26,25 @@ $usuario=$_SESSION['usuario'];
   <link rel="stylesheet" href="css/estilos_base_v2.css">
   <script src="js/agendarCitas.js"></script>
 </head>
+
+
+<!-- <dialog id="modalAnticipo">
+  <h2>Cobrar anticipo</h2>
+  <p>Cita #<span id="antIdCita"></span> — Total: $<span id="antTotal"></span></p>
+  <label>Método</label>
+  <select id="antMetodo">
+    <option value="efectivo">Efectivo</option>
+    <option value="tarjeta">Tarjeta</option>
+    <option value="transferencia">Transferencia</option>
+  </select>
+  <label>Monto</label>
+  <input type="number" id="antMonto" step="0.01">
+  <button type="button" id="btnConfirmarAnticipo">Confirmar</button>
+  <button type="button" id="btnCerrarAnticipo">Cancelar</button>
+</dialog> -->
+
+
+
 <body>
 
   <div class="layout">
@@ -46,6 +68,7 @@ $usuario=$_SESSION['usuario'];
     <!-- <form id="formCita" action="../controllers/citas.php" method="POST"> -->
     <form action="../controllers/citas.php?accion=agendar_cita" method="POST">
       <fieldset>
+        <div id="datosSesion" data-id-empleado="<?php echo htmlspecialchars((string)($_SESSION['id_empleado'] ?? $_SESSION['id_usuario'] ?? '')); ?>"></div>
         <legend>Datos de la cita</legend>
 
         <div class="grid-formulario">
@@ -82,16 +105,14 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="fecha">Fecha *:</label>
             <input type="date" class="campo" id="fecha" name="fecha" data-fecha="fecha" required
-
+              min="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime('+1 year')); ?>"
               value="<?php echo htmlspecialchars((string)($_SESSION['oldFecha'] ?? '')); unset($_SESSION['oldFecha']); ?>">
-
           </div>
 
           <div>
-            <label class="label-campo" for="Duración">Duración estimada (minutos) *:</label>
-            <input type="number" class="campo" id="duracion" name="duracion" required placeholder="Ej. 60" readonly
+            <label class="label-campo" for="duracion">Duración estimada (minutos) *:</label>
+            <input type="number" class="campo" id="duracion" name="duracion" required min="1" max="480" placeholder="Ej. 60" readonly
               value="<?php echo htmlspecialchars((string)($_SESSION['oldDuracion'] ?? '')); unset($_SESSION['oldDuracion']); ?>">
-
           </div>
 
           <div>
@@ -117,7 +138,7 @@ $usuario=$_SESSION['usuario'];
           </div>
 
           <div class="campo-completo">
-            <label class="label-campo" for="motivoConsulta">Motivo de consulta u observación *:</label>
+            <label class="label-campo" for="motivoConsulta">Observación *:</label>
             <input type="text" class="campo" id="motivoConsulta" name="motivoConsulta" placeholder="Ej. Revisión general, vacunación, malestar estomacal" required
 
               value="<?php echo htmlspecialchars((string)($_SESSION['oldMotivo'] ?? '')); unset($_SESSION['oldMotivo']); ?>">
@@ -171,11 +192,13 @@ $usuario=$_SESSION['usuario'];
 
 
         </div>
+       <button type="button" class="btn btn-chico" id="btnAnticipo">Anticipo</button>
       </fieldset>
 
       <div class="acciones-formulario">
         <a class="btn btn-secundario btn-chico" href="citas.php">Cancelar</a>
         <button type="submit" class="btn btn-chico">Guardar cita</button>
+        
       </div>
     </form>
 

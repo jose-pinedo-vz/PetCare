@@ -2,6 +2,13 @@
   if (!isset($_SESSION)) {
     session_start();
   }
+
+  // posible codigo sensible
+  if (!isset($_SESSION['usuario']))
+  {
+    header("Location: ../views/login.php");
+    exit();
+  }
   
 ?>
 

@@ -2,18 +2,33 @@
 // funcion encarfada de mostrar y ocultar los elemtos con el nombre espesificado
 // resice 2 datos, nombre a buscar y mostrar y las tarjetas o divs de los nombres
 
+function mostrarSeccion(nombre, evento) {
+  const secciones = {
+    espera: 'seccion_espera',
+    atendidas: 'seccion_atendidos',
+    canseladas: 'seccion_canselado',
+    no_asistio: 'seccion_no_asitio'
+  };
+  document.querySelectorAll('.seccion-panel').forEach(s => s.classList.add('oculto'));
+  document.getElementById(secciones[nombre]).classList.remove('oculto');
+  document.querySelectorAll('.btn_active').forEach(b => b.classList.remove('active'));
+  evento.currentTarget.classList.add('active');
+}
+
+
+
 function mostrarNombre(nombre,tarjetas)
 {
+    const normalizar = (s) => (s || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     if(nombre)
     {
         nombre.addEventListener('input', (evento) => 
         {
-            const valor = evento.target.value.toLowerCase().trim();
-            console.log('Valor ingresado:', valor);
+            const valor = normalizar(evento.target.value);
             tarjetas.forEach(tarjeta =>
                 {
-                    const nombreDuenio = tarjeta.getAttribute('data-nombre');
-                    if (nombreDuenio && nombreDuenio.toLowerCase().includes(valor))
+                    const nombreDuenio = normalizar(tarjeta.getAttribute('data-nombre'));
+                    if (nombreDuenio && nombreDuenio.includes(valor))
                     {
                         tarjeta.classList.remove("oculto");
                     }
@@ -26,8 +41,6 @@ function mostrarNombre(nombre,tarjetas)
         });
     }
 }
-
-
 
 // escuchardor de el nombre dentro de citas
 // manda 2 datos nombres a mostrart y los divs donde estan
@@ -43,23 +56,23 @@ document.addEventListener('DOMContentLoaded', function()
 
 
 // ocultar citas entre atendidas y en espera
-function mostrarSeccion(tipo, evt)
-{
-    const seccionEspera = document.getElementById("seccion_espera");
-    const seccionAtendidos = document.getElementById('seccion_atendidos');
-    const botones = document.querySelectorAll('.btn_active');
+// function mostrarSeccion(tipo, evt)
+// {
+//     const seccionEspera = document.getElementById("seccion_espera");
+//     const seccionAtendidos = document.getElementById('seccion_atendidos');
+//     const botones = document.querySelectorAll('.btn_active');
 
-    botones.forEach(btn => btn.classList.remove('active'));
-    evt.target.classList.add('active');
+//     botones.forEach(btn => btn.classList.remove('active'));
+//     evt.target.classList.add('active');
 
-    if (tipo === 'espera') {
-        seccionEspera.classList.remove('oculto');
-        seccionAtendidos.classList.add('oculto');
-    } else if (tipo === 'atendidas') {
-        seccionAtendidos.classList.remove('oculto');
-        seccionEspera.classList.add('oculto');
-    }
-}
+//     if (tipo === 'espera') {
+//         seccionEspera.classList.remove('oculto');
+//         seccionAtendidos.classList.add('oculto');
+//     } else if (tipo === 'atendidas') {
+//         seccionAtendidos.classList.remove('oculto');
+//         seccionEspera.classList.add('oculto');
+//     }
+// }
 
 
 
@@ -186,7 +199,7 @@ function mostrarModalCancelarCita(idCita)
             </fieldset>
             <div class="acciones-formulario">
                 <button type="button" class="btn-secundario" onclick="window.location.reload()">Regresar</button>
-                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Contirunar</button>
+                <button type="button" class="btn" onclick="ejecutarFetchCancelacion(${idCita})">Continuar</button>
             </div>
         </div>
     `;
@@ -197,6 +210,47 @@ async function ejecutarFetchCancelacion(idCita) {
         method: "GET"
     });
     
+    if (respuesta.ok) {
+        window.location.reload();
+    }
+}
+
+
+
+
+
+// no asistio algien
+async function noAsistioCita(idCita, event)
+{
+    event.preventDefault();
+    mostrarModalNoAsistio(idCita);
+}
+
+function mostrarModalNoAsistio(idCita)
+{
+    const contenedor = document.getElementById('contenedor-modal');
+    const main = document.getElementById('mainAOcultar');
+
+    main.classList.add('oculto');
+    contenedor.innerHTML = `
+        <div class="tarjeta">
+            <fieldset>
+                <p>¿Marcar esta cita como "No asistió"?
+                    Esta acción no se puede deshacer.
+                </p>
+            </fieldset>
+            <div class="acciones-formulario">
+                <button type="button" class="btn-secundario" onclick="window.location.reload()">Regresar</button>
+                <button type="button" class="btn" onclick="ejecutarFetchNoAsistio(${idCita})">Continuar</button>
+            </div>
+        </div>
+    `;
+}
+
+async function ejecutarFetchNoAsistio(idCita) {
+    const respuesta = await fetch(`../controllers/citas.php?accion=noAsistio&id_cita=${encodeURIComponent(idCita)}`, {
+        method: "GET"
+    });
     if (respuesta.ok) {
         window.location.reload();
     }

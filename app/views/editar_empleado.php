@@ -1,9 +1,17 @@
 <?php
-require_once __DIR__ . '/../models/Empleados.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+    header("Location: inicio.php");
+    exit();
+}
+
+require_once __DIR__ . '/../models/Empleados.php';
 
 $idEmpleado = filter_input(INPUT_GET, 'id_empleado', FILTER_VALIDATE_INT);
 
@@ -193,13 +201,13 @@ unset($_SESSION['error']);
 
           <div>
             <label class="label-campo" for="ciudad">Ciudad *:</label>
-            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required readonly
+            <input type="text" class="campo" id="ciudad" name="ciudad" maxlength="60" required readonly placeholder="Se completa automáticamente"
               value="<?= e($ciudad) ?>">
           </div>
 
           <div>
             <label class="label-campo" for="estado">Estado *:</label>
-            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required readonly
+            <input type="text" class="campo" id="estado" name="estado" maxlength="60" required readonly placeholder="Se completa automáticamente"
               value="<?= e($estado) ?>">
           </div>
         </div>
@@ -216,11 +224,13 @@ unset($_SESSION['error']);
               <option value="Veterinario" <?= $puesto === 'Veterinario' ? 'selected' : '' ?>>Veterinario</option>
               <option value="Vendedor"      <?= $puesto === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
               <option value="Estilista"     <?= $puesto === 'Estilista'     ? 'selected' : '' ?>>Estilista</option>
+              <option value="Recepcionista" <?= $puesto === 'Recepcionista' ? 'selected' : '' ?>>Recepcionista</option>
+              <option value="Hotelero"      <?= $puesto === 'Hotelero'      ? 'selected' : '' ?>>Hotelero</option>
             </select>
           </div>
 
           <div>
-            <label class="label-campo" for="especialidad">Especialidad:</label>
+            <label class="label-campo" for="especialidad">Especialidad<span id="ast_especialidad"></span>:</label>
             <input type="text" class="campo" id="especialidad" name="especialidad" minlength="3" maxlength="50"
               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}([\s\-][A-Za-zÁÉÍÓÚáéíóúÑñ]{2,})*$"
               title="Solo letras y espacios (sin números ni símbolos especiales)"
@@ -228,7 +238,7 @@ unset($_SESSION['error']);
           </div>
 
           <div>
-            <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional:</label>
+            <label class="label-campo" for="num_cedula_profesional">Número de cédula profesional<span id="ast_num_cedula"></span>:</label>
             <input type="text" class="campo" id="num_cedula_profesional" name="num_cedula_profesional" minlength="6" maxlength="8"
               pattern="^[0-9]{6,8}$" title="Entre 6 y 8 dígitos numéricos"
               value="<?= e($cedula) ?>">
@@ -252,8 +262,8 @@ unset($_SESSION['error']);
       </fieldset>
 
       <div class="acciones-formulario">
-        <a class="btn-secundario" href="empleados.php">Cancelar</a>
-        <button type="submit" class="btn">Guardar cambios</button>
+        <a class="btn btn-secundario btn-chico" href="empleados.php">Cancelar</a>
+        <button type="submit" class="btn btn-chico">Guardar cambios</button>
       </div>
 
     </form>
@@ -266,6 +276,31 @@ unset($_SESSION['error']);
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const puesto = document.getElementById('puesto');
+    const especialidad = document.getElementById('especialidad');
+    const cedula = document.getElementById('num_cedula_profesional');
+    const astEsp = document.getElementById('ast_especialidad');
+    const astCedu = document.getElementById('ast_num_cedula');
+
+    function actualizarCamposVeterinario(){
+        const esVet = puesto.value === 'Veterinario';
+
+        especialidad.required = esVet;
+        cedula.required = esVet;
+
+        astEsp.textContent = esVet ? ' *' : '';
+        astCedu.textContent = esVet ? ' *' : '';
+
+        especialidad.placeholder = esVet ? 'Obligatorio' : 'Solo aplica para veterinarios';
+        cedula.placeholder = esVet ? 'Obligatorio' : 'Solo aplica para veterinarios';
+    }
+    puesto.addEventListener('change', actualizarCamposVeterinario);
+    actualizarCamposVeterinario();
+});
+</script>
 
 </body>
 </html>

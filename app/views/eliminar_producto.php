@@ -1,6 +1,6 @@
 <?php
 // Validar si realmente llegaron los datos por la URL (GET)
-if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['imagen'])) {
+if (!isset($_GET['id']) || !isset($_GET['nombre'])) {
     // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
     header("Location: inventario.php");
     exit();
@@ -9,7 +9,7 @@ if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['imagen'])) {
 // Si sí llegaron, los guardamos con seguridad
 $id_producto = (int) $_GET['id'];
 $nombre = $_GET['nombre'];
-$imagen = $_GET['imagen'];
+//$imagen = $_GET['imagen'];
 ?>
 
 <!DOCTYPE html>

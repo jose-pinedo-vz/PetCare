@@ -216,3 +216,24 @@ body {
 .pay-btn:hover {
   background-color: #1a202c;
 }
+
+.create-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 12px;
+    background: #10b981;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.create-btn:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}

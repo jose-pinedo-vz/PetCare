@@ -1,9 +1,10 @@
 <?php
-// Carga el modelo
-require_once __DIR__ . '/../models/Ventas.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Datos fijos hasta que haya login
-const ID_EMPLEADO_VENTA = 1;
+require_once __DIR__ . '/../models/ventas.php';
+
 const ID_CLIENTE_PUBLICO = 11;
 
 $accion = $_GET['accion'] ?? '';
@@ -22,6 +23,29 @@ if ($accion === 'buscar_productos') {
     ventaDetalle();
 } elseif ($accion === 'guardar_factura') {
     ventaGuardarFactura();
+} elseif ($accion === 'estado_caja') {
+    ventaEstadoCaja();
+} elseif ($accion === 'citas_por_cobrar') {
+    ventaCitasPorCobrar();
+}
+
+// Citas con saldo pendiente para cobrarlas desde el punto de venta
+function ventaCitasPorCobrar()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    try {
+        require_once __DIR__ . '/../models/PagosAdmin.php';
+        $lista = PagosAdmin::citasPorCobrar(ConexionDB::obtenerConexion());
+        echo json_encode(array_map(fn($f) => [
+            'id_cita' => (int)$f['id'], 'id_servicio' => (int)$f['id_servicio'], 'folio' => $f['folio'],
+            'cliente' => $f['cliente'], 'mascota' => $f['mascota'], 'servicio' => $f['servicio'],
+            'categoria' => $f['categoria'], 'saldo' => $f['saldo']
+        ], $lista));
+    } catch (Throwable $e) {
+        error_log('citas_por_cobrar: ' . $e->getMessage());
+        echo json_encode([]);
+    }
+    exit;
 }
 
 // Lista el historial con filtros y paginas
@@ -144,17 +168,54 @@ function ventaGuardar()
     // Datos de tarjeta o transferencia; solo se pasan al modelo, nunca se registran
     $datosPago = (is_array($datos) && is_array($datos['datos_pago'] ?? null)) ? $datos['datos_pago'] : [];
 
+    $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
+    if ($idEmpleado <= 0) {
+        echo json_encode(['ok' => false, 'error' => 'No hay una sesión de empleado activa. Inicia sesión para continuar.']);
+        exit;
+    }
+
+    // Cliente por telefono; si va vacio es publico en general
+    $telefonoCliente = preg_replace('/\D/', '', (string)($datos['telefono_cliente'] ?? ''));
+    $idCliente = ID_CLIENTE_PUBLICO;
+    if ($telefonoCliente !== '') {
+        $idCliente = Ventas::buscarClientePorTelefono($telefonoCliente);
+        if ($idCliente === null) {
+            echo json_encode(['ok' => false, 'error' => 'No existe un cliente con ese telefono. Deja el campo vacio para publico en general.']);
+            exit;
+        }
+    }
+
     $resultado = Ventas::guardarVenta(
         $items,
         $formaPago,
         $recibido,
-        ID_EMPLEADO_VENTA,
-        ID_CLIENTE_PUBLICO,
+        $idEmpleado,
+        $idCliente,
         $servicios,
         $datosPago
     );
     unset($datos, $datosPago);
 
     echo json_encode($resultado);
+    exit;
+}
+
+function ventaEstadoCaja()
+{
+    header('Content-Type: application/json; charset=utf-8');
+    $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
+    if ($idEmpleado <= 0) {
+        echo json_encode(['ok' => false, 'abierta' => false, 'error' => 'Sin sesión de empleado']);
+        exit;
+    }
+    require_once __DIR__ . '/../models/conexion_db.php';
+    require_once __DIR__ . '/../models/CorteCaja.php';
+    try {
+        $db = ConexionDB::obtenerConexion();
+        $corte = CorteCaja::obtenerCorteAbierto($db, $idEmpleado);
+        echo json_encode(['ok' => true, 'abierta' => $corte !== null, 'corte' => $corte]);
+    } catch (Exception $e) {
+        echo json_encode(['ok' => false, 'abierta' => false, 'error' => $e->getMessage()]);
+    }
     exit;
 }

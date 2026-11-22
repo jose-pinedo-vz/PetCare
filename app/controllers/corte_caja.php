@@ -15,7 +15,10 @@ require_once __DIR__ . '/../models/CorteCaja.php';
 
 $db = ConexionDB::obtenerConexion();
 $idEmpleado = isset($_SESSION['id_empleado']) ? (int)$_SESSION['id_empleado'] : 0;
-$esAdministrador = strtolower((string)($_SESSION['rol'] ?? '')) === 'admin';
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+$motivoAccesoCaja = CorteCaja::motivoDenegacionAcceso($db, $idEmpleado, $rolSesion);
+$puedeOperarCaja = $motivoAccesoCaja === null;
+$esAdministrador = $rolSesion === 'admin' && $puedeOperarCaja;
 $periodo = $_POST['periodo'] ?? $_GET['periodo'] ?? date('Y-m');
 if (!is_string($periodo) || !preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $periodo)) {
     $periodo = date('Y-m');
@@ -79,6 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $accion = $leerTexto($_POST, 'accion');
+        if (!$puedeOperarCaja) {
+            throw new DomainException('Tu usuario no tiene permiso para abrir ni operar una caja.');
+        }
         if ($idEmpleado < 1 && !$esAdministrador) {
             throw new DomainException('Tu usuario no está asociado a un empleado.');
         }
@@ -88,9 +94,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($idEmpleado < 1) {
                     throw new DomainException('Tu usuario no está asociado a un empleado.');
                 }
-                CorteCaja::crearCorte($db, $idEmpleado, $leerTexto($_POST, 'turno'));
+                $fondoPost = $_POST['fondo_inicial'] ?? null;
+                $fondoInicial = (is_scalar($fondoPost) && is_numeric($fondoPost)) ? (float)$fondoPost : CorteCaja::FONDO_INICIAL;
+                CorteCaja::crearCorte($db, $idEmpleado, $leerTexto($_POST, 'turno'), $fondoInicial);
                 unset($_SESSION['corte_arqueo']);
-                $_SESSION['corte_flash'] = ['tipo' => 'exito', 'mensaje' => 'Caja abierta con fondo inicial de $1,000.00.'];
+                $_SESSION['corte_flash'] = ['tipo' => 'exito', 'mensaje' => 'Caja abierta con fondo inicial de $' . number_format($fondoInicial, 2) . '.'];
                 break;
 
             case 'movimiento':
@@ -190,7 +198,9 @@ if (empty($_SESSION['csrf_corte'])) {
     $_SESSION['csrf_corte'] = bin2hex(random_bytes(32));
 }
 $csrfToken = $_SESSION['csrf_corte'];
-$corteAbierto = $idEmpleado > 0 ? CorteCaja::obtenerCorteAbierto($db, $idEmpleado) : null;
+$corteAbierto = $puedeOperarCaja && $idEmpleado > 0
+    ? CorteCaja::obtenerCorteAbierto($db, $idEmpleado)
+    : null;
 $movimientosCorte = $corteAbierto
     ? CorteCaja::listarMovimientos($db, (int)$corteAbierto['id'])
     : [];
@@ -209,7 +219,7 @@ $estadoHistorial = is_string($_GET['estado'] ?? null) && in_array($_GET['estado'
     ? $_GET['estado']
     : 'todos';
 $empleadoHistorial = $esAdministrador ? ($leerEntero($_GET, 'empleado') ?: null) : null;
-$historialCortes = $idEmpleado > 0 || $esAdministrador
+$historialCortes = $puedeOperarCaja && ($idEmpleado > 0 || $esAdministrador)
     ? CorteCaja::listarCortes(
         $db,
         $inicioPeriodo,
@@ -291,7 +301,7 @@ $pagosMensuales = $esAdministrador
 $detalleCorte = null;
 $movimientosDetalle = [];
 $detalleId = $leerEntero($_GET, 'detalle');
-if ($detalleId) {
+if ($detalleId && $puedeOperarCaja) {
     $detalleCorte = CorteCaja::obtenerDetalle($db, $detalleId, $idEmpleado, $esAdministrador);
     if ($detalleCorte) {
         $movimientosDetalle = CorteCaja::listarMovimientos($db, $detalleId);

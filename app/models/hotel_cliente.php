@@ -104,6 +104,28 @@ class HotelCliente
 
             $db->beginTransaction();
 
+            // El mismo cliente no puede registrar otra reservación para esta mascota
+            // mientras exista Por pagar/Pagado o cualquier estado activo equivalente.
+            $stmt = $db->prepare(
+                "SELECT 1 FROM hotel
+                 WHERE cliente = ?
+                   AND mascota = ?
+                   AND LOWER(TRIM(estado)) IN (
+                       'por pagar',
+                       'pagado',
+                       'activo',
+                       'pendiente de pago',
+                       'pendiente cartilla',
+                       'confirmada'
+                   )
+                 LIMIT 1"
+            );
+            $stmt->execute([$idCliente, (int)$mascota['id_mascota']]);
+            if ($stmt->fetchColumn() !== false) {
+                $db->rollBack();
+                return ['exito' => false, 'mensaje' => 'Ya tienes una reservación registrada para esta mascota.'];
+            }
+
             // La misma mascota no puede tener dos reservaciones que se crucen
             $stmt = $db->prepare(
                 "SELECT 1 FROM hotel h

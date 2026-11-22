@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!input || !lista || !campoId) return;
 
+        lista.style.display = 'none';
+
         const opciones = Array.from(lista.querySelectorAll('li'));
 
         function filtrarOpciones() {
@@ -35,7 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
             lista.style.display = coincidencias > 0 ? 'block' : 'none';
         }
 
-        input.addEventListener('focus', filtrarOpciones);
+        input.addEventListener('focus', () => {
+            if (campoId.value !== '' && input.value.trim() !== '') {
+                lista.style.display = 'none';
+                return;
+            }
+            filtrarOpciones();
+        });
+
         input.addEventListener('input', () => {
             campoId.value = '';
             filtrarOpciones();
@@ -52,6 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('click', (evento) => {
             if (!input.parentElement.contains(evento.target)) {
+                lista.style.display = 'none';
+            }
+        });
+
+        input.addEventListener('keydown', (evento) => {
+            if (evento.key === 'Escape') {
                 lista.style.display = 'none';
             }
         });

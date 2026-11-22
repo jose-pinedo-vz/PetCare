@@ -717,6 +717,62 @@
   }
 }
 
+.jaula-dialog {
+  width: min(460px, calc(100% - 32px));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--white);
+  color: var(--primary-dark);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+}
+
+.jaula-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.jaula-dialog-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  background-color: var(--primary-dark);
+  color: var(--white);
+}
+
+.jaula-dialog-encabezado h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.jaula-dialog-cerrar {
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--white);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.jaula-dialog-contenido {
+  padding: 22px;
+}
+
+.jaula-dialog-nota {
+  margin: 16px 0 0;
+  color: var(--texto-suave);
+  font-size: 13px;
+}
+
+.jaula-dialog-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 /* ORDEN DE COMPRA: interfaz de sugerencias, catálogo y selección. */
 .orden-compra-acciones {
   display: flex;

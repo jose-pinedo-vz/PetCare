@@ -32,17 +32,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
     else
     {
         // Encriptamos la contraseña para mantener la seguridad
-        $password_hash = $password;
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
         
         // Rol predeterminado para nuevos registros y estado activo
         $rol = 'cliente'; 
-        $permisos = 'lectura';
         $estado = 'activo';
         $empleado_asociado = null;
 
         try
         {
-            ConexionDB::insertarUsuario($conexion, $usuario, $password_hash, $empleado_asociado, $rol, $permisos, $estado);
+            ConexionDB::insertarUsuario($conexion, $usuario, $password_hash, $empleado_asociado, $rol, $estado);
             
             $_SESSION['mensaje'] = "¡Cuenta creada con éxito! Ya puedes iniciar sesión.";
             header("Location: ../views/login.php");

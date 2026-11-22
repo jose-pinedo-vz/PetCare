@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles = UsuariosDB::empleados_disponibles();
-// Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
@@ -11,11 +8,17 @@ if (!isset($_SESSION['usuario']))
   header("Location: ../views/login.php");
   exit();
 }
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
+{
+  header("Location: inicio.php");
+  exit();
+}
+require_once __DIR__ . '/../models/usuarios_db.php';
+$empleados_disponibles = UsuariosDB::empleados_disponibles();
 $mensaje = $_SESSION['mensaje'] ?? '';
 $error = $_SESSION['error'] ?? '';
 unset($_SESSION['mensaje'], $_SESSION['error']);
 $usuario = $_SESSION['usuario'];
-// Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -27,7 +30,7 @@ $usuario = $_SESSION['usuario'];
 </head>
 <body>
     <div class="layout">
-        <?php $paginaActiva = 'adopcion';
+        <?php $paginaActiva = 'usuarios';
         include __DIR__ . '/layout/sidebar.php'; ?>
   
         <main>
@@ -62,8 +65,8 @@ $usuario = $_SESSION['usuario'];
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
                                 <?php foreach ($empleados_disponibles as $emp): ?>
-                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>">
-                                        <?= htmlspecialchars($emp['nombre']); ?>
+                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>" data-puesto="<?= htmlspecialchars($emp['puesto']); ?>">
+                                        <?= htmlspecialchars($emp['nombre']); ?> — <?= htmlspecialchars($emp['puesto']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -76,25 +79,16 @@ $usuario = $_SESSION['usuario'];
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
                             <option value="admin">Administrador</option>
+                            <option value="gerente">Gerente</option>
                             <option value="veterinario">Veterinario</option>
                             <option value="vendedor">Vendedor</option>
                             <option value="estilista">Estilista</option>
                             <option value="recepcionista">Recepcionista</option>
                             <option value="hotelero">Hotelero</option>
+                            <option value="cajero">Cajero</option>
                         </select>
                     </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Permisos:</label>
-                        <select name="permisos" class="campo" multiple size="1">
-                            <option value="todos">Todo</option>
-                            <option value="lectura">Lectura</option>
-                            <option value="modificar">Modificar</option>
-                            <option value="eliminar">Eliminar</option>
-                            <option value="insertar">Insertar</option>
-                        </select>
-                    </div>
-
+                    
                     <div style="margin-bottom: 20px;">
                         <label class="label-campo">Estado:</label>
                         <select name="estado" class="campo">
@@ -112,6 +106,41 @@ $usuario = $_SESSION['usuario'];
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    (() => {
+      const rol = document.querySelector('[name="rol"]');
+      const empleado = document.querySelector('[name="empleado_asociado"]');
+      if (!rol || !empleado) return;
 
+      const rolPorPuesto = {
+        'administrador': 'admin',
+        'gerente': 'gerente',
+        'veterinario': 'veterinario',
+        'veterinario/a': 'veterinario',
+        'vendedor': 'vendedor',
+        'estilista': 'estilista',
+        'recepcionista': 'recepcionista',
+        'hotelero': 'hotelero',
+        'cajero': 'cajero'
+      };
+
+      function sincronizarRolConEmpleado() {
+        const opcionSeleccionada = empleado.options[empleado.selectedIndex];
+        const puesto = (opcionSeleccionada?.dataset?.puesto || '').trim().toLowerCase();
+        const rolDetectado = rolPorPuesto[puesto];
+
+        if (rolDetectado && rol.querySelector(`option[value="${rolDetectado}"]`)) {
+          rol.value = rolDetectado;
+        }
+      }
+
+      empleado.addEventListener('change', sincronizarRolConEmpleado);
+
+      // Si al abrir el formulario ya viene un empleado seleccionado, sincroniza el rol
+      if (empleado.value) {
+        sincronizarRolConEmpleado();
+      }
+    })();
+  </script>
 </body>
 </html>
