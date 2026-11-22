@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE)
     
 }
 require_once '../models/conexion_db.php';
+require_once '../models/Cliente.php';
 $conexion=ConexionDB::obtenerConexion();
 $action=$_GET['action'] ?? '';
 
@@ -79,8 +80,32 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
         }
         else
         {
-            $error="usuario incorrectos.";
+            // no es empleado: se busca entre los clientes (su usuario y contrasena estan en la tabla clientes)
+            $cliente=Cliente::obtenerPorUsuario($usuario);
+
+            if ($cliente && password_verify($password, $cliente['contrasena']))
+            {
+                session_regenerate_id(true);
+                session_unset();
+                // solo id_cliente: sin $_SESSION['usuario'] no puede abrir las paginas de empleados
+                $_SESSION['id_cliente']=$cliente['id_cliente'];
+                $_SESSION['cliente_nombre']=$cliente['nombre'];
+                header("Location: ../views/cliente/mis_mascotas.php");
+                exit();
+            }
+            else
+            {
+                $error="usuario o contraseña incorrectos.";
+            }
         }
     }
+}
+
+// si el intento vino del formulario del cliente, el error se muestra ahi y con un mensaje unico
+if ($error !== '' && ($_POST['origen'] ?? '') === 'cliente')
+{
+    $_SESSION['errores']=['Usuario o contraseña incorrectos.'];
+    header("Location: ../views/cliente/iniciar_sesion.php");
+    exit();
 }
 require_once '../views/login.php';

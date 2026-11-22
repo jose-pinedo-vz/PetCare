@@ -149,6 +149,13 @@ class Cliente
                 return ['exito' => false, 'id' => null, 'mensaje' => 'Ese nombre de usuario ya está en uso.'];
             }
 
+            // el login es compartido: tampoco puede coincidir con el usuario de un empleado
+            $existeEmpleado = $db->prepare("SELECT COUNT(*) FROM usuarios WHERE usuario = ?");
+            $existeEmpleado->execute([$datos['usuario']]);
+            if ((int) $existeEmpleado->fetchColumn() > 0) {
+                return ['exito' => false, 'id' => null, 'mensaje' => 'Ese nombre de usuario ya está en uso.'];
+            }
+
             $id = self::generarIdCliente($db);
 
             $sql = "INSERT INTO clientes (
