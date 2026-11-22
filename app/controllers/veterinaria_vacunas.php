@@ -28,7 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($nombre === '' || mb_strlen($nombre) > 50 || !$especie || $especie <= 0) {
             $_SESSION['error'] = 'Datos inválidos para agregar la vacuna.';
-        } 
+        } else {
+            $resultado = Veterinaria::agregarVacuna($nombre, $especie);
+        }
 
     } elseif ($accion === 'editarVacuna') {
 
@@ -38,7 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$id || $id <= 0 || $nombre === '' || mb_strlen($nombre) > 50 || !$especie || $especie <= 0) {
             $_SESSION['error'] = 'Datos inválidos para editar la vacuna.';
-        } 
+        } else {
+            $resultado = Veterinaria::editarVacuna($id, $nombre, $especie);
+        }
 
     } elseif ($accion === 'eliminarVacuna') {
 
@@ -46,6 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$id || $id <= 0) {
             $_SESSION['error'] = 'Vacuna inválida.';
+        } else {
+            $resultado = Veterinaria::eliminarVacuna($id);
         }
     }
 
