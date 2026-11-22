@@ -1,8 +1,7 @@
 <?php
-// Guarda los cambios de "Mi perfil" del cliente: datos de contacto o contraseña
 session_start();
 
-// Solo clientes con sesión y solo por POST
+
 if (empty($_SESSION['id_cliente'])) {
     header('Location: ../views/cliente/iniciar_sesion.php');
     exit;
@@ -14,11 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 require_once __DIR__ . '/../models/Cliente.php';
 
-// El cliente SIEMPRE sale de la sesión, nunca del formulario
 $idCliente = (int) $_SESSION['id_cliente'];
 $accion = $_POST['accion'] ?? '';
 
-// Regresa a Mi perfil con errores (y lo escrito, para no perderlo)
+
 function regresarConErrores(array $errores, string $destino, array $old = []): void
 {
     $_SESSION['perfil_errores'] = $errores;
@@ -119,6 +117,5 @@ if ($accion === 'contrasena') {
     exit;
 }
 
-// Acción desconocida
 header('Location: ../views/cliente/mi_perfil.php');
 exit;
