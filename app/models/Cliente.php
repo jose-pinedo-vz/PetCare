@@ -191,6 +191,47 @@ class Cliente
         }
     }
 
+    // Mi perfil (cliente): actualiza solo los datos de contacto que el cliente puede cambiar
+    public static function actualizarPerfil(int $id, array $datos): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "UPDATE clientes SET
+                    nombre = ?, apellido = ?, telefono = ?, correo = ?, calle = ?,
+                    contacto_emergencia = ?, telefono_emergencia = ?
+                 WHERE id_cliente = ?"
+            );
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                $datos['direccion'] ?? '',
+                $datos['contacto_emergencia'],
+                $datos['telefono_emergencia'],
+                $id
+            ]);
+            return ['exito' => true, 'mensaje' => 'Tus datos se guardaron correctamente.'];
+        } catch (Exception $e) {
+            error_log('Error en Cliente::actualizarPerfil: ' . $e->getMessage());
+            return ['exito' => false, 'mensaje' => 'No se pudieron guardar tus datos. Intenta de nuevo.'];
+        }
+    }
+
+    // Mi perfil (cliente): cambia la contraseña (recibe la contraseña ya encriptada)
+    public static function actualizarContrasena(int $id, string $contrasenaHash): bool
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("UPDATE clientes SET contrasena = ? WHERE id_cliente = ?");
+            return $stmt->execute([$contrasenaHash, $id]);
+        } catch (Exception $e) {
+            error_log('Error en Cliente::actualizarContrasena: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public static function eliminar(int $id): bool
     {
         try {
