@@ -35,7 +35,8 @@ $paginaActiva = '';
                 </div>
             <?php endif; ?>
 
-            <form action="../../controllers/cliente_validar_login.php" method="post">
+            <form action="../../controllers/Login.php" method="post">
+                <input type="hidden" name="origen" value="cliente">
                 <div class="formulario-rejilla">
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="usuario">Usuario</label>
@@ -44,7 +45,7 @@ $paginaActiva = '';
 
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="contrasena">Contraseña</label>
-                        <input class="campo__entrada" type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+                        <input class="campo__entrada" type="password" id="contrasena" name="password" placeholder="••••••••" required>
                     </div>
                 </div>
 

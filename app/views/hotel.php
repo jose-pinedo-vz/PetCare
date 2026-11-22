@@ -14,8 +14,9 @@ if (!in_array($rolSesion, ['admin', 'gerente', 'hotelero', 'recepcionista'], tru
 
 require_once __DIR__ . '/../models/Hotel.php';
 
-$resultadoActualizacion = Hotel::desactivarReservacionesVencidas();
-$errorActualizacion = isset($resultadoActualizacion['error']);
+if (empty($_SESSION['csrf_hotel'])) {
+    $_SESSION['csrf_hotel'] = bin2hex(random_bytes(32));
+}
 $jaulas = Hotel::obtenerJaulasParaListado();
 $reservaciones = Hotel::obtenerReservacionesParaListado();
 $errorJaulas = is_array($jaulas) && isset($jaulas['error']);
@@ -58,8 +59,19 @@ foreach ($jaulas as &$jaula) {
 unset($jaula);
 
 $estadosReservacion = [
+    'por pagar' => 'Por pagar',
+    'pagado' => 'Pagado',
+    'cancelado' => 'Cancelado',
+    'no asistio' => 'No asistio',
+    'finalizado' => 'Finalizado',
+    'cancelada' => 'Cancelada',
+    'pendiente cartilla' => 'Pendiente cartilla',
+    'vencida' => 'Vencida',
+    'abandonada' => 'Abandonada',
     'activo' => 'Activo',
     'inactivo' => 'Inactivo',
+    'pendiente de pago' => 'Pendiente de pago',
+    'confirmada' => 'Confirmada',
 ];
 ?>
 <!DOCTYPE html>
@@ -89,10 +101,6 @@ $estadosReservacion = [
             <div class="encabezado-pagina">
                 <h1>Hotel de mascotas</h1>
             </div>
-            <?php if ($errorActualizacion): ?>
-                <p class="msg-error" role="alert"><?= $escapar($resultadoActualizacion['error']) ?></p>
-            <?php endif; ?>
-
             <div class="tarjeta">
                 <div class="barra-acciones-busqueda">
                     <h2>Disponibilidad de jaulas</h2>
@@ -100,6 +108,7 @@ $estadosReservacion = [
                         <a class="btn" href="reservacion_hotel.php">+ Nueva reservación</a>
                     </div>
                 </div>
+                <p id="mensaje-acciones-hotel" role="alert" hidden></p>
 
                 <div class="inventario-resumen">
                     <div class="inventario-tarjeta">
@@ -121,7 +130,9 @@ $estadosReservacion = [
                     <p><?= count($jaulas) ?></p>
                 </div>
                 <br>
-
+                <div class="barra-acciones">
+                        <button class="btn" type="button" id="btn-abrir-modal-jaula">+ Agregar jaula</button>
+                    </div>
                 <?php if ($errorJaulas): ?>
                     <p class="msg-error" role="alert"><?= $escapar($mensajeErrorJaulas) ?></p>
                 <?php elseif (!$jaulas): ?>
@@ -136,6 +147,7 @@ $estadosReservacion = [
                                     <th>Estado</th>
                                     <th>Mascota actual</th>
                                     <th>Libre a partir de</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,7 +155,7 @@ $estadosReservacion = [
                                     $estado = $jaula['estado_actual'];
                                     $textoEstado = [
                                         'disponible' => 'Disponible',
-                                        'ocupado' => 'Ocupada',
+                                        'ocupado' => 'Reservada',
                                         'mantenimiento' => 'Mantenimiento',
                                     ][$estado] ?? ucfirst($estado);
                                     $claseEstado = $estado === 'disponible'
@@ -154,6 +166,16 @@ $estadosReservacion = [
                                         : ($estado === 'ocupado'
                                             ? (!empty($jaula['libre_a_partir']) ? $fechaCorta($jaula['libre_a_partir']) : 'Sin fecha')
                                             : 'Sin fecha');
+                                    if ($estado === 'ocupado' && !empty($jaula['libre_a_partir'])) {
+                                        $fechaLibre = DateTimeImmutable::createFromFormat('!Y-m-d', substr((string) $jaula['libre_a_partir'], 0, 10));
+                                        if ($fechaLibre !== false) {
+                                            $hoy = new DateTimeImmutable('today');
+                                            $diasRestantes = (int) $hoy->diff($fechaLibre)->format('%r%a');
+                                            if ($diasRestantes >= 0) {
+                                                $libreDesde .= ' (' . $diasRestantes . ' ' . ($diasRestantes === 1 ? 'día' : 'días') . ')';
+                                            }
+                                        }
+                                    }
                                 ?>
                                     <tr>
                                         <td><?= $escapar('J-' . $jaula['id']) ?></td>
@@ -161,6 +183,16 @@ $estadosReservacion = [
                                         <td><span class="historial-estado <?= $claseEstado ?>"><?= $escapar($textoEstado) ?></span></td>
                                         <td><?= $escapar($jaula['mascota_actual'] ?: '—') ?></td>
                                         <td><?= $libreDesde ?></td>
+                                        <td class="acciones">
+                                            <?php if ($estado === 'disponible'): ?>
+                                                <button type="button" class="btn btn-chico" data-hotel-accion="jaula_mantenimiento" data-id="<?= (int) $jaula['id'] ?>">Enviar a mantenimiento</button>
+                                                <button type="button" class="btn btn-eliminar btn-chico" data-hotel-accion="jaula_eliminar" data-id="<?= (int) $jaula['id'] ?>">Eliminar</button>
+                                            <?php elseif ($estado === 'mantenimiento'): ?>
+                                                <button type="button" class="btn btn-chico" data-hotel-accion="jaula_disponible" data-id="<?= (int) $jaula['id'] ?>">Marcar disponible</button>
+                                            <?php else: ?>
+                                                —
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -211,16 +243,23 @@ $estadosReservacion = [
                                         <th>Noches</th>
                                         <th>Saldo</th>
                                         <th>Estado</th>
-                                       <!-- <th>Acciones</th> -->
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($reservaciones as $reservacion):
                                         $estado = strtolower(trim((string) $reservacion['estado']));
                                         $textoEstado = $estadosReservacion[$estado] ?? ucfirst($estado);
-                                        $claseEstado = $estado === 'activo'
+                                        $claseEstado = $estado === 'pagado' || $estado === 'finalizado'
                                             ? 'pagada'
-                                            : ($estado === 'inactivo' ? 'cancelada' : 'pendiente');
+                                            : (in_array($estado, ['cancelado', 'cancelada', 'no asistio', 'inactivo', 'vencida', 'abandonada'], true)
+                                                ? 'cancelada'
+                                                : 'pendiente');
+                                        $estadosAbiertos = ['por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada'];
+                                        $fechaSalidaISO = substr((string) $reservacion['fecha_salida'], 0, 10);
+                                        $puedeFinalizar = $estado === 'pagado'
+                                            && $fechaSalidaISO !== ''
+                                            && $fechaSalidaISO <= date('Y-m-d');
                                     ?>
                                         <tr
                                             data-reservacion
@@ -241,7 +280,20 @@ $estadosReservacion = [
                                             <td><?= $escapar($reservacion['num_noches'] ?? '—') ?></td>
                                             <td>$<?= number_format((float) $reservacion['saldo'], 2) ?></td>
                                             <td><span class="historial-estado <?= $claseEstado ?>"><?= $escapar($textoEstado) ?></span></td>
-                                            <!-- <td class="acciones">—</td> -->
+                                            <td class="acciones">
+                                                <?php if (in_array($estado, $estadosAbiertos, true)): ?>
+                                                    <button type="button" class="btn btn-secundario btn-chico" data-hotel-accion="reservacion_cancelar" data-id="<?= (int) $reservacion['id_reservacion'] ?>">Cancelar</button>
+                                                    <button type="button" class="btn btn-secundario btn-chico" data-hotel-accion="reservacion_no_asistio" data-id="<?= (int) $reservacion['id_reservacion'] ?>">No asistió</button>
+                                                    <?php if (in_array($estado, ['por pagar', 'pendiente de pago'], true)): ?>
+                                                        <button type="button" class="btn btn-chico" disabled title="Disponible cuando se integre el módulo de pagos">Pagar</button>
+                                                    <?php endif; ?>
+                                                    <?php if ($puedeFinalizar): ?>
+                                                        <button type="button" class="btn btn-chico" data-hotel-accion="reservacion_finalizar" data-id="<?= (int) $reservacion['id_reservacion'] ?>">Finalizar</button>
+                                                    <?php endif; ?>
+                                                <?php else: ?>
+                                                    —
+                                                <?php endif; ?>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -260,8 +312,10 @@ $estadosReservacion = [
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
 
+    <?php include __DIR__ . '/modal_jaula.php'; ?>
     <script src="js/buscador_inteligente.js"></script>
     <script src="js/hotel_filtros.js"></script>
+    <script src="js/hotel_acciones.js"></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+date_default_timezone_set('America/Mexico_City');
 require_once __DIR__ . '/../models/citas.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -60,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
             exit();
         }
     } else {
-        $ProximaCita = null;
+        $ProximaCita = date('Y-m-d', strtotime('+3 months'));
     }
 
     if (filter_var($Docies, FILTER_VALIDATE_FLOAT) !== false) 
@@ -81,7 +82,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         exit();
     }
 
-    
+    $idProducto = (int)$ProductoUtilizado;
+    if ($idProducto <= 0) {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT id_producto FROM productos WHERE nombre = ? LIMIT 1");
+            $stmt->execute([$ProductoUtilizado]);
+            $idProducto = (int)$stmt->fetchColumn();
+        } catch (Throwable $e) {
+            $idProducto = 0;
+        }
+    }
+
     $idEmpleado = ConexionesClientes::consultarResponsablePorConsulta($id_cita);
     if (empty($idEmpleado) || (int)$idEmpleado <= 0) {
         $idEmpleado = $_SESSION['id_empleado'] ?? $_SESSION['empleado_asociado'] ?? null;
@@ -90,6 +102,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         $veterinarios = ConexionesClientes::consultarEmpleadoPorPuesto('Veterinario');
         if (!empty($veterinarios)) {
             $idEmpleado = (int)$veterinarios[0]['id_empleado'];
+        }
+    }
+    if (empty($idEmpleado) || (int)$idEmpleado <= 0) {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmtEmp = $db->query("SELECT id_empleado FROM empleados WHERE esta_activo = 1 LIMIT 1");
+            $idEmpleado = $stmtEmp ? (int)$stmtEmp->fetchColumn() : 1;
+        } catch (Throwable $e) {
+            $idEmpleado = 1;
         }
     }
 
@@ -106,10 +127,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $insercion = ConexionesClientes::insertarDesparacitacion(
         $id_cita,
         $TipoDesparacitacion,
-        $ProductoUtilizado,
+        $idProducto,
         $ProximaCita,
         $Docies,
-        (!empty($idEmpleado) && (int)$idEmpleado > 0) ? (int)$idEmpleado : null,
+        (!empty($idEmpleado) && (int)$idEmpleado > 0) ? (int)$idEmpleado : 1,
         $Observaciones
     );
 

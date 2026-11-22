@@ -67,6 +67,17 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         } catch (Exception $e) {
             $errores[] = "Edad: Formato de fecha no válido.";
         }
+
+        if (!empty($datos['edad'])) {
+            $fechaNacimiento = DateTime::createFromFormat('Y-m-d', $datos['edad']);
+            if ($fechaNacimiento) {
+                $fechaActual = new DateTime();
+                $intervalo = $fechaActual->diff($fechaNacimiento);
+                if ($intervalo->y > 30) {
+                    $errores[] = "Edad: La mascota no puede tener más de 30 años.";
+                }
+            }
+        }
     }
     // color opcional
     if (empty(trim($datos['color']))) {

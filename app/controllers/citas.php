@@ -2,6 +2,7 @@
 // hola
 // hola 2
 declare(strict_types=1);
+date_default_timezone_set('America/Mexico_City');
 
 require_once __DIR__ . '/../models/citas.php';
 // session_start();
@@ -103,9 +104,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     // validar que no sea fecha pasada
     $fechaActual = date('Y-m-d');
-    if ($fecha <= $fechaActual)
+    if ($fecha < $fechaActual)
     {
         errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");
+    }
+
+    $fechaMaxima = date('Y-m-d', strtotime('+1 year'));
+    if ($fecha > $fechaMaxima)
+    {
+        errorSession("La fecha no puede ser mayor a un año en adelante.");
     }
 
     // verificar que el cliente exista en la base de datos
@@ -139,10 +146,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     // echo "hola " . $fecha . "<br>". $horaLimpia . "<br>";
 
-    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal);
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal, (int)$mascota, (int)$claveCliente);
     if ($HayMasHoras === true)
     {
-        errorSession("Ya hay una consulta en ese horario.");
+        errorSession("Ya hay una consulta registrada para este horario (el responsable, el cliente o la mascota ya tienen cita a esta hora).");
         exit();
     }
 
@@ -272,8 +279,15 @@ if ($accion === "mostrarMascota")
 }
 function mostrarMascotas()
 {
-    $id_cliente = $_GET['id_cliente' ?? ''];
-    $mascotas =  ConexionesClientes::consultaMascota($id_cliente);
+    $id_cliente = (int)($_GET['id_cliente'] ?? 0);
+    $consultasCitas = new ConexionesClientes();
+    $clienteExiste = $consultasCitas->consultarIdCliente($id_cliente);
+    if (!$clienteExiste)
+    {
+        echo json_encode(['error' => 'cliente_no_existe']);
+        exit();
+    }
+    $mascotas = ConexionesClientes::consultaMascota($id_cliente);
 
     echo json_encode($mascotas);
     exit();
@@ -423,16 +437,25 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
         erroresDeReprogramarCitas("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
 
+    $fechaMaxima = date('Y-m-d', strtotime('+1 year'));
+    if ($nuevaFecha > $fechaMaxima)
+    {
+        erroresDeReprogramarCitas("La fecha no puede ser mayor a un año en adelante.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+    }
+
     // juntar fecha con horas 
     $horaLimpia = $objetoHora->format('H:i:s');
     $fechaHoraFinal = $nuevaFecha . ' ' . $horaLimpia;  
 
     
-    $consultasCitas = new ConexionesClientes();                                          
-    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal);
+    $consultasCitas = new ConexionesClientes();
+    $citaDetalle = ConexionesClientes::obtenerDetalleCita((int)$idConsulta);
+    $idMascota = $citaDetalle ? (int)$citaDetalle['mascota'] : null;
+    $idCliente = $citaDetalle ? (int)$citaDetalle['cliente'] : null;
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
     if ($HayMasHoras)
     {
-        erroresDeReprogramarCitas("Ya hay una consulta en ese horario.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
+        erroresDeReprogramarCitas("Ya hay una consulta registrada para este horario (el responsable, el cliente o la mascota ya tienen cita a esta hora).", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
         exit();
     }
 
