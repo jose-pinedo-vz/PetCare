@@ -4,12 +4,6 @@ require_once __DIR__ . '/Productos.php';
 
 class Hotel
 {
-    private const vacunas_requeridas = [
-        'rabia' => 'Rabia',
-        'parvovirus' => 'Parvovirus',
-        'moquillo' => 'Moquillo',
-    ];
-
     public static function existeMascota(int $id)
     {
         $conexion = ConexionDB::obtenerConexion();
@@ -32,6 +26,28 @@ class Hotel
         $stmt = $conexion->prepare("SELECT id FROM jaula WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->rowCount() > 0;
+    }
+
+    public static function existeReservaActiva(int $idCliente, int $idMascota): bool
+    {
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare(
+            "SELECT 1
+             FROM hotel
+             WHERE cliente = ?
+               AND mascota = ?
+               AND LOWER(TRIM(estado)) IN (
+                   'por pagar',
+                   'pagado',
+                   'activo',
+                   'pendiente de pago',
+                   'pendiente cartilla',
+                   'confirmada'
+               )
+             LIMIT 1"
+        );
+        $stmt->execute([$idCliente, $idMascota]);
+        return (bool) $stmt->fetchColumn();
     }
 
     public static function insertarHotel(array $datos)
@@ -62,10 +78,58 @@ class Hotel
         try {
             $conexion->beginTransaction();
 
+            $reservacionActiva = $conexion->prepare(
+                "SELECT 1
+                 FROM hotel
+                 WHERE cliente = :cliente
+                   AND mascota = :mascota
+                   AND LOWER(TRIM(estado)) IN (
+                       'por pagar',
+                       'pagado',
+                       'activo',
+                       'pendiente de pago',
+                       'pendiente cartilla',
+                       'confirmada'
+                   )
+                 LIMIT 1"
+            );
+            $reservacionActiva->execute([
+                ':cliente' => (int) $datos['id_cliente'],
+                ':mascota' => (int) $datos['id_mascota'],
+            ]);
+            if ($reservacionActiva->fetchColumn() !== false) {
+                $conexion->rollBack();
+                return ['error' => 'El cliente ya tiene una reservación registrada para esta mascota.'];
+            }
+
+            $actualizarJaula = $conexion->prepare("
+                UPDATE jaula j
+                SET estado = 'ocupado'
+                WHERE j.id = :id_jaula
+                    AND LOWER(TRIM(j.estado)) = 'disponible'
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM hotel h
+                        WHERE h.id_jaula = j.id
+                            AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                            AND :fecha_entrada < h.fecha_salida
+                            AND :fecha_salida > h.fecha_entrada
+                    )
+            ");
+            $actualizarJaula->execute([
+                ':id_jaula' => (int) $datos['id_jaula'],
+                ':fecha_entrada' => $datos['fecha_entrada'],
+                ':fecha_salida' => $datos['fecha_salida'],
+            ]);
+            if ($actualizarJaula->rowCount() !== 1) {
+                $conexion->rollBack();
+                return ['error' => 'La jaula seleccionada ya no está disponible para esas fechas. Elige otra jaula.'];
+            }
+
             $stmt = $conexion->prepare($insertar);
             // El formulario no cobra anticipo; una reservación nueva queda pendiente del total.
             $anticipo = '0.00';
-            $estado = 'activo';
+            $estado = 'Por pagar';
             $stmt->bindParam(':cliente',                $datos['id_cliente'],            PDO::PARAM_INT);
             $stmt->bindParam(':mascota',                $datos['id_mascota'],            PDO::PARAM_INT);
             $stmt->bindParam(':fecha_entrada',          $datos['fecha_entrada'],         PDO::PARAM_STR);
@@ -89,19 +153,6 @@ class Hotel
 
             $stmt->execute();
 
-            $actualizarJaula = $conexion->prepare("
-                UPDATE jaula
-                SET estado = 'ocupado'
-                WHERE id = :id_jaula
-                    AND LOWER(TRIM(estado)) = 'disponible'
-            ");
-            $actualizarJaula->execute([':id_jaula' => (int) $datos['id_jaula']]);
-
-            if ($actualizarJaula->rowCount() !== 1) {
-                $conexion->rollBack();
-                return ['error' => 'La jaula seleccionada ya no está disponible. Elige otra jaula.'];
-            }
-
             $conexion->commit();
         } catch (PDOException $e) {
             if ($conexion->inTransaction()) {
@@ -123,93 +174,34 @@ class Hotel
         }
     }
 
-    public static function desactivarReservacionesVencidas(): array
-    {
-        try {
-            $conexion = ConexionDB::obtenerConexion();
-            $conexion->beginTransaction();
-            $stmt = $conexion->prepare("
-                UPDATE hotel
-                SET estado = 'inactivo'
-                WHERE LOWER(TRIM(estado)) = 'activo'
-                    AND fecha_salida IS NOT NULL
-                    AND DATE(fecha_salida) <= CURRENT_DATE()
-            ");
-            $stmt->execute();
-            $reservacionesActualizadas = $stmt->rowCount();
-
-            $jaulasLiberadas = 0;
-            $tieneIdJaula = self::tieneColumna($conexion, 'hotel', 'id_jaula');
-            $tieneHotelEnJaula = self::tieneColumna($conexion, 'jaula', 'hotel');
-
-            if ($tieneIdJaula) {
-                $jaulas = $conexion->prepare("
-                    UPDATE jaula j
-                    SET estado = 'disponible'
-                    WHERE LOWER(TRIM(j.estado)) = 'ocupado'
-                        AND EXISTS (
-                            SELECT 1
-                            FROM hotel h
-                            WHERE h.id_jaula = j.id
-                                AND LOWER(TRIM(h.estado)) = 'inactivo'
-                                AND DATE(h.fecha_salida) <= CURRENT_DATE()
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1
-                            FROM hotel h
-                            WHERE h.id_jaula = j.id
-                                AND LOWER(TRIM(h.estado)) = 'activo'
-                        )
-                ");
-                $jaulas->execute();
-                $jaulasLiberadas = $jaulas->rowCount();
-            } elseif ($tieneHotelEnJaula) {
-                $jaulas = $conexion->prepare("
-                    UPDATE jaula j
-                    SET estado = 'disponible'
-                    WHERE LOWER(TRIM(j.estado)) = 'ocupado'
-                        AND EXISTS (
-                            SELECT 1
-                            FROM hotel h
-                            WHERE h.id_reservacion = j.hotel
-                                AND LOWER(TRIM(h.estado)) = 'inactivo'
-                                AND DATE(h.fecha_salida) <= CURRENT_DATE()
-                        )
-                        AND NOT EXISTS (
-                            SELECT 1
-                            FROM hotel h
-                            WHERE h.id_reservacion = j.hotel
-                                AND LOWER(TRIM(h.estado)) = 'activo'
-                        )
-                ");
-                $jaulas->execute();
-                $jaulasLiberadas = $jaulas->rowCount();
-            }
-
-            $conexion->commit();
-            return [
-                'actualizadas' => $reservacionesActualizadas,
-                'jaulas_liberadas' => $jaulasLiberadas,
-            ];
-        } catch (Throwable $e) {
-            if (isset($conexion) && $conexion->inTransaction()) {
-                $conexion->rollBack();
-            }
-            error_log('Error al desactivar reservaciones vencidas del hotel: ' . $e->getMessage());
-            return ['error' => 'No fue posible actualizar el estado de las reservaciones vencidas.'];
-        }
-    }
-
     public static function obtenerJaulas()
     {
         try {
             $conexion = ConexionDB::obtenerConexion();
-            $stmt = $conexion->query("
-                SELECT id, tamano, estado
-                FROM jaula
-                WHERE LOWER(estado) = 'disponible'
-                ORDER BY tamano, id
-            ");
+            $tieneIdJaula = self::tieneColumna($conexion, 'hotel', 'id_jaula');
+            $tieneHotelEnJaula = self::tieneColumna($conexion, 'jaula', 'hotel');
+            $sql = "SELECT j.id, j.tamano, j.estado FROM jaula j WHERE LOWER(TRIM(j.estado)) = 'disponible'";
+            if ($tieneIdJaula) {
+                $sql .= "
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM hotel h
+                        WHERE h.id_jaula = j.id
+                            AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                            AND DATE(h.fecha_salida) >= CURRENT_DATE()
+                    )";
+            } elseif ($tieneHotelEnJaula) {
+                $sql .= "
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM hotel h
+                        WHERE h.id_reservacion = j.hotel
+                            AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                            AND DATE(h.fecha_salida) >= CURRENT_DATE()
+                    )";
+            }
+            $sql .= ' ORDER BY j.tamano, j.id';
+            $stmt = $conexion->query($sql);
             if ($stmt instanceof PDOStatement) {
                 return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
             }
@@ -234,7 +226,7 @@ class Hotel
                             FROM hotel h
                             INNER JOIN mascotas m ON m.id_mascota = h.mascota
                             WHERE h.id_jaula = j.id
-                                AND LOWER(TRIM(h.estado)) = 'activo'
+                                AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
                                 AND CURRENT_DATE() >= DATE(h.fecha_entrada)
                                 AND CURRENT_DATE() < DATE(h.fecha_salida)
                             ORDER BY DATE(h.fecha_salida) DESC, h.id_reservacion DESC
@@ -244,9 +236,8 @@ class Hotel
                             SELECT MAX(DATE(h.fecha_salida))
                             FROM hotel h
                             WHERE h.id_jaula = j.id
-                                AND LOWER(TRIM(h.estado)) = 'activo'
-                                AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                                AND CURRENT_DATE() < DATE(h.fecha_salida)
+                                AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                                AND DATE(h.fecha_salida) >= CURRENT_DATE()
                         ) AS libre_a_partir,
                         CASE
                             WHEN LOWER(TRIM(j.estado)) = 'mantenimiento' THEN 'mantenimiento'
@@ -255,9 +246,8 @@ class Hotel
                                     SELECT 1
                                     FROM hotel h
                                     WHERE h.id_jaula = j.id
-                                        AND LOWER(TRIM(h.estado)) = 'activo'
-                                        AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                                        AND CURRENT_DATE() < DATE(h.fecha_salida)
+                                        AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                                        AND DATE(h.fecha_salida) >= CURRENT_DATE()
                                 ) THEN 'ocupado'
                             ELSE LOWER(TRIM(j.estado))
                         END AS estado_actual
@@ -272,7 +262,7 @@ class Hotel
                             FROM hotel h
                             INNER JOIN mascotas m ON m.id_mascota = h.mascota
                             WHERE h.id_reservacion = j.hotel
-                                AND LOWER(TRIM(h.estado)) = 'activo'
+                                AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
                                 AND CURRENT_DATE() >= DATE(h.fecha_entrada)
                                 AND CURRENT_DATE() < DATE(h.fecha_salida)
                             ORDER BY DATE(h.fecha_salida) DESC, h.id_reservacion DESC
@@ -282,9 +272,8 @@ class Hotel
                             SELECT MAX(DATE(h.fecha_salida))
                             FROM hotel h
                             WHERE h.id_reservacion = j.hotel
-                                AND LOWER(TRIM(h.estado)) = 'activo'
-                                AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                                AND CURRENT_DATE() < DATE(h.fecha_salida)
+                                AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                                AND DATE(h.fecha_salida) >= CURRENT_DATE()
                         ) AS libre_a_partir,
                         CASE
                             WHEN LOWER(TRIM(j.estado)) = 'mantenimiento' THEN 'mantenimiento'
@@ -293,9 +282,8 @@ class Hotel
                                     SELECT 1
                                     FROM hotel h
                                     WHERE h.id_reservacion = j.hotel
-                                        AND LOWER(TRIM(h.estado)) = 'activo'
-                                        AND CURRENT_DATE() >= DATE(h.fecha_entrada)
-                                        AND CURRENT_DATE() < DATE(h.fecha_salida)
+                                        AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                                        AND DATE(h.fecha_salida) >= CURRENT_DATE()
                                 ) THEN 'ocupado'
                             ELSE LOWER(TRIM(j.estado))
                         END AS estado_actual
@@ -412,11 +400,23 @@ class Hotel
             $conexion = ConexionDB::obtenerConexion();
             $stmt = $conexion->prepare("
                 SELECT lista_vacunas.nombre AS tipo_vacunas, vacunas.fecha_aplicacion,
-                       vacunas.fecha_proxima, vacunas.veterinario, vacunas.lote,
+                       vacunas.fecha_proxima, vacunas.veterinario,
+                       CONCAT_WS(' ', empleados.nombre, empleados.apellido) AS veterinario_nombre,
+                       vacunas.lote,
                        vacunas.fabricante, vacunas.observaciones
-                FROM vacunas
-                INNER JOIN lista_vacunas ON vacunas.vacuna_puesta = lista_vacunas.id
-                WHERE vacunas.id_mascota = ?
+                FROM mascotas
+                INNER JOIN especies
+                    ON LOWER(TRIM(especies.especie)) COLLATE utf8mb4_general_ci
+                        = LOWER(TRIM(mascotas.especie)) COLLATE utf8mb4_general_ci
+                INNER JOIN lista_vacunas
+                    ON lista_vacunas.especie = especies.id
+                    AND lista_vacunas.estado = 1
+                LEFT JOIN vacunas
+                    ON vacunas.id_mascota = mascotas.id_mascota
+                    AND vacunas.vacuna_puesta = lista_vacunas.id
+                LEFT JOIN empleados
+                    ON empleados.id_empleado = vacunas.veterinario
+                WHERE mascotas.id_mascota = ?
                 ORDER BY lista_vacunas.nombre, vacunas.fecha_aplicacion DESC, vacunas.id_vacuna DESC
             ");
             $stmt->execute([$idMascota]);
@@ -431,27 +431,54 @@ class Hotel
             ];
         }
 
-        $registrosPorTipo = [];
-        foreach ($registros as $registro) {
-            $tipo = strtolower(trim((string)$registro['tipo_vacunas']));
-            $registrosPorTipo[$tipo][] = $registro;
-        }
-
         $vacunas = [];
         $errores = [];
-
+        $registrosPorVacuna = [];
         foreach ($registros as $registro) {
-            $tipo = strtolower(trim((string)$registro['tipo_vacunas']));
-            $requerida = isset(self::vacunas_requeridas[$tipo]);
-            $aplicacionAnteriorASalida = $registro['fecha_aplicacion'] <= $fechaSalida;
-            $tieneVigencia = !empty($registro['fecha_proxima']);
-            $vigenteHastaSalida = $aplicacionAnteriorASalida &&
-                $tieneVigencia &&
-                $registro['fecha_proxima'] >= $fechaSalida;
+            $nombre = (string) $registro['tipo_vacunas'];
+            $registrosPorVacuna[$nombre][] = $registro;
+        }
 
-            if ($registro['fecha_aplicacion'] > $fechaSalida) {
+        foreach ($registrosPorVacuna as $nombre => $registrosVacuna) {
+            $registroSeleccionado = null;
+            $hayRegistroVigente = false;
+
+            foreach ($registrosVacuna as $registro) {
+                if ($registro['fecha_aplicacion'] === null) {
+                    continue;
+                }
+
+                if ($registroSeleccionado === null) {
+                    $registroSeleccionado = $registro;
+                }
+                if (
+                    $registro['fecha_aplicacion'] <= $fechaSalida &&
+                    !empty($registro['fecha_proxima']) &&
+                    $registro['fecha_proxima'] >= $fechaSalida
+                ) {
+                    $registroSeleccionado = $registro;
+                    $hayRegistroVigente = true;
+                    break;
+                }
+            }
+
+            $registroSeleccionado = $registroSeleccionado ?? [
+                'tipo_vacunas' => $nombre,
+                'fecha_aplicacion' => null,
+                'fecha_proxima' => null,
+                'veterinario' => null,
+                'veterinario_nombre' => null,
+                'lote' => null,
+                'fabricante' => null,
+                'observaciones' => null,
+            ];
+            $registro = $registroSeleccionado;
+
+            if ($registro['fecha_aplicacion'] === null) {
+                $estado = 'Sin registro';
+            } elseif ($registro['fecha_aplicacion'] > $fechaSalida) {
                 $estado = 'Aplicada después de la salida';
-            } elseif (!$tieneVigencia) {
+            } elseif (empty($registro['fecha_proxima'])) {
                 $estado = 'Sin fecha próxima';
             } elseif ($registro['fecha_proxima'] < $fechaSalida) {
                 $estado = 'Vence antes de la salida';
@@ -460,47 +487,15 @@ class Hotel
             }
 
             $vacunas[] = array_merge($registro, [
-                'requerida' => $requerida,
-                'valida' => $vigenteHastaSalida,
+                'requerida' => true,
+                'valida' => $hayRegistroVigente,
                 'estado_validacion' => $estado,
             ]);
 
-        }
-
-        foreach (self::vacunas_requeridas as $tipo => $nombre) {
-            $registrosTipo = $registrosPorTipo[$tipo] ?? [];
-            $hayRegistroVigente = false;
-
-            foreach ($registrosTipo as $registro) {
-                if (
-                    $registro['fecha_aplicacion'] <= $fechaSalida &&
-                    !empty($registro['fecha_proxima']) &&
-                    $registro['fecha_proxima'] >= $fechaSalida
-                ) {
-                    $hayRegistroVigente = true;
-                    break;
-                }
-            }
-
-            if (!$registrosTipo) {
-                $vacunas[] = [
-                    'tipo_vacunas' => $nombre,
-                    'fecha_aplicacion' => null,
-                    'fecha_proxima' => null,
-                    'veterinario' => null,
-                    'lote' => null,
-                    'fabricante' => null,
-                    'observaciones' => null,
-                    'requerida' => true,
-                    'valida' => false,
-                    'estado_validacion' => 'Sin registro',
-                ];
-            }
-
             if (!$hayRegistroVigente) {
-                $errores[] = $registrosTipo
-                    ? "La vacuna {$nombre} no está vigente hasta la fecha de salida."
-                    : "Falta registrar la vacuna {$nombre}.";
+                $errores[] = $registro['fecha_aplicacion'] === null
+                    ? "Falta registrar la vacuna {$nombre}."
+                    : "La vacuna {$nombre} no está vigente hasta la fecha de salida.";
             }
         }
 
@@ -510,6 +505,148 @@ class Hotel
             'vacunas' => $vacunas,
             'errores' => $errores,
         ];
+    }
+
+    public static function insertarJaula(string $tamano): array
+    {
+        $conexion = ConexionDB::obtenerConexion();
+        $conexion->beginTransaction();
+        try {
+            $consultaId = $conexion->query("SELECT COALESCE(MAX(id), 0) + 1 FROM jaula");
+            $id = (int) $consultaId->fetchColumn();
+            $stmt = $conexion->prepare("
+                INSERT INTO jaula (id, tamano, estado)
+                VALUES (?, ?, 'disponible')
+            ");
+            $stmt->execute([$id, $tamano]);
+            $conexion->commit();
+        } catch (Throwable $e) {
+            if ($conexion->inTransaction()) {
+                $conexion->rollBack();
+            }
+            throw $e;
+        }
+
+        return [
+            'id' => $id,
+            'tamano' => $tamano,
+            'estado' => 'disponible',
+        ];
+    }
+
+    public static function eliminarJaulaDisponible(int $id): bool
+    {
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("
+            DELETE FROM jaula
+            WHERE id = ?
+                AND LOWER(TRIM(estado)) = 'disponible'
+        ");
+        $stmt->execute([$id]);
+
+        return $stmt->rowCount() === 1;
+    }
+
+    public static function actualizarEstadoJaulaDisponible(int $id, string $estado): bool
+    {
+        if (!in_array($estado, ['disponible', 'mantenimiento'], true)) {
+            return false;
+        }
+
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare("
+            UPDATE jaula
+            SET estado = ?
+            WHERE id = ?
+                AND LOWER(TRIM(estado)) IN ('disponible', 'mantenimiento')
+        ");
+        $stmt->execute([$estado, $id]);
+
+        return $stmt->rowCount() === 1;
+    }
+
+    public static function actualizarEstadoReservacion(int $id, string $accion): array
+    {
+        $estadosAccion = [
+            'cancelar' => 'Cancelado',
+            'no_asistio' => 'No asistio',
+            'finalizar' => 'Finalizado',
+        ];
+        if (!isset($estadosAccion[$accion])) {
+            return ['error' => 'La acción solicitada no es válida.'];
+        }
+
+        $conexion = ConexionDB::obtenerConexion();
+        try {
+            $conexion->beginTransaction();
+            $tieneIdJaula = self::tieneColumna($conexion, 'hotel', 'id_jaula');
+            $tieneHotelEnJaula = self::tieneColumna($conexion, 'jaula', 'hotel');
+            $sqlJaula = $tieneIdJaula ? 'id_jaula' : 'NULL AS id_jaula';
+            $stmt = $conexion->prepare("
+                SELECT estado, fecha_salida, {$sqlJaula}
+                FROM hotel
+                WHERE id_reservacion = ?
+                FOR UPDATE
+            ");
+            $stmt->execute([$id]);
+            $reservacion = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$reservacion) {
+                $conexion->rollBack();
+                return ['error' => 'No se encontró la reservación.'];
+            }
+            if (!$tieneIdJaula && $tieneHotelEnJaula) {
+                $jaulaReservacion = $conexion->prepare(
+                    "SELECT id FROM jaula WHERE hotel = ? FOR UPDATE"
+                );
+                $jaulaReservacion->execute([$id]);
+                $reservacion['id_jaula'] = $jaulaReservacion->fetchColumn() ?: null;
+            }
+
+            $estadoActual = strtolower(trim((string) $reservacion['estado']));
+            $estadosAbiertos = ['por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada'];
+            if (!in_array($estadoActual, $estadosAbiertos, true)) {
+                $conexion->rollBack();
+                return ['error' => 'La reservación ya no permite esta acción.'];
+            }
+            if (
+                $accion === 'finalizar' &&
+                (empty($reservacion['fecha_salida']) || substr((string) $reservacion['fecha_salida'], 0, 10) > date('Y-m-d'))
+            ) {
+                $conexion->rollBack();
+                return ['error' => 'La reservación solo se puede finalizar a partir de la fecha de salida.'];
+            }
+
+            $actualizar = $conexion->prepare("
+                UPDATE hotel SET estado = ? WHERE id_reservacion = ?
+            ");
+            $actualizar->execute([$estadosAccion[$accion], $id]);
+
+            if (!empty($reservacion['id_jaula'])) {
+                $relacionReservacion = $tieneIdJaula ? 'h.id_jaula = j.id' : 'h.id_reservacion = j.hotel';
+                $jaula = $conexion->prepare("
+                    UPDATE jaula j
+                    SET estado = 'disponible'
+                    WHERE j.id = ?
+                        AND LOWER(TRIM(j.estado)) <> 'mantenimiento'
+                        AND NOT EXISTS (
+                            SELECT 1 FROM hotel h
+                            WHERE {$relacionReservacion}
+                                AND LOWER(TRIM(h.estado)) IN ('por pagar', 'pagado', 'activo', 'pendiente de pago', 'pendiente cartilla', 'confirmada')
+                                AND DATE(h.fecha_salida) >= CURRENT_DATE()
+                        )
+                ");
+                $jaula->execute([(int) $reservacion['id_jaula']]);
+            }
+
+            $conexion->commit();
+            return ['estado' => $estadosAccion[$accion]];
+        } catch (Throwable $e) {
+            if ($conexion->inTransaction()) {
+                $conexion->rollBack();
+            }
+            error_log('Error al actualizar una reservación del hotel: ' . $e->getMessage());
+            return ['error' => 'No fue posible actualizar la reservación.'];
+        }
     }
 
     public static function obtenerJaulaPorId(int $id)

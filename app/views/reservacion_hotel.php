@@ -188,7 +188,7 @@ $valorCampo = static function (string $campo, string $porDefecto = '') use ($old
           <fieldset>
             <legend>Validación de vacunas</legend>
             <div id="estado_validacion_vacunas" class="nota-campo" role="status" aria-live="polite">
-              Selecciona una mascota y la fecha de salida para revisar las vacunas.
+              Selecciona una mascota para ver las vacunas configuradas para su especie.
             </div>
             <div class="tabla-envoltura">
               <table>
@@ -197,7 +197,7 @@ $valorCampo = static function (string $campo, string $porDefecto = '') use ($old
                     <th>Vacuna</th>
                     <th>Fecha de aplicación</th>
                     <th>Fecha próxima</th>
-                    <th>Veterinario (ID)</th>
+                    <th>Veterinario (ID y nombre)</th>
                     <th>Lote</th>
                     <th>Fabricante</th>
                     <th>Observaciones</th>
@@ -207,7 +207,7 @@ $valorCampo = static function (string $campo, string $porDefecto = '') use ($old
                 </thead>
                 <tbody id="tabla_vacunas_body">
                   <tr>
-                    <td colspan="9">Selecciona una mascota y la fecha de salida para consultar sus vacunas.</td>
+                    <td colspan="9">Selecciona una mascota para consultar las vacunas de su especie.</td>
                   </tr>
                 </tbody>
               </table>
@@ -258,9 +258,9 @@ $valorCampo = static function (string $campo, string $porDefecto = '') use ($old
 
           <div class="acciones-formulario">
             <a class="btn btn-secundario btn-chico" href="hotel.php">Cancelar</a>
-            <button type="submit" id="guardar_reservacion" class="btn btn-chico" disabled>Guardar reservación</button>
+            <button type="submit" id="guardar_reservacion" class="btn btn-chico">Guardar reservación</button>
           </div>
-          <span class="nota-campo" style="text-align:right;">Solo se puede guardar cuando las vacunas están vigentes hasta la fecha de salida.</span>
+          <span class="nota-campo" style="text-align:right;">La información de vacunas es solo orientativa; puedes guardar la reservación aunque falten vacunas.</span>
         </form>
       </div>
     </main>
