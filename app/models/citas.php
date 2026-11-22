@@ -226,7 +226,7 @@
             try
             {
                 $query = "UPDATE citas
-                    SET estado_cita = 'cancelada',  estado = 'No asistio'
+                    SET estado_cita = 'cancelada',  estado = 'No asistió'
                     WHERE id_cita = ?";
 
                 $db = ConexionDB::obtenerConexion();
@@ -270,6 +270,15 @@
         public static function obtenerResponsable(int $cita)
         {
             $query = "SELECT empleado FROM citas WHERE id_cita = ?";
+            $db = ConexionDB::obtenerConexion();
+            $stml = $db->prepare($query);
+            $stml->execute([$cita]);
+            return $stml->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public static function obtenerDetalleCita(int $cita)
+        {
+            $query = "SELECT id_cita, cliente, mascota, empleado, fecha, servicio FROM citas WHERE id_cita = ?";
             $db = ConexionDB::obtenerConexion();
             $stml = $db->prepare($query);
             $stml->execute([$cita]);
@@ -346,7 +355,17 @@
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $db = ConexionDB::obtenerConexion();
                 $stml = $db->prepare($query);
-                return $stml->execute([$id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $empleado, $Observaciones]);
+                $fechaProxima = (!empty($ProximaCita)) ? $ProximaCita : date('Y-m-d', strtotime('+3 months'));
+                $idVet = (!empty($empleado) && (int)$empleado > 0) ? (int)$empleado : 1;
+                return $stml->execute([
+                    (int)$id_cita,
+                    $TipoDesparacitacion,
+                    (int)$ProductoUtilizado,
+                    $fechaProxima,
+                    (float)$Docies,
+                    $idVet,
+                    ($Observaciones !== '' && $Observaciones !== null) ? $Observaciones : ''
+                ]);
             }
             catch (Exception $e)
             {
@@ -479,14 +498,29 @@
             }
         }
 
-        public function hayMasCitas($idResponsable, $fecha)
+        public function hayMasCitas($idResponsable, $fecha, $idMascota = null, $idCliente = null, $excluirIdCita = null)
         {
             try
             {
-                $query = "SELECT * FROM citas WHERE empleado = ? and fecha = ? AND estado_cita != 'cancelada'";
+                $condiciones = ["empleado = ?"];
+                $params = [$idResponsable];
+                if (!empty($idMascota)) {
+                    $condiciones[] = "mascota = ?";
+                    $params[] = $idMascota;
+                }
+                if (!empty($idCliente)) {
+                    $condiciones[] = "cliente = ?";
+                    $params[] = $idCliente;
+                }
+                $query = "SELECT * FROM citas WHERE (" . implode(" OR ", $condiciones) . ") AND fecha = ? AND estado_cita != 'cancelada'";
+                $params[] = $fecha;
+                if (!empty($excluirIdCita)) {
+                    $query .= " AND id_cita != ?";
+                    $params[] = $excluirIdCita;
+                }
                 $db = ConexionDB::obtenerConexion();
                 $stmt = $db->prepare($query);
-                $stmt->execute([$idResponsable, $fecha]);
+                $stmt->execute($params);
                 return (bool) $stmt->fetchColumn();
             }
             catch (Exception $e)

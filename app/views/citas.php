@@ -23,26 +23,35 @@ if (session_status() === PHP_SESSION_NONE)
 
   function mostrarProximasCitas(array $datos,array $servicios,string $miNombre)
   {
-    // echo $datos[0]['atendido'];
     $responsables = responsablesNombreEId();
+    $ahora = date('Y-m-d H:i:s');
     foreach ($datos as $d)
     {
       $estadocita = trim($d['estado_cita'] ?? '');
       if ($estadocita == "pendiente")
-      {?>
+      {
+        $esVencida = !empty($d['fecha']) && ($d['fecha'] < $ahora);
+        $esFutura = !empty($d['fecha']) && (strtotime((string)$d['fecha']) > time());
+        $onclickConsulta = $esFutura ? 'onclick="return confirm(\'Esta cita está programada para una fecha futura (' . htmlspecialchars($d['fecha']) . '). ¿Desea iniciar la atención ahora?\');"' : '';
+      ?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
           <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
-          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td>
+            <?php echo htmlspecialchars($d['fecha']); ?>
+            <?php if ($esVencida): ?>
+              <span class="estado-chip" style="background:#dc3545; color:#fff; font-size:11px; padding:2px 6px; border-radius:4px; margin-left:6px;">Vencida</span>
+            <?php endif; ?>
+          </td>
           <td><?php echo htmlspecialchars($d['motivo']); ?></td>
           <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
           <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
 
           <?php if (($miNombre !== '' && strtolower($responsables[$d['empleado']] ?? '') === $miNombre) || strtolower((string)($_SESSION['rol'] ?? '')) === 'admin') { ?>
           <td>
-            <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
+            <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>" <?php echo $onclickConsulta; ?>>Consulta</a>
             <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
             <a class="btn btn-chico btn-aviso btn-chico" href="reprogramar_cita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
-            <a class="btn btn-chico btn-peligro" onclick="noAsistioCita(<?php echo $d['id_consulta']; ?>, event)">No asistio</a>
+            <a class="btn btn-chico btn-peligro" onclick="noAsistioCita(<?php echo $d['id_consulta']; ?>, event)">No asistió</a>
           </td>
           <?php
           }else
@@ -86,15 +95,11 @@ if (session_status() === PHP_SESSION_NONE)
 
   function mostrarCanseladas(array $datos,array $servicios, string $miNombre)
   {
-    // $datos = estraerDatosConsultas();
-
-    // arregl oque traiga todos los servicios del servidor, una sola consluta
-    // junto con los servidores sera tambine el id, con esos 2 datos
     $responsables = responsablesNombreEId();
     foreach ($datos as $d)
     {
       $estadocita = trim($d['estado_cita'] ?? '');
-      if ($estadocita == "cancelada" && $d['estado'] !==  'No asistio')
+      if ($estadocita == "cancelada" && $d['estado'] !== 'No asistio' && $d['estado'] !== 'No asistió')
       {?>
         <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
           <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
@@ -110,15 +115,10 @@ if (session_status() === PHP_SESSION_NONE)
 
     function mostrarInAsistidas(array $datos,array $servicios)
     {
-      // $datos = estraerDatosConsultas();
-
-      // arregl oque traiga todos los servicios del servidor, una sola consluta
-      // junto con los servidores sera tambine el id, con esos 2 datos
       $responsables = responsablesNombreEId();
       foreach ($datos as $d)
       {
-        //$estadocita = trim($d['estado_cita'] ?? '');
-        if ($d['estado'] === 'No asistio')
+        if ($d['estado'] === 'No asistio' || $d['estado'] === 'No asistió')
         {?>
           <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
             <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
@@ -218,8 +218,8 @@ if (session_status() === PHP_SESSION_NONE)
             <div class="boton_control">
               <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
               <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
-              <button type="button" onclick="mostrarSeccion('canseladas', event)" class="btn btn_active btn-chico">Canseladas</button>
-              <button type="button" onclick="mostrarSeccion('no_asistio', event)" class="btn btn_active btn-chico">No asistio</button>
+              <button type="button" onclick="mostrarSeccion('canseladas', event)" class="btn btn_active btn-chico">Canceladas</button>
+              <button type="button" onclick="mostrarSeccion('no_asistio', event)" class="btn btn_active btn-chico">No asistió</button>
 
             </div>
 
@@ -267,7 +267,7 @@ if (session_status() === PHP_SESSION_NONE)
               </div>
 
               <div id="seccion_canselado" class="seccion-panel oculto">
-              <h3>Citas canseladas</h3>
+              <h3>Citas canceladas</h3>
               <div class="tabla-envoltura"> 
                 <table>
                   <thead>
@@ -287,7 +287,7 @@ if (session_status() === PHP_SESSION_NONE)
               </div>
 
               <div id="seccion_no_asitio" class="seccion-panel oculto">
-              <h3>No asistio a la cita</h3>
+              <h3>No asistió a la cita</h3>
               <div class="tabla-envoltura"> 
                 <table>
                   <thead>

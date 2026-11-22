@@ -142,15 +142,18 @@
   const cuerpoTablaClientes = document.querySelector('.tabla-envoltura tbody');
   const buscarCliente = document.getElementById('buscarCliente');
 
+  const normalizarTexto = (texto) => (texto || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
   if (cuerpoTablaClientes && buscarCliente) {
     buscarCliente.addEventListener('input', () => {
-      const termino = buscarCliente.value.trim().toLocaleLowerCase();
+      const termino = normalizarTexto(buscarCliente.value);
       cuerpoTablaClientes.querySelectorAll('tr[data-registro]').forEach((fila) => {
-        const texto = Array.from(fila.cells)
-          .slice(0, -1)
-          .map((celda) => celda.textContent)
-          .join(' ')
-          .toLocaleLowerCase();
+        const texto = normalizarTexto(
+          Array.from(fila.cells)
+            .slice(0, -1)
+            .map((celda) => celda.textContent)
+            .join(' ')
+        );
         fila.hidden = !texto.includes(termino);
       });
     });

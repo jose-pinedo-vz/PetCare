@@ -19,16 +19,16 @@ function mostrarSeccion(nombre, evento) {
 
 function mostrarNombre(nombre,tarjetas)
 {
+    const normalizar = (s) => (s || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     if(nombre)
     {
         nombre.addEventListener('input', (evento) => 
         {
-            const valor = evento.target.value.toLowerCase().trim();
-            console.log('Valor ingresado:', valor);
+            const valor = normalizar(evento.target.value);
             tarjetas.forEach(tarjeta =>
                 {
-                    const nombreDuenio = tarjeta.getAttribute('data-nombre');
-                    if (nombreDuenio && nombreDuenio.toLowerCase().includes(valor))
+                    const nombreDuenio = normalizar(tarjeta.getAttribute('data-nombre'));
+                    if (nombreDuenio && nombreDuenio.includes(valor))
                     {
                         tarjeta.classList.remove("oculto");
                     }

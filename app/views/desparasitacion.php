@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Mexico_City');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -8,8 +9,17 @@ require_once __DIR__ . '/../models/conexion_db.php';
 $listaProductos = [];
 try {
     $dbProd = ConexionDB::obtenerConexion();
-    $stmtProd = $dbProd->query("SELECT id_producto, nombre FROM productos WHERE estado = 1 OR estado = 'activo' ORDER BY nombre ASC");
+    $stmtProd = $dbProd->query("SELECT p.id_producto, p.nombre 
+                                FROM productos p 
+                                INNER JOIN categoria_productos c ON p.id_categoria = c.id_categoria 
+                                WHERE (c.nombre LIKE '%desparasita%' OR c.nombre LIKE '%medicamento%' OR c.nombre LIKE '%farmacia%') 
+                                  AND (p.estado = 1 OR p.estado = b'1' OR p.estado = 'activo') 
+                                ORDER BY p.nombre ASC");
     $listaProductos = $stmtProd ? $stmtProd->fetchAll(PDO::FETCH_ASSOC) : [];
+    if (empty($listaProductos)) {
+        $stmtProd2 = $dbProd->query("SELECT id_producto, nombre FROM productos WHERE id_categoria = 4 AND (estado = 1 OR estado = b'1' OR estado = 'activo') ORDER BY nombre ASC");
+        $listaProductos = $stmtProd2 ? $stmtProd2->fetchAll(PDO::FETCH_ASSOC) : [];
+    }
 } catch (Exception $e) {
     error_log("Error al cargar productos en desparasitacion: " . $e->getMessage());
 }
@@ -88,9 +98,8 @@ function old(string $clave): string
             <select class="campo" name="ProductoUtilizado" id="ProductoUtilizado" required>
               <option value="">Selecciona un producto</option>
               <?php foreach ($listaProductos as $prod): ?>
-                <?php $nombreProd = $prod['nombre']; ?>
-                <option value="<?= htmlspecialchars($nombreProd) ?>" <?= ($oldProducto === $nombreProd) ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($nombreProd) ?>
+                <option value="<?= (int)$prod['id_producto'] ?>" <?= ((string)$oldProducto === (string)$prod['id_producto']) ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($prod['nombre']) ?>
                 </option>
               <?php endforeach; ?>
             </select>
