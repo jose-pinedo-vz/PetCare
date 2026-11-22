@@ -148,8 +148,8 @@ function validar_datos_hotel(array $datos) {
     if (!empty($datos['horario_alimentacion'])) {
         if (strlen($datos['horario_alimentacion']) > 50) {
             $errores[] = "El horario de alimentación no puede exceder los 50 caracteres.";
-        }else if (!preg_match('/^[a-zA-Z0-9\s.,;:()\-]*$/', $datos['horario_alimentacion'])) {
-            $errores[] = "El horario de alimentación contiene caracteres no permitidos.";
+        }elseif (!preg_match('/^\s*\d{1,2}(?::[0-5]\d)?\s*(?:a\.?m\.?|p\.?m\.?)(?:\s*(?:,|\/|-|\by\b)\s*\d{1,2}(?::[0-5]\d)?\s*(?:a\.?m\.?|p\.?m\.?))*\s*$/iu', $datos['horario_alimentacion'])) {
+            $errores[] = "Ingresa un horario válido, por ejemplo: 8 am, 3 pm y 10 pm.";
         }
     }
 
@@ -168,8 +168,8 @@ function validar_datos_hotel(array $datos) {
     if (!empty($datos['horario_medicamentos'])) {
         if (strlen($datos['horario_medicamentos']) > 100) {
             $errores[] = "El horario de medicamentos no puede exceder los 100 caracteres.";
-        }else if (!preg_match('/^[a-zA-Z0-9\s.,;:()\-]*$/', $datos['horario_medicamentos'])) {
-            $errores[] = "El horario de medicamentos contiene caracteres no permitidos.";
+        }else if (!preg_match('/^\s*\d{1,2}(?::[0-5]\d)?\s*(?:a\.?m\.?|p\.?m\.?)(?:\s*(?:,|\/|-|\by\b)\s*\d{1,2}(?::[0-5]\d)?\s*(?:a\.?m\.?|p\.?m\.?))*\s*$/iu', $datos['horario_medicamentos'])) {
+            $errores[] = "Ingresa un horario válido, por ejemplo: 8 am, 3 pm y 10 pm.";
         }
     }
 
