@@ -123,7 +123,7 @@ foreach ($lotes as $lote){
 							$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
 							$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
 
-							if ($diasRestantes < 0) {
+							if ($diasRestantes < 0 || $lote['cantidad'] <= 0) {
 								$estado = 'vencido';
 								$textoEstado = 'Vencido';
 							} elseif ($diasRestantes <= 15) {
@@ -204,12 +204,17 @@ foreach ($lotes as $lote){
 					<?php endforeach; ?>
 				</ul>
 			</div>
+
 		<?php endif; ?>
+		<?php require_once __DIR__ . '/../models/Lotes.php';
+		$codigo ='';
+		$codigo = Lotes::generarSiguienteLote(); ?>
+		
 		<form id="formulario-lote" action="../controllers/lotes.php" method="post" novalidate>
 			<div class="lote-formulario">
 				<div class="lote-campo">
 					<label for="lote-id">Código de lote</label>
-					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" value="<?= $escapar($loteAnterior['lote'] ?? '') ?>" required>
+					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" value="<?= $escapar($loteAnterior['lote'] ?? $codigo ?? '') ?>" readonly required>
 				</div>
 				<div class="lote-campo contenedor-buscador">
 					<label for="lote-producto">Producto</label>

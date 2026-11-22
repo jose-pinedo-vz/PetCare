@@ -166,7 +166,7 @@ try {
             ]);
         }
 
-        $registrado = Pedidos::registrarRecepcion(
+        $loteSiguiente = Pedidos::registrarRecepcion(
             $idPedido,
             (int) $idDetalle,
             $cantidad,
@@ -177,7 +177,7 @@ try {
                 'precio_compra' => $datos['precio_compra'],
             ]
         );
-        if (!$registrado) {
+        if ($loteSiguiente === null) {
             $responder(409, ['ok' => false, 'mensaje' => 'El pedido ya no está pendiente o la cantidad supera lo que falta por recibir.']);
         }
 
@@ -212,6 +212,7 @@ try {
             'mensaje' => 'Producto recibido y agregado al inventario.' . $avisoCaja,
             'pedido' => $pedidoActualizado,
             'productos_pendientes' => $productosPendientes,
+            'lote_siguiente' => $loteSiguiente,
         ]);
     }
 

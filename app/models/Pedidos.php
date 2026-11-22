@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/conexion_db.php';
 require_once __DIR__ . '/Productos.php';
+require_once __DIR__ . '/Lotes.php';
 
 class Pedidos
 {
@@ -149,7 +150,7 @@ class Pedidos
         int $idDetalle,
         int $cantidad,
         array $datosLote
-    ): bool {
+    ): ?string {
         $conexion = ConexionDB::obtenerConexion();
         self::asegurarTablaRecepciones($conexion);
         $conexion->beginTransaction();
@@ -161,7 +162,7 @@ class Pedidos
             $stmtPedido->execute([$idPedido]);
             if ($stmtPedido->fetchColumn() !== 'pendiente') {
                 $conexion->rollBack();
-                return false;
+                return null;
             }
 
             $stmtDetalle = $conexion->prepare(
@@ -175,13 +176,13 @@ class Pedidos
             $cantidadRecibida = (int) ($detalle['cantidad_recibida'] ?? 0);
             if (!$detalle || $cantidad > (int) $detalle['cantidad'] - $cantidadRecibida) {
                 $conexion->rollBack();
-                return false;
+                return null;
             }
 
             $precioCompra = trim((string) ($datosLote['precio_compra'] ?? '0'));
             if ((float) $precioCompra <= 0) {
                 $conexion->rollBack();
-                return false;
+                return null;
             }
 
             $stmtActualizarPrecio = $conexion->prepare(
@@ -257,8 +258,10 @@ class Pedidos
                 $stmtEstado->execute(['entregado', $idPedido, 'pendiente']);
             }
 
+            $loteSiguiente = Lotes::generarSiguienteLote($conexion);
+
             $conexion->commit();
-            return true;
+            return $loteSiguiente;
         } catch (Throwable $e) {
             if ($conexion->inTransaction()) {
                 $conexion->rollBack();
