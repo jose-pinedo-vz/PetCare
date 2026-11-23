@@ -21,18 +21,16 @@ class UsuariosDB
             return false;
         }
 
-        $stmt = $conexion->prepare(
-            'SELECT puesto FROM empleados WHERE id_empleado = :empleado AND esta_activo = 1 LIMIT 1'
-        );
+        $stmt = $conexion->prepare('SELECT puesto FROM empleados WHERE id_empleado = :empleado AND esta_activo = 1 LIMIT 1');
         $stmt->execute([':empleado' => $empleado]);
         $puesto = $stmt->fetchColumn();
-        if (!is_string($puesto)) {
+        if (!is_string($puesto))
+        {
             return false;
         }
 
         $combinaciones = [
-            'admin' => ['Administrador'],
-            'gerente' => ['Gerente'],
+            'admin' => ['Administrador','Gerente'],
             'veterinario' => ['Veterinario', 'Veterinario/a'],
             'vendedor' => ['Vendedor'],
             'estilista' => ['Estilista'],

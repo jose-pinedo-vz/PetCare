@@ -144,7 +144,7 @@ function editar(array $datos)
 function obtenerTodos(): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $stmt = $conexion->query("SELECT * FROM animal_venta WHERE estado NOT IN ('Vendido', 'Adoptado') OR estado IS NULL ORDER BY id_animal DESC");
+        $stmt = $conexion->query("SELECT * FROM animal_venta WHERE (estado NOT IN ('Vendido', 'Adoptado', 'Inactivo') OR estado IS NULL) ORDER BY id_animal DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
     catch (Exception $e)
@@ -168,7 +168,7 @@ function obtenerPorId(int $id): ?array {
 function eliminar_adopcion(int $id): bool {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $stmt = $conexion->prepare("DELETE FROM animal_venta WHERE id_animal = ?");
+        $stmt = $conexion->prepare("UPDATE animal_venta SET estado = 'Inactivo' WHERE id_animal = ?");
         return $stmt->execute([$id]);
     } catch (Exception $e) {
         return false;

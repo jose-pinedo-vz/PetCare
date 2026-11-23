@@ -1,15 +1,19 @@
 <?php
 declare(strict_types=1);
 date_default_timezone_set('America/Mexico_City');
-//requiere_once hace que se cargue el archivo que se le pone en este
-require_once __DIR__ . '/../models/fichaMedicaModelo.php';
-
-require_once __DIR__ . '/../models/citas.php';
-require_once __DIR__ . '/../controllers/ImagenController.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
-};
+}
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
+require_once __DIR__ . '/../models/fichaMedicaModelo.php';
+require_once __DIR__ . '/../models/citas.php';
+require_once __DIR__ . '/../controllers/ImagenController.php';
 
 $ficha = new FichaMedica();
 $idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
