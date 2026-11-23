@@ -68,10 +68,12 @@
 
 .corte-tabs {
   display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
   gap: 4px;
   margin-bottom: 22px;
   overflow-x: auto;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 4px solid var(--primary-dark);
 }
 
 .corte-acceso {
@@ -125,27 +127,50 @@
   padding-left: 18px;
 }
 
+/* Pestañas tipo carpeta: la activa es más grande */
 .corte-tab {
   flex: 0 0 auto;
-  padding: 12px 16px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: transparent;
+  padding: 8px 16px;
+  border: 1px solid var(--border-light);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: var(--gray-light);
   color: var(--texto-suave);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
+  transition: background-color 0.2s ease, color 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
 }
 
-.corte-tab:hover,
-.corte-tab:focus-visible {
+.corte-tab:hover {
+  background: var(--card);
   color: var(--primary-dark);
+}
+
+.corte-tab:focus-visible {
+  outline: 3px solid var(--accent-teal);
+  outline-offset: 2px;
 }
 
 .corte-tab.activa {
-  border-bottom-color: var(--primary-dark);
-  color: var(--primary-dark);
+  padding: 14px 28px;
+  border-color: var(--primary-dark);
+  background: var(--primary-dark);
+  color: var(--white);
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .corte-tab {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .corte-tab.activa {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
 }
 
 .corte-panel[hidden] {
