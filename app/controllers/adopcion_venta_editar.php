@@ -222,32 +222,57 @@ function validar_datos($datos) {
     $obs = $validarTextoLibre($datos['observaciones'] ?? '', 'Observaciones', 5, 500);
     if ($obs !== null) $datos['observaciones'] = $obs;
 
-    $foto = $_FILES['fotografia'] ?? null;
-    $datos['fotografia'] = null;
-    if (is_array($foto) && !empty($foto['name']) && $foto['error'] !== UPLOAD_ERR_NO_FILE) {
+    $idAnimal = (int)($datos['id_animal'] ?? $_POST['id'] ?? 0);
+    $foto = $datos['fotografia'] ?? ($_FILES['fotografia'] ?? null);
+
+    if (is_array($foto) && !empty($foto['name']) && ($foto['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
         $resultadoImagen = ImagenController::subir($foto);
         if ($resultadoImagen['exito']) {
             $datos['fotografia'] = $resultadoImagen['ruta'];
         } else {
             $errores[] = "Error en la foto: " . $resultadoImagen['mensaje'];
+            $fotoActual = null;
+            if (!empty($datos['fotografia_actual'])) {
+                $fotoActual = trim($datos['fotografia_actual']);
+            } elseif (!empty($_POST['fotografia_actual'])) {
+                $fotoActual = trim($_POST['fotografia_actual']);
+            } elseif ($idAnimal > 0) {
+                $animalExistente = obtenerPorId($idAnimal);
+                $fotoActual = $animalExistente['fotografia'] ?? null;
+            }
+            $datos['fotografia'] = ($fotoActual !== '' && $fotoActual !== 'Sin foto') ? $fotoActual : null;
         }
+    } else {
+        // No se seleccionó foto nueva: conservar la foto existente
+        $fotoActual = null;
+        if (!empty($datos['fotografia_actual'])) {
+            $fotoActual = trim($datos['fotografia_actual']);
+        } elseif (!empty($_POST['fotografia_actual'])) {
+            $fotoActual = trim($_POST['fotografia_actual']);
+        } elseif ($idAnimal > 0) {
+            $animalExistente = obtenerPorId($idAnimal);
+            $fotoActual = $animalExistente['fotografia'] ?? null;
+        }
+        $datos['fotografia'] = ($fotoActual !== '' && $fotoActual !== 'Sin foto') ? $fotoActual : null;
     }
+
+    $urlRedireccionEditar = "../views/editar_adopcion_venta.php" . ($idAnimal > 0 ? "?id=" . urlencode((string)$idAnimal) : "");
 
     if (count($errores) > 0) {
         $_SESSION['errores'] = $errores;
         $_SESSION['old']     = $_POST;
-        header("Location: ../views/ediaar_adopcion_venta.php");
+        header("Location: " . $urlRedireccionEditar);
         exit;
     } else {
         $advert = editar($datos);
         if (is_array($advert) && count($advert) > 0) {
             if ($advert[0] === "Error BD") {
                 $_SESSION['errores'] = ["No se pudo conectar a la base de datos: " . $advert[1]];
-            } else if ($advert[0] === "Error al Insertar") {
-                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . $advert[1]];
+            } else {
+                $_SESSION['errores'] = ["Error al guardar en la base de datos: " . ($advert[1] ?? 'Error desconocido')];
             }
             $_SESSION['old'] = $_POST;
-            header("Location: ../views/editar_adopcion_venta.php");
+            header("Location: " . $urlRedireccionEditar);
             exit;
         } else {
             header('Location: ../views/adopcion_venta.php');

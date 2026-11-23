@@ -10,13 +10,34 @@ $errores=$_SESSION['errores'] ?? [];
 $old=$_SESSION['old'] ?? [];
 unset($_SESSION['errores']);
 unset($_SESSION['old']);
-$id=$_GET['id'] ?? null;
+$id=$_GET['id'] ?? ($old['id'] ?? ($old['id_animal'] ?? null));
 if (!$id)
 {
     header('Location: ../views/adopcion_venta.php');
     exit;
 }
-$registro=obtenerPorId($id);
+$registro=obtenerPorId((int)$id);
+if (!$registro)
+{
+    header('Location: ../views/adopcion_venta.php');
+    exit;
+}
+
+$fotoActual = trim((string)($old['fotografia_actual'] ?? $registro['fotografia'] ?? ''));
+$rutaFotoActual = '';
+if ($fotoActual !== '' && $fotoActual !== 'Sin foto') {
+    if (str_starts_with($fotoActual, 'http://') || str_starts_with($fotoActual, 'https://') || str_starts_with($fotoActual, '/')) {
+        $rutaFotoActual = $fotoActual;
+    } elseif (str_starts_with($fotoActual, '../../')) {
+        $rutaFotoActual = $fotoActual;
+    } elseif (str_starts_with($fotoActual, '../')) {
+        $rutaFotoActual = '../' . $fotoActual;
+    } elseif (str_starts_with($fotoActual, 'uploads/')) {
+        $rutaFotoActual = '../../' . $fotoActual;
+    } else {
+        $rutaFotoActual = '../../uploads/mascotas/' . ltrim($fotoActual, '/');
+    }
+}
 
 $especieActual = (string) ($old['especie'] ?? $registro['especie'] ?? 'Perro');
 $razaActual = (string) ($old['raza'] ?? $registro['raza'] ?? '');
@@ -69,7 +90,7 @@ $especieIdActual = $mapaEspecieId[$especieActual] ?? '';
     <?php endif; ?>
     <form action="../controllers/actualizar_adopcion_venta.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= htmlspecialchars($registro['id_animal']) ?>">
-        <input type="hidden" name="fotografia_actual" value="<?= htmlspecialchars($registro['fotografia'] ?? '') ?>">
+        <input type="hidden" name="fotografia_actual" value="<?= htmlspecialchars($fotoActual) ?>">
 
 <fieldset>
   <legend> Datos generales</legend>
@@ -163,7 +184,12 @@ $especieIdActual = $mapaEspecieId[$especieActual] ?? '';
 
     <div>
         <label class="label-campo" for="fecha_de_ingreso">Fecha de ingreso *:</label>
-        <input type="datetime-local" class="campo" id="fecha_de_ingreso" name="fecha_de_ingreso" value="<?= htmlspecialchars($old['fecha_de_ingreso'] ?? $registro['fecha_de_ingreso'] ?? '') ?>" required>
+        <?php
+          $fechaIngresoValor = !empty($old['fecha_de_ingreso']) 
+            ? $old['fecha_de_ingreso'] 
+            : (!empty($registro['fecha_de_ingreso']) ? date('Y-m-d\TH:i', strtotime($registro['fecha_de_ingreso'])) : '');
+        ?>
+        <input type="datetime-local" class="campo" id="fecha_de_ingreso" name="fecha_de_ingreso" value="<?= htmlspecialchars($fechaIngresoValor) ?>" required>
     </div>
 
     <div>
@@ -180,10 +206,7 @@ $especieIdActual = $mapaEspecieId[$especieActual] ?? '';
         <label class="label-campo" for="estado">Estado:</label>
         <select class="campo" id="estado" name="estado">
             <?php $estadoActual = $old['estado'] ?? $registro['estado'] ?? ''; ?>
-            <option value="Venta legal" <?= ($estadoActual === 'Venta legal') ? 'selected' : '' ?>>Venta legal</option>
-            <option value="Adopcion" <?= ($estadoActual === 'Adopcion') ? 'selected' : '' ?>>Adopcion</option>
             <option value="Disponible" <?= in_array($estadoActual, ['Disponible', 'Venta legal', 'Venta Legal']) ? 'selected' : '' ?>>Venta legal</option>
-            <option value="Reservado" <?= in_array($estadoActual, ['Reservado', 'Adopcion', 'Adopción']) ? 'selected' : '' ?>>Adopcion</option>
             <option value="Adopcion" <?= in_array($estadoActual, ['Adopcion', 'Adopción', 'Reservado']) ? 'selected' : '' ?>>Adopción</option>
         </select>
     </div>
@@ -201,14 +224,15 @@ $especieIdActual = $mapaEspecieId[$especieActual] ?? '';
 
   <div class="campo-completo-sep">
     <label class="label-campo" for="fotografia">Fotografía:</label>
-    <?php if (!empty($registro['fotografia'])): ?>
+    <?php if (!empty($rutaFotoActual)): ?>
         <div style="margin-bottom: 10px;">
           <p class="nota-campo">Imagen actual:</p>
-          <img src="../../uploads/mascotas/<?= htmlspecialchars($registro['fotografia']) ?>" alt="Foto actual" style="max-width: 120px; border-radius: 4px;">
+          <img src="<?= htmlspecialchars($rutaFotoActual) ?>" alt="Foto actual" style="max-width: 120px; border-radius: 4px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="nota-campo" style="display:none; color: #8c7b6c;">Imagen no disponible</span>
         </div>
     <?php endif;?>
     <input type="file" class="campo" id="fotografia" name="fotografia" accept="image/*">
-    <img id="preview-crop" alt="Vista previa recortada (cuadrado)">
+    <img id="preview-crop" alt="Vista previa recortada (cuadrado)" style="display: none; max-width: 120px; border-radius: 4px; margin-top: 10px;">
     <p class="nota-campo">Al elegir una foto nueva se abrirá el cuadrado de recorte.</p>
   </div>
 
