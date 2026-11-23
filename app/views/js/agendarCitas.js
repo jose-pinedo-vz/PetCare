@@ -79,8 +79,9 @@ document.addEventListener("DOMContentLoaded", async function()
 // mostrar las mascotas de cada cliente en el select de mascotas
 document.addEventListener("DOMContentLoaded", async function()
 {
-    const cliente = document.getElementById('claveCliente');
+    //sconst cliente = document.getElementById('clietne');
     //console.log("¿Qué encontró el DOM?:", cliente);
+    const cliente = document.getElementById('cliente');
 
     if (cliente)
     {
@@ -110,6 +111,7 @@ document.addEventListener("DOMContentLoaded", async function()
             {
                 // console.log(error)
                 mascota.innerHTML = '<option value="">Error al cargar las mascotas</option>';
+                return;
             }
 
             mascota.innerHTML = "";
@@ -133,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async function()
                 }
             }
         }
-        cliente.addEventListener('input', (event) =>
+        cliente.addEventListener('change', (event) =>
         {
 
             elegir_mascota(event.target.value.trim());
@@ -170,8 +172,8 @@ document.addEventListener("DOMContentLoaded", async function()
                 for (const item of datos)
                 {
                     const option = document.createElement("option");
-                    option.value = item.id_servicio;
-                    option.textContent = item.nombre;
+                    option.value = item.id_cliente;
+                    option.textContent = item.id_cliente + " - " + item.nombre + " " + item.nombre ;
                     cliente.appendChild(option);
                 }
             }

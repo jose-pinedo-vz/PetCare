@@ -46,7 +46,7 @@ function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
 
-    $_SESSION['oldClave'] = $_POST['claveCliente'] ?? '';
+    $_SESSION['oldClave'] = $_POST['cliente'] ?? '';
     $_SESSION['oldFecha'] = $_POST['fecha'] ?? '';
     $_SESSION['oldMotivo'] = $_POST['motivoConsulta'] ?? '';
     $_SESSION['oldHorario'] = $_POST['horarioConsulta'] ?? '';
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     
     // datos 
-    $claveCliente = trim($_POST['claveCliente'] ?? '');
+    $claveCliente = trim($_POST['cliente'] ?? '');
     $mascota = trim($_POST['mascota'] ?? '');
     $fecha = trim($_POST['fecha'] ?? '');
     $duracion = trim($_POST['duracion'] ?? '');
@@ -502,6 +502,11 @@ function nombreDelUsuario(string $usuario)
     return ConexionesClientes::empleadoDelUsuario($usuario);
 }
 
+function MostrarnombreCliente(int $id_cliente)
+{
+    return ConexionesClientes::nombreCliente($id_cliente);
+}
+
 
 $accion = $_GET['accion'] ?? '';
 
@@ -521,3 +526,5 @@ if ($accion === "mostrarCliente")
     echo json_encode(ConexionesClientes::idConCliente());
     exit();
 }
+
+?>

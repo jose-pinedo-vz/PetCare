@@ -75,10 +75,20 @@ $usuario=$_SESSION['usuario'];
           <div>
             <label class="label-campo" for="claveCliente">Clave del cliente *:</label>
             <select class="campo" name="cliente" id="cliente" required>
-              <?php ?>
-              <option value="">Seleccione un Cliente</option>
-                  
-            </select>
+              <?php
+              if (!empty($_SESSION['oldClave'])) {
+                  $idOld = $_SESSION['oldClave'];
+                  unset($_SESSION['oldClave']);
+
+                  $res = MostrarnombreCliente($idOld);
+                  $fila = $res[0] ?? [];
+                  $textoOpcion = $idOld . " - " . ($fila['nombre'] ?? '') . " " . ($fila['apellido'] ?? '');
+                  ?>
+                  <option value="<?= htmlspecialchars((string)$idOld) ?>"><?= htmlspecialchars($textoOpcion) ?></option>
+              <?php } else { ?>
+                  <option value="">Seleccione un Cliente</option>
+              <?php } ?>
+          </select>
 
               
           </div>
