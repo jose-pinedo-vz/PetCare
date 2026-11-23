@@ -47,6 +47,7 @@ function insertar(array $datos) {
     )";
 
     try {
+        $conexion->beginTransaction();
         $stmt = $conexion->prepare($insert);
         $stmt->execute([
             ':id'                     => $id,
@@ -67,12 +68,28 @@ function insertar(array $datos) {
             ':condiciones_especiales' => $datos['condiciones_especiales'] ?? null,
             ':temperamento'           => $datos['temperamento'] ?? null,
             ':restricciones'          => $restricciones,
-            ':vacunas'                => $datos['vacunas'] ?? null,
+            // ':vacunas'                => $datos['vacunas'] ?? null,
+            ':vacunas'                => null,
             ':ultima_desparasitacion' => $datos['ultima_desparasitacion'] ?? null,
             ':observaciones'          => $datos['observaciones'] ?? null
         ]);
 
+        $insertarVacuna = $conexion->prepare("
+            INSERT INTO vacunas (id_mascota, vacuna_puesta, fecha_aplicacion, veterinario)
+            VALUES (?, ?, ?, NULL)
+        ");
+
+        foreach ((is_array($datos['vacunas'] ?? null) ? $datos['vacunas'] : []) as $idVacuna) {
+            $insertarVacuna->execute([$id, (int)$idVacuna, $datos['fechas_vacunas'][$idVacuna] ?? null]);
+        }
+
+        $conexion->commit();
+
     } catch (PDOException $e) {
+
+        if ($conexion->inTransaction()) {   // NUEVO
+            $conexion->rollBack();
+        }
 
         if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1452) {
             return ["Error ID"];
@@ -203,6 +220,103 @@ function obtenerMascotaPorId(int $id): ?array {
     }
 }
 
+function catalogoVacunasMascota(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "SELECT id, nombre, especie FROM lista_vacunas WHERE estado = 1 ORDER BY nombre ASC";
+        $resultado = $conexion -> query($sql);
+
+        if (!$resultado) {
+            return [];
+        }
+
+        return $resultado -> fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el catalogo de vacunas " . $error -> getMessage());
+        return [];
+    }
+}
+
+function obtenerVacunasMascota(int $idMascota): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT vacuna_puesta, fecha_aplicacion, veterinario
+            FROM vacunas
+            WHERE id_mascota = ? 
+            ORDER BY fecha_aplicacion DESC
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$idMascota]);
+
+        if (!$consulta) {
+            return [];
+        }
+
+        return $consulta -> fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error en obtener vacunas de la mascota " . $error -> getMessage());
+        return [];
+    }
+}
+
+function sincronizarVacunasMascota(int $idMascota, array $ids, array $fechas): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $conexion -> beginTransaction();
+
+        $administradas = array_map('intval', $conexion -> query("SELECT id FROM lista_vacunas WHERE estado = 1") -> fetchAll(PDO::FETCH_COLUMN));
+
+        // aplicadas en petcare
+        $consulta = $conexion -> prepare("SELECT DISTINCT vacuna_puesta FROM vacunas WHERE id_mascota = ? AND veterinario IS NOT NULL");
+        $consulta -> execute([$idMascota]);
+        $deClinica = array_map('intval', $consulta -> fetchAll(PDO::FETCH_COLUMN));
+        
+        //quitar la que esten desmarcadas
+        $quitar = array_values(array_diff($administradas, array_map('intval', $ids), $deClinica));
+
+        if ($quitar) {
+            $marcadas = implode(',', array_fill(0, count($quitar), '?'));
+            $consulta = $conexion -> prepare("DELETE FROM vacunas WHERE id_mascota = ? AND veterinario IS NULL AND vacuna_puesta IN ($marcadas)");
+            $consulta -> execute([$idMascota, ...$quitar]);
+        }
+
+        $buscar = $conexion -> prepare("SELECT COUnt(*) FROM vacunas WHERE id_mascota = ? AND vacuna_puesta = ? AND veterinario IS NULL");
+        $actualizar = $conexion -> prepare("UPDATE vacunas SET fecha_aplicacion = ? WHERE id_mascota = ? AND vacuna_puesta = ? AND veterinario IS NULL");
+        $insertar = $conexion -> prepare("INSERT INTO vacunas (id_mascota, vacuna_puesta, fecha_aplicacion, veterinario) VALUES (?, ?, ?, NULL)");
+
+        foreach ($ids as $idVacuna) {
+            $idVacuna = (int) $idVacuna;
+
+            if (in_array($idVacuna, $deClinica, true)) {
+                continue;
+            }
+
+            $fecha = $fechas[$idVacuna] ?? null;
+
+            $buscar -> execute([$idMascota, $idVacuna]);
+            if ((int) $buscar -> fetchColumn() > 0) {
+                $actualizar -> execute([$fecha, $idMascota, $idVacuna]);
+            } else {
+                $insertar -> execute([$idMascota, $idVacuna, $fecha]);
+            }
+        }
+
+        $conexion -> commit();
+        return true;
+
+    } catch (Exception $error) {
+        if (isset($conexion) && $conexion -> inTransaction()) {
+            $conexion -> rollBack();
+        }
+        error_log("Error en sincronizar vacunas de la mascota " . $error -> getMessage());
+        return false;
+    }
+}
+
 class Mascota {
     public static function obtenerVeterinariosActivos(): array {
         try {
@@ -297,6 +411,15 @@ class Mascota {
     }
     public static function eliminar(int $id): bool {
         return eliminar($id);
+    }
+    public static function catalogoVacunasMascota(): array {
+        return catalogoVacunasMascota();
+    }
+    public static function obtenerVacunasMascota(int $idMascota): array {
+        return obtenerVacunasMascota($idMascota);
+    }
+    public static function sincronizarVacunasMascota(int $idMascota, array $ids, array $fechas): bool {
+        return sincronizarVacunasMascota($idMascota, $ids, $fechas);
     }
 }
 

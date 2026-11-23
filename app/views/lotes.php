@@ -37,7 +37,10 @@ $por_caducar = 0;
 $unidad_lotes = 0;
 $lotes_vencidos = 0;
 foreach ($lotes as $lote){
-    if (!empty($lote['fecha_caducidad'])) {
+    $cantidadLote = (int) $lote['cantidad'];
+    if ($cantidadLote <= 0) {
+        $lotes_vencidos++;
+    } elseif (!empty($lote['fecha_caducidad'])) {
         $fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
         $diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
 
@@ -119,11 +122,12 @@ foreach ($lotes as $lote){
 				<div class="lotes-grid" id="lista-lotes">
 
 					<?php foreach ($lotes as $lote):
+						$cantidadLote = (int) $lote['cantidad'];
 						if (!empty($lote['fecha_caducidad'])) {
 							$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
 							$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
 
-							if ($diasRestantes < 0 || $lote['cantidad'] <= 0) {
+							if ($diasRestantes < 0 || $cantidadLote <= 0) {
 								$estado = 'vencido';
 								$textoEstado = 'Vencido';
 							} elseif ($diasRestantes <= 15) {
@@ -134,8 +138,8 @@ foreach ($lotes as $lote){
 								$textoEstado = 'Vigente';
 							}
 						} else {
-							$estado = 'vigente';
-							$textoEstado = 'Vigente';
+							$estado = $cantidadLote <= 0 ? 'vencido' : 'vigente';
+							$textoEstado = $cantidadLote <= 0 ? 'Vencido' : 'Vigente';
 						}
 
 						$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');

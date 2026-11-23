@@ -11,6 +11,7 @@ $listaMascotas = $datos['listaMascotas'];
 $detMascotas = $datos['detMascotas'];
 $detProp = $datos['detProp'];
 $edad = $datos['edad'];
+$vacunas_mascota = $datos['vacunas'] ?? [];
 
 $urlNuevaConsulta = !empty($detProp['id_cliente']) ? 'agendarCita.php?claveCliente=' . urlencode((string)$detProp['id_cliente']) : '#';
 $urlEditarMascota = $idMascota > 0 ? 'editar_mascota.php?id_mascota=' . urlencode((string)$idMascota) : '#';
@@ -46,13 +47,18 @@ unset($_SESSION['error']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Datos Mascota</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <style>
+    .columna-lateral .barra-acciones {
+    margin-top: 16px;
+    }
+  </style>
 </head>
 
 <body>
 
   <div class="layout">
 
-    <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php';?>
+    <?php $paginaActiva = 'veterinaria'; include __DIR__ . '/layout/sidebar.php';?>
 
     <main>
       <div class="migaja"><a href="veterinaria_Inicio.php" class="link-tenue">Veterinaria</a> / Datos de mascota</div>
@@ -126,18 +132,25 @@ unset($_SESSION['error']);
                 <thead>
                     <tr>
                         <th>Vacuna</th>
-                        <th>Aplicada</th>
                         <th>Fecha</th>
                         <th>Veterinario</th>
                     </tr>
                 </thead>
                 <tbody id="tablaVacunas"><!--Estas recuerda que se sacan de la tabla vacunas siempre que tengan el id de la mascota seleccionada-->
-                  <tr>
-                    <td>vacuna</td>
-                    <td>aplicada</td> <!-- Es tinyint en bd, o sea, 1 es atendido y 0 es no-->
-                    <td>11/11/2011</td>
-                    <td>Gerundi Bocanegra</td>
-                  </tr>
+                    <?php if (empty($vacunas_mascota)): ?>
+                        <tr>
+                            <td colspan="3">
+                                <?php echo $idMascota > 0 ? 'Esta mascota no tiene vacunas registradas' : 'Primero seleccione una mascota' ?>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                    <?php foreach ($vacunas_mascota as $vm): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($vm['vacuna']) ?></td>
+                            <td><?php echo !empty($vm['fecha_aplicacion']) ? htmlspecialchars(formatearFechaEsp((string)$vm['fecha_aplicacion'])) : 'Sin fecha' ?></td>
+                            <td><?php echo htmlspecialchars($vm['veterinario'] ?? 'Externo') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
               </table>
             </div>

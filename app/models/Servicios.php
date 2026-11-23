@@ -60,6 +60,20 @@ class Servicios
         return (int) $r->fetchColumn();
     }
 
+    // Revisa que el empleado exista y este activo
+    public static function empleadoActivo(int $idEmpleado): bool
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT COUNT(*) FROM empleados WHERE id_empleado = ? AND esta_activo + 0 = 1");
+            $stmt->execute([$idEmpleado]);
+            return $stmt->fetchColumn() > 0;
+        } catch (Exception $e) {
+            error_log("Error en Servicios::empleadoActivo: " . $e->getMessage());
+            return false;
+        }
+    }
+
     // Revisa si ya existe un servicio con ese nombre
     public static function existeNombre(string $nombre, int $excluirId = 0): bool
     {

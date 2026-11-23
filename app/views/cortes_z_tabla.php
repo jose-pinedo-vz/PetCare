@@ -1,6 +1,6 @@
 <div class="corte-tabla-envoltura">
     <table class="corte-tabla corte-tabla-historial">
-        <thead><tr><th>Folio</th><th>Fecha</th><th>Turno</th><th>Cajero apertura</th><th>Empleado cierre</th><th>Efectivo</th><th>Tarjeta</th><th>Transferencia</th><th>Total</th><th>Esperado</th><th>Contado</th><th>Diferencia</th><th>Estado</th><th>Detalle</th></tr></thead>
+        <thead><tr><th>Folio</th><th>Fecha</th><th>Turno</th><th>Cajero apertura</th><th>Empleado cierre</th><th>Pagos efectivo</th><th>Tarjeta</th><th>Transferencia</th><th>Total cobrado</th><th>Esperado en caja</th><th>Contado</th><th>Diferencia</th><th>Estado</th><th>Detalle</th></tr></thead>
         <tbody id="<?= htmlspecialchars($tablaHistorialId) ?>">
             <?php foreach ($historialCortes as $corte): ?>
                 <?php $cerrado = $corte['estado'] === 'cerrado'; ?>

@@ -77,7 +77,7 @@ $escaparMovimiento = static fn ($valor): string => htmlspecialchars((string) $va
               $tipoTexto = ucfirst($tipo);
               $empleado = trim((string) ($movimiento['nombre_empleado'] ?? '') . ' ' . (string) ($movimiento['apellido_empleado'] ?? ''));
               $fecha = strtotime((string) $movimiento['fecha']);
-              $fechaTexto = $fecha === false ? (string) $movimiento['fecha'] : date('d/m/Y, H:i', $fecha);
+              $fechaTexto = $fecha === false ? (string) $movimiento['fecha'] : date('d/m/Y', $fecha);
               $fechaFiltro = $fecha === false ? '' : date('Y-m-d', $fecha);
               $producto = $movimiento['nombre_producto'] ?? null;
             ?>
@@ -110,7 +110,8 @@ $escaparMovimiento = static fn ($valor): string => htmlspecialchars((string) $va
               </div>
               <div class="movimiento-datos">
                 <div><span>Fecha</span><strong><?= $escaparMovimiento($fechaTexto) ?></strong></div>
-                <div><span>Motivo</span><strong><?= $escaparMovimiento($movimiento['motivo'] ?: 'Sin motivo registrado') ?></strong></div>
+                <div><span>Cantidad</span><strong><?= (int) $movimiento['cantidad'] ?> (de <?= (int) $movimiento['existencia_anterior'] ?> a <?= (int) $movimiento['existencia_posterior'] ?>)</strong></div>
+                <div><span>Motivo</span><strong><?= $escaparMovimiento($movimiento['motivo'] ?: 'Sin motivo registrado') ?><?= !empty($movimiento['numero_factura']) ? ' · ' . $escaparMovimiento($movimiento['numero_factura']) : '' ?></strong></div>
                 <div><span>Empleado responsable</span><strong><?= $escaparMovimiento($empleado !== '' ? $empleado : 'No disponible') ?></strong></div>
               </div>
             </article>

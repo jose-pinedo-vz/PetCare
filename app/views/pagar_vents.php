@@ -95,7 +95,7 @@
                     </div>
                     <div class="pago-campo-completo">
                         <label for="nombreTarjeta">Titular de la tarjeta</label>
-                        <input class="campo" id="nombreTarjeta" type="text" autocomplete="cc-name" maxlength="60" minlength="3" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ .'\-]{3,60}" title="Solo letras, espacios, punto, apóstrofe o guion (3 a 60 caracteres)" placeholder="Como aparece en la tarjeta">
+                        <input class="campo" id="nombreTarjeta" type="text" autocomplete="cc-name" maxlength="60" minlength="3" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ .'\-]{3,60}" title="Solo letras, espacios, punto, apóstrofo o guion (3 a 60 caracteres)" placeholder="Como aparece en la tarjeta">
                     </div>
                     <div>
                         <label for="vencimientoTarjeta">Vencimiento</label>
@@ -111,7 +111,7 @@
             <section class="pago-detalles-metodo" id="detallesTransferencia" hidden aria-labelledby="tituloDatosTransferencia">
                 <h3 id="tituloDatosTransferencia">Datos de transferencia</h3>
                 <label for="referenciaTransferencia">Referencia / folio (opcional)</label>
-                <input class="campo" id="referenciaTransferencia" type="text" maxlength="80" autocomplete="off" placeholder="Referencia SPEI">
+                <input class="campo" id="referenciaTransferencia" type="text" maxlength="30" pattern="[A-Za-z0-9\-]{1,30}" title="Solo letras, números y guiones (máximo 30)" autocomplete="off" placeholder="Referencia SPEI">
             </section>
 
             <div class="pago-acciones">

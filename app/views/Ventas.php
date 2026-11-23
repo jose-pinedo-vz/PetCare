@@ -52,11 +52,17 @@ try {
 } catch (Throwable $e) {
     error_log('Ventas pagos: ' . $e->getMessage());
 }
-$pendientesServ = array_filter($pagosServicios, fn($f) => $f['saldo'] > 0 && $f['estado'] !== 'devolver');
-$porDevolver = array_filter($pagosServicios, fn($f) => $f['estado'] === 'devolver');
+$serviciosCitas = array_values(array_filter($pagosServicios, fn($f) => $f['tipo'] === 'cita'));
+$serviciosHotel = array_values(array_filter($pagosServicios, fn($f) => $f['tipo'] === 'hotel'));
+$pendientesServ = array_filter($serviciosCitas, fn($f) => $f['saldo'] > 0 && $f['estado'] !== 'devolver');
+$porDevolver = array_filter($serviciosCitas, fn($f) => $f['estado'] === 'devolver');
+$pendientesHotel = array_filter($serviciosHotel, fn($f) => $f['saldo'] > 0 && $f['estado'] !== 'devolver');
+$porDevolverHotel = array_filter($serviciosHotel, fn($f) => $f['estado'] === 'devolver');
+$saldoHotel = array_sum(array_column($pendientesHotel, 'saldo'));
+$conAbonoHotel = count(array_filter($pendientesHotel, fn($f) => $f['abonado'] > 0));
 $saldoServ = array_sum(array_column($pendientesServ, 'saldo'));
 $conAbonoServ = count(array_filter($pendientesServ, fn($f) => $f['abonado'] > 0));
-$categoriasServ = array_values(array_unique(array_filter(array_column($pagosServicios, 'categoria'))));
+$categoriasServ = array_values(array_unique(array_filter(array_column($serviciosCitas, 'categoria'))));
 $nominaPendiente = array_sum(array_map(fn($f) => $f['pagado'] ? 0 : $f['sueldo'], $nominaFilas));
 $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
 // Mostrar nombre del usuario
@@ -84,6 +90,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 <a href="#ventas" class="activa" id="pestanaVentas" aria-controls="panel-ventas" aria-current="page">1. Punto de venta</a>
                 <a href="#pagos" id="pestanaPagos" aria-controls="panel-pagos">2. Pagos de servicios</a>
                 <a href="#pagos-empleados" id="pestanaPagosEmpleados" aria-controls="panel-pagos-empleados">3. Pagos a empleados</a>
+                <a href="#pagos-hotel" id="pestanaPagosHotel" aria-controls="panel-pagos-hotel">4. Pagos de hotel</a>
             </nav>
 
             <section id="panel-ventas" class="ventas-panel" aria-labelledby="pestanaVentas">
@@ -192,14 +199,14 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 <section class="tarjeta" aria-labelledby="tituloPagosPendientes">
                     <div class="pagos-encabezado">
                         <div>
-                            <h2 id="tituloPagosPendientes">Pagos pendientes de servicios</h2>
-                            <p>Citas de consulta, estética y hotel en una sola lista de cobranza.</p>
+                            <h2 id="tituloPagosPendientes">Pagos de servicios</h2>
+                            <p>Citas de consulta y estética por pagar y pagadas. Al liquidarlas pasan a Pagado.</p>
                         </div>
                     </div>
                     <div class="pagos-filtros">
                         <div>
                             <label class="label-campo" for="buscarPagoServicio">Buscar</label>
-                            <input class="campo" id="buscarPagoServicio" type="search" placeholder="Folio, cliente, mascota o servicio">
+                            <input class="campo" id="buscarPagoServicio" type="search" placeholder="Cliente, mascota o servicio">
                         </div>
                         <div>
                             <label class="label-campo" for="filtroTipoServicio">Tipo de servicio</label>
@@ -214,7 +221,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                             <label class="label-campo" for="filtroEstadoPago">Estado del pago</label>
                             <select class="campo" id="filtroEstadoPago">
                                 <option value="">Todos los estados</option>
-                                <option value="pendiente">Pendiente</option>
+                                <option value="pendiente">Por pagar</option>
                                 <option value="parcial">Abono parcial</option>
                                 <option value="pagado">Pagado</option>
                                 <option value="devolver">Por devolver</option>
@@ -225,7 +232,6 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                         <table class="pagos-tabla">
                             <thead>
                                 <tr>
-                                    <th>Folio</th>
                                     <th>Fecha</th>
                                     <th>Cliente / mascota</th>
                                     <th>Servicio</th>
@@ -237,15 +243,14 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                                 </tr>
                             </thead>
                             <tbody id="tablaPagosPendientes">
-                                <?php if (empty($pagosServicios)): ?>
-                                    <tr><td colspan="9">No hay citas por cobrar.</td></tr>
+                                <?php if (empty($serviciosCitas)): ?>
+                                    <tr><td colspan="8">No hay citas por cobrar.</td></tr>
                                 <?php endif; ?>
-                                <?php foreach ($pagosServicios as $ps):
+                                <?php foreach ($serviciosCitas as $ps):
                                     $clsEstado = $ps['estado'] === 'pagado' ? 'pagada' : ($ps['estado'] === 'parcial' ? 'parcial' : ($ps['estado'] === 'devolver' ? 'cancelada' : 'pendiente'));
-                                    $txtEstado = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Pendiente'][$ps['estado']];
+                                    $txtEstado = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Por pagar'][$ps['estado']];
                                 ?>
                                 <tr data-kind="<?= $ps['tipo'] ?>" data-id="<?= (int)$ps['id'] ?>" data-tipo="<?= htmlspecialchars(strtolower((string)$ps['categoria'])) ?>" data-estado="<?= $ps['estado'] ?>" data-fecha="<?= htmlspecialchars(substr((string)$ps['fecha'], 0, 10)) ?>" data-total="<?= $ps['total'] ?>" data-pagado="<?= $ps['abonado'] ?>" data-saldo="<?= $ps['saldo'] ?>">
-                                    <td><strong><?= htmlspecialchars($ps['folio']) ?></strong></td>
                                     <td><?= $ps['fecha'] ? date('d/m/Y', strtotime($ps['fecha'])) : '' ?></td>
                                     <td><?= htmlspecialchars((string)$ps['cliente']) ?><small><?= htmlspecialchars((string)$ps['mascota'] . ' · ' . (string)$ps['especie']) ?></small></td>
                                     <td><?= htmlspecialchars((string)$ps['servicio']) ?></td>
@@ -266,6 +271,95 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                         </table>
                     </div>
                     <p id="mensajePagoServicio" class="venta-mensaje" role="status" aria-live="polite"></p>
+                </section>
+            </section>
+
+            <section id="panel-pagos-hotel" class="ventas-panel" aria-labelledby="pestanaPagosHotel" hidden>
+                <div class="inventario-resumen pagos-resumen" aria-label="Resumen de pagos de hotel">
+                    <article class="inventario-tarjeta">
+                        <h3>Reservaciones por pagar</h3>
+                        <p><?= count($pendientesHotel) ?></p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Saldo pendiente</h3>
+                        <p>$<?= number_format($saldoHotel, 2) ?></p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Con abonos</h3>
+                        <p><?= $conAbonoHotel ?></p>
+                    </article>
+                    <article class="inventario-tarjeta">
+                        <h3>Por devolver</h3>
+                        <p>$<?= number_format(array_sum(array_column($porDevolverHotel, 'abonado')), 2) ?></p>
+                    </article>
+                </div>
+
+                <section class="tarjeta" aria-labelledby="tituloPagosHotel">
+                    <div class="pagos-encabezado">
+                        <div>
+                            <h2 id="tituloPagosHotel">Pagos de hotel</h2>
+                            <p>Reservaciones de hotel por pagar. Al liquidarlas pasan a Pagado.</p>
+                        </div>
+                    </div>
+                    <div class="pagos-filtros">
+                        <div>
+                            <label class="label-campo" for="buscarPagoHotel">Buscar</label>
+                            <input class="campo" id="buscarPagoHotel" type="search" placeholder="Cliente o mascota">
+                        </div>
+                        <div>
+                            <label class="label-campo" for="filtroEstadoHotel">Estado del pago</label>
+                            <select class="campo" id="filtroEstadoHotel">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Por pagar</option>
+                                <option value="parcial">Abono parcial</option>
+                                <option value="pagado">Pagado</option>
+                                <option value="devolver">Por devolver</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tabla-envoltura pagos-tabla-envoltura">
+                        <table class="pagos-tabla">
+                            <thead>
+                                <tr>
+                                    <th>Entrada</th>
+                                    <th>Cliente / mascota</th>
+                                    <th>Estancia</th>
+                                    <th>Total</th>
+                                    <th>Abonado</th>
+                                    <th>Saldo</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaPagosHotel">
+                                <?php if (empty($serviciosHotel)): ?>
+                                    <tr><td colspan="8">No hay reservaciones de hotel.</td></tr>
+                                <?php endif; ?>
+                                <?php foreach ($serviciosHotel as $ph):
+                                    $clsEstadoH = $ph['estado'] === 'pagado' ? 'pagada' : ($ph['estado'] === 'parcial' ? 'parcial' : ($ph['estado'] === 'devolver' ? 'cancelada' : 'pendiente'));
+                                    $txtEstadoH = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Por pagar'][$ph['estado']];
+                                ?>
+                                <tr data-kind="hotel" data-id="<?= (int)$ph['id'] ?>" data-estado="<?= $ph['estado'] ?>" data-total="<?= $ph['total'] ?>" data-pagado="<?= $ph['abonado'] ?>" data-saldo="<?= $ph['saldo'] ?>">
+                                    <td><?= $ph['fecha'] ? date('d/m/Y', strtotime($ph['fecha'])) : '' ?></td>
+                                    <td><?= htmlspecialchars((string)$ph['cliente']) ?><small><?= htmlspecialchars((string)$ph['mascota'] . ' · ' . (string)$ph['especie']) ?></small></td>
+                                    <td><?= htmlspecialchars((string)$ph['servicio']) ?></td>
+                                    <td>$<?= number_format($ph['total'], 2) ?></td>
+                                    <td class="pago-abonado">$<?= number_format($ph['abonado'], 2) ?></td>
+                                    <td class="pago-saldo"><strong>$<?= number_format($ph['saldo'], 2) ?></strong></td>
+                                    <td class="pago-estado"><span class="historial-estado <?= $clsEstadoH ?>"><?= $txtEstadoH ?></span></td>
+                                    <td>
+                                        <?php if ($ph['estado'] === 'devolver'): ?>
+                                            <button class="btn btn-secundario btn-chico" type="button" data-devolver <?= $puedeAdminPagos ? '' : 'disabled' ?>>Devolver</button>
+                                        <?php else: ?>
+                                            <button class="btn btn-info btn-chico" type="button" data-registrar-pago <?= $ph['saldo'] <= 0 ? 'disabled' : '' ?>>Registrar pago</button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="mensajePagoHotel" class="venta-mensaje" role="status" aria-live="polite"></p>
                 </section>
             </section>
 
@@ -487,15 +581,18 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
         const pestanasVentas = [
             { enlace: document.getElementById('pestanaVentas'), panel: document.getElementById('panel-ventas') },
             { enlace: document.getElementById('pestanaPagos'), panel: document.getElementById('panel-pagos') },
-            { enlace: document.getElementById('pestanaPagosEmpleados'), panel: document.getElementById('panel-pagos-empleados') }
+            { enlace: document.getElementById('pestanaPagosEmpleados'), panel: document.getElementById('panel-pagos-empleados') },
+            { enlace: document.getElementById('pestanaPagosHotel'), panel: document.getElementById('panel-pagos-hotel') }
         ];
 
         function activarPestana() {
-            const indiceActivo = window.location.hash === '#pagos-empleados'
-                ? 2
-                : window.location.hash === '#pagos'
-                    ? 1
-                    : 0;
+            const indiceActivo = window.location.hash === '#pagos-hotel'
+                ? 3
+                : window.location.hash === '#pagos-empleados'
+                    ? 2
+                    : window.location.hash === '#pagos'
+                        ? 1
+                        : 0;
             pestanasVentas.forEach(({ enlace, panel }, indice) => {
                 const activa = indice === indiceActivo;
                 enlace.classList.toggle('activa', activa);
@@ -542,13 +639,12 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
             document.getElementById('cambioPago').hidden = esServicio;
 
             if (esServicio) {
-                const nombreServicio = fila.cells[3].textContent.trim();
-                const folio = fila.cells[0].textContent.trim();
-                const clienteMascota = fila.cells[2].textContent.trim();
+                const nombreServicio = fila.cells[2].textContent.trim();
+                const clienteMascota = fila.cells[1].textContent.trim();
                 filasResumenPago.replaceChildren();
                 const renglon = document.createElement('tr');
                 const detalle = document.createElement('td');
-                detalle.textContent = `${folio} · ${nombreServicio} · ${clienteMascota}`;
+                detalle.textContent = `${nombreServicio} · ${clienteMascota}`;
                 const cantidad = document.createElement('td');
                 cantidad.textContent = '1';
                 const precio = document.createElement('td');
@@ -672,11 +768,12 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 return;
             }
 
-            if (metodoPagoActual === 'Tarjeta') {
-                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
-                    .every((campo) => campo.reportValidity());
-                if (!tarjetaValida) return;
-            }
+            if (metodoPagoActual === 'Tarjeta') {
+                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
+                    .every((campo) => campo.reportValidity());
+                if (!tarjetaValida) return;
+            }
+            if (metodoPagoActual === 'Transferencia' && !document.getElementById('referenciaTransferencia').reportValidity()) return;
 
             if (esServicio) {
                 const fila = contextoPago.fila;
@@ -696,13 +793,14 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                     }
                 }).then((r) => {
                     botonConfirmarPago.disabled = false;
+                    const esHotel = fila.dataset.kind === 'hotel';
                     if (!r.ok) {
-                        document.getElementById('mensajePagoServicio').textContent = r.error || 'No se pudo registrar el pago.';
+                        document.getElementById(esHotel ? 'mensajePagoHotel' : 'mensajePagoServicio').textContent = r.error || 'No se pudo registrar el pago.';
                         modalPagarVenta.close();
                         return;
                     }
                     modalPagarVenta.close();
-                    recargarCon(`Abono de ${moneda.format(importe)} con ${metodoPagoActual} registrado` + (r.autorizacion ? ` (autorización ${r.autorizacion}).` : '.'), '#pagos');
+                    recargarCon(`Abono de ${moneda.format(importe)} con ${metodoPagoActual} registrado` + (r.autorizacion ? ` (autorización ${r.autorizacion}).` : '.'), esHotel ? '#pagos-hotel' : '#pagos');
                 });
                 return;
             }
@@ -736,7 +834,9 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
         });
 
         const moneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
-        const filasPagoServicio = [...document.querySelectorAll('#tablaPagosPendientes tr[data-id]')];
+        const filasPagoServicio = [...document.querySelectorAll('#tablaPagosPendientes tr[data-id], #tablaPagosHotel tr[data-id]')];
+        const filasSoloServicios = [...document.querySelectorAll('#tablaPagosPendientes tr[data-id]')];
+        const filasSoloHotel = [...document.querySelectorAll('#tablaPagosHotel tr[data-id]')];
 
         function actualizarResumenPagos() {
             const pendientes = filasPagoServicio.filter((fila) => Number(fila.dataset.saldo) > 0);
@@ -751,15 +851,15 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
             const btnDev = fila.querySelector('[data-devolver]');
             if (btnDev) {
                 btnDev.addEventListener('click', () => {
-                    if (!confirm(`¿Devolver ${moneda.format(Number(fila.dataset.pagado))} de ${fila.cells[0].textContent.trim()}? Tarjeta: se reversa en el banco. Efectivo: sale de tu caja.`)) return;
+                    if (!confirm(`¿Devolver ${moneda.format(Number(fila.dataset.pagado))} de ${fila.cells[1].textContent.trim()}? Tarjeta: se reversa en el banco. Efectivo: sale de tu caja.`)) return;
                     btnDev.disabled = true;
                     llamarPagos({ accion: 'devolver', tipo: fila.dataset.kind, id: Number(fila.dataset.id) }).then((r) => {
                         if (!r.ok) {
                             btnDev.disabled = false;
-                            document.getElementById('mensajePagoServicio').textContent = r.error || 'No se pudo devolver.';
+                            document.getElementById(fila.dataset.kind === 'hotel' ? 'mensajePagoHotel' : 'mensajePagoServicio').textContent = r.error || 'No se pudo devolver.';
                             return;
                         }
-                        recargarCon(`Devolución registrada: ${moneda.format(r.devuelto || 0)}.`, '#pagos');
+                        recargarCon(`Devolución registrada: ${moneda.format(r.devuelto || 0)}.`, fila.dataset.kind === 'hotel' ? '#pagos-hotel' : '#pagos');
                     });
                 });
                 return;
@@ -776,7 +876,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
             const q = document.getElementById('buscarPagoServicio').value.trim().toLowerCase();
             const tipo = document.getElementById('filtroTipoServicio').value;
             const estado = document.getElementById('filtroEstadoPago').value;
-            filasPagoServicio.forEach((fila) => {
+            filasSoloServicios.forEach((fila) => {
                 const coincide = (!q || fila.textContent.toLowerCase().includes(q)) &&
                     (!tipo || fila.dataset.tipo === tipo) && (!estado || fila.dataset.estado === estado);
                 fila.hidden = !coincide;
@@ -786,12 +886,23 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
             document.getElementById(id).addEventListener('input', filtrarPagosServicio);
         });
 
+        function filtrarPagosHotel() {
+            const q = document.getElementById('buscarPagoHotel').value.trim().toLowerCase();
+            const estado = document.getElementById('filtroEstadoHotel').value;
+            filasSoloHotel.forEach((fila) => {
+                fila.hidden = !((!q || fila.textContent.toLowerCase().includes(q)) && (!estado || fila.dataset.estado === estado));
+            });
+        }
+        ['buscarPagoHotel', 'filtroEstadoHotel'].forEach((id) => {
+            document.getElementById(id).addEventListener('input', filtrarPagosHotel);
+        });
+
         try {
             const guardado = sessionStorage.getItem('mensajePagos');
             if (guardado) {
                 sessionStorage.removeItem('mensajePagos');
                 const { mensaje, hash } = JSON.parse(guardado);
-                const destino = document.getElementById(hash === '#pagos-empleados' ? 'mensajePagoEmpleado' : 'mensajePagoServicio');
+                const destino = document.getElementById(hash === '#pagos-empleados' ? 'mensajePagoEmpleado' : (hash === '#pagos-hotel' ? 'mensajePagoHotel' : 'mensajePagoServicio'));
                 if (destino) destino.textContent = mensaje;
             }
         } catch (e) {}

@@ -61,7 +61,7 @@ if ($modalError === 'eliminar') {
 <body>
 <div class="layout">
 
-  <?php $paginaActiva = 'Veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
+  <?php $paginaActiva = 'veterinaria'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
     <div class="migaja"><a href="veterinaria_Inicio.php" class="link-tenue">Veterinaria</a> / Vacunas</div>
