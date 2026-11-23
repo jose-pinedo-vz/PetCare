@@ -501,7 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const total = Number(totalPagar.textContent.replace('$', '')) || 0;
             const MontoResivido = Number(inputMonto.value) || 0;
 
-            const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
+            const idCliente = Number(document.getElementById('cliente')?.value) || 0;
             //const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
             const idEmpleado = Number(document.getElementById('datosSesion')?.dataset.idEmpleado) || 0;
 

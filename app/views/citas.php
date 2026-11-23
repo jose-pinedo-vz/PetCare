@@ -145,7 +145,7 @@ if (session_status() === PHP_SESSION_NONE)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Citas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/citas.js?v=3"></script>
+  <script src="js/citas.js?v=4"></script>
 </head>
 
 <body>

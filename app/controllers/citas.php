@@ -420,7 +420,8 @@ function erroresDeReprogramarCitas(string $error, $nuevaFecha, $responsable, $nu
 function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorario)
 {
     // validaciones 
-    if ($idConsulta === '' || $nuevaFecha === '' || $responsable === '' || $nuevoHorario === '')
+    // if ($idConsulta === '' || $nuevaFecha === '' || $responsable === '' || $nuevoHorario === '')
+    if ($idConsulta === '' || $nuevaFecha === '' || $nuevoHorario === '')
     {
         erroresDeReprogramarCitas("Todos los campos son obligatorios.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
@@ -452,7 +453,8 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
     $citaDetalle = ConexionesClientes::obtenerDetalleCita((int)$idConsulta);
     $idMascota = $citaDetalle ? (int)$citaDetalle['mascota'] : null;
     $idCliente = $citaDetalle ? (int)$citaDetalle['cliente'] : null;
-    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)($citaDetalle['empleado'] ?? 0), $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
+    //$HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
     if ($HayMasHoras)
     {
         erroresDeReprogramarCitas("Ya hay una consulta registrada para este horario (el responsable, el cliente o la mascota ya tienen cita a esta hora).", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);

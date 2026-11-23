@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario'])) {
+    http_response_code(403);
+    exit('Inicia sesión para descargar la orden de compra.');
+}
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../models/Pedidos.php';
 
