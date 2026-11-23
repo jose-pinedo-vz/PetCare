@@ -143,7 +143,8 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                         </table>
                     </div>
                     <div class="venta-carrito-acciones">
-                        <button class="btn btn-info btn-chico" id="btnAgregarServicio" type="button">Agregar servicio</button>
+                        <!-- Oculto temporalmente (el JS aún lo referencia, por eso no se comenta): -->
+                        <button class="btn btn-info btn-chico" id="btnAgregarServicio" type="button" hidden style="display:none">Agregar servicio</button>
                         <button class="btn btn-chico" id="btnNuevaVenta" type="button">Nueva venta</button> <!-- este boton deberia limpiar la venta actual y reiniciar todo, tambien se deberia preguntar si se desea cancelar la venta actual, o eso interprete -->
                     </div>
                     <p class="venta-mensaje" id="ventaMensaje" role="status" aria-live="polite"></p>
