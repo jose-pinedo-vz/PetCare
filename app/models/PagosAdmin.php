@@ -104,7 +104,7 @@ class PagosAdmin
         foreach ($db->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $f) {
             $f['tipo'] = 'hotel';
             $f['folio'] = 'HT-' . $f['id'];
-            $f['cancelada'] = in_array(strtolower((string)$f['estado_cita']), ['cancelada', 'vencida', 'abandonada'], true);
+            $f['cancelada'] = in_array(strtolower((string)$f['estado_cita']), ['cancelada', 'cancelado', 'no asistio', 'vencida', 'abandonada'], true);
             $filas[] = $f;
         }
 
@@ -180,6 +180,8 @@ class PagosAdmin
                 CorteCaja::registrarMovimiento($db, (int)$corte['id'], $empleado, 'ingreso manual', 'Pago de servicio ' . $fila['folio'], $monto, null, 'Cobro en efectivo de ' . $fila['folio']);
             }
             if ($tipo === 'hotel' && round($fila['saldo'] - $monto, 2) <= 0) {
+                // Reservacion de recepcion: Por pagar -> Pagado. Reservacion del cliente: Pendiente de pago -> Confirmada.
+                $db->prepare("UPDATE hotel SET estado = 'Pagado' WHERE id_reservacion = ? AND LOWER(TRIM(estado)) = 'por pagar'")->execute([$id]);
                 $db->prepare("UPDATE hotel SET estado = 'Confirmada' WHERE id_reservacion = ? AND estado = 'Pendiente de pago'")->execute([$id]);
             }
         } catch (Throwable $e) {
