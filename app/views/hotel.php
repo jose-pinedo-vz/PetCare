@@ -64,14 +64,14 @@ $estadosReservacion = [
     'cancelado' => 'Cancelado',
     'no asistio' => 'No asistio',
     'finalizado' => 'Finalizado',
-    'cancelada' => 'Cancelada',
-    'pendiente cartilla' => 'Pendiente cartilla',
-    'vencida' => 'Vencida',
-    'abandonada' => 'Abandonada',
-    'activo' => 'Activo',
-    'inactivo' => 'Inactivo',
-    'pendiente de pago' => 'Pendiente de pago',
-    'confirmada' => 'Confirmada',
+    //'cancelada' => 'Cancelada',
+    //'pendiente cartilla' => 'Pendiente cartilla',
+    //'vencida' => 'Vencida',
+    //'abandonada' => 'Abandonada',
+    //'activo' => 'Activo',
+    //'inactivo' => 'Inactivo',
+    //'pendiente de pago' => 'Pendiente de pago',
+    //'confirmada' => 'Confirmada',
 ];
 ?>
 <!DOCTYPE html>
@@ -284,9 +284,7 @@ $estadosReservacion = [
                                                 <?php if (in_array($estado, $estadosAbiertos, true)): ?>
                                                     <button type="button" class="btn btn-secundario btn-chico" data-hotel-accion="reservacion_cancelar" data-id="<?= (int) $reservacion['id_reservacion'] ?>">Cancelar</button>
                                                     <button type="button" class="btn btn-secundario btn-chico" data-hotel-accion="reservacion_no_asistio" data-id="<?= (int) $reservacion['id_reservacion'] ?>">No asistió</button>
-                                                    <?php if (in_array($estado, ['por pagar', 'pendiente de pago'], true)): ?>
-                                                        <button type="button" class="btn btn-chico" disabled title="Disponible cuando se integre el módulo de pagos">Pagar</button>
-                                                    <?php endif; ?>
+                                                    
                                                     <?php if ($puedeFinalizar): ?>
                                                         <button type="button" class="btn btn-chico" data-hotel-accion="reservacion_finalizar" data-id="<?= (int) $reservacion['id_reservacion'] ?>">Finalizar</button>
                                                     <?php endif; ?>
