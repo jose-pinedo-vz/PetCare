@@ -4,7 +4,7 @@
             <div><span class="corte-kicker">Movimiento de efectivo</span><h2 id="tituloSalida">Registrar movimiento</h2></div>
             <button class="corte-dialog-cerrar" type="button" data-cerrar-dialog aria-label="Cerrar ventana">×</button>
         </div>
-        <p class="corte-dialog-descripcion">El movimiento quedará asociado a este corte y al empleado que lo registra. El fondo fijo de $1,000 se conserva; los retiros se muestran aparte de los gastos operativos.</p>
+        <p class="corte-dialog-descripcion">El movimiento quedará asociado a este corte y al empleado que lo registra. Separar dinero para resguardo reduce el efectivo físico esperado, pero no es un gasto ni una pérdida.</p>
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
         <input type="hidden" name="periodo" value="<?= htmlspecialchars($periodo) ?>">
         <input type="hidden" name="accion" value="movimiento">
@@ -15,7 +15,7 @@
                 <select class="campo" id="tipoMovimiento" name="tipo" required>
                     <option value="ingreso manual">Otro ingreso de caja (no venta)</option>
                     <option value="nomina">Nómina</option>
-                    <option value="retiro">Retiro / entrega a resguardo</option>
+                    <option value="retiro">Dinero separado para resguardo</option>
                     <option value="gasto">Gasto</option>
                 </select>
             </div>

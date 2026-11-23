@@ -5,7 +5,7 @@
     </div>
     <div class="corte-confirmacion-resumen">
         <p>Vas a marcar como cerrado el corte del turno <strong>Matutino</strong>.</p>
-        <div><span>Efectivo esperado</span><strong id="resumenCierreEsperado">$5,280.00</strong></div>
+        <div><span>Efectivo esperado en caja</span><strong id="resumenCierreEsperado">$5,280.00</strong></div>
         <div><span>Efectivo contado</span><strong id="resumenCierreContado">$5,280.00</strong></div>
         <div><span>Diferencia</span><strong id="resumenCierreDiferencia">$0.00</strong></div>
     </div>

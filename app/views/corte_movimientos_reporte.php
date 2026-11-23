@@ -10,7 +10,7 @@
                 $etiquetaMovimiento = $esIngreso
                     ? 'Otro ingreso de caja'
                     : ($esRetiro
-                        ? 'Retiro / resguardo'
+                        ? 'Dinero separado para resguardo'
                         : 'Gasto operativo: ' . ($movimientosTipos[$movimiento['tipo']] ?? $movimiento['tipo']));
                 ?>
                 <tr>

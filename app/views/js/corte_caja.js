@@ -32,6 +32,23 @@
         });
     });
 
+    document.querySelectorAll('[data-grafica-vista]').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            const grupo = boton.closest('[data-grafica-grupo]');
+            if (!grupo) return;
+
+            const vista = boton.dataset.graficaVista;
+            grupo.querySelectorAll('[data-grafica-vista]').forEach((opcion) => {
+                const activa = opcion === boton;
+                opcion.classList.toggle('activa', activa);
+                opcion.setAttribute('aria-pressed', String(activa));
+            });
+            grupo.querySelectorAll('[data-grafica-panel]').forEach((panel) => {
+                panel.hidden = panel.dataset.graficaPanel !== vista;
+            });
+        });
+    });
+
     document.getElementById('abrirArqueo')?.addEventListener('click', () => {
         if (dialogArqueo && !dialogArqueo.open) dialogArqueo.showModal();
     });
