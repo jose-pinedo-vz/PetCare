@@ -86,6 +86,11 @@ if (!$resultado['exito']) {
     $old = $_POST;
     unset($old['contrasena'], $old['confirmar_contrasena']);
     $_SESSION['errores'] = [$resultado['mensaje']];
+
+    $_SESSION['nombre'] = trim($_POST['usuario'] ?? '');
+    $_SESSION['errores'] = [$resultado['mensaje']];
+
+
     $_SESSION['old'] = $old;
     header('Location: ../views/cliente/crear_cuenta.php');
     exit;
