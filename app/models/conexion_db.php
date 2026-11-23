@@ -47,6 +47,9 @@ class ConexionDB
             return self::$conexion;
         }
 
+        // Hora de Mexico para todo el sistema (PHP y MySQL), sin depender del servidor
+        date_default_timezone_set('America/Mexico_City');
+
         try {
             $rutaEnv = __DIR__ . '/../../.env';
             if (!file_exists($rutaEnv))
@@ -68,6 +71,7 @@ class ConexionDB
             
             self::$conexion = new PDO($dsn, $user, $pass);
             self::$conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$conexion->exec("SET time_zone = '" . (new DateTime('now'))->format('P') . "'");
             
             return self::$conexion;
 

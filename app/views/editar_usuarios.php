@@ -86,7 +86,6 @@ $usuario=$_SESSION['usuario'];
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
                             <option value="admin"           <?= ($user_edi['rol'] === 'admin') ? 'selected' : '' ?>>Administrador</option>
-                            <option value="gerente"         <?= ($user_edi['rol'] === 'gerente') ? 'selected' : '' ?>>Gerente</option>
                             <option value="veterinario"     <?= ($user_edi['rol'] === 'veterinario') ? 'selected' : '' ?>>Veterinario</option>
                             <option value="cajero"          <?= ($user_edi['rol'] === 'cajero') ? 'selected' : '' ?>>Cajero</option>
                             <option value="vendedor"        <?= ($user_edi['rol'] === 'vendedor') ? 'selected' : '' ?>>Vendedor</option>
@@ -122,7 +121,7 @@ $usuario=$_SESSION['usuario'];
 
       const rolPorPuesto = {
         'administrador': 'admin',
-        'gerente': 'gerente',
+        'gerente': 'admin',
         'veterinario': 'veterinario',
         'veterinario/a': 'veterinario',
         'vendedor': 'vendedor',
