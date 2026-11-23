@@ -12,7 +12,7 @@ $conexion = ConexionDB::obtenerConexion();
 $mensaje = '';
 $error = '';
 
-$rolesValidos = ['admin', 'gerente', 'veterinario', 'recepcionista', 'vendedor', 'estilista', 'hotelero', 'cajero'];
+$rolesValidos = ['admin', 'veterinario', 'recepcionista', 'vendedor', 'estilista', 'hotelero', 'cajero'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nuevo_usuario = trim($_POST['nuevo_usuario'] ?? '');
