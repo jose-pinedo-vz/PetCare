@@ -184,13 +184,73 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     }
 
     // Vacunas Opcional
-    if (empty(trim($datos['vacunas']))) {
-        $datos['vacunas'] = null;
-    }//else{
+    /* if (empty(trim($datos['vacunas']))) { */
+    /*     $datos['vacunas'] = null; */
+    /* }//else{ */
      //   if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['vacunas'])) {
      //       $errores[] = "Las vacunas deben incluir el nombre o texto, no solo números.";
      //   }
      //}
+
+    // Vacunas Opcional
+    if (is_array($datos['vacunas'])) {
+
+        // NUEVO: id de la especie elegida (el formulario manda el nombre, no el id)
+        $idEspecieMascota = null;
+        foreach (Mascota::obtenerEspecies() as $registroEspecie) {
+            if ($registroEspecie['especie'] === $datos['especie']) {
+                $idEspecieMascota = (int)$registroEspecie['id'];
+                break;
+            }
+        }
+
+        // NUEVO: vacunas del catalogo que SI corresponden a esa especie
+        $catalogoPermitido = [];
+        foreach (Mascota::catalogoVacunasMascota() as $registroVacuna) {
+            if ((int)$registroVacuna['especie'] === $idEspecieMascota) {
+                $catalogoPermitido[] = (int)$registroVacuna['id'];
+            }
+        }
+
+        $idsVacunas = [];
+        $fechasVacunas = [];
+
+        foreach (array_unique(array_map('intval', $datos['vacunas'])) as $idVacuna) {
+
+            if (!in_array($idVacuna, $catalogoPermitido, true)) {
+                $errores[] = "Una de las vacunas seleccionadas no corresponde a la especie de la mascota.";
+                continue;
+            }
+
+            $idsVacunas[] = $idVacuna;
+
+            // La fecha es opcional: puede haberse puesto en otra veterinaria y no saberse
+            $fechaVacuna = $datos['fechas_vacunas'][$idVacuna] ?? '';
+            $fechaVacuna = trim(is_string($fechaVacuna) ? $fechaVacuna : '');
+
+            if ($fechaVacuna === '') {
+                $fechasVacunas[$idVacuna] = null;
+                continue;
+            }
+
+            $fechasVacunas[$idVacuna] = $fechaVacuna;
+            $objetoFecha = DateTime::createFromFormat('Y-m-d', $fechaVacuna);
+
+            if (!$objetoFecha || $objetoFecha->format('Y-m-d') !== $fechaVacuna) {
+                $errores[] = "La fecha de una vacuna no es válida.";
+            } elseif ($objetoFecha > new DateTime('today')) {
+                $errores[] = "La fecha de una vacuna no puede ser posterior a hoy.";
+            } elseif (!empty($datos['edad']) && $fechaVacuna < $datos['edad']) {
+                $errores[] = "La fecha de una vacuna no puede ser anterior al nacimiento de la mascota.";
+            }
+        }
+
+        $datos['vacunas'] = $idsVacunas;
+        $datos['fechas_vacunas'] = $fechasVacunas;
+
+    } elseif (empty(trim($datos['vacunas']))) {
+        $datos['vacunas'] = null;
+    }
 
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
@@ -301,6 +361,12 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
 
             $valoresFinales = [];
             foreach ($camposEditables as $campo) {
+
+                if ($campo === 'vacunas') {
+                    $valoresFinales[] = $mascotaActual['vacunas'] ?? null;
+                    continue; 
+                }
+
                 $valoresFinales[] = $datos[$campo] ?? null;
             }
 
@@ -318,6 +384,17 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
               exit;
             }
 
+            if (is_array($datos['vacunas'] ?? null)) {
+                $exitoVacunas = Mascota::sincronizarVacunasMascota($idMascota, $datos['vacunas'], $datos['fechas_vacunas'] ?? []);
+
+                if (!$exitoVacunas) {
+                    $_SESSION['errores'] = ["La mascota se actualizo pero no se pudieron guardar sus vacunas."];
+                    $_SESSION['old'] = $datos;
+                    header('Location: ../views/editar_mascota.php?id_mascota=' . $idMascota);
+                    exit;
+                }
+            }
+            
             header('Location: ../views/mascotas.php');
             exit;
 

@@ -106,6 +106,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    especie.addEventListener('change', () => filtrarRazas(true));
+    const contenedorVacunas = document.getElementById('contenedorVacunas');
+    const notaVacunas = document.getElementById('notaVacunas');
+
+    // La fecha solo aparece (y se envia) si la casilla de esa vacuna esta marcada.
+    function actualizarFechaVacuna(casilla, fecha) {
+        fecha.disabled = !casilla.checked;
+        fecha.classList.toggle('oculto', !casilla.checked);
+        if (!casilla.checked) fecha.value = '';
+    }
+
+    // Muestra solo las vacunas relacionadas con el ID de la especie seleccionada.
+    function filtrarVacunas() {
+        if (!contenedorVacunas) return;
+
+        const especieSeleccionada = especie.options[especie.selectedIndex];
+        const especieId = especieSeleccionada ? especieSeleccionada.dataset.especieId : '';
+        let hayVacunas = false;
+
+        contenedorVacunas.querySelectorAll('label[data-especie-id]').forEach((etiqueta) => {
+            const casilla = etiqueta.querySelector('input[type="checkbox"]');
+            const fecha = etiqueta.querySelector('input[type="date"]');
+            const perteneceEspecie = especieId !== '' && etiqueta.dataset.especieId === especieId;
+
+            etiqueta.classList.toggle('oculto', !perteneceEspecie);
+            casilla.disabled = !perteneceEspecie;
+            if (!perteneceEspecie) casilla.checked = false;
+            if (perteneceEspecie) hayVacunas = true;
+
+            actualizarFechaVacuna(casilla, fecha);
+            casilla.onchange = () => actualizarFechaVacuna(casilla, fecha);
+        });
+
+        if (notaVacunas) {
+            notaVacunas.textContent = especieId === ''
+                ? 'Selecciona primero una especie...'
+                : (hayVacunas ? '' : 'No hay vacunas registradas para esta especie.');
+        }
+    }
+
+    especie.addEventListener('change', () => {
+        filtrarRazas(true)
+        filtrarVacunas();
+    });
     filtrarRazas(false);
+    filtrarVacunas();
 });

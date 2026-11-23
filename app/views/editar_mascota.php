@@ -63,6 +63,32 @@ $clientes = Cliente::obtenerTodos();
 $veterinarios = Mascota::obtenerVeterinariosActivos();
 $especies = Mascota::obtenerEspecies();
 $razas = Mascota::obtenerRazas();
+
+$catalogoVacunas = Mascota::catalogoVacunasMascota();
+$vacunas_mascota = Mascota::obtenerVacunasMascota($idMascota);
+
+$tieneVacunas = [];
+foreach ($vacunas_mascota as $vm) {
+    $idVacPues = (int)$vm['vacuna_puesta'];
+
+    if (!isset($tieneVacunas[$idVacPues])) {
+        $tieneVacunas[$idVacPues] = ['marcada' => false, 'fecha' => '', 'clinica' => false, 'fecha_clinica' => ''];
+    }
+
+    if ($vm['veterinario'] !== null) {
+
+        $tieneVacunas[$idVacPues]['clinica'] = true;
+
+        if ($tieneVacunas[$idVacPues]['fecha_clinica'] === '') {
+            $tieneVacunas[$idVacPues]['fecha_clinica'] = (string)($vm['fecha_aplicacion'] ?? ''); 
+        }
+    } else {
+        $tieneVacunas[$idVacPues]['marcada'] = true;
+        $tieneVacunas[$idVacPues]['fecha'] = (string)($vm['fecha_aplicacion'] ?? '');
+    }
+}
+$vacunasEnviadas = is_array($old['vacunas'] ?? null);
+
 $escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 
 $clienteIdAnterior = (string) ($old['id_cliente'] ?? $mascota['id_cliente'] ?? '');
@@ -124,6 +150,12 @@ foreach ($especies as $registroEspecie) {
     .switch input:checked + .slider { background-color: var(--accent-teal); }
     .switch input:checked + .slider::before { transform: translateX(20px); }
     .switch input:focus-visible + .slider { outline: 2px solid var(--primary-dark); outline-offset: 2px; }
+
+    /* vacunas */
+    .rejilla-vacunas { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px 16px; margin-top: 8px; }
+    .tarjeta-vacuna { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 6px; }
+    .tarjeta-vacuna .titulo-vacuna { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+    .tarjeta-vacuna input[type="date"] { padding: 6px 10px; }
   </style>
 </head>
 <body>
@@ -364,9 +396,46 @@ foreach ($especies as $registroEspecie) {
             <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2"><?= dato($old, $mascota, 'condiciones_especiales') ?></textarea>
           </div>
 
-          <div>
-            <label class="label-campo" for="vacunas">Vacunas:</label>
-            <textarea class="campo" id="vacunas" name="vacunas" rows="2"><?= dato($old, $mascota, 'vacunas') ?></textarea>
+          <div class="campo-completo" id="contenedorVacunas">
+            <label class="label-campo">Vacunas que ya tiene:</label>
+            <small class="nota-campo" id="notaVacunas">Seleccione primero una especie</small>
+
+            <div class="rejilla-vacunas">
+
+                <?php foreach ($catalogoVacunas as $catVac): 
+                    $info = $tieneVacunas[(int)$catVac['id']] ?? null;
+                    if (!($info && $info['clinica'])) {
+                        continue;
+                    }
+                ?>
+                <div class="tarjeta-vacuna">
+                    <span class="titulo-vacuna"> ✔ <?php echo $escapar($catVac['nombre']) ?> </span>
+                    <small class="nota-campo">Aplicada en la clinica <?php echo $info['fecha_clinica'] !== '' ? ' el ' . $escapar($info['fecha_clinica']) : '' ?></small>
+                </div>
+                <?php endforeach; ?>
+        
+                <?php foreach ($catalogoVacunas as $catVac): 
+                    $idVac = (int)$catVac['id'];
+                    $info = $tieneVacunas[$idVac] ?? null;
+
+                    if ($info && $info['clinica']) {
+                        continue;
+                    }
+                 
+                    $marcada = $vacunasEnviadas ? in_array((string)$idVac, array_map('strval', $old['vacunas']), true) : (bool)($info['marcada'] ?? false);
+
+                    $fechaVacuna = $vacunasEnviadas ? ($old['fechas_vacunas'][$idVac] ?? '') : ($info['fecha'] ?? '');
+                ?>
+                  <label class="oculto tarjeta-vacuna" data-especie-id="<?php echo (int)$catVac['especie'] ?>">
+                    <span class="titulo-vacuna">
+                      <input type="checkbox" name="vacunas[]" value="<?php echo $idVac ?>" disabled <?php echo $marcada ? 'checked' : '' ?>>
+                      <?php echo $escapar($catVac['nombre']) ?>
+                    </span>
+                    <input type="date" class="campo" name="fechas_vacunas[<?php echo $idVac ?>]" max="<?php echo date('Y-m-d') ?>"
+                      value="<?php echo $escapar($fechaVacuna) ?>" disabled>
+                  </label>
+                <?php endforeach; ?>
+            </div>
           </div>
 
           <div>

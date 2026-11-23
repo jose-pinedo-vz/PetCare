@@ -18,6 +18,7 @@ $clientes = Cliente::obtenerTodos();
 $veterinarios = Mascota::obtenerVeterinariosActivos();
 $especies = Mascota::obtenerEspecies();
 $razas = Mascota::obtenerRazas();
+$catalogoVacunas = Mascota::catalogoVacunasMascota();
 $escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 
 $clienteIdAnterior = (string) ($old['id_cliente'] ?? $_GET['id_cliente'] ?? '');
@@ -57,6 +58,34 @@ foreach ($especies as $registroEspecie) {
   <title>Veterinaria PetCare - Agregar mascota</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <style>
+      .rejilla-vacunas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 12px 16px;
+        margin-top: 8px;
+      }
+
+      .tarjeta-vacuna {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1px solid var(--border-light);
+        border-radius: 6px;
+      }
+
+      .tarjeta-vacuna .titulo-vacuna {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+      }
+
+      .tarjeta-vacuna input[type="date"] {
+        padding: 6px 10px;
+      }
+    </style>
 </head>
 <body>
 
@@ -297,10 +326,25 @@ foreach ($especies as $registroEspecie) {
                 <textarea class="campo" id="condiciones_especiales" name="condiciones_especiales" rows="2" ><?= htmlspecialchars($old['condiciones_especiales'] ?? '') ?></textarea>
               </div>
 
-              <div>
-                <label class="label-campo" for="vacunas" >Vacunas:</label>
-                <textarea class="campo" id="vacunas" name="vacunas" rows="2" ><?= htmlspecialchars($old['vacunas'] ?? '') ?></textarea>
+            <div class="campo-completo" id="contenedorVacunas">
+              <label class="label-campo">Vacunas que ya tiene:</label>
+              <small class="nota-campo" id="notaVacunas">Selecciona primero una especie...</small>
+              <small class="nota-campo">Marca las que ya tiene. La fecha es opcional: déjala vacía si no se sabe o si se la pusieron en otra veterinaria.</small>
+
+              <div class="rejilla-vacunas">
+                <?php foreach ($catalogoVacunas as $vac): ?>
+                  <label class="oculto tarjeta-vacuna" data-especie-id="<?= (int)$vac['especie'] ?>">
+                    <span class="titulo-vacuna">
+                      <input type="checkbox" name="vacunas[]" value="<?= (int)$vac['id'] ?>" disabled
+                        <?= in_array((string)$vac['id'], array_map('strval', (array)($old['vacunas'] ?? [])), true) ? 'checked' : '' ?>>
+                      <?= $escapar($vac['nombre']) ?>
+                    </span>
+                    <input type="date" class="campo" name="fechas_vacunas[<?= (int)$vac['id'] ?>]" max="<?= date('Y-m-d') ?>"
+                      value="<?= $escapar($old['fechas_vacunas'][$vac['id']] ?? '') ?>" disabled>
+                  </label>
+                <?php endforeach; ?>
               </div>
+            </div>
 
               <div>
                 <label class="label-campo" for="ultima_desparasitacion" >Última desparasitación *:</label>
