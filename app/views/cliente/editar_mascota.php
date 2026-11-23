@@ -29,9 +29,6 @@ $v = function (string $campo) use ($old, $mascota) {
     return htmlspecialchars((string) ($old[$campo] ?? $mascota[$campo] ?? ''));
 };
 
-//la BD guarda fecha de nacimiento; el formulario pide años
-$edadAnios = $old['edad'] ?? round((new DateTime($mascota['edad']))->diff(new DateTime('today'))->days / 365.25, 1);
-
 $foto = rutaFotoMascota($mascota['fotografia']);
 ?>
 <!DOCTYPE html>
@@ -79,22 +76,17 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="p. ej. Luna" value="<?= $v('nombre') ?>" required>
+                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="p. ej. Luna" value="<?= $v('nombre') ?>" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos">
                         </div>
 
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="especie">Especie <span class="campo__obligatorio">*</span></label>
-                            <select class="campo__entrada" id="especie" name="especie" required>
-                                <?php foreach (['Perro', 'Gato', 'Otro'] as $opcion): ?>
-                                    <option value="<?= $opcion ?>" <?= $v('especie') === $opcion ? 'selected' : '' ?>><?= $opcion ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="raza">Raza</label>
-                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador" value="<?= $v('raza') ?>">
-                        </div>
+                        <?php
+                        // Especie, raza y color salen de la BD (desplegables)
+                        $valEspecie   = (string) ($old['especie'] ?? $mascota['especie'] ?? '');
+                        $valRaza      = (string) ($old['raza'] ?? $mascota['raza'] ?? '');
+                        $valColor     = (string) ($old['color'] ?? $mascota['color'] ?? '');
+                        $valColorOtro = (string) ($old['color_otro'] ?? '');
+                        include __DIR__ . '/_campos_especie_raza_color.php';
+                        ?>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="sexo">Sexo <span class="campo__obligatorio">*</span></label>
@@ -106,8 +98,8 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="edad">Edad (años) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" value="<?= htmlspecialchars((string) $edadAnios) ?>" required>
+                            <label class="campo__etiqueta" for="edad">Fecha de nacimiento <span class="campo__obligatorio">*</span></label>
+                            <input class="campo__entrada" type="date" id="edad" name="edad" min="<?= date('Y-m-d', strtotime('-40 years')) ?>" max="<?= date('Y-m-d') ?>" value="<?= substr($v('edad'), 0, 10) ?>" required>
                         </div>
 
                         <div class="campo">
@@ -116,17 +108,8 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="color">Color</label>
-                            <input class="campo__entrada" type="text" id="color" name="color" value="<?= $v('color') ?>">
-                        </div>
-
-                        <div class="campo">
                             <label class="campo__etiqueta" for="temperamento">Temperamento</label>
-                            <select class="campo__entrada" id="temperamento" name="temperamento">
-                                <?php foreach (['' => 'No estoy seguro', 'Tranquilo' => 'Tranquilo', 'Juguetón' => 'Juguetón', 'Nervioso' => 'Nervioso', 'Reactivo' => 'Reactivo o agresivo'] as $valor => $texto): ?>
-                                    <option value="<?= $valor ?>" <?= $v('temperamento') === $valor ? 'selected' : '' ?>><?= $texto ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                            <textarea class="campo__entrada" id="temperamento" name="temperamento" rows="2" maxlength="100" placeholder="Ej. Dócil, juguetón, tímido"><?= $v('temperamento') ?></textarea>
                         </div>
 
                         <div class="campo">

@@ -53,23 +53,18 @@ $paginaActiva = 'mascotas';
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
                             <input class="campo__entrada" type="text" id="nombre" name="nombre"
-                                placeholder="p. ej. Luna" required
+                                placeholder="p. ej. Luna" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos"
                                 value="<?= htmlspecialchars($old['nombre'] ?? '') ?>">
                         </div>
 
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="especie">Especie <span class="campo__obligatorio">*</span></label>
-                            <select class="campo__entrada" id="especie" name="especie" required>
-                                <option value="Perro">Perro</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="raza">Raza</label>
-                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
-                        </div>
+                        <?php
+                        // Especie, raza y color salen de la BD (desplegables)
+                        $valEspecie   = (string) ($old['especie'] ?? '');
+                        $valRaza      = (string) ($old['raza'] ?? '');
+                        $valColor     = (string) ($old['color'] ?? '');
+                        $valColorOtro = (string) ($old['color_otro'] ?? '');
+                        include __DIR__ . '/_campos_especie_raza_color.php';
+                        ?>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="sexo">Sexo <span class="campo__obligatorio">*</span></label>
@@ -80,8 +75,8 @@ $paginaActiva = 'mascotas';
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="edad">Edad (años) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
+                            <label class="campo__etiqueta" for="edad">Fecha de nacimiento <span class="campo__obligatorio">*</span></label>
+                            <input class="campo__entrada" type="date" id="edad" name="edad" min="<?= date('Y-m-d', strtotime('-40 years')) ?>" max="<?= date('Y-m-d') ?>" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -90,19 +85,8 @@ $paginaActiva = 'mascotas';
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="color">Color</label>
-                            <input class="campo__entrada" type="text" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? '') ?>">
-                        </div>
-
-                        <div class="campo">
                             <label class="campo__etiqueta" for="temperamento">Temperamento</label>
-                            <select class="campo__entrada" id="temperamento" name="temperamento">
-                                <option value="">No estoy seguro</option>
-                                <option value="Tranquilo">Tranquilo</option>
-                                <option value="Juguetón">Juguetón</option>
-                                <option value="Nervioso">Nervioso</option>
-                                <option value="Reactivo">Reactivo o agresivo</option>
-                            </select>
+                            <textarea class="campo__entrada" id="temperamento" name="temperamento" rows="2" maxlength="100" placeholder="Ej. Dócil, juguetón, tímido"><?= htmlspecialchars($old['temperamento'] ?? '') ?></textarea>
                         </div>
 
                         <div class="campo">

@@ -23,15 +23,9 @@ $alergias = trim($_POST['alergias'] ?? '');
 $condiciones_especiales = trim($_POST['condiciones_especiales'] ?? '');
 
 $errores = [];
-if ($nombre === '') {
-    $errores[] = 'El nombre es obligatorio.';
-} elseif (strlen($nombre) > 20) {
-    $errores[] = 'El nombre no puede tener más de 20 letras.';
-} 
-
-if ($especie === '') {
-    $errores[] = 'La especie es obligatoria';
-} 
+// nombre, especie, raza y color (mismas reglas en registrar y editar)
+require_once __DIR__ . '/cliente_validar_mascota.php';
+$color = validarCamposMascotaCliente($errores, $nombre, $especie, $raza, $color, trim($_POST['color_otro'] ?? ''));
 
 if (!in_array($sexo, ['Hembra', 'Macho'])) {
     $errores[] = '¿Es macho o hembra?';
@@ -41,18 +35,23 @@ if (!is_numeric($peso) || $peso <= 0 || $peso > 100) {
     $errores[] = 'El peso debe ser mayor a 0 y no mas de 100 kg';
 }
 
-if (!is_numeric($edad) || $edad < 0 || $edad > 40) {
-    $errores[] = 'La edad debe ser un número entre 0 y 40 años.';
-} /*else {
-    $fechaNacimiento = (new DateTime('today'))
-         ->modify('-' . round($edad * 12) . 'months')  
-         ->format('Y-m-d');
-}*/
+// fecha de nacimiento: obligatoria, no futura y maximo 40 años
+$fechaNac = DateTime::createFromFormat('!Y-m-d', $edad);
+if ($edad === '') {
+    $errores[] = 'La fecha de nacimiento es obligatoria.';
+} elseif (!$fechaNac || $fechaNac->format('Y-m-d') !== $edad) {
+    $errores[] = 'La fecha de nacimiento no es válida.';
+} elseif ($fechaNac > new DateTime('today')) {
+    $errores[] = 'La fecha de nacimiento no puede ser posterior a hoy.';
+} elseif ($fechaNac->diff(new DateTime('today'))->y > 40) {
+    $errores[] = 'La mascota no puede tener más de 40 años.';
+}
 
-if ($raza === '') {
-    $raza = 'Sin especificar';
-} elseif (strlen($raza) > 20) {
-    $errores[] = 'La raza no puede tener más de 20 letras.';
+// temperamento: opcional, sin numeros (igual que el empleado)
+if ($temperamento !== '' && preg_match('/\d/', $temperamento)) {
+    $errores[] = 'El temperamento no puede contener números.';
+} elseif (mb_strlen($temperamento) > 100) {
+    $errores[] = 'El temperamento no puede tener más de 100 caracteres.';
 }
 
 if (count($errores) > 0) {
@@ -76,10 +75,8 @@ if (!empty($_FILES['fotografia']['name'])) {
     $rutaFoto = $resultado['ruta'];
 }
 
-//convertir los años a fecha de nacimiento
-$fechaNacimiento = (new DateTime('today'))
-    ->modify('-' . round($edad * 12) . ' months')
-    ->format('Y-m-d');
+//la BD guarda la fecha de nacimiento tal cual
+$fechaNacimiento = $edad;
 
 //guardar
 require_once __DIR__ . '/../models/Mascota.php';

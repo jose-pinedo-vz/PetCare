@@ -395,6 +395,11 @@ a {
     gap: 6px;
 }
 
+/* Un campo con el atributo hidden no se muestra (ej. "¿Qué color?" hasta elegir Otro) */
+.campo[hidden] {
+    display: none;
+}
+
 .campo--ancho-completo {
     flex-basis: 100%;
 }
