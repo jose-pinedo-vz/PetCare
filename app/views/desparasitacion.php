@@ -1,28 +1,11 @@
 <?php
-date_default_timezone_set('America/Mexico_City');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../models/conexion_db.php';
+// Esta vista se carga desde controllers/FichaMedicaController.php,
+// asi que puede que estas variables no existan si se entra directo.
 
-$listaProductos = [];
-try {
-    $dbProd = ConexionDB::obtenerConexion();
-    $stmtProd = $dbProd->query("SELECT p.id_producto, p.nombre 
-                                FROM productos p 
-                                INNER JOIN categoria_productos c ON p.id_categoria = c.id_categoria 
-                                WHERE (c.nombre LIKE '%desparasita%' OR c.nombre LIKE '%medicamento%' OR c.nombre LIKE '%farmacia%') 
-                                  AND (p.estado = 1 OR p.estado = b'1' OR p.estado = 'activo') 
-                                ORDER BY p.nombre ASC");
-    $listaProductos = $stmtProd ? $stmtProd->fetchAll(PDO::FETCH_ASSOC) : [];
-    if (empty($listaProductos)) {
-        $stmtProd2 = $dbProd->query("SELECT id_producto, nombre FROM productos WHERE id_categoria = 4 AND (estado = 1 OR estado = b'1' OR estado = 'activo') ORDER BY nombre ASC");
-        $listaProductos = $stmtProd2 ? $stmtProd2->fetchAll(PDO::FETCH_ASSOC) : [];
-    }
-} catch (Exception $e) {
-    error_log("Error al cargar productos en desparasitacion: " . $e->getMessage());
-}
 
 // Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
 function old(string $clave): string
@@ -44,6 +27,8 @@ function old(string $clave): string
   <base href="../views/">
   <title>Veterinaria PetCare - Desparasitación</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
+  <script src="js/desparasitacion.js"></script>
+
 </head>
 <body>
 
@@ -68,12 +53,8 @@ function old(string $clave): string
       <div class="tarjeta">
 
       <?php
-        $id_consulta = $_GET['id_consulta'] ?? $_SESSION['id_consulta_error'] ?? '';
-        unset($_SESSION['id_consulta_error']);
+        $id_consulta = $_GET['id_consulta'] ?? '';
         $id_cita = (int)$id_consulta;
-        $oldTipo = old('oldTipo');
-        $oldProducto = old('oldProducto');
-        $oldDosis = old('oldDosis') ?: old('oldDicis');
       ?>
 
     <form action="../controllers/servicioDesparacitacion.php" method="POST" enctype="multipart/form-data">
@@ -86,9 +67,14 @@ function old(string $clave): string
         <div>
             <label class="label-campo" for="Tipo">Tipo de desparasitación *:</label>
             <select class="campo" name="Tipo" id="Tipo" required>
-              <option value="">Selecciona un tipo</option>
-              <option value="Interno" <?= $oldTipo === 'Interno' ? 'selected' : '' ?>>Interno</option>
-              <option value="Externo" <?= $oldTipo === 'Externo' ? 'selected' : '' ?>>Externo</option>
+
+              <?php if ($_SESSION['oldTipo']) { ?>
+              <option value="<?php echo htmlspecialchars((string)($_SESSION['oldTipo'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldTipo'] ?? '')); unset($_SESSION['oldTipo']); ?></option>
+              <?php } else { ?> <option value="">Selecciona un tipo</option> <?php }?> 
+
+              
+              <option value="Interno">Interno</option>
+              <option value="Externo">Externo</option>
             </select>
           </div>
 
@@ -96,12 +82,12 @@ function old(string $clave): string
           <div>
             <label class="label-campo" for="ProductoUtilizado">Producto utilizado *:</label>
             <select class="campo" name="ProductoUtilizado" id="ProductoUtilizado" required>
-              <option value="">Selecciona un producto</option>
-              <?php foreach ($listaProductos as $prod): ?>
-                <option value="<?= (int)$prod['id_producto'] ?>" <?= ((string)$oldProducto === (string)$prod['id_producto']) ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($prod['nombre']) ?>
-                </option>
-              <?php endforeach; ?>
+
+              <?php if ($_SESSION['oldProductoUtilizado']) { ?>
+                <option value="<?php echo htmlspecialchars((string)($_SESSION['oldProductoUtilizado'] ?? ''));?>"><?php echo htmlspecialchars((string)($_SESSION['oldProductoUtilizado'] ?? '')); unset($_SESSION['oldProductoUtilizado']); ?></option>
+              <?php } else { ?> <option value="">Selecciona un producto</option> <?php }?> 
+
+              
             </select>
           </div>
       </fieldset>
@@ -109,13 +95,13 @@ function old(string $clave): string
       <fieldset>
         <div class="grid-formulario">
           <div>
-            <label class="label-campo" for="dosis">Dosis (mg por kg) *:</label>
-            <input type="number" class="campo" id="dosis" name="dosis" min="0" max="1000" step="0.1"
-              placeholder="Ej. 10.5" required value="<?= $oldDosis ?>">
+            <label class="label-campo" for="Dicis">Dicis (mg por kg) *:</label>
+            <input type="number" class="campo" id="Dicis" name="Dicis" min="0" max="1000" step="0.1"
+              placeholder="Ej. 10.5" required value="<?= old('oldDicis') ?>">
           </div>
 
            <div>
-            <label class="label-campo" for="fecha">Próxima cita:</label>
+            <label class="label-campo" for="fecha">Próxima aplicacion:</label>
             <input type="date" class="campo" id="fecha" name="fecha"
               min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+2 years')) ?>" value="<?= old('oldFecha') ?>">
           </div>
@@ -136,9 +122,7 @@ function old(string $clave): string
         </div>
       </fieldset>
 
-      
-
-     
+    
     </form>
 
       </div>

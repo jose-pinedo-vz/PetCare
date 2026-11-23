@@ -64,13 +64,15 @@ function old(string $clave): string
 
         
           <div class="campo-completo">
-            <label class="label-campo" for="comportamiento">Comportamiento:</label>
-            <textarea class="campo" id="comportamiento" name="comportamiento" rows="3" placeholder="Comportamiento del animal durante el servicio"></textarea>
+            <label class="label-campo" for="comportamiento">Comportamiento *:</label>
+            <textarea class="campo" id="comportamiento" name="comportamiento"
+            rows="3" placeholder="Comportamiento del animal durante el servicio"><?= old('oldComportamiento'); unset($_SESSION['oldComportamiento']); ?></textarea>
             </div>
 
             <div class="campo-completo">
-            <label class="label-campo" for="observaciones">Observaciones:</label>
-            <textarea class="campo" id="observaciones" name="observaciones" rows="3" placeholder="Notas u observaciones adicionales"></textarea>
+            <label class="label-campo" for="observaciones">Observaciones *:</label>
+            <textarea class="campo" id="observaciones" name="observaciones"
+            rows="3" placeholder="Notas u observaciones adicionales"><?= old('oldObserbaciones'); unset($_SESSION['oldObserbaciones']); ?></textarea>
         </div>
 
          

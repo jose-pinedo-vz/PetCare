@@ -9,6 +9,17 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita)
 {
     $_SESSION['error'] = $mensaje;
+
+    $_SESSION['oldTipo'] = trim($_POST['Tipo'] ?? '');
+    $_SESSION['oldLongitud'] = trim($_POST['Longitud'] ?? '');
+    $_SESSION['oldCorte_higienico'] = trim($_POST['corte_higienico'] ?? '');
+    $_SESSION['oldAccesorios'] = trim($_POST['accesorios'] ?? ''); 
+    $_SESSION['oldCorteCara'] = trim($_POST['corteCara'] ?? ''); 
+    $_SESSION['oldCortePatas'] = trim($_POST['cortePatas'] ?? ''); 
+    $_SESSION['oldDeslanado'] = trim($_POST['Deslanado'] ?? ''); 
+    $_SESSION['oldObservaciones'] = trim($_POST['Observaciones'] ?? ''); 
+    $_SESSION['oldCepillado'] = trim($_POST['Cepillado'] ?? '');
+
     $url = "../views/servicioCortepelo.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
     header("Location: " . $url);
     exit();
