@@ -1,5 +1,9 @@
-<?php //Falta cambiar la consulta a atendido(1) si se inserto la ficha
+<?php
 declare(strict_types=1);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['usuario'])) {
     header("Location: ../views/login.php");

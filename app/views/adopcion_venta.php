@@ -194,8 +194,10 @@ $animales = listar_adopciones_ventas();
                                                     $rutaFoto = $foto;
                                                 } elseif (str_starts_with($foto, '../')) {
                                                     $rutaFoto = '../' . $foto;
+                                                } elseif (str_starts_with($foto, 'uploads/')) {
+                                                    $rutaFoto = '../../' . $foto;
                                                 } else {
-                                                    $rutaFoto = '../../' . ltrim($foto, '/');
+                                                    $rutaFoto = '../../uploads/mascotas/' . ltrim($foto, '/');
                                                 }
                                                 $nombreAnimal = trim(($animal['especie'] ?? '') . ' ' . ($animal['raza'] ?? ''));
                                                 if ($nombreAnimal === '') {
