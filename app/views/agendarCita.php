@@ -74,9 +74,13 @@ $usuario=$_SESSION['usuario'];
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="claveCliente">Clave del cliente *:</label>
-            <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
+            <select class="campo" name="cliente" id="cliente" required>
+              <?php ?>
+              <option value="">Seleccione un Cliente</option>
+                  
+            </select>
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? $_GET['claveCliente'] ?? '')); unset($_SESSION['oldClave']); ?>">
+              
           </div>
 
           <div>

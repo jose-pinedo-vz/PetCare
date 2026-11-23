@@ -146,6 +146,51 @@ document.addEventListener("DOMContentLoaded", async function()
     }
 });
 
+// mostrar los clientes
+
+document.addEventListener("DOMContentLoaded", async function()
+{
+    //console.log("se ejecuta");
+    const cliente = document.getElementById('cliente');
+
+    if (cliente)
+    {
+        const mas_servicios = async (masServicios) =>
+        {
+            let datos = [];
+
+            try
+            {
+                const respuesta = await fetch('../controllers/citas.php?accion=mostrarCliente',
+                    {method: "GET"
+                });
+
+                datos = await respuesta.json();
+
+                for (const item of datos)
+                {
+                    const option = document.createElement("option");
+                    option.value = item.id_servicio;
+                    option.textContent = item.nombre;
+                    cliente.appendChild(option);
+                }
+            }
+            catch (error)
+            {
+
+            }
+        }
+        mas_servicios();
+    }
+});
+
+
+
+
+
+
+
+
 
 
 // mostrar todos los servicios en el select de servicios
@@ -455,9 +500,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const MontoResivido = Number(inputMonto.value) || 0;
 
             const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
+            //const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
             const idEmpleado = Number(document.getElementById('datosSesion')?.dataset.idEmpleado) || 0;
 
-            // estraer datos segun metodo seleccionardo
+            // estraer datos segun metodo seleccionard
 
             let referencia = '';
             let numTarjeta = '';
@@ -483,6 +529,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (MontoResivido === 0) {alert("Ingrese un monto valido por favor."); return;}
             // if (iva === 0) {alert("Ingrese un monto valido por favor."); return;}
             if (MontoResivido < total) { alert("El monto recibido es menor al total."); return; }
+            if (idCliente <= 0) { alert("Seleccione a un cliente por favor."); return; }
+
 
             
 

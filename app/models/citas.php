@@ -645,5 +645,21 @@
                 return [];
             }
         }
+
+        public static function idConCliente()
+        {
+            try
+            {
+                $query = "SELECT id_cliente, nombre, apellido FROM clientes";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC); 
+            }
+            catch (Exception)
+            {
+                return [];
+            }
+        }
     }
 ?>

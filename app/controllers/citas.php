@@ -191,7 +191,7 @@ function horarios()
     $empleado = (int)($_GET['responsable'] ?? 0);
     $Horarios = [];
     $entradaMatutino = 9;
-    $salidaMatutino = 13;
+    $salidaMatutino = 13; // aqui al mostrarse hasta la una como ultima hora, es a proposito, no hay error, la una es la utlima hora que se muestra, par que no reserves a las 2
     $entradaVespertino = 16;
     $salidaVespertino = 18;
     $horasPorConsulta = 1;
@@ -509,5 +509,15 @@ if ($accion === "datos_Servicio")
 {
     $id = (int)$_GET['id_Servicio'] ?? '';
     echo json_encode(ConexionesClientes::datosServicio($id));
+    exit();
+}
+
+
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === "mostrarCliente")
+{
+    //$id = (int)$_GET['id_Servicio'] ?? '';
+    echo json_encode(ConexionesClientes::idConCliente());
     exit();
 }
