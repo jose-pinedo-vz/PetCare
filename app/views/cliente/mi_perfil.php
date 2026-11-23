@@ -170,7 +170,7 @@ $inicial = mb_strtoupper(mb_substr($cliente['nombre'], 0, 1));
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="emergencia_nombre">Contacto de emergencia (nombre) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="emergencia_nombre" name="emergencia_nombre" maxlength="100" value="<?= valorPerfil($old, 'emergencia_nombre', $cliente, 'contacto_emergencia') ?>" required>
+                            <input class="campo__entrada" type="text" id="emergencia_nombre" name="emergencia_nombre" maxlength="100" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras" placeholder="Ej. María López" value="<?= valorPerfil($old, 'emergencia_nombre', $cliente, 'contacto_emergencia') ?>" required>
                         </div>
 
                         <div class="campo">

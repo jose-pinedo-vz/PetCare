@@ -64,6 +64,8 @@ if ($accion === 'datos') {
         $errores[] = 'El contacto de emergencia es obligatorio.';
     } elseif (mb_strlen($datos['contacto_emergencia']) > 100) {
         $errores[] = 'El contacto de emergencia no puede tener más de 100 letras.';
+    } elseif (!preg_match('/^[\p{L} ]+$/u', $datos['contacto_emergencia'])) {
+        $errores[] = 'El contacto de emergencia solo puede tener letras.';
     }
     if (!preg_match('/^[0-9]{10}$/', $datos['telefono_emergencia'])) {
         $errores[] = 'El teléfono de emergencia debe tener 10 dígitos.';
