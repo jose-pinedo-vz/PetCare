@@ -10,7 +10,6 @@ $paginaActiva = '';
 
 require_once __DIR__ . '/../../models/Cliente.php';
 require_once __DIR__ . '/../../models/Mascota.php';
-require_once __DIR__ . '/../../models/hotel_cliente.php';
 
 // El cliente SIEMPRE sale de la sesión
 $idCliente = (int) $_SESSION['id_cliente'];
@@ -33,7 +32,6 @@ $editando = isset($_GET['editar']);
 
 // Contadores para la portada
 $totalMascotas = count(Mascota::obtenerPorCliente($idCliente));
-$totalReservaciones = count(HotelCliente::reservacionesDelCliente($idCliente));
 
 // Si hay datos escritos (por un error) se usan esos; si no, los de la base de datos
 function valorPerfil(array $old, string $campoFormulario, array $cliente, string $campoBD): string
@@ -78,10 +76,6 @@ $inicial = mb_strtoupper(mb_substr($cliente['nombre'], 0, 1));
                     <span class="perfil-numero__valor"><?= $totalMascotas ?></span>
                     <span class="perfil-numero__texto"><?= $totalMascotas === 1 ? 'Mascota' : 'Mascotas' ?></span>
                 </a>
-                <a class="perfil-numero" href="mis_reservaciones.php">
-                    <span class="perfil-numero__valor"><?= $totalReservaciones ?></span>
-                    <span class="perfil-numero__texto"><?= $totalReservaciones === 1 ? 'Reservación' : 'Reservaciones' ?></span>
-                </a>
             </div>
         </section>
 
@@ -103,7 +97,7 @@ $inicial = mb_strtoupper(mb_substr($cliente['nombre'], 0, 1));
             <div class="perfil-seccion__encabezado">
                 <div>
                     <h2 class="perfil-seccion__titulo">Información personal</h2>
-                    <p class="perfil-seccion__texto">Así te contactamos para tus citas y reservaciones.</p>
+                    <p class="perfil-seccion__texto">Así te contactamos para tus citas.</p>
                 </div>
                 <?php if (!$editando): ?>
                     <a class="boton boton--contorno boton--chico" href="mi_perfil.php?editar=1">Editar datos</a>

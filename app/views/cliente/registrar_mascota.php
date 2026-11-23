@@ -53,7 +53,7 @@ $paginaActiva = 'mascotas';
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
                             <input class="campo__entrada" type="text" id="nombre" name="nombre"
-                                placeholder="p. ej. Luna" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos"
+                                placeholder="Ej. Luna" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos"
                                 value="<?= htmlspecialchars($old['nombre'] ?? '') ?>">
                         </div>
 
@@ -81,7 +81,7 @@ $paginaActiva = 'mascotas';
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="peso">Peso (kg) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" required value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
+                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="Ej. 24" min="0" step="0.1" required value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -101,7 +101,7 @@ $paginaActiva = 'mascotas';
 
                         <div class="campo campo--ancho-completo">
                             <label class="campo__etiqueta" for="alergias">Alergias o cuidados</label>
-                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"></textarea>
+                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Ej. Polen, pollo, penicilina"></textarea>
                         </div>
 
                         <div class="campo campo--ancho-completo">
