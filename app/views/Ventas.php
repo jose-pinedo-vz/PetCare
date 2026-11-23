@@ -768,11 +768,12 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 return;
             }
 
-            if (metodoPagoActual === 'Tarjeta') {
-                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
-                    .every((campo) => campo.reportValidity());
-                if (!tarjetaValida) return;
-            }
+            if (metodoPagoActual === 'Tarjeta') {
+                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
+                    .every((campo) => campo.reportValidity());
+                if (!tarjetaValida) return;
+            }
+            if (metodoPagoActual === 'Transferencia' && !document.getElementById('referenciaTransferencia').reportValidity()) return;
 
             if (esServicio) {
                 const fila = contextoPago.fila;

@@ -30,6 +30,10 @@ try {
     $db = ConexionDB::obtenerConexion();
     switch ($accion) {
         case 'registrar_pago':
+            if (!isset($d['monto']) || !is_numeric($d['monto'])) {
+                $r = ['ok' => false, 'error' => 'Captura un abono válido.'];
+                break;
+            }
             $r = PagosAdmin::registrarPagoServicio(
                 $db, (string)($d['tipo'] ?? 'cita'), (int)($d['id'] ?? $d['id_cita'] ?? 0), (float)($d['monto'] ?? 0), (string)($d['metodo'] ?? ''),
                 (array)($d['tarjeta'] ?? []), (string)($d['referencia'] ?? ''), $idEmpleado
@@ -46,10 +50,14 @@ try {
             $r = PagosAdmin::pagarEmpleado($db, $idEmpleado, (int)($d['id_empleado'] ?? 0), $periodo);
             break;
         case 'abonar_caja':
+            if (!isset($d['monto']) || !is_numeric($d['monto'])) {
+                $r = ['ok' => false, 'error' => 'Captura un monto válido.'];
+                break;
+            }
             $r = PagosAdmin::abonarCaja($db, $idEmpleado, (float)($d['monto'] ?? 0), (string)($d['concepto'] ?? ''));
             break;
         case 'guardar_sueldo':
-            $r = ['ok' => PagosAdmin::guardarSueldo($db, (int)($d['id_empleado'] ?? 0), (float)($d['sueldo'] ?? 0))];
+            $r = ['ok' => isset($d['sueldo']) && is_numeric($d['sueldo']) && PagosAdmin::guardarSueldo($db, (int)($d['id_empleado'] ?? 0), (float)$d['sueldo'])];
             if (!$r['ok']) {
                 $r['error'] = 'Sueldo no válido.';
             }

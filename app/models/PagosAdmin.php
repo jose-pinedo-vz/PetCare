@@ -143,13 +143,57 @@ class PagosAdmin
         return null;
     }
 
+    // Mismas reglas que el punto de venta para los datos de tarjeta
+    private static function validarTarjetaPago(array $t): array
+    {
+        $leer = function (string $clave) use ($t): string {
+            $v = $t[$clave] ?? '';
+            return is_scalar($v) ? trim((string)$v) : '';
+        };
+        $numero = preg_replace('/\D/', '', $leer('numero'));
+        $titular = preg_replace('/\s+/u', ' ', $leer('titular'));
+        $vencimiento = $leer('vencimiento');
+        $cvv = $leer('cvv');
+        if (!preg_match('/^\d{13,19}$/', $numero)) {
+            return ['ok' => false, 'error' => 'El número de tarjeta debe tener de 13 a 19 dígitos.'];
+        }
+        if (!preg_match('/^\p{L}[\p{L} .\'\-]{2,59}$/u', $titular)) {
+            return ['ok' => false, 'error' => 'El titular debe tener de 3 a 60 caracteres y solo letras, espacios, punto, apóstrofo o guion.'];
+        }
+        if (!preg_match('/^(\d{4})-(0[1-9]|1[0-2])$/', $vencimiento)) {
+            return ['ok' => false, 'error' => 'El vencimiento debe tener el formato AAAA-MM.'];
+        }
+        $ahora = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+        if (strcmp($vencimiento, $ahora->format('Y-m')) < 0) {
+            return ['ok' => false, 'error' => 'La tarjeta está vencida.'];
+        }
+        if (strcmp($vencimiento, $ahora->modify('+15 years')->format('Y-m')) > 0) {
+            return ['ok' => false, 'error' => 'La fecha de vencimiento no es válida.'];
+        }
+        if (!preg_match('/^\d{3,4}$/', $cvv)) {
+            return ['ok' => false, 'error' => 'El CVV debe tener 3 o 4 dígitos.'];
+        }
+        return ['ok' => true, 'numero' => $numero, 'vencimiento' => $vencimiento, 'cvv' => $cvv];
+    }
+
     public static function registrarPagoServicio(PDO $db, string $tipo, int $id, float $monto, string $metodo, array $tarjeta, string $referencia, int $empleado): array
     {
         self::preparar($db);
-        $tipo = $tipo === 'hotel' ? 'hotel' : 'cita';
+        if (!in_array($tipo, ['cita', 'hotel'], true)) {
+            return ['ok' => false, 'error' => 'Tipo de servicio no válido.'];
+        }
+        if ($id <= 0) {
+            return ['ok' => false, 'error' => 'Servicio no válido.'];
+        }
         [$tabla, $colId] = self::tablaPagos($tipo);
+        if (!is_finite($monto) || $monto <= 0 || $monto > 999999.99) {
+            return ['ok' => false, 'error' => 'Captura un abono mayor a cero.'];
+        }
+        if (abs($monto - round($monto, 2)) > 0.00001) {
+            return ['ok' => false, 'error' => 'El abono solo puede tener hasta dos decimales.'];
+        }
         $monto = round($monto, 2);
-        $metodo = strtolower($metodo);
+        $metodo = strtolower(trim($metodo));
         if (!in_array($metodo, ['efectivo', 'tarjeta', 'transferencia'], true)) {
             return ['ok' => false, 'error' => 'Método de pago no válido.'];
         }
@@ -161,14 +205,26 @@ class PagosAdmin
         if (!$fila || $fila['cancelada']) {
             return ['ok' => false, 'error' => 'El servicio no existe o está cancelado.'];
         }
-        if ($monto <= 0 || $monto > $fila['saldo'] + 0.001) {
-            return ['ok' => false, 'error' => 'El abono debe ser mayor a cero y no superar el saldo ($' . number_format($fila['saldo'], 2) . ').'];
+        if ($fila['saldo'] <= 0) {
+            return ['ok' => false, 'error' => 'Este servicio ya está pagado.'];
         }
-        $referencia = mb_substr(trim($referencia), 0, 40);
+        if ($monto > $fila['saldo'] + 0.001) {
+            return ['ok' => false, 'error' => 'El abono no puede superar el saldo ($' . number_format($fila['saldo'], 2) . ').'];
+        }
+        $referencia = trim($referencia);
         $folioBanco = null;
-        if ($metodo === 'tarjeta') {
-            $num = preg_replace('/\D/', '', (string)($tarjeta['numero'] ?? ''));
-            $res = bancoAutorizarCobro($num, (string)($tarjeta['vencimiento'] ?? ''), (string)($tarjeta['cvv'] ?? ''), $monto, 'PetCare - ' . $fila['folio']);
+        if ($metodo === 'efectivo') {
+            $referencia = '';
+        } elseif ($metodo === 'transferencia') {
+            if ($referencia !== '' && !preg_match('/^[A-Za-z0-9-]{1,30}$/', $referencia)) {
+                return ['ok' => false, 'error' => 'La referencia de transferencia debe tener máximo 30 caracteres (solo letras, números y guiones).'];
+            }
+        } else {
+            $datosTarjeta = self::validarTarjetaPago($tarjeta);
+            if (!$datosTarjeta['ok']) {
+                return ['ok' => false, 'error' => $datosTarjeta['error']];
+            }
+            $res = bancoAutorizarCobro($datosTarjeta['numero'], $datosTarjeta['vencimiento'], $datosTarjeta['cvv'], $monto, 'PetCare - ' . $fila['folio']);
             if (!$res['ok']) {
                 return ['ok' => false, 'error' => $res['error']];
             }
@@ -180,6 +236,11 @@ class PagosAdmin
             $s = $db->prepare("INSERT INTO $tabla ($colId, monto, metodo, referencia, origen, empleado, corte, fecha) VALUES (?, ?, ?, ?, 'caja', ?, ?, NOW())");
             $s->execute([$id, $monto, $metodo, $referencia !== '' ? $referencia : null, $empleado, (int)$corte['id']]);
             $idPago = (int)$db->lastInsertId();
+            // Dos cobros al mismo tiempo no deben dejar el servicio sobrepagado
+            $despues = self::buscarServicio($db, $tipo, $id);
+            if ($despues && $despues['abonado'] > $despues['total'] + 0.001) {
+                throw new DomainException('Otro cobro se registró al mismo tiempo. Revisa el saldo e intenta de nuevo.');
+            }
             if ($metodo === 'efectivo') {
                 CorteCaja::registrarMovimiento($db, (int)$corte['id'], $empleado, 'ingreso manual', 'Pago de servicio ' . $fila['folio'], $monto, null, 'Cobro en efectivo de ' . $fila['folio']);
             }
@@ -204,7 +265,7 @@ class PagosAdmin
                 bancoReversarCobro($folioBanco);
             }
             error_log('PagosAdmin::registrarPagoServicio ' . $e->getMessage());
-            return ['ok' => false, 'error' => 'No se pudo registrar el pago.'];
+            return ['ok' => false, 'error' => $e instanceof DomainException ? $e->getMessage() : 'No se pudo registrar el pago.'];
         }
         return ['ok' => true, 'autorizacion' => $folioBanco];
     }
@@ -233,8 +294,17 @@ class PagosAdmin
     public static function devolver(PDO $db, string $tipo, int $id, ?int $empleado): array
     {
         self::preparar($db);
-        $tipo = $tipo === 'hotel' ? 'hotel' : 'cita';
+        if (!in_array($tipo, ['cita', 'hotel'], true) || $id <= 0) {
+            return ['ok' => false, 'error' => 'Servicio no válido.'];
+        }
         [$tabla, $colId] = self::tablaPagos($tipo);
+        // Solo se devuelve dinero de un servicio cancelado que tenga pagos
+        $fila = self::buscarServicio($db, $tipo, $id);
+        if (!$fila || $fila['estado'] !== 'devolver') {
+            return $empleado === null
+                ? ['ok' => true, 'devuelto' => 0.0, 'pendiente' => 0.0]
+                : ['ok' => false, 'error' => 'Este servicio no tiene dinero por devolver.'];
+        }
         $s = $db->prepare("SELECT * FROM $tabla WHERE $colId = ? AND devuelto = 0 AND id_venta IS NULL ORDER BY id_pago");
         $s->execute([$id]);
         $pagos = $s->fetchAll(PDO::FETCH_ASSOC);
