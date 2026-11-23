@@ -422,7 +422,7 @@
 
         const actual = carrito.find(function (i) { return i.tipo === 'servicio' && i.id_servicio === id; });
         if (actual) {
-            mensajeVenta.textContent = 'El servicio ya esta en la venta.';
+            mensajeVenta.textContent = 'El servicio ya está en la venta.';
             return;
         }
 
@@ -442,7 +442,7 @@
     function agregarCita(ci) {
         mensajeVenta.textContent = '';
         if (carrito.some(function (i) { return i.id_cita === Number(ci.id_cita); })) {
-            mensajeVenta.textContent = 'Esa cita ya esta en la venta.';
+            mensajeVenta.textContent = 'Esa cita ya está en la venta.';
             return;
         }
         carrito.push({

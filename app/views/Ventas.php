@@ -206,7 +206,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                     <div class="pagos-filtros">
                         <div>
                             <label class="label-campo" for="buscarPagoServicio">Buscar</label>
-                            <input class="campo" id="buscarPagoServicio" type="search" placeholder="Folio, cliente, mascota o servicio">
+                            <input class="campo" id="buscarPagoServicio" type="search" placeholder="Cliente, mascota o servicio">
                         </div>
                         <div>
                             <label class="label-campo" for="filtroTipoServicio">Tipo de servicio</label>
@@ -232,7 +232,6 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                         <table class="pagos-tabla">
                             <thead>
                                 <tr>
-                                    <th>Folio</th>
                                     <th>Fecha</th>
                                     <th>Cliente / mascota</th>
                                     <th>Servicio</th>
@@ -245,14 +244,13 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                             </thead>
                             <tbody id="tablaPagosPendientes">
                                 <?php if (empty($serviciosCitas)): ?>
-                                    <tr><td colspan="9">No hay citas por cobrar.</td></tr>
+                                    <tr><td colspan="8">No hay citas por cobrar.</td></tr>
                                 <?php endif; ?>
                                 <?php foreach ($serviciosCitas as $ps):
                                     $clsEstado = $ps['estado'] === 'pagado' ? 'pagada' : ($ps['estado'] === 'parcial' ? 'parcial' : ($ps['estado'] === 'devolver' ? 'cancelada' : 'pendiente'));
                                     $txtEstado = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Por pagar'][$ps['estado']];
                                 ?>
                                 <tr data-kind="<?= $ps['tipo'] ?>" data-id="<?= (int)$ps['id'] ?>" data-tipo="<?= htmlspecialchars(strtolower((string)$ps['categoria'])) ?>" data-estado="<?= $ps['estado'] ?>" data-fecha="<?= htmlspecialchars(substr((string)$ps['fecha'], 0, 10)) ?>" data-total="<?= $ps['total'] ?>" data-pagado="<?= $ps['abonado'] ?>" data-saldo="<?= $ps['saldo'] ?>">
-                                    <td><strong><?= htmlspecialchars($ps['folio']) ?></strong></td>
                                     <td><?= $ps['fecha'] ? date('d/m/Y', strtotime($ps['fecha'])) : '' ?></td>
                                     <td><?= htmlspecialchars((string)$ps['cliente']) ?><small><?= htmlspecialchars((string)$ps['mascota'] . ' · ' . (string)$ps['especie']) ?></small></td>
                                     <td><?= htmlspecialchars((string)$ps['servicio']) ?></td>
@@ -306,7 +304,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                     <div class="pagos-filtros">
                         <div>
                             <label class="label-campo" for="buscarPagoHotel">Buscar</label>
-                            <input class="campo" id="buscarPagoHotel" type="search" placeholder="Folio, cliente o mascota">
+                            <input class="campo" id="buscarPagoHotel" type="search" placeholder="Cliente o mascota">
                         </div>
                         <div>
                             <label class="label-campo" for="filtroEstadoHotel">Estado del pago</label>
@@ -323,7 +321,6 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                         <table class="pagos-tabla">
                             <thead>
                                 <tr>
-                                    <th>Folio</th>
                                     <th>Entrada</th>
                                     <th>Cliente / mascota</th>
                                     <th>Estancia</th>
@@ -336,14 +333,13 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                             </thead>
                             <tbody id="tablaPagosHotel">
                                 <?php if (empty($serviciosHotel)): ?>
-                                    <tr><td colspan="9">No hay reservaciones de hotel.</td></tr>
+                                    <tr><td colspan="8">No hay reservaciones de hotel.</td></tr>
                                 <?php endif; ?>
                                 <?php foreach ($serviciosHotel as $ph):
                                     $clsEstadoH = $ph['estado'] === 'pagado' ? 'pagada' : ($ph['estado'] === 'parcial' ? 'parcial' : ($ph['estado'] === 'devolver' ? 'cancelada' : 'pendiente'));
                                     $txtEstadoH = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Por pagar'][$ph['estado']];
                                 ?>
                                 <tr data-kind="hotel" data-id="<?= (int)$ph['id'] ?>" data-estado="<?= $ph['estado'] ?>" data-total="<?= $ph['total'] ?>" data-pagado="<?= $ph['abonado'] ?>" data-saldo="<?= $ph['saldo'] ?>">
-                                    <td><strong><?= htmlspecialchars($ph['folio']) ?></strong></td>
                                     <td><?= $ph['fecha'] ? date('d/m/Y', strtotime($ph['fecha'])) : '' ?></td>
                                     <td><?= htmlspecialchars((string)$ph['cliente']) ?><small><?= htmlspecialchars((string)$ph['mascota'] . ' · ' . (string)$ph['especie']) ?></small></td>
                                     <td><?= htmlspecialchars((string)$ph['servicio']) ?></td>
@@ -643,13 +639,12 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
             document.getElementById('cambioPago').hidden = esServicio;
 
             if (esServicio) {
-                const nombreServicio = fila.cells[3].textContent.trim();
-                const folio = fila.cells[0].textContent.trim();
-                const clienteMascota = fila.cells[2].textContent.trim();
+                const nombreServicio = fila.cells[2].textContent.trim();
+                const clienteMascota = fila.cells[1].textContent.trim();
                 filasResumenPago.replaceChildren();
                 const renglon = document.createElement('tr');
                 const detalle = document.createElement('td');
-                detalle.textContent = `${folio} · ${nombreServicio} · ${clienteMascota}`;
+                detalle.textContent = `${nombreServicio} · ${clienteMascota}`;
                 const cantidad = document.createElement('td');
                 cantidad.textContent = '1';
                 const precio = document.createElement('td');
@@ -855,7 +850,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
             const btnDev = fila.querySelector('[data-devolver]');
             if (btnDev) {
                 btnDev.addEventListener('click', () => {
-                    if (!confirm(`¿Devolver ${moneda.format(Number(fila.dataset.pagado))} de ${fila.cells[0].textContent.trim()}? Tarjeta: se reversa en el banco. Efectivo: sale de tu caja.`)) return;
+                    if (!confirm(`¿Devolver ${moneda.format(Number(fila.dataset.pagado))} de ${fila.cells[1].textContent.trim()}? Tarjeta: se reversa en el banco. Efectivo: sale de tu caja.`)) return;
                     btnDev.disabled = true;
                     llamarPagos({ accion: 'devolver', tipo: fila.dataset.kind, id: Number(fila.dataset.id) }).then((r) => {
                         if (!r.ok) {

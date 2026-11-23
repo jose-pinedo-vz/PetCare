@@ -87,7 +87,7 @@ class Ventas
     {
         $formasValidas = ['efectivo', 'tarjeta', 'transferencia'];
         if ((empty($items) && empty($servicios)) || !in_array($formaPago, $formasValidas, true)) {
-            return ['ok' => false, 'error' => 'Datos de venta no validos.'];
+            return ['ok' => false, 'error' => 'Datos de venta no válidos.'];
         }
 
         // Referencia y observaciones del pago (efectivo no lleva)
@@ -111,7 +111,7 @@ class Ventas
             $ref = $datosPago['referencia'] ?? '';
             $ref = is_scalar($ref) ? trim((string)$ref) : '';
             if ($ref !== '' && !preg_match('/^[A-Za-z0-9-]{1,30}$/', $ref)) {
-                return ['ok' => false, 'error' => 'La referencia de transferencia debe tener maximo 30 caracteres (solo letras, numeros y guiones).'];
+                return ['ok' => false, 'error' => 'La referencia de transferencia debe tener máximo 30 caracteres (solo letras, números y guiones).'];
             }
             $referenciaPago = ($ref === '') ? null : $ref;
             $observacionesPago = 'Transferencia';
@@ -144,10 +144,10 @@ class Ventas
                 $descuento = (float)($item['descuento'] ?? 0);
 
                 if ($idProducto <= 0 || $cantidad <= 0 || $descuento < 0 || $descuento > 100) {
-                    throw new Exception('Producto, cantidad o descuento no validos.');
+                    throw new Exception('Producto, cantidad o descuento no válidos.');
                 }
                 if (isset($vistos[$idProducto])) {
-                    throw new Exception('Un producto esta repetido en la venta.');
+                    throw new Exception('Un producto está repetido en la venta.');
                 }
                 $vistos[$idProducto] = true;
 
@@ -160,7 +160,7 @@ class Ventas
                 $prod = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if (!$prod) {
-                    throw new Exception('Un producto ya no esta disponible.');
+                    throw new Exception('Un producto ya no está disponible.');
                 }
 
                 // Lotes sin vencer, primero el que caduca antes (FOR UPDATE los bloquea)
@@ -217,18 +217,18 @@ class Ventas
             $vistosServ = [];
             foreach ($servicios as $serv) {
                 if (!is_array($serv)) {
-                    throw new Exception('Servicio o descuento no validos.');
+                    throw new Exception('Servicio o descuento no válidos.');
                 }
                 $idServicio = (int)($serv['id_servicio'] ?? 0);
                 $idCita = (int)($serv['id_cita'] ?? 0);
                 $descServ = (float)($serv['descuento'] ?? 0);
 
                 if ($idServicio <= 0 || $descServ < 0 || $descServ > 100) {
-                    throw new Exception('Servicio o descuento no validos.');
+                    throw new Exception('Servicio o descuento no válidos.');
                 }
                 $clave = $idCita > 0 ? 'c' . $idCita : 's' . $idServicio;
                 if (isset($vistosServ[$clave])) {
-                    throw new Exception('Un servicio esta repetido en la venta.');
+                    throw new Exception('Un servicio está repetido en la venta.');
                 }
                 $vistosServ[$clave] = true;
 
@@ -265,7 +265,7 @@ class Ventas
                 $srv = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if (!$srv) {
-                    throw new Exception('Un servicio ya no esta disponible.');
+                    throw new Exception('Un servicio ya no está disponible.');
                 }
 
                 $precio = (float)$srv['precio'];
@@ -417,7 +417,7 @@ class Ventas
             $stmt->execute();
         } catch (Exception $e) {
             error_log("No se pudo crear el cliente publico: " . $e->getMessage());
-            throw new Exception('No existe el cliente "Publico en general" (id 11) en la base de datos.');
+            throw new Exception('No existe el cliente "Público en general" (id 11) en la base de datos.');
         }
     }
 
@@ -436,11 +436,11 @@ class Ventas
         $cvv = $leer('cvv');
 
         if (!preg_match('/^\d{13,19}$/', $numero)) {
-            return ['ok' => false, 'error' => 'El numero de tarjeta debe tener de 13 a 19 digitos.'];
+            return ['ok' => false, 'error' => 'El número de tarjeta debe tener de 13 a 19 dígitos.'];
         }
 
         if (!preg_match('/^\p{L}[\p{L} .\'\-]{2,59}$/u', $titular)) {
-            return ['ok' => false, 'error' => 'El titular debe tener de 3 a 60 caracteres y solo letras, espacios, punto, apostrofe o guion.'];
+            return ['ok' => false, 'error' => 'El titular debe tener de 3 a 60 caracteres y solo letras, espacios, punto, apóstrofo o guion.'];
         }
 
         if (!preg_match('/^(\d{4})-(0[1-9]|1[0-2])$/', $vencimiento)) {
@@ -448,14 +448,14 @@ class Ventas
         }
         $ahora = new DateTime('now', new DateTimeZone('America/Mexico_City'));
         if (strcmp($vencimiento, $ahora->format('Y-m')) < 0) {
-            return ['ok' => false, 'error' => 'La tarjeta esta vencida.'];
+            return ['ok' => false, 'error' => 'La tarjeta está vencida.'];
         }
         if (strcmp($vencimiento, $ahora->modify('+15 years')->format('Y-m')) > 0) {
-            return ['ok' => false, 'error' => 'La fecha de vencimiento no es valida.'];
+            return ['ok' => false, 'error' => 'La fecha de vencimiento no es válida.'];
         }
 
         if (!preg_match('/^\d{3,4}$/', $cvv)) {
-            return ['ok' => false, 'error' => 'El CVV debe tener 3 o 4 digitos.'];
+            return ['ok' => false, 'error' => 'El CVV debe tener 3 o 4 dígitos.'];
         }
 
         return ['ok' => true, 'numero' => $numero, 'titular' => $titular, 'vencimiento' => $vencimiento, 'cvv' => $cvv];
@@ -697,19 +697,19 @@ class Ventas
         $largoRazon = function_exists('mb_strlen') ? mb_strlen($razon, 'UTF-8') : strlen($razon);
 
         if ($idVenta <= 0) {
-            return ['ok' => false, 'error' => 'Venta no valida.'];
+            return ['ok' => false, 'error' => 'Venta no válida.'];
         }
         if (!preg_match('/^[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}$/u', $rfc)) {
-            return ['ok' => false, 'error' => 'El RFC no tiene un formato valido.'];
+            return ['ok' => false, 'error' => 'El RFC no tiene un formato válido.'];
         }
         if ($largoRazon < 3 || $largoRazon > 100) {
-            return ['ok' => false, 'error' => 'La razon social debe tener de 3 a 100 caracteres.'];
+            return ['ok' => false, 'error' => 'La razón social debe tener de 3 a 100 caracteres.'];
         }
         if (!preg_match('/^[0-9]{5}$/', $cp)) {
-            return ['ok' => false, 'error' => 'El codigo postal debe tener 5 digitos.'];
+            return ['ok' => false, 'error' => 'El código postal debe tener 5 dígitos.'];
         }
         if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-            return ['ok' => false, 'error' => 'El correo no es valido.'];
+            return ['ok' => false, 'error' => 'El correo no es válido.'];
         }
 
         try {

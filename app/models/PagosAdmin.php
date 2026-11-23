@@ -95,7 +95,7 @@ class PagosAdmin
         $sql = "SELECT h.id_reservacion AS id, h.fecha_entrada AS fecha, h.estado AS estado_cita,
                        CONCAT(cl.nombre, ' ', cl.apellido) AS cliente, m.nombre AS mascota, m.especie,
                        CONCAT('Hotel · ', h.num_noches, ' noche(s)') AS servicio, 'Hotel' AS categoria,
-                       h.num_noches * h.precio_noche AS total,
+                       h.num_noches * h.precio_noche AS total, COALESCE(h.anticipo, 0) AS anticipo_hotel,
                        COALESCE((SELECT SUM(p.monto) FROM pagos_hotel p WHERE p.id_reservacion = h.id_reservacion AND p.devuelto = 0), 0) AS abonado
                 FROM hotel h
                 LEFT JOIN clientes cl ON cl.id_cliente = h.cliente
@@ -105,6 +105,10 @@ class PagosAdmin
             $f['tipo'] = 'hotel';
             $f['folio'] = 'HT-' . $f['id'];
             $f['cancelada'] = in_array(strtolower((string)$f['estado_cita']), ['cancelada', 'cancelado', 'no asistio', 'vencida', 'abandonada'], true);
+            // Anticipo cobrado fuera de caja (reservacion pagada en linea): cuenta como abonado
+            if (!$f['cancelada']) {
+                $f['abonado'] = (float)$f['abonado'] + (float)$f['anticipo_hotel'];
+            }
             $filas[] = $f;
         }
 
@@ -178,6 +182,14 @@ class PagosAdmin
             $idPago = (int)$db->lastInsertId();
             if ($metodo === 'efectivo') {
                 CorteCaja::registrarMovimiento($db, (int)$corte['id'], $empleado, 'ingreso manual', 'Pago de servicio ' . $fila['folio'], $monto, null, 'Cobro en efectivo de ' . $fila['folio']);
+            }
+            if ($tipo === 'hotel') {
+                // Mantener el saldo de la reservacion igual al que se muestra en Hotel
+                $db->prepare(
+                    "UPDATE hotel SET saldo = GREATEST(ROUND(num_noches * precio_noche - COALESCE(anticipo, 0)
+                        - (SELECT COALESCE(SUM(p.monto), 0) FROM pagos_hotel p WHERE p.id_reservacion = hotel.id_reservacion AND p.devuelto = 0), 2), 0)
+                     WHERE id_reservacion = ?"
+                )->execute([$id]);
             }
             if ($tipo === 'hotel' && round($fila['saldo'] - $monto, 2) <= 0) {
                 // Reservacion de recepcion: Por pagar -> Pagado. Reservacion del cliente: Pendiente de pago -> Confirmada.

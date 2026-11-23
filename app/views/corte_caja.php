@@ -184,18 +184,18 @@ $mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tien
                         </div>
                     </section>
 
-                    <p class="corte-dialog-nota" role="note">Los importes comerciales de este resumen corresponden únicamente a los pagos que ya estén vinculados al ID de este corte.</p>
+                    <p class="corte-dialog-nota" role="note">Este resumen cuenta las ventas cobradas durante este corte. Los cobros en efectivo de citas y hotel entran a la caja como movimientos de efectivo.</p>
 
                     <section class="corte-kpis corte-kpis--periodo" aria-label="Pagos asociados a este corte">
                         <article class="corte-kpi"><span class="corte-kpi-label">Efectivo cobrado</span><strong><?= $moneda($resumenPagosCorte['efectivo']) ?></strong></article>
                         <article class="corte-kpi"><span class="corte-kpi-label">Tarjeta</span><strong><?= $moneda($resumenPagosCorte['tarjeta']) ?></strong></article>
                         <article class="corte-kpi"><span class="corte-kpi-label">Transferencia</span><strong><?= $moneda($resumenPagosCorte['transferencia']) ?></strong></article>
                         <article class="corte-kpi"><span class="corte-kpi-label">Ventas relacionadas</span><strong><?= (int)$resumenPagosCorte['ventas'] ?></strong></article>
-                        <article class="corte-kpi corte-kpi--total"><span class="corte-kpi-label">Total cobrado</span><strong><?= $moneda($resumenPagosCorte['general']) ?></strong><small><?= (int)$resumenPagosCorte['pagos'] ?> pago(s) asociado(s) a este corte</small></article>
+                        <article class="corte-kpi corte-kpi--total"><span class="corte-kpi-label">Total cobrado</span><strong><?= $moneda($resumenPagosCorte['general']) ?></strong><small><?= (int)$resumenPagosCorte['pagos'] ?> pago(s) registrado(s) en este corte</small></article>
                     </section>
 
                     <section class="tarjeta corte-movimientos" aria-labelledby="tituloPagosCorte">
-                        <div class="corte-seccion-titulo"><div><h2 id="tituloPagosCorte">Pagos vinculados a la caja</h2><p>Solo se muestran pagos cuyo campo `pago.corte` coincide con el ID de este corte.</p></div></div>
+                        <div class="corte-seccion-titulo"><div><h2 id="tituloPagosCorte">Pagos registrados en la caja</h2><p>Solo se muestran los pagos registrados durante este corte.</p></div></div>
                         <div class="corte-tabla-envoltura">
                             <table class="corte-tabla">
                                 <thead><tr><th>Fecha</th><th>Venta</th><th>Estado de venta</th><th>Cliente</th><th>Forma de pago</th><th>Referencia</th><th class="corte-monto">Importe del pago</th><th class="corte-monto">Total de la venta</th></tr></thead>
@@ -212,7 +212,7 @@ $mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tien
                                             <td class="corte-monto"><?= $moneda($pago['total_venta']) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
-                                    <?php if (!$pagosCorte): ?><tr><td colspan="8">Todavía no hay pagos vinculados a este corte.</td></tr><?php endif; ?>
+                                    <?php if (!$pagosCorte): ?><tr><td colspan="8">Todavía no hay pagos registrados en este corte.</td></tr><?php endif; ?>
                                 </tbody>
                             </table>
                         </div>

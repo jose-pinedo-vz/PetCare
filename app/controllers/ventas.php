@@ -85,13 +85,13 @@ function ventaGuardarFactura()
     header('Content-Type: application/json; charset=utf-8');
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        echo json_encode(['ok' => false, 'error' => 'Metodo no permitido.']);
+        echo json_encode(['ok' => false, 'error' => 'Método no permitido.']);
         exit;
     }
 
     $datos = json_decode(file_get_contents('php://input'), true);
     if (!is_array($datos)) {
-        echo json_encode(['ok' => false, 'error' => 'Datos no validos.']);
+        echo json_encode(['ok' => false, 'error' => 'Datos no válidos.']);
         exit;
     }
 
@@ -146,7 +146,7 @@ function ventaGuardar()
     header('Content-Type: application/json; charset=utf-8');
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        echo json_encode(['ok' => false, 'error' => 'Metodo no permitido.']);
+        echo json_encode(['ok' => false, 'error' => 'Método no permitido.']);
         exit;
     }
 
@@ -158,7 +158,7 @@ function ventaGuardar()
     $servicios = (is_array($datos) && is_array($datos['servicios'] ?? null)) ? $datos['servicios'] : [];
 
     if (empty($items) && empty($servicios)) {
-        echo json_encode(['ok' => false, 'error' => 'El carrito esta vacio.']);
+        echo json_encode(['ok' => false, 'error' => 'El carrito está vacío.']);
         exit;
     }
 
@@ -180,7 +180,7 @@ function ventaGuardar()
     if ($telefonoCliente !== '') {
         $idCliente = Ventas::buscarClientePorTelefono($telefonoCliente);
         if ($idCliente === null) {
-            echo json_encode(['ok' => false, 'error' => 'No existe un cliente con ese telefono. Deja el campo vacio para publico en general.']);
+            echo json_encode(['ok' => false, 'error' => 'No existe un cliente con ese teléfono. Deja el campo vacío para público en general.']);
             exit;
         }
     }
