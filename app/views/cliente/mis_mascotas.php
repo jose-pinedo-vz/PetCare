@@ -53,14 +53,6 @@ $mascotas = Mascota::obtenerPorCliente((int) $_SESSION['id_cliente']);
                     <h3 class="tarjeta-mascota__nombre"><a href="detalle_mascota.php?id_mascota=<?= (int) $mascota['id_mascota'] ?>"><?= htmlspecialchars($mascota['nombre']) ?></a></h3>
                     <p class="tarjeta-mascota__dato"><?= htmlspecialchars($mascota['especie']) ?> · <?= htmlspecialchars($mascota['raza']) ?> · <?= htmlspecialchars($mascota['sexo']) ?></p>
                     <p class="tarjeta-mascota__dato"><?= textoEdadMascota($mascota['edad']) ?> · <?= $mascota['peso'] ?> kg</p>
-                    <div class="grupo-etiquetas">
-                        <?php $vacunas = trim(strtolower($mascota['vacunas'] ?? '')); ?>
-                        <?php if ($vacunas === '' || $vacunas === 'ninguna'): ?>
-                            <span class="etiqueta">Sin vacunas registradas</span>
-                        <?php else: ?>
-                            <span class="etiqueta etiqueta--exito">Vacunas registradas</span>
-                        <?php endif; ?>
-                    </div>
                     <div class="grupo-botones grupo-botones--compacto">
                         <a class="boton boton--chico" href="agendar_cita.php?id_mascota=<?= $mascota['id_mascota'] ?>">Agendar cita</a>
                         <a class="boton boton--contorno boton--chico" href="editar_mascota.php?id_mascota=<?= $mascota['id_mascota'] ?>">Editar</a>

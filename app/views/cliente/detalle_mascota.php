@@ -29,8 +29,6 @@ $nombre = htmlspecialchars($mascota['nombre']);
 $foto   = rutaFotoMascota($mascota['fotografia']);
 
 
-$vacunas = trim($mascota['vacunas'] ?? '');
-$tieneVacunas = $vacunas !== '' && strtolower($vacunas) !== 'ninguna';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -98,14 +96,7 @@ $tieneVacunas = $vacunas !== '' && strtolower($vacunas) !== 'ninguna';
                     <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'condiciones_especiales', 'Ninguna') ?></dd>
 
                     <dt class="bloque-informacion__dato">Vacunas</dt>
-                    <dd class="bloque-informacion__valor">
-                        <?php if ($tieneVacunas): ?>
-                            <span class="etiqueta etiqueta--exito">Registradas</span>
-                            <?= htmlspecialchars($vacunas) ?>
-                        <?php else: ?>
-                            <span class="etiqueta">Sin vacunas registradas</span>
-                        <?php endif; ?>
-                    </dd>
+                    <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'vacunas', 'Ninguna') ?></dd>
 
                     <dt class="bloque-informacion__dato">Última desparasitación</dt>
                     <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'ultima_desparasitacion') ?></dd>
