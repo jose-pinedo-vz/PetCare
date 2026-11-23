@@ -79,7 +79,6 @@ $usuario = $_SESSION['usuario'];
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
                             <option value="admin">Administrador</option>
-                            <option value="gerente">Gerente</option>
                             <option value="veterinario">Veterinario</option>
                             <option value="vendedor">Vendedor</option>
                             <option value="estilista">Estilista</option>
