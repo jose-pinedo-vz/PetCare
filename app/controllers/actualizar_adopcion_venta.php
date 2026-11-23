@@ -33,12 +33,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         'procedencia'           => trim($_POST['procedencia'] ?? ''),
         'vacunas'               => trim($_POST['vacunas'] ?? ''),
         'desparasitacion'       => trim($_POST['desparasitacion'] ?? ''),
-        'observaciones'         => trim($_POST['observaciones'] ?? '')
+        'observaciones'         => trim($_POST['observaciones'] ?? ''),
+        'fotografia_actual'     => trim($_POST['fotografia_actual'] ?? '')
     ];
 
-    if (isset($_FILES['fotografia']) && $_FILES['fotografia']['error'] === UPLOAD_ERR_OK)
+    if (isset($_FILES['fotografia']) && is_array($_FILES['fotografia']) && $_FILES['fotografia']['error'] !== UPLOAD_ERR_NO_FILE)
     {
-        echo "<pre>"; print_r($_FILES['fotografia']); echo "</pre>";
         $datos['fotografia'] = $_FILES['fotografia'];
     }
     validar_datos($datos);
