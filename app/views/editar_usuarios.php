@@ -122,7 +122,7 @@ $usuario=$_SESSION['usuario'];
 
       const rolPorPuesto = {
         'administrador': 'admin',
-        'gerente': 'gerente',
+        'gerente': 'admin',
         'veterinario': 'veterinario',
         'veterinario/a': 'veterinario',
         'vendedor': 'vendedor',
