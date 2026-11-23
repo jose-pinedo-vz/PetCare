@@ -155,7 +155,7 @@ $inicial = mb_strtoupper(mb_substr($cliente['nombre'], 0, 1));
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="telefono">Teléfono <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="tel" id="telefono" name="telefono" maxlength="10" pattern="[0-9]{10}" title="10 dígitos" value="<?= valorPerfil($old, 'telefono', $cliente, 'telefono') ?>" required>
+                            <input class="campo__entrada" type="tel" id="telefono" name="telefono" inputmode="numeric" minlength="10" maxlength="10" pattern="[0-9]{10}" title="Escribe 10 dígitos, solo números" placeholder="Ej. 3312345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= valorPerfil($old, 'telefono', $cliente, 'telefono') ?>" required>
                         </div>
 
                         <div class="campo">
@@ -175,7 +175,7 @@ $inicial = mb_strtoupper(mb_substr($cliente['nombre'], 0, 1));
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="emergencia_telefono">Teléfono de emergencia <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="tel" id="emergencia_telefono" name="emergencia_telefono" maxlength="10" pattern="[0-9]{10}" title="10 dígitos" value="<?= valorPerfil($old, 'emergencia_telefono', $cliente, 'telefono_emergencia') ?>" required>
+                            <input class="campo__entrada" type="tel" id="emergencia_telefono" name="emergencia_telefono" inputmode="numeric" minlength="10" maxlength="10" pattern="[0-9]{10}" title="Escribe 10 dígitos, solo números" placeholder="Ej. 3312345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= valorPerfil($old, 'emergencia_telefono', $cliente, 'telefono_emergencia') ?>" required>
                         </div>
                     </div>
 
