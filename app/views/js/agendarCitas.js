@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", async function()
                 {
                     const option = document.createElement("option");
                     option.value = item.id_cliente;
-                    option.textContent = item.id_cliente + " - " + item.nombre + " " + item.nombre ;
+                    option.textContent = item.id_cliente + " - " + item.nombre + " " + item.apellido ;
                     cliente.appendChild(option);
                 }
             }
