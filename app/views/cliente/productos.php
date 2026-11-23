@@ -38,7 +38,7 @@ $productos = Publico::productos($buscar);
                 $hay = (float)$pr['disponible'] > 0;
             ?>
             <div class="tarjeta tarjeta-mascota">
-                <?php if ($img !== ''): ?>
+                <?php if ($img !== '' && is_file(__DIR__ . '/../../../' . ltrim($img, '/'))): ?>
                     <img class="foto-marcador foto-marcador--mascota" src="../../../<?= htmlspecialchars(ltrim($img, '/')) ?>" alt="<?= htmlspecialchars($pr['nombre']) ?>">
                 <?php else: ?>
                     <div class="foto-marcador foto-marcador--mascota">Foto del producto</div>

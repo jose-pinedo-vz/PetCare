@@ -92,4 +92,36 @@ Class Lotes
 
         return $stmt->rowCount() === 1;
     }
+
+    public static function generarSiguienteLote(?PDO $conexion = null): string 
+        {
+            $conexion = $conexion ?? ConexionDB::obtenerConexion();
+        
+            $anioActual = date('Y');
+            $prefijo = "L-" . $anioActual . "-";
+        
+            // Ordenar numéricamente por el último segmento después del guion
+            $sql = "SELECT lote 
+                    FROM lote_productos 
+                    WHERE lote LIKE :prefijo 
+                    ORDER BY CAST(SUBSTRING_INDEX(lote, '-', -1) AS UNSIGNED) DESC 
+                    LIMIT 1";
+                    
+            $stmt = $conexion->prepare($sql);
+            $stmt->execute([':prefijo' => $prefijo . '%']);
+            $ultimoLote = $stmt->fetchColumn();
+        
+            if ($ultimoLote) {
+                $partes = explode('-', $ultimoLote);
+                $numeroActual = (int) end($partes);
+                $siguienteNumero = $numeroActual + 1;
+            } else {
+                $siguienteNumero = 1;
+            }
+        
+            // Mantiene 4 dígitos (0001, 0002, 0003, 0004...)
+            $consecutivoFormateado = str_pad((string) $siguienteNumero, 4, '0', STR_PAD_LEFT);
+        
+            return $prefijo . $consecutivoFormateado;
+        }
 }

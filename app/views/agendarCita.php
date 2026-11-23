@@ -24,7 +24,7 @@ $usuario=$_SESSION['usuario'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agendar cita</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/agendarCitas.js"></script>
+  <script src="js/agendarCitas.js?v=4"></script>
 </head>
 
 

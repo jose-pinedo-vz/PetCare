@@ -6,6 +6,7 @@
     const formularioRegistro = document.getElementById('formulario-registro-pedido');
     const selectorProducto = document.getElementById('pedido-producto');
     const selectorProveedor = document.getElementById('pedido-proveedor');
+    const campoLote = document.getElementById('pedido-id');
     const campoPrecio = document.getElementById('pedido-precio');
     const campoCantidad = document.getElementById('pedido-cantidad');
     const botonRegistrar = formularioRegistro.querySelector('.lote-dialog-acciones button:last-child');
@@ -13,6 +14,7 @@
     const token = dialogoRegistro.dataset.csrf;
     let pedidoActivo = null;
     let productosPendientes = [];
+    let loteSiguiente = campoLote.value;
 
     const establecerVisibilidad = (elemento, visible) => {
         elemento.hidden = !visible;
@@ -171,6 +173,7 @@
             const tarjeta = boton.closest('[data-pedido]');
             pedidoActivo = tarjeta?.dataset.pedidoId || null;
             formularioRegistro.reset();
+            campoLote.value = loteSiguiente;
             campoPrecio.value = '';
             campoPrecio.readOnly = true;
             campoPrecio.placeholder = '';
@@ -215,13 +218,14 @@
                 body: datos
             });
             productosPendientes = resultado.productos_pendientes;
+            loteSiguiente = resultado.lote_siguiente;
+            campoLote.value = loteSiguiente;
             renderizarOpcionesProducto();
             campoPrecio.value = '';
             campoPrecio.readOnly = true;
             campoPrecio.placeholder = '';
             campoCantidad.value = '';
             campoCantidad.removeAttribute('max');
-            document.getElementById('pedido-id').value = '';
             document.getElementById('pedido-caducidad').value = '';
             mostrarMensaje(
                 formularioRegistro,
@@ -256,6 +260,7 @@
         if (!tarjeta) return;
         pedidoActivo = tarjeta.dataset.pedidoId;
         formularioRegistro.reset();
+        campoLote.value = loteSiguiente;
         campoPrecio.value = '';
         campoPrecio.readOnly = true;
         campoPrecio.placeholder = '';

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../models/Productos.php';
 date_default_timezone_set('America/Mexico_City');
 
 function validar_datos(array $datos) {
@@ -10,9 +11,11 @@ function validar_datos(array $datos) {
 
     // El codigo es obligatorio
     if (empty($datos['codigo'])) {
-        $errores[] = "El codigo es obligatorio.";
-    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['codigo'])) {
-        $errores[] = "El código debe contener al menos una letra, un número y sin caracteres especiales.";
+        $errores[] = "El código es obligatorio.";
+    } else if (!preg_match('/^(\d+|(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-ZñÑ0-9\-_]+)$/', $datos['codigo'])) {
+        $errores[] = "El código debe contener solo números ejemplo: 123, o combinar letras con al menos un número ejemplo: PRD-01 (sin caracteres especiales).";
+    }else if (Productos::existeCodigo($datos['codigo'])) {
+        $errores[] = "El código del producto ya está registrado.";
     }
 
     //El nombre es obligatorio

@@ -139,14 +139,16 @@ try {
 			</div>
 		</main>
 	</div>
-
+	<?php require_once __DIR__ . '/../models/Lotes.php';
+		$codigo ='';
+		$codigo = Lotes::generarSiguienteLote(); ?>
 	<dialog class="lote-dialog" id="dialogo-registro-pedido" aria-labelledby="titulo-registro-pedido" data-csrf="<?= $escaparPedido($_SESSION['csrf_pedidos']) ?>">
 		<h2 id="titulo-registro-pedido">Registrar pedido</h2>
 		<form id="formulario-registro-pedido">
 			<div class="lote-formulario">
 				<div class="lote-campo">
 					<label for="pedido-id">Código de lote</label>
-					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" pattern="(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+" required>
+					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" value="<?= $escaparPedido($codigo ?? '') ?>" readonly required>
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-producto">Producto</label>

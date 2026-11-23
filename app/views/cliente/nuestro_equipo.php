@@ -39,7 +39,7 @@ $equipo = Publico::equipo($tipo);
                 <h2 class="tarjeta-empleado__nombre"><?= htmlspecialchars($em['nombre'] . ' ' . $em['apellido']) ?></h2>
                 <span class="tarjeta-empleado__puesto"><?= htmlspecialchars($em['puesto']) ?></span>
                 <?php if (!empty($em['especialidad'])): ?>
-                    <p class="tarjeta-empleado__detalle"><?= htmlspecialchars($em['especialidad']) ?></p>
+                    <p class="tarjeta-empleado__detalle">Especialidad: <?= htmlspecialchars($em['especialidad']) ?></p>
                 <?php endif; ?>
                 <?php if (!empty($em['num_cedula_profesional'])): ?>
                     <p class="tarjeta-empleado__detalle">Cédula profesional: <?= (int)$em['num_cedula_profesional'] ?></p>
