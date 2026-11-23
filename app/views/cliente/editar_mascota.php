@@ -76,7 +76,7 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="p. ej. Luna" value="<?= $v('nombre') ?>" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos">
+                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="Ej. Luna" value="<?= $v('nombre') ?>" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos">
                         </div>
 
                         <?php
@@ -104,7 +104,7 @@ $foto = rutaFotoMascota($mascota['fotografia']);
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="peso">Peso (kg) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" value="<?= $v('peso') ?>" required>
+                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="Ej. 24" min="0" step="0.1" value="<?= $v('peso') ?>" required>
                         </div>
 
                         <div class="campo">
@@ -123,7 +123,7 @@ $foto = rutaFotoMascota($mascota['fotografia']);
 
                         <div class="campo campo--ancho-completo">
                             <label class="campo__etiqueta" for="alergias">Alergias</label>
-                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"><?= $v('alergias') ?></textarea>
+                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Ej. Polen, pollo, penicilina"><?= $v('alergias') ?></textarea>
                         </div>
 
                         <div class="campo campo--ancho-completo">

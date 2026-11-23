@@ -79,7 +79,7 @@ $v = function (string $clave) use ($old): string {
 
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="servicios_adicionales">Servicios adicionales</label>
-                        <textarea class="campo__entrada" id="servicios_adicionales" name="servicios_adicionales" rows="3" maxlength="1000" placeholder="p. ej. baño antes de la salida"><?= $v('servicios_adicionales') ?></textarea>
+                        <textarea class="campo__entrada" id="servicios_adicionales" name="servicios_adicionales" rows="3" maxlength="1000" placeholder="Ej. baño antes de la salida"><?= $v('servicios_adicionales') ?></textarea>
                     </div>
                 </div>
 

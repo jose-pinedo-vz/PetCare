@@ -64,7 +64,7 @@ if ($valColor !== '' && $valColor !== 'Otro' && !in_array($valColor, $coloresBD,
 <div class="campo" id="campo-color-otro" <?= $valColor === 'Otro' ? '' : 'hidden' ?>>
     <label class="campo__etiqueta" for="color_otro">¿Qué color? <span class="campo__obligatorio">*</span></label>
     <input class="campo__entrada" type="text" id="color_otro" name="color_otro" maxlength="50"
-           placeholder="p. ej. Marrón rojizo"
+           placeholder="Ej. Marrón rojizo"
            pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ,]+" title="Solo letras, espacios y comas"
            value="<?= htmlspecialchars($valColorOtro) ?>"
            <?= $valColor === 'Otro' ? 'required' : '' ?>>
