@@ -43,35 +43,85 @@ class UsuariosDB
             && in_array($puesto, $combinaciones[$rolNormalizado], true);
     }
     
-    public static function obtenerTodosUsuarios(PDO $conexion): array
+    public static function obtenerTodosUsuarios(PDO $conexion,string $tipo = 'todos',string $rol = '',string $estado = '',string $busqueda = ''): array
     {
-        try {
-            $base = $conexion->prepare("SELECT u.id_usuario, u.usuario, e.nombre AS empleado_asociado, u.rol, u.fecha_creacion, u.ultimo_acceso, u.estado
-                                        FROM usuarios u
-                                        LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
-                                        WHERE u.estado = 'activo'
-                                        ORDER BY u.id_usuario DESC");
-            $base->execute();
-            return $base->fetchAll(PDO::FETCH_ASSOC) ?: [];
-        } catch (Throwable $error) {
-            try {
-                $base = $conexion->prepare("SELECT u.*, e.nombre AS empleado_asociado
-                                            FROM usuarios u
-                                            LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado
-                                            ORDER BY u.id_usuario DESC");
-                $base->execute();
-                return $base->fetchAll(PDO::FETCH_ASSOC) ?: [];
-            } catch (Throwable $e) {
-                try {
-                    $base = $conexion->query("SELECT * FROM usuarios");
-                    if ($base instanceof PDOStatement) {
-                        return $base->fetchAll(PDO::FETCH_ASSOC) ?: [];
-                    }
-                    return [];
-                } catch (Throwable $e2) {
-                    return [];
-                }
-            }
+        $tipo = strtolower(trim($tipo));
+        $rol = strtolower(trim($rol));
+        $estado = strtolower(trim($estado));
+        $busqueda = trim($busqueda);
+        $sqlUsuarios = "
+            SELECT
+                u.id_usuario AS id_registro,
+                CONCAT('usr_', u.id_usuario) AS clave_fila,
+                'sistema' AS origen,
+                u.usuario,
+                COALESCE(NULLIF(TRIM(CONCAT_WS(' ', e.nombre, e.apellido)), ''), 'Sin empleado') AS nombre_asociado,
+                LOWER(u.rol) AS rol,
+                u.fecha_creacion,
+                u.ultimo_acceso,
+                LOWER(u.estado) AS estado
+            FROM usuarios u
+            LEFT JOIN empleados e ON u.empleado_asociado = e.id_empleado";
+        $sqlClientes = "
+            SELECT
+                c.id_cliente AS id_registro,
+                CONCAT('cli_', c.id_cliente) AS clave_fila,
+                'cliente' AS origen,
+                c.usuario,
+                TRIM(CONCAT_WS(' ', c.nombre, c.apellido)) AS nombre_asociado,
+                'cliente' AS rol,
+                c.fecha_registro AS fecha_creacion,
+                NULL AS ultimo_acceso,
+                CASE WHEN c.esta_activo = 1 THEN 'activo' ELSE 'inactivo' END AS estado
+            FROM clientes c
+            WHERE c.usuario IS NOT NULL AND TRIM(c.usuario) <> '' ";
+        if ($tipo === 'sistema')
+        {
+            $subquery = "($sqlUsuarios) AS sub";
+        }
+        elseif ($tipo === 'cliente')
+        {
+            $subquery = "($sqlClientes) AS sub";
+        }
+        else
+        {
+            $subquery = "($sqlUsuarios UNION ALL $sqlClientes) AS sub";
+        }
+        $where = [];
+        $params = [];
+        if ($rol !== '' && $rol !== 'todos')
+        {
+            $where[] = "sub.rol = :rol";
+            $params[':rol'] = $rol;
+        }
+        if ($estado !== '' && $estado !== 'todos')
+        {
+            $where[] = "sub.estado = :estado";
+            $params[':estado'] = $estado;
+        }
+
+        if ($busqueda !== '')
+        {
+            $where[] = "(sub.usuario LIKE :busqueda OR sub.nombre_asociado LIKE :busqueda)";
+            $params[':busqueda'] = '%' . $busqueda . '%';
+        }
+
+        $sqlFinal = "SELECT * FROM $subquery";
+        if (!empty($where))
+        {
+            $sqlFinal .= " WHERE " . implode(' AND ', $where);
+        }
+        $sqlFinal .= " ORDER BY sub.fecha_creacion DESC, sub.id_registro DESC";
+
+        try
+        {
+            $stmt = $conexion->prepare($sqlFinal);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        }
+        catch (Throwable $e)
+        {
+            return [];
         }
     }
 
