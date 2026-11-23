@@ -87,7 +87,7 @@ unset(
             <div class="grid-formulario">
               <div>
                 <label class="label-campo" for="nombre">Nombre *:</label>
-                <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" minlength="2" required title="Solo letras y espacios"
+                <input type="text" class="campo" id="nombre" name="nombre" maxlength="50" minlength="2" required pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*" autocomplete="off" title="Solo letras y espacios (mínimo 2 letras)"
                   value="<?php echo htmlspecialchars($f['nombre']); ?>">
               </div>
 
@@ -102,13 +102,13 @@ unset(
 
               <div>
                 <label class="label-campo" for="duracion">Duración (minutos) *:</label>
-                <input type="number" class="campo" id="duracion" name="duracion" min="1" required
+                <input type="number" class="campo" id="duracion" name="duracion" min="1" max="1440" step="1" inputmode="numeric" required placeholder="Ej. 45" title="La duración debe estar entre 1 minuto y 24 horas."
                   value="<?php echo htmlspecialchars($f['duracion']); ?>">
               </div>
 
               <div>
-                <label class="label-campo" for="precio">Precio *:</label>
-                <input type="number" class="campo" id="precio" name="precio" step="0.01" min="0" required
+                <label class="label-campo" for="precio">Precio ($) *:</label>
+                <input type="number" class="campo" id="precio" name="precio" step="0.01" min="1" max="999" inputmode="decimal" required placeholder="Ej. 250" title="El precio debe estar entre $1 y $999."
                   value="<?php echo htmlspecialchars($f['precio']); ?>">
               </div>
 
@@ -162,10 +162,33 @@ unset(
         var v = d.value.trim();
         var letras = (v.match(/\p{L}/gu) || []).length;
         var ok = v === '' || (/^[\p{L}\p{N}\s.,;:()¿?¡!\-\/]+$/u.test(v) && letras >= 3);
-        d.setCustomValidity(ok ? '' : 'Escribe texto (minimo 3 letras); no se permiten solo numeros ni simbolos especiales.');
+        d.setCustomValidity(ok ? '' : 'Escribe texto (mínimo 3 letras); no se permiten solo números ni símbolos especiales.');
       }
-      n.addEventListener('input', validarNombre);
-      d.addEventListener('input', validarDescripcion);
+      // No deja escribir ni pegar caracteres que no se permiten
+      function limpiarNombre() {
+        n.value = n.value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]/g, '').replace(/^ +/, '').replace(/ {2,}/g, ' ');
+      }
+      function limpiarDescripcion() {
+        d.value = d.value.replace(/[^\p{L}\p{N}\s.,;:()¿?¡!\-\/]/gu, '');
+      }
+      function soloEnteros(e) { if (['e', 'E', '+', '-', '.', ','].indexOf(e.key) !== -1) e.preventDefault(); }
+      function soloDecimales(e) { if (['e', 'E', '+', '-'].indexOf(e.key) !== -1) e.preventDefault(); }
+      var dur = document.getElementById('duracion');
+      var pre = document.getElementById('precio');
+      dur.addEventListener('keydown', soloEnteros);
+      pre.addEventListener('keydown', soloDecimales);
+      // Se deja escribir y se avisa con el error; el precio admite hasta 2 decimales
+      dur.addEventListener('input', function () {
+        if (dur.value.length > 6) dur.value = dur.value.slice(0, 6);
+        dur.setCustomValidity(dur.value !== '' && (+dur.value < 1 || +dur.value > 1440) ? 'La duración debe estar entre 1 minuto y 24 horas.' : '');
+      });
+      pre.addEventListener('input', function () {
+        var p = pre.value.split('.');
+        if (p[0].length > 7 || (p[1] && p[1].length > 2)) pre.value = p[0].slice(0, 7) + (p.length > 1 ? '.' + p[1].slice(0, 2) : '');
+        pre.setCustomValidity(pre.value !== '' && (+pre.value < 1 || +pre.value > 999) ? 'El precio debe estar entre $1 y $999.' : '');
+      });
+      n.addEventListener('input', function () { limpiarNombre(); validarNombre(); });
+      d.addEventListener('input', function () { limpiarDescripcion(); validarDescripcion(); });
       validarNombre();
       validarDescripcion();
     })();

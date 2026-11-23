@@ -21,13 +21,15 @@ class Movimientos{
         try {
             $conexion = ConexionDB::obtenerConexion();
             $consulta = $conexion->query(
-                "SELECT m.id_producto, m.tipo_movimiento, m.motivo, m.id_empleado, m.fecha,
+                "SELECT m.id_movimiento, m.producto AS id_producto, m.tipo_movimiento, m.cantidad,
+                        m.existencia_anterior, m.existencia_posterior, m.motivo,
+                        m.empleado_responsable AS id_empleado, m.fecha, m.numero_factura, m.observaciones,
                         p.codigo AS codigo_producto, p.nombre AS nombre_producto,
                         e.nombre AS nombre_empleado, e.apellido AS apellido_empleado
                  FROM movimientos_inventario AS m
-                 LEFT JOIN productos AS p ON p.id_producto = m.id_producto
-                 LEFT JOIN empleados AS e ON e.id_empleado = m.id_empleado
-                 ORDER BY m.fecha DESC"
+                 LEFT JOIN productos AS p ON p.id_producto = m.producto
+                 LEFT JOIN empleados AS e ON e.id_empleado = m.empleado_responsable
+                 ORDER BY m.fecha DESC, m.id_movimiento DESC"
             );
             return $consulta->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Throwable $e) {
