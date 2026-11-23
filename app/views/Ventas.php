@@ -56,7 +56,9 @@ $pendientesServ = array_filter($pagosServicios, fn($f) => $f['saldo'] > 0 && $f[
 $porDevolver = array_filter($pagosServicios, fn($f) => $f['estado'] === 'devolver');
 $saldoServ = array_sum(array_column($pendientesServ, 'saldo'));
 $conAbonoServ = count(array_filter($pendientesServ, fn($f) => $f['abonado'] > 0));
-$categoriasServ = array_values(array_unique(array_filter(array_column($pagosServicios, 'categoria'))));
+// La tabla de Pagos de servicios solo muestra los servicios ya pagados
+$pagadosServ = array_values(array_filter($pagosServicios, fn($f) => $f['estado'] === 'pagado'));
+$categoriasServ = array_values(array_unique(array_filter(array_column($pagadosServ, 'categoria'))));
 $nominaPendiente = array_sum(array_map(fn($f) => $f['pagado'] ? 0 : $f['sueldo'], $nominaFilas));
 $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
 // Mostrar nombre del usuario
@@ -192,8 +194,8 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 <section class="tarjeta" aria-labelledby="tituloPagosPendientes">
                     <div class="pagos-encabezado">
                         <div>
-                            <h2 id="tituloPagosPendientes">Pagos pendientes de servicios</h2>
-                            <p>Citas de consulta, estética y hotel en una sola lista de cobranza.</p>
+                            <h2 id="tituloPagosPendientes">Servicios pagados</h2>
+                            <p>Citas de consulta y estética que ya fueron pagadas por completo.</p>
                         </div>
                     </div>
                     <div class="pagos-filtros">
@@ -237,10 +239,10 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                                 </tr>
                             </thead>
                             <tbody id="tablaPagosPendientes">
-                                <?php if (empty($pagosServicios)): ?>
-                                    <tr><td colspan="9">No hay citas por cobrar.</td></tr>
+                                <?php if (empty($pagadosServ)): ?>
+                                    <tr><td colspan="9">No hay servicios pagados.</td></tr>
                                 <?php endif; ?>
-                                <?php foreach ($pagosServicios as $ps):
+                                <?php foreach ($pagadosServ as $ps):
                                     $clsEstado = $ps['estado'] === 'pagado' ? 'pagada' : ($ps['estado'] === 'parcial' ? 'parcial' : ($ps['estado'] === 'devolver' ? 'cancelada' : 'pendiente'));
                                     $txtEstado = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Pendiente'][$ps['estado']];
                                 ?>
