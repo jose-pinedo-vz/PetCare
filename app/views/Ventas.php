@@ -62,9 +62,7 @@ $saldoHotel = array_sum(array_column($pendientesHotel, 'saldo'));
 $conAbonoHotel = count(array_filter($pendientesHotel, fn($f) => $f['abonado'] > 0));
 $saldoServ = array_sum(array_column($pendientesServ, 'saldo'));
 $conAbonoServ = count(array_filter($pendientesServ, fn($f) => $f['abonado'] > 0));
-// La tabla de Pagos de servicios solo muestra los servicios ya pagados
-$pagadosServ = array_values(array_filter($serviciosCitas, fn($f) => $f['estado'] === 'pagado'));
-$categoriasServ = array_values(array_unique(array_filter(array_column($pagadosServ, 'categoria'))));
+$categoriasServ = array_values(array_unique(array_filter(array_column($serviciosCitas, 'categoria'))));
 $nominaPendiente = array_sum(array_map(fn($f) => $f['pagado'] ? 0 : $f['sueldo'], $nominaFilas));
 $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
 // Mostrar nombre del usuario
@@ -201,8 +199,8 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 <section class="tarjeta" aria-labelledby="tituloPagosPendientes">
                     <div class="pagos-encabezado">
                         <div>
-                            <h2 id="tituloPagosPendientes">Servicios pagados</h2>
-                            <p>Citas de consulta y estética que ya fueron pagadas por completo.</p>
+                            <h2 id="tituloPagosPendientes">Pagos de servicios</h2>
+                            <p>Citas de consulta y estética por pagar y pagadas. Al liquidarlas pasan a Pagado.</p>
                         </div>
                     </div>
                     <div class="pagos-filtros">
@@ -223,7 +221,7 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                             <label class="label-campo" for="filtroEstadoPago">Estado del pago</label>
                             <select class="campo" id="filtroEstadoPago">
                                 <option value="">Todos los estados</option>
-                                <option value="pendiente">Pendiente</option>
+                                <option value="pendiente">Por pagar</option>
                                 <option value="parcial">Abono parcial</option>
                                 <option value="pagado">Pagado</option>
                                 <option value="devolver">Por devolver</option>
@@ -246,12 +244,12 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                                 </tr>
                             </thead>
                             <tbody id="tablaPagosPendientes">
-                                <?php if (empty($pagadosServ)): ?>
-                                    <tr><td colspan="9">No hay servicios pagados.</td></tr>
+                                <?php if (empty($serviciosCitas)): ?>
+                                    <tr><td colspan="9">No hay citas por cobrar.</td></tr>
                                 <?php endif; ?>
-                                <?php foreach ($pagadosServ as $ps):
+                                <?php foreach ($serviciosCitas as $ps):
                                     $clsEstado = $ps['estado'] === 'pagado' ? 'pagada' : ($ps['estado'] === 'parcial' ? 'parcial' : ($ps['estado'] === 'devolver' ? 'cancelada' : 'pendiente'));
-                                    $txtEstado = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Pendiente'][$ps['estado']];
+                                    $txtEstado = ['pagado' => 'Pagado', 'parcial' => 'Abono parcial', 'devolver' => 'Por devolver', 'pendiente' => 'Por pagar'][$ps['estado']];
                                 ?>
                                 <tr data-kind="<?= $ps['tipo'] ?>" data-id="<?= (int)$ps['id'] ?>" data-tipo="<?= htmlspecialchars(strtolower((string)$ps['categoria'])) ?>" data-estado="<?= $ps['estado'] ?>" data-fecha="<?= htmlspecialchars(substr((string)$ps['fecha'], 0, 10)) ?>" data-total="<?= $ps['total'] ?>" data-pagado="<?= $ps['abonado'] ?>" data-saldo="<?= $ps['saldo'] ?>">
                                     <td><strong><?= htmlspecialchars($ps['folio']) ?></strong></td>
