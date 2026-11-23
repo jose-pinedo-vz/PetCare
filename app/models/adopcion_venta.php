@@ -79,6 +79,15 @@ function editar(array $datos)
         return ["Error", "ID de animal no especificado para la actualización."];
     }
 
+    if (!isset($datos['fotografia']) || $datos['fotografia'] === null || $datos['fotografia'] === '') {
+        $existente = obtenerPorId((int)$id);
+        if ($existente && !empty($existente['fotografia']) && $existente['fotografia'] !== 'Sin foto') {
+            $datos['fotografia'] = $existente['fotografia'];
+        } else {
+            $datos['fotografia'] = null;
+        }
+    }
+
     $update="UPDATE animal_venta SET
         especie=:especie,
         raza=:raza,
@@ -109,7 +118,11 @@ function editar(array $datos)
         $stmt->bindParam(":color",                $datos['color'],              PDO::PARAM_STR);
         $stmt->bindParam(":peso",                 $datos['peso']);
         $stmt->bindParam(":caracteristicas",      $datos['caracteristicas'],    PDO::PARAM_STR);
-        $stmt->bindParam(":fotografia",           $datos['fotografia'],         PDO::PARAM_STR);
+        if ($datos['fotografia'] === null) {
+            $stmt->bindValue(":fotografia",       null,                         PDO::PARAM_NULL);
+        } else {
+            $stmt->bindValue(":fotografia",       $datos['fotografia'],         PDO::PARAM_STR);
+        }
         $stmt->bindParam(":procedencia",          $datos['procedencia'],        PDO::PARAM_STR);
         $stmt->bindParam(":fecha_de_ingreso",     $datos['fecha_de_ingreso'],   PDO::PARAM_STR);
         $stmt->bindParam(":costo_de_adquisicion", $datos['costo_de_adquisicion']);
