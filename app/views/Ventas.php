@@ -458,6 +458,11 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                     </div>
                 </section>
             </section>
+            <div style="margin-top: 20px; text-align: right;">
+                <a href="../../banca_simulada/banca_cliente.php" target="_blank" rel="noopener noreferrer">
+                    Banca simulada
+                </a>
+            </div>
         </main>
     </div>
     <?php include __DIR__ . '/buscar_productos.php'; ?>
@@ -769,11 +774,16 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 return;
             }
 
-            if (metodoPagoActual === 'Tarjeta') {
-                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
-                    .every((campo) => campo.reportValidity());
-                if (!tarjetaValida) return;
-            }
+            if (metodoPagoActual === 'Tarjeta') {
+
+                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
+
+                    .every((campo) => campo.reportValidity());
+
+                if (!tarjetaValida) return;
+
+            }
+
             if (metodoPagoActual === 'Transferencia' && !document.getElementById('referenciaTransferencia').reportValidity()) return;
 
             if (esServicio) {
