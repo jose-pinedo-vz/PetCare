@@ -874,30 +874,62 @@
   width: 78px;
 }
 
+/* Pestañas tipo carpeta (Inventario, Lotes, Pedidos, Movimientos y Ventas): pegadas a la izquierda, la activa es más grande */
 .inventario-pestanas {
   display: flex;
-  gap: 8px;
-  margin: 0 0 20px;
-  padding: 0 0 1px;
-  border-bottom: 1px solid var(--border-light);
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 22px;
+  padding: 0;
+  border-bottom: 4px solid var(--primary-dark);
 }
 
 .inventario-pestanas a {
-  padding: 11px 16px;
-  border-bottom: 2px solid transparent;
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border: 1px solid var(--border-light);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: var(--gray-light);
   color: var(--texto-suave);
   font-size: 13px;
+  font-weight: 600;
   text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
 }
 
-.inventario-pestanas a:hover,
-.inventario-pestanas a.activa {
+.inventario-pestanas a:hover {
+  background: var(--card);
   color: var(--primary-dark);
 }
 
 .inventario-pestanas a.activa {
-  border-bottom-color: var(--primary-dark);
-  font-weight: bold;
+  padding: 14px 28px;
+  border-color: var(--primary-dark);
+  background: var(--primary-dark);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.inventario-pestanas a:focus-visible {
+  outline: 3px solid var(--accent-teal);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .inventario-pestanas a {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .inventario-pestanas a.activa {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
 }
 
 .inventario-pedidos-toolbar {

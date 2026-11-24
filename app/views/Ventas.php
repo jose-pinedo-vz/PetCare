@@ -143,7 +143,8 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                         </table>
                     </div>
                     <div class="venta-carrito-acciones">
-                        <button class="btn btn-info btn-chico" id="btnAgregarServicio" type="button">Agregar servicio</button>
+                        <!-- Oculto temporalmente (el JS aún lo referencia, por eso no se comenta): -->
+                        <button class="btn btn-info btn-chico" id="btnAgregarServicio" type="button" hidden style="display:none">Agregar servicio</button>
                         <button class="btn btn-chico" id="btnNuevaVenta" type="button">Nueva venta</button> <!-- este boton deberia limpiar la venta actual y reiniciar todo, tambien se deberia preguntar si se desea cancelar la venta actual, o eso interprete -->
                     </div>
                     <p class="venta-mensaje" id="ventaMensaje" role="status" aria-live="polite"></p>
@@ -457,6 +458,11 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                     </div>
                 </section>
             </section>
+            <div style="margin-top: 20px; text-align: right;">
+                <a href="../../banca_simulada/banca_cliente.php" target="_blank" rel="noopener noreferrer">
+                    Banca simulada
+                </a>
+            </div>
         </main>
     </div>
     <?php include __DIR__ . '/buscar_productos.php'; ?>
@@ -768,11 +774,16 @@ $nominaPagados = count(array_filter($nominaFilas, fn($f) => $f['pagado']));
                 return;
             }
 
-            if (metodoPagoActual === 'Tarjeta') {
-                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
-                    .every((campo) => campo.reportValidity());
-                if (!tarjetaValida) return;
-            }
+            if (metodoPagoActual === 'Tarjeta') {
+
+                const tarjetaValida = [numeroTarjeta, nombreTarjeta, vencimientoTarjeta, cvvTarjeta]
+
+                    .every((campo) => campo.reportValidity());
+
+                if (!tarjetaValida) return;
+
+            }
+
             if (metodoPagoActual === 'Transferencia' && !document.getElementById('referenciaTransferencia').reportValidity()) return;
 
             if (esServicio) {

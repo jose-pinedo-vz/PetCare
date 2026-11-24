@@ -63,7 +63,7 @@ $mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tien
     <link rel="stylesheet" href="css/estilos_base_v2.css">
     <link rel="stylesheet" href="css/corte_caja.css">
 </head>
-<body>
+<body class="<?= $detalleCorte ? 'corte-detalle-abierto' : '' ?>">
     <div class="layout">
         <?php $paginaActiva = 'corte_caja'; include __DIR__ . '/layout/sidebar.php'; ?>
 
@@ -242,7 +242,7 @@ $mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tien
 
                 <?php if ($corteAbierto && $arqueoPendiente && $puedeOperarCaja): ?>
                     <section class="tarjeta corte-auditoria" aria-labelledby="tituloArqueoDeclarado">
-                        <div><h2 id="tituloArqueoDeclarado">Declaración de efectivo recibida</h2><p>Confirma el resultado calculado en el servidor para cerrar el corte.</p></div>
+                        <div><h2 id="tituloArqueoDeclarado">Declaración de efectivo recibida</h2><p>La declaración no se puede modificar. Cierra el corte para guardar el resultado.</p></div>
                         <div class="corte-confirmacion-resumen">
                             <div><span>Efectivo esperado en caja</span><strong><?= $moneda($arqueoPendiente['datos']['efectivo_esperado']) ?></strong></div>
                             <div><span>Efectivo contado</span><strong><?= $moneda($arqueoPendiente['datos']['efectivo_contado']) ?></strong></div>
@@ -254,13 +254,7 @@ $mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tien
                             <input type="hidden" name="periodo" value="<?= htmlspecialchars($periodo) ?>">
                             <input type="hidden" name="accion" value="confirmar_cierre">
                             <input type="hidden" name="corte" value="<?= (int)$corteAbierto['id'] ?>">
-                            <button class="btn btn-peligro" type="submit">Confirmar cierre</button>
-                        </form>
-                        <form method="post" action="../controllers/corte_caja.php" class="corte-acciones">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                            <input type="hidden" name="periodo" value="<?= htmlspecialchars($periodo) ?>">
-                            <input type="hidden" name="accion" value="cancelar_arqueo">
-                            <button class="btn-secundario" type="submit">Cancelar confirmación</button>
+                            <button class="btn btn-peligro" type="submit">Cerrar corte de caja</button>
                         </form>
                     </section>
                 <?php endif; ?>

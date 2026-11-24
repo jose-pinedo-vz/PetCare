@@ -68,10 +68,12 @@
 
 .corte-tabs {
   display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
   gap: 4px;
   margin-bottom: 22px;
   overflow-x: auto;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 4px solid var(--primary-dark);
 }
 
 .corte-acceso {
@@ -125,27 +127,50 @@
   padding-left: 18px;
 }
 
+/* Pestañas tipo carpeta: la activa es más grande */
 .corte-tab {
   flex: 0 0 auto;
-  padding: 12px 16px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: transparent;
+  padding: 8px 16px;
+  border: 1px solid var(--border-light);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+  background: var(--gray-light);
   color: var(--texto-suave);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
+  transition: background-color 0.2s ease, color 0.2s ease, padding 0.2s ease, font-size 0.2s ease;
 }
 
-.corte-tab:hover,
-.corte-tab:focus-visible {
+.corte-tab:hover {
+  background: var(--card);
   color: var(--primary-dark);
+}
+
+.corte-tab:focus-visible {
+  outline: 3px solid var(--accent-teal);
+  outline-offset: 2px;
 }
 
 .corte-tab.activa {
-  border-bottom-color: var(--primary-dark);
-  color: var(--primary-dark);
+  padding: 14px 28px;
+  border-color: var(--primary-dark);
+  background: var(--primary-dark);
+  color: var(--white);
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .corte-tab {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .corte-tab.activa {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
 }
 
 .corte-panel[hidden] {
@@ -1369,6 +1394,10 @@
 }
 
 @media print {
+  @page {
+    margin: 8mm 6mm;
+  }
+
   .sidebar,
   .migaja,
   .corte-tabs,
@@ -1380,6 +1409,95 @@
   .corte-acciones,
   .corte-dialog-acciones {
     display: none !important;
+  }
+
+  body.corte-detalle-abierto > .layout {
+    display: none !important;
+  }
+
+  body.corte-detalle-abierto > #modalDetalleCorte[open] {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.corte-detalle-abierto > #modalDetalleCorte[open]::backdrop {
+    display: none !important;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-dialog-cerrar {
+    display: none !important;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-detalle-modal > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 9pt;
+    break-inside: avoid;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-detalle-modal > div strong {
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla-envoltura {
+    overflow: visible !important;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla {
+    width: 100%;
+    table-layout: fixed;
+    font-size: 8pt;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla th,
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla td {
+    padding: 4px 3px;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla th:nth-child(1),
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla td:nth-child(1) {
+    width: 18%;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla th:nth-child(2),
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla td:nth-child(2) {
+    width: 31%;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla th:nth-child(3),
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla td:nth-child(3) {
+    width: 16%;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla th:nth-child(4),
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla td:nth-child(4) {
+    width: 20%;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla th:nth-child(5),
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla td:nth-child(5) {
+    width: 15%;
+  }
+
+  body.corte-detalle-abierto #modalDetalleCorte .corte-tabla tr {
+    break-inside: avoid;
   }
 
   .layout {

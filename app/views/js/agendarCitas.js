@@ -79,8 +79,9 @@ document.addEventListener("DOMContentLoaded", async function()
 // mostrar las mascotas de cada cliente en el select de mascotas
 document.addEventListener("DOMContentLoaded", async function()
 {
-    const cliente = document.getElementById('claveCliente');
+    //sconst cliente = document.getElementById('clietne');
     //console.log("¿Qué encontró el DOM?:", cliente);
+    const cliente = document.getElementById('cliente');
 
     if (cliente)
     {
@@ -110,6 +111,7 @@ document.addEventListener("DOMContentLoaded", async function()
             {
                 // console.log(error)
                 mascota.innerHTML = '<option value="">Error al cargar las mascotas</option>';
+                return;
             }
 
             mascota.innerHTML = "";
@@ -133,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async function()
                 }
             }
         }
-        cliente.addEventListener('input', (event) =>
+        cliente.addEventListener('change', (event) =>
         {
 
             elegir_mascota(event.target.value.trim());
@@ -145,6 +147,51 @@ document.addEventListener("DOMContentLoaded", async function()
         }
     }
 });
+
+// mostrar los clientes
+
+document.addEventListener("DOMContentLoaded", async function()
+{
+    //console.log("se ejecuta");
+    const cliente = document.getElementById('cliente');
+
+    if (cliente)
+    {
+        const mas_servicios = async (masServicios) =>
+        {
+            let datos = [];
+
+            try
+            {
+                const respuesta = await fetch('../controllers/citas.php?accion=mostrarCliente',
+                    {method: "GET"
+                });
+
+                datos = await respuesta.json();
+
+                for (const item of datos)
+                {
+                    const option = document.createElement("option");
+                    option.value = item.id_cliente;
+                    option.textContent = item.id_cliente + " - " + item.nombre + " " + item.apellido ;
+                    cliente.appendChild(option);
+                }
+            }
+            catch (error)
+            {
+
+            }
+        }
+        mas_servicios();
+    }
+});
+
+
+
+
+
+
+
 
 
 
@@ -454,10 +501,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const total = Number(totalPagar.textContent.replace('$', '')) || 0;
             const MontoResivido = Number(inputMonto.value) || 0;
 
-            const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
+            const idCliente = Number(document.getElementById('cliente')?.value) || 0;
+            //const idCliente = Number(document.getElementById('claveCliente')?.value) || 0;
             const idEmpleado = Number(document.getElementById('datosSesion')?.dataset.idEmpleado) || 0;
 
-            // estraer datos segun metodo seleccionardo
+            // estraer datos segun metodo seleccionard
 
             let referencia = '';
             let numTarjeta = '';
@@ -483,6 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (MontoResivido === 0) {alert("Ingrese un monto valido por favor."); return;}
             // if (iva === 0) {alert("Ingrese un monto valido por favor."); return;}
             if (MontoResivido < total) { alert("El monto recibido es menor al total."); return; }
+            if (idCliente <= 0) { alert("Seleccione a un cliente por favor."); return; }
+
 
             
 

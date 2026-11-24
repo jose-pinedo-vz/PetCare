@@ -9,8 +9,12 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita = '')
 {
     $_SESSION['error'] = $mensaje;
-    $url = "../views/corte_unias.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
-    header("Location: " . $url);
+
+    $_SESSION['oldComportamiento'] = trim($_POST['comportamiento'] ?? '');
+    $_SESSION['oldObserbaciones'] = trim($_POST['observaciones'] ?? '');
+
+    $id_cita = (int)($_POST['id_cita'] ?? 0);  
+    header("Location: ../views/corte_unias.php?id_consulta=" . $id_cita . "&error=" . urlencode($mensaje));
     exit();
 }
 
@@ -23,24 +27,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     $observaciones = trim($_POST['observaciones'] ?? '');
 
     if ($id_cita === '') {
-        errorSession("ID de cita no proporcionado.", $id_cita);
+        errorSession("ID de cita no proporcionado.");
         exit();
     }
 
     if ($id_cita <= 0) {
-        errorSession("Error: No se recibió un ID de cita válido.", $id_cita);
+        errorSession("Error: No se recibió un ID de cita válido.");
         exit();
     }
 
     if ($comportamiento === '' || $observaciones === '') {
-        errorSession("Todos los campos son obligatorios.", $id_cita);
+        errorSession("Todos los campos son obligatorios.");
         exit();
     }
 
     if (!preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,]+$/u', $comportamiento) || 
         !preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,]+$/u', $observaciones)) 
     {
-        errorSession("Los campos contienen caracteres no válidos.", $id_cita);
+        errorSession("Los campos contienen caracteres no válidos.");
         exit();
     }
 
@@ -60,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     
 
     if (!$insercion) {
-        errorSession("Error al guardar la información. Por favor, inténtelo de nuevo.", $id_cita);
+        errorSession("Error al guardar la información. Por favor, inténtelo de nuevo.");
         exit();
     }
 

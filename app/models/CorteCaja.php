@@ -434,7 +434,7 @@ final class CorteCaja
             $esperadoActual = self::calcularEfectivoEsperado($db, $corte);
             if (round($esperadoActual, 2) !== round($esperadoDeclarado, 2)) {
                 throw new DomainException(
-                    'Los movimientos cambiaron después del arqueo. Vuelve a contar el efectivo antes de cerrar.'
+                    'Los movimientos cambiaron después de la declaración. El corte no puede cerrarse; solicita a un administrador que revise los movimientos.'
                 );
             }
 

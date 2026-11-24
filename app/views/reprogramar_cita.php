@@ -78,7 +78,8 @@
 
         <div>
             <!-- <label class="label-campo" for="responsable">Responsable *:</label> -->
-            <select class="campo oculto" name="responsable_reprogramar" id="responsable_reprogramar" required>
+            <!-- <select class="campo oculto" name="responsable_reprogramar" id="responsable_reprogramar"> -->
+            <select class="campo oculto" name="responsable_reprogramar" id="responsable_reprogramar">
               
 
               <?php 

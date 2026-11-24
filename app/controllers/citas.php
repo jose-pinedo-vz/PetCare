@@ -46,7 +46,7 @@ function errorSession(string $error)
 {
     $_SESSION['error'] = $error;
 
-    $_SESSION['oldClave'] = $_POST['claveCliente'] ?? '';
+    $_SESSION['oldClave'] = $_POST['cliente'] ?? '';
     $_SESSION['oldFecha'] = $_POST['fecha'] ?? '';
     $_SESSION['oldMotivo'] = $_POST['motivoConsulta'] ?? '';
     $_SESSION['oldHorario'] = $_POST['horarioConsulta'] ?? '';
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && (($_GET['accion'] ?? '') === 'agend
 
     
     // datos 
-    $claveCliente = trim($_POST['claveCliente'] ?? '');
+    $claveCliente = trim($_POST['cliente'] ?? '');
     $mascota = trim($_POST['mascota'] ?? '');
     $fecha = trim($_POST['fecha'] ?? '');
     $duracion = trim($_POST['duracion'] ?? '');
@@ -191,7 +191,7 @@ function horarios()
     $empleado = (int)($_GET['responsable'] ?? 0);
     $Horarios = [];
     $entradaMatutino = 9;
-    $salidaMatutino = 13;
+    $salidaMatutino = 13; // aqui al mostrarse hasta la una como ultima hora, es a proposito, no hay error, la una es la utlima hora que se muestra, par que no reserves a las 2
     $entradaVespertino = 16;
     $salidaVespertino = 18;
     $horasPorConsulta = 1;
@@ -420,7 +420,8 @@ function erroresDeReprogramarCitas(string $error, $nuevaFecha, $responsable, $nu
 function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorario)
 {
     // validaciones 
-    if ($idConsulta === '' || $nuevaFecha === '' || $responsable === '' || $nuevoHorario === '')
+    // if ($idConsulta === '' || $nuevaFecha === '' || $responsable === '' || $nuevoHorario === '')
+    if ($idConsulta === '' || $nuevaFecha === '' || $nuevoHorario === '')
     {
         erroresDeReprogramarCitas("Todos los campos son obligatorios.", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
     }
@@ -452,7 +453,8 @@ function actualizarConsulta($idConsulta, $nuevaFecha, $responsable, $nuevoHorari
     $citaDetalle = ConexionesClientes::obtenerDetalleCita((int)$idConsulta);
     $idMascota = $citaDetalle ? (int)$citaDetalle['mascota'] : null;
     $idCliente = $citaDetalle ? (int)$citaDetalle['cliente'] : null;
-    $HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
+    $HayMasHoras = $consultasCitas->hayMasCitas((int)($citaDetalle['empleado'] ?? 0), $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
+    //$HayMasHoras = $consultasCitas->hayMasCitas((int)$responsable, $fechaHoraFinal, $idMascota, $idCliente, (int)$idConsulta);
     if ($HayMasHoras)
     {
         erroresDeReprogramarCitas("Ya hay una consulta registrada para este horario (el responsable, el cliente o la mascota ya tienen cita a esta hora).", $nuevaFecha, $responsable, $nuevoHorario, $idConsulta);
@@ -502,6 +504,11 @@ function nombreDelUsuario(string $usuario)
     return ConexionesClientes::empleadoDelUsuario($usuario);
 }
 
+function MostrarnombreCliente(int $id_cliente)
+{
+    return ConexionesClientes::nombreCliente($id_cliente);
+}
+
 
 $accion = $_GET['accion'] ?? '';
 
@@ -511,3 +518,15 @@ if ($accion === "datos_Servicio")
     echo json_encode(ConexionesClientes::datosServicio($id));
     exit();
 }
+
+
+$accion = $_GET['accion'] ?? '';
+
+if ($accion === "mostrarCliente")
+{
+    //$id = (int)$_GET['id_Servicio'] ?? '';
+    echo json_encode(ConexionesClientes::idConCliente());
+    exit();
+}
+
+?>

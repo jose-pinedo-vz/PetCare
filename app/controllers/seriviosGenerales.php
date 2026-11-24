@@ -9,11 +9,8 @@ if (session_status() === PHP_SESSION_NONE) {
 function errorSession($mensaje, $id_cita = '')
 {
     $_SESSION['error'] = $mensaje;
-    $url = "../views/servicioGeneral.php?error=" . urlencode($mensaje);
-    if ($id_cita !== '' && $id_cita > 0) {
-        $url .= "&id_consulta=" . $id_cita;
-    }
-    header("Location: " . $url);
+    $id_cita = (int)($_POST['id_cita'] ?? 0);  
+    header("Location: ../views/servicioGeneral.php?id_consulta=" . $id_cita . "&error=" . urlencode($mensaje));
     exit();
 }
 

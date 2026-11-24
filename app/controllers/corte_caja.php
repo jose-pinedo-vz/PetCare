@@ -129,6 +129,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new DomainException('Tu usuario no está asociado a un empleado.');
                 }
                 $corteId = $leerEntero($_POST, 'corte');
+                $pendiente = $_SESSION['corte_arqueo'] ?? null;
+                if (is_array($pendiente) && (int)($pendiente['corte'] ?? 0) === (int)$corteId) {
+                    throw new DomainException('Ya existe una declaración para este corte. Debes cerrarlo sin reemplazarla.');
+                }
                 $contado = $_POST['efectivo_contado'] ?? null;
                 if (!$corteId || !is_scalar($contado) || !is_numeric($contado)) {
                     throw new DomainException('Ingresa el total de efectivo contado.');
@@ -137,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'corte' => $corteId,
                     'observaciones' => trim($leerTexto($_POST, 'observaciones')),
                     'datos' => CorteCaja::prepararArqueo($db, $corteId, $idEmpleado, (float)$contado),
-                    'creado' => time(),
                 ];
                 $_SESSION['corte_flash'] = ['tipo' => 'info', 'mensaje' => 'Revisa el resultado del arqueo y confirma el cierre.'];
                 break;
@@ -145,11 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'confirmar_cierre':
                 $pendiente = $_SESSION['corte_arqueo'] ?? null;
                 if ($idEmpleado < 1 || !is_array($pendiente) || (int)$pendiente['corte'] !== (int)($leerEntero($_POST, 'corte') ?: 0)) {
-                    throw new DomainException('No hay un arqueo pendiente para este corte. Vuelve a contar el efectivo.');
-                }
-                if (time() - (int)$pendiente['creado'] > 1200) {
-                    unset($_SESSION['corte_arqueo']);
-                    throw new DomainException('El arqueo venció. Vuelve a contar el efectivo.');
+                    throw new DomainException('No hay una declaración pendiente para este corte.');
                 }
                 $resultado = CorteCaja::cerrarCorte(
                     $db,
@@ -169,18 +168,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['corte_flash'] = ['tipo' => 'exito', 'mensaje' => $mensaje];
                 break;
 
-            case 'cancelar_arqueo':
-                unset($_SESSION['corte_arqueo']);
-                $_SESSION['corte_flash'] = ['tipo' => 'info', 'mensaje' => 'Se canceló la confirmación del arqueo.'];
-                break;
-
             default:
                 throw new DomainException('La acción solicitada no es válida.');
         }
     } catch (DomainException | InvalidArgumentException $e) {
-        if (($accion ?? '') === 'confirmar_cierre') {
-            unset($_SESSION['corte_arqueo']);
-        }
         $_SESSION['corte_flash'] = ['tipo' => 'error', 'mensaje' => $e->getMessage()];
     } catch (PDOException $e) {
         error_log('Error de base de datos en CorteCaja: ' . $e->getMessage());
@@ -209,7 +200,6 @@ if (
     !is_array($arqueoPendiente)
     || !$corteAbierto
     || (int)$arqueoPendiente['corte'] !== (int)$corteAbierto['id']
-    || time() - (int)$arqueoPendiente['creado'] > 1200
 ) {
     unset($_SESSION['corte_arqueo']);
     $arqueoPendiente = null;

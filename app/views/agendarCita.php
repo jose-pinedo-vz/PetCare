@@ -24,7 +24,7 @@ $usuario=$_SESSION['usuario'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Agendar cita</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/agendarCitas.js"></script>
+  <script src="js/agendarCitas.js?v=4"></script>
 </head>
 
 
@@ -74,9 +74,23 @@ $usuario=$_SESSION['usuario'];
         <div class="grid-formulario">
           <div>
             <label class="label-campo" for="claveCliente">Clave del cliente *:</label>
-            <input type="number" class="campo" id="claveCliente" name="claveCliente" required placeholder="Ej. 12"
+            <select class="campo" name="cliente" id="cliente" required>
+              <?php
+              if (!empty($_SESSION['oldClave'])) {
+                  $idOld = $_SESSION['oldClave'];
+                  unset($_SESSION['oldClave']);
 
-              value="<?php echo htmlspecialchars((string)($_SESSION['oldClave'] ?? $_GET['claveCliente'] ?? '')); unset($_SESSION['oldClave']); ?>">
+                  $res = MostrarnombreCliente($idOld);
+                  $fila = $res[0] ?? [];
+                  $textoOpcion = $idOld . " - " . ($fila['nombre'] ?? '') . " " . ($fila['apellido'] ?? '');
+                  ?>
+                  <option value="<?= htmlspecialchars((string)$idOld) ?>"><?= htmlspecialchars($textoOpcion) ?></option>
+              <?php } else { ?>
+                  <option value="">Seleccione un Cliente</option>
+              <?php } ?>
+          </select>
+
+              
           </div>
 
           <div>

@@ -1,149 +1,115 @@
 <?php
+// hola
+// hola 2
 declare(strict_types=1);
-date_default_timezone_set('America/Mexico_City');
 require_once __DIR__ . '/../models/citas.php';
+// session_start();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function errorSession($mensaje, $id_cita = 0)
+function errorSession($mensaje)
 {
     $_SESSION['error'] = $mensaje;
-    $url = "../views/desparasitacion.php?error=" . urlencode($mensaje) . "&id_consulta=" . $id_cita;
-    header("Location: " . $url);
+
+    $_SESSION['oldTipo'] = trim($_POST['Tipo'] ?? '');
+    $_SESSION['oldProductoUtilizado'] = trim($_POST['ProductoUtilizado'] ?? '');
+    $_SESSION['oldFecha'] = trim($_POST['fecha'] ?? '');
+    $_SESSION['oldDicis'] = trim($_POST['Dicis'] ?? '');
+    $_SESSION['oldObservaciones'] = trim($_POST['observaciones'] ?? '');
+
+
+    $id_cita = (int)($_POST['id_cita'] ?? 0);  
+    header("Location: ../views/desparasitacion.php?id_consulta=" . $id_cita . "&error=" . urlencode($mensaje));
     exit();
 }
 
+
+
 if ($_SERVER["REQUEST_METHOD"] === "POST")
 {
-    $id_cita = (int)($_POST['id_cita'] ?? 0);
+
+    $id_cita = $_POST['id_cita'] ?? '';
 
     // datos 
     $TipoDesparacitacion = trim($_POST['Tipo'] ?? '');
     $ProductoUtilizado = trim($_POST['ProductoUtilizado'] ?? '');
     $ProximaCita = trim($_POST['fecha'] ?? '');
-    $Docies = trim($_POST['dosis'] ?? $_POST['Dosis'] ?? $_POST['Dicis'] ?? '');
+    $Docies = trim($_POST['Dicis'] ?? '');
     $Observaciones = trim($_POST['observaciones'] ?? '');
 
-
-    $_SESSION['oldDosis'] = $Docies;
-    $_SESSION['oldDicis'] = $Docies;
-    $_SESSION['oldFecha'] = $ProximaCita;
-    $_SESSION['oldObservaciones'] = $Observaciones;
-    $_SESSION['oldTipo'] = $TipoDesparacitacion;
-    $_SESSION['oldProducto'] = $ProductoUtilizado;
-
-    if ($id_cita <= 0) {
-        errorSession("ID de cita no proporcionado o inválido.", $id_cita);
-        exit();
-    }
-
-    if ($TipoDesparacitacion === '' || $ProductoUtilizado === '' || $Docies === '') 
+    if ($TipoDesparacitacion === '' || $ProductoUtilizado === '' || $ProximaCita === '' || $Docies === '') 
     {
-        errorSession("Todos los campos obligatorios deben ser completados.", $id_cita);
+        errorSession("Todos los campos son obligatorios.");
+        header("Location: ../views/desparasitacion.php");
         exit();
     }
 
+    if ($Docies > 0 && $Docies < 10000)
+    {
+        errorSession("La docis no puede ser negativa ni mayor a 10000.");
+        header("Location: ../views/desparasitacion.php");
+        exit(); 
+    }
 
-    if ($ProximaCita !== '') {
-        $d = DateTime::createFromFormat('Y-m-d', $ProximaCita);
-        if (!$d || $d->format('Y-m-d') !== $ProximaCita)
-        {
-            errorSession("El formato de la fecha no es válido.", $id_cita);
-            exit();
-        }
 
-        $fechaActual = date('Y-m-d');
-        if ($ProximaCita < $fechaActual)
-        {
-            errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.", $id_cita);
-            exit();
-        }
-    } else {
-        $ProximaCita = date('Y-m-d', strtotime('+3 months'));
+    // validaciones
+    $d = DateTime::createFromFormat('Y-m-d', $ProximaCita);
+    if (!$d || $d->format('Y-m-d') !== $ProximaCita)
+    {
+        errorSession("El formato de la fecha no es válido.");
+        header("Location: ../views/desparasitacion.php");
+        exit();
+    }
+
+    $fechaActual = date('Y-m-d');
+    if ($ProximaCita < $fechaActual)
+    {
+        errorSession("Verifique la fecha por favor. Debe ingresar una fecha de hoy en adelante.");
+        header("Location: ../views/desparasitacion.php");
+        exit();
     }
 
     if (filter_var($Docies, FILTER_VALIDATE_FLOAT) !== false) 
     {
         $Docies = (float)$Docies;
-        if ($Docies <= 0) {
-            errorSession("El valor ingresado para Dosis debe ser mayor a 0.", $id_cita);
-            exit();
-        }
     } else {
-        errorSession("El valor ingresado para Dosis debe ser un número válido.", $id_cita);
+        errorSession("El valor ingresado para Dosis debe ser un número válido.");
+        header("Location: ../views/desparasitacion.php");
         exit();
     }
 
-    if (!empty($Observaciones) && !preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,\-_]+$/u', $Observaciones)) 
+    if (!empty($Observaciones) && !preg_match('/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\.,]+$/u', $Observaciones)) 
     {
-        errorSession("Las observaciones contienen caracteres no válidos.", $id_cita);
+        errorSession("Las observaciones contienen caracteres no válidos.");
+        header("Location: ../views/desparasitacion.php");
         exit();
     }
 
-    $idProducto = (int)$ProductoUtilizado;
-    if ($idProducto <= 0) {
-        try {
-            $db = ConexionDB::obtenerConexion();
-            $stmt = $db->prepare("SELECT id_producto FROM productos WHERE nombre = ? LIMIT 1");
-            $stmt->execute([$ProductoUtilizado]);
-            $idProducto = (int)$stmt->fetchColumn();
-        } catch (Throwable $e) {
-            $idProducto = 0;
-        }
-    }
 
-    $idEmpleado = ConexionesClientes::consultarResponsablePorConsulta($id_cita);
-    if (empty($idEmpleado) || (int)$idEmpleado <= 0) {
-        $idEmpleado = $_SESSION['id_empleado'] ?? $_SESSION['empleado_asociado'] ?? null;
-    }
-    if (empty($idEmpleado) || (int)$idEmpleado <= 0) {
-        $veterinarios = ConexionesClientes::consultarEmpleadoPorPuesto('Veterinario');
-        if (!empty($veterinarios)) {
-            $idEmpleado = (int)$veterinarios[0]['id_empleado'];
-        }
-    }
-    if (empty($idEmpleado) || (int)$idEmpleado <= 0) {
-        try {
-            $db = ConexionDB::obtenerConexion();
-            $stmtEmp = $db->query("SELECT id_empleado FROM empleados WHERE esta_activo = 1 LIMIT 1");
-            $idEmpleado = $stmtEmp ? (int)$stmtEmp->fetchColumn() : 1;
-        } catch (Throwable $e) {
-            $idEmpleado = 1;
-        }
-    }
-
+    // validados
+    $idEmpleado =  ConexionesClientes::consultarResponsablePorConsulta($id_cita);
     
-    if (!empty($idEmpleado) && (int)$idEmpleado > 0) {
-        try {
-            $db = ConexionDB::obtenerConexion();
-            $upd = $db->prepare("UPDATE citas SET empleado = ? WHERE id_cita = ? AND (empleado IS NULL OR empleado = 0)");
-            $upd->execute([(int)$idEmpleado, $id_cita]);
-        } catch (Throwable $ignore) {
-        }
-    }
-    
-    $insercion = ConexionesClientes::insertarDesparacitacion(
-        $id_cita,
-        $TipoDesparacitacion,
-        $idProducto,
-        $ProximaCita,
-        $Docies,
-        (!empty($idEmpleado) && (int)$idEmpleado > 0) ? (int)$idEmpleado : 1,
-        $Observaciones
-    );
-
+    $insercion = ConexionesClientes::insertarDesparacitacion($id_cita, $TipoDesparacitacion, $ProductoUtilizado, $ProximaCita, $Docies, $idEmpleado, $Observaciones);
     if (!$insercion) {
-        errorSession("Error al guardar la información. Por favor, inténtelo de nuevo.", $id_cita);
+        errorSession("Error al guardar la información. Por favor, inténtelo de nuevo.");
+        header("Location: ../views/desparasitacion.php");
         exit();
     }
 
-    ConexionesClientes::marcarCitaAtendida($id_cita);
-    
-    unset($_SESSION['oldDosis'], $_SESSION['oldDicis'], $_SESSION['oldFecha'], $_SESSION['oldObservaciones'], $_SESSION['oldTipo'], $_SESSION['oldProducto'], $_SESSION['error']);
+    ConexionesClientes::marcarCitaAtendida((int)$id_cita);
 
     header("Location: ../views/citas.php");
+    exit();
+}
+
+
+$accion = $_GET['accion'] ?? '';
+if ($accion === 'mostrarProductos')
+{
+    $mostrarProductos = ConexionesClientes::productosDesparasitantes();
+    echo json_encode($mostrarProductos);
     exit();
 }
 ?>

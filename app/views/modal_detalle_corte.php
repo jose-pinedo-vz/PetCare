@@ -55,7 +55,6 @@
             <div><span>Efectivo esperado antes de resguardo</span><strong><?= $moneda($efectivoEsperadoAntesResguardo) ?></strong></div>
             <div><span>Efectivo contado en arqueo</span><strong><?= $moneda($detalleCorte['efectivo_contado']) ?></strong></div>
             <div><span>Diferencia en arqueo</span><strong><?= $monedaConSigno($detalleCorte['diferencia']) ?></strong></div>
-            <div><span>Retiro a resguardo (post-arqueo)</span><strong><?= $monedaConSigno(-$resguardosAutomaticosDetalle) ?></strong></div>
             <div><span>Efectivo restante en caja (nuevo fondo)</span><strong><?= $moneda($efectivoRestanteDetalle) ?></strong></div>
 
             <div class="corte-detalle-seccion">Cobros del corte</div>
@@ -64,12 +63,11 @@
             <div><span>Pagos por transferencia</span><strong><?= $moneda($detalleCorte['total_transferencia']) ?></strong></div>
             <div><span>Total cobrado</span><strong><?= $moneda($detalleCorte['total_general']) ?></strong></div>
 
-            <div class="corte-detalle-seccion">Movimientos y resguardos</div>
+            <div class="corte-detalle-seccion">Resumen de movimientos manuales</div>
             <div><span>Otros ingresos de caja</span><strong><?= $moneda($otrosIngresosDetalle) ?></strong></div>
             <div><span>Gastos</span><strong><?= $moneda($gastosDetalle) ?></strong></div>
             <div><span>Nómina</span><strong><?= $moneda($nominasDetalle) ?></strong></div>
             <div><span>Retiro manual a resguardo</span><strong><?= $moneda($resguardosManualesDetalle) ?></strong></div>
-            <div><span>Retiro post-arqueo a resguardo</span><strong><?= $moneda($resguardosAutomaticosDetalle) ?></strong></div>
         <?php else: ?>
             <div><span>Arqueo</span><strong>Pendiente de declaración</strong></div>
         <?php endif; ?>

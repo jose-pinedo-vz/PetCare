@@ -433,7 +433,7 @@
             }
             catch (Exception $e)
             {
-                exit();
+                error_log("Error en insertarCortePelo: " . $e->getMessage());
                 return false;
             }
         }
@@ -639,6 +639,38 @@
                 $stml = $db->prepare($query);
                 $stml->execute([$id]);
                 return (string)$stml->fetchColumn();  
+            }
+            catch (Exception)
+            {
+                return [];
+            }
+        }
+
+        public static function idConCliente()
+        {
+            try
+            {
+                $query = "SELECT id_cliente, nombre, apellido FROM clientes";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC); 
+            }
+            catch (Exception)
+            {
+                return [];
+            }
+        }
+
+        public static function nombreCliente($id_cliente)
+        {
+            try
+            {
+                $query = "SELECT nombre, apellido FROM clientes WHERE id_cliente = ?";
+                $db = ConexionDB::obtenerConexion();
+                $stml = $db->prepare($query);
+                $stml->execute([$id_cliente]);
+                return $stml->fetchAll(PDO::FETCH_ASSOC); 
             }
             catch (Exception)
             {
