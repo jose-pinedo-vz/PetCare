@@ -435,6 +435,21 @@ class Productos {
         return existeCodigoProducto($codigo);
     }
 
+    public static function existeCodigoProductoActualizar(string $codigo, int $id_producto): bool {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $consulta = $conexion->prepare(
+                "SELECT 1 FROM productos WHERE LOWER(codigo) = LOWER(?) AND id_producto != ? LIMIT 1"
+            );
+            $consulta->execute([$codigo, $id_producto]);
+
+            return $consulta->fetchColumn() !== false;
+        } catch (Exception $e) {
+            error_log("Error al verificar el código del producto: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public static function insertarProducto(array $datos){
         return insertarProducto($datos);
     }

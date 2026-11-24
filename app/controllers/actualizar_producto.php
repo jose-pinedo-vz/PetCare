@@ -55,6 +55,8 @@ if (session_status() === PHP_SESSION_NONE) {
         $errores[] = "El código es obligatorio.";
     } else if (!preg_match('/^(\d+|(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-ZñÑ0-9\-_]+)$/', $datos['codigo'])) {
         $errores[] = "El código debe contener solo números ejemplo: 123, o combinar letras con al menos un número ejemplo: PRD-01 (sin caracteres especiales).";
+    }else if (Productos::existeCodigoProductoActualizar($datos['codigo'], $id)) {
+        $errores[] = "El código del producto ya está registrado.";
     }
 
     //El nombre es obligatorio
