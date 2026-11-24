@@ -129,7 +129,7 @@ function obtenerVacunas(): array{
     }
 }
 
-function historiaVacunasMascota(int $id_mascota): array {
+function historialVacunasMascota(int $id_mascota): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
         $sql = "
@@ -148,6 +148,32 @@ function historiaVacunasMascota(int $id_mascota): array {
 
     } catch (Exception $error) {
         error_log("Error al obtener el historial de las vacunas de la mascota " . $error -> getMessage());
+        return [];
+    }
+}
+
+function historialVacunas(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT m.id_mascota, m.nombre AS mascota, lv.nombre AS tipo_vacunas,
+                   v.fecha_aplicacion, v.lote, v.fecha_proxima
+            FROM vacunas v, mascotas m, lista_vacunas lv
+            WHERE v.id_mascota = m.id_mascota AND v.vacuna_puesta = lv.id AND m.esta_activo = 1
+            ORDER BY v.fecha_aplicacion DESC
+            LIMIT 100
+        ";
+
+        $resultado = $conexion -> query($sql);
+
+        if (!$resultado) {
+            return [];
+        }
+
+        return $resultado -> fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el historial de vacunas " . $error -> getMessage());
         return [];
     }
 }
@@ -268,8 +294,12 @@ class Veterinaria {
         return obtenerVacunas();
     }
 
-    public static function historiaVacunasMascota(int $id_mascota): array {
-        return historiaVacunasMascota($id_mascota);
+    public static function historialVacunasMascota(int $id_mascota): array {
+        return historialVacunasMascota($id_mascota);
+    }
+
+    public static function historialVacunas(): array {
+        return historialVacunas();
     }
 
     public static function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {

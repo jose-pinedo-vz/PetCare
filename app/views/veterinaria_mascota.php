@@ -79,7 +79,7 @@ unset($_SESSION['error']);
             <h2>Seleccionar mascota</h2>
             <form method="POST" action="../controllers/veterinaria.php">
                 <select class="campo" name="id_mascota" id="mascota" onchange="this.form.submit()">
-                    <option value="">Selecciona una mascota</option>
+                    <option value="" selected disabled>Selecciona una mascota</option>
                     <?php foreach ($listaMascotas as $listM): ?>
                         <option value="<?php echo (int)$listM['id_mascota']?>" <?php echo ((int)$listM['id_mascota'] === $idMascota) ? 'selected' : '' ?> > <?php echo htmlspecialchars($listM['nombre']) ?> </option>
                     <?php endforeach; ?>

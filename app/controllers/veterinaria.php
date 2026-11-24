@@ -45,7 +45,7 @@ function extraerDatosMascota(): array {
             $_SESSION['mascotaSeleccionada'] = $idMascota;
             $detProp = Veterinaria::obtenerDatosPropietario($idMascota);
             $edad = calcularEdad((string) ($detMascotas['edad'] ?? ''));
-            $vacunas = Veterinaria::historiaVacunasMascota($idMascota);
+            $vacunas = Veterinaria::historialVacunasMascota($idMascota);
         }
     } 
 

@@ -17,6 +17,10 @@ function listado_Especies(): array {
     return Veterinaria::obtenerEspecies();
 }
 
+function listado_HistorialVacunas(): array {
+    return Veterinaria::historialVacunas();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $accion = $_POST['accion'] ?? '';

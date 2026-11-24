@@ -327,7 +327,7 @@ foreach ($especies as $registroEspecie) {
               </div>
 
             <div class="campo-completo" id="contenedorVacunas">
-              <label class="label-campo">Vacunas que ya tiene:</label>
+              <label class="label-campo">Vacunas:</label>
               <small class="nota-campo" id="notaVacunas">Selecciona primero una especie...</small>
               <small class="nota-campo">Marca las que ya tiene. La fecha es opcional: déjala vacía si no se sabe o si se la pusieron en otra veterinaria.</small>
 

@@ -3,7 +3,8 @@ require_once __DIR__ . '/../controllers/veterinaria_vacunas.php';
 
 $lista_vacunas=listado_Vacunas()['listaVacunas'];
 
-$vacunas = $vacunas ?? [];
+/* $vacunas = $vacunas ?? []; */
+$vacunas = listado_HistorialVacunas();
 $lista_vacunas = $lista_vacunas ?? [];
 $especies = listado_Especies();
 
@@ -54,7 +55,69 @@ if ($modalError === 'eliminar') {
 
     .columna-lateral .tarjeta > .btn {
       margin-top: 12px;
+      align-self: flex-start;
+      flex-shrink: 0;
     }
+    /* Espacio entre las dos tarjetas de historial */
+  .columna-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Cada tabla tiene su propio scroll y el encabezado se queda fijo */
+  .tarjeta .tabla-envoltura {
+    overflow-y: auto;
+  }
+
+  .tarjeta .tabla-envoltura thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  /* Escritorio: la pantalla ocupa exactamente el alto de la ventana */
+  @media (min-width: 769px) {
+    main {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    main .panel-inicio {
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+    }
+
+    .columna-lateral,
+    .columna-principal {
+      min-height: 0;
+    }
+
+    /* Todas las tarjetas se reparten el alto disponible */
+    .columna-lateral .tarjeta,
+    .columna-principal .tarjeta {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tarjeta .tabla-envoltura {
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  /* Celular: sin alto fijo, pero con tope para que las tablas no se alarguen */
+  @media (max-width: 768px) {
+    .tarjeta .tabla-envoltura {
+      max-height: 360px;
+    }
+  }
   </style>
 </head>
 
@@ -110,7 +173,6 @@ if ($modalError === 'eliminar') {
                       <th>Mascota</th>
                       <th>Fecha</th>
                       <th>Vacuna</th>
-                      <th>Lote</th>
                       <th>Proxima aplicacion</th>
                     </tr>
                   </thead>
@@ -118,11 +180,9 @@ if ($modalError === 'eliminar') {
                     <?php foreach ($vacunas as $v): ?>
                       <tr>
                         <td><?= htmlspecialchars($v['mascota']) ?></td>
-                        <td><?= htmlspecialchars($v['fecha_aplicacion']) ?></td>
+                        <td><?= !empty($v['fecha_aplicacion']) ? htmlspecialchars((string)$v['fecha_aplicacion']) : 'Sin fecha' ?></td>
                         <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
-                        <td><?= htmlspecialchars($v['lote']) ?></td>
                         <td><?= htmlspecialchars($v['fecha_proxima']) ?></td>
-                        <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
                       </tr>
                     <?php endforeach; ?>
                   </tbody>
