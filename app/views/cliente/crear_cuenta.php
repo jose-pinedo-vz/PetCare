@@ -40,7 +40,7 @@ $paginaActiva = '';
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="usuario">Usuario <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="usuario" name="usuario" placeholder="p. ej. maria.lopez" required
+                            <input class="campo__entrada" type="text" id="usuario" name="usuario" placeholder="Ej. maria.lopez" required
                                 value="<?php echo htmlspecialchars((string)($_SESSION['nombre'] ?? '')); unset($_SESSION['nombre']); ?>">
                         </div>
 
