@@ -53,7 +53,7 @@ $paginaActiva = 'mascotas';
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
                             <input class="campo__entrada" type="text" id="nombre" name="nombre"
-                                placeholder="p. ej. Luna" required
+                                placeholder="Ej. Luna" required
                                 value="<?= htmlspecialchars($old['nombre'] ?? '') ?>">
                         </div>
 
@@ -68,7 +68,7 @@ $paginaActiva = 'mascotas';
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="raza">Raza</label>
-                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
+                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="Ej. Labrador" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -81,12 +81,12 @@ $paginaActiva = 'mascotas';
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="edad">Edad (años) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
+                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="Ej. 3" min="0" step="0.1" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="peso">Peso (kg) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" required value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
+                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="Ej. 24" min="0" step="0.1" required value="<?= htmlspecialchars($old['peso'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
