@@ -79,6 +79,16 @@ function validar_datos(array $datos) {
         $errores[] = "La unidad de medida no puede tener mas de 5 caracteres";
     }
 
+    if (isset($datos['contenido']) && isset($datos['unidad_medida'])) {
+        if (filter_var($datos['contenido'], FILTER_VALIDATE_INT) === false && $datos['unidad_medida'] === 'pza') {
+            $errores[] = "El contenido debe ser entero si la unidad de medida es 'Pieza'.";
+        }else if (filter_var($datos['contenido'], FILTER_VALIDATE_INT) === false && $datos['unidad_medida'] === 'paq') {
+            $errores[] = "El contenido debe ser entero si la unidad de medida es 'Paquete'.";
+        }else if (filter_var($datos['contenido'], FILTER_VALIDATE_INT) === false && $datos['unidad_medida'] === 'caja') {
+            $errores[] = "El contenido debe ser entero si la unidad de medida es 'Caja'.";
+        }
+    }
+
     //El precio de venta es obligatorio
     if ($datos['precio_venta'] === '') {
         $errores[] = "El precio de venta es obligatorio.";
