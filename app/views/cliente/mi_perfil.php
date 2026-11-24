@@ -70,7 +70,7 @@ $inicial = mb_strtoupper(mb_substr($cliente['nombre'], 0, 1));
 
             <div class="perfil-portada__info">
                 <h1 class="perfil-portada__nombre"><?= htmlspecialchars($nombreCompleto) ?></h1>
-                <p class="perfil-portada__usuario">@<?= htmlspecialchars($cliente['usuario'] ?? '') ?></p>
+                <p class="perfil-portada__usuario"><?= htmlspecialchars($cliente['usuario'] ?? '') ?></p>
             </div>
 
             <div class="perfil-portada__numeros">
