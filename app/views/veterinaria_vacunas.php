@@ -7,7 +7,7 @@ $vacunas          = $vacunas ?? [];
 $lista_vacunas = $lista_vacunas ?? [];
 $especies = listado_Especies();
 
-$desparasitaciones = $desparasitaciones ?? [];
+$desparasitaciones = historialDesparasitaciones();
 $catalogoVacunas = $catalogoVacunas ?? [];
 ?>
 
@@ -110,15 +110,24 @@ $catalogoVacunas = $catalogoVacunas ?? [];
                       </tr>
                     </thead>
                     <tbody id="tablaDespara">
-                      <?php foreach ($desparasitaciones as $d): ?>
+                      <?php if (count($desparasitaciones) > 0): ?>
+                        <?php foreach ($desparasitaciones as $d): ?>
+                            <tr>
+                              <td><?= htmlspecialchars($d['mascota']) ?></td>                        
+                              <td><?= date('d/m/Y', strtotime($d['fecha'])) ?></td>                        
+                              <td><?= htmlspecialchars($d['tipo']) ?></td>                        
+                              <td><?= htmlspecialchars($d['producto_utilizado']) ?></td>                        
+                              <td><?= htmlspecialchars((string)$d['dosis']) ?></td>                        
+                              <!-- <td><?= date('d/m/Y', strtotime($d['proxima_aplicacion'])) ?></td>   -->                      
+                            </tr>
+                        <?php endforeach; ?>
+                      <?php else: ?>
                         <tr>
-                          <td><?= htmlspecialchars($d['fecha']) ?></td> <!--La fecha de aqui saldra de la tabla citas-->
-                          <td><?= htmlspecialchars($d['tipo']) ?></td>
-                          <td><?= htmlspecialchars($d['producto_utilizado']) ?></td>
-                          <td><?= htmlspecialchars($d['dosis']) ?></td>
-                          <td> <a class="btn" href="datosMascota.php?id_mascota=<?= urlencode((string)$m['id_mascota']) ?>"> Ver datos</a></td>
+                          <td colspan="7" style="text-align: center;">
+                            No hay desparasitaciones registradas
+                          </td>
                         </tr>
-                      <?php endforeach; ?>
+                      <?php endif; ?>
                     </tbody>
                   </table>
                 </div>

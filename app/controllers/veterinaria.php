@@ -98,6 +98,10 @@ function extraerCitasHoy(): array {
     return Veterinaria::citasHoyVeterinaria(date('Y-m-d'));
 }
 
+function historialDesparasitaciones(): array {
+    return Veterinaria::conseguirHistorialDesparasitacion();
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $idMascota = trim($_POST['id_mascota'] ?? '');

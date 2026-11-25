@@ -176,6 +176,32 @@ function editarVacuna(int $id, string $nombre, int $especie): bool {
     }
 }
 
+function conseguirHistorialVacuna(int $id){
+    try{
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "select
+                    v.id_mascota,
+                    v.fecha_aplicacion,
+                    lv.nombre AS vacuna,
+                    v.lote,
+                    v.fecha_proxima
+                from vacunas v
+                inner join lista_vacunas lv
+                    ON v.vacuna_puesta = lv.id
+                where v.id_mascota = ?
+                order by v.fecha_aplicacion DESC";
+        $consulta = $conexion->prepare($sql);
+        $consulta->execute([$id]);
+
+        return $consulta-fetchall(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error){
+        error_log("Error al eliminar vacuna: " . $error->getMessage());
+        return false;
+    }
+}
+
 function eliminarVacuna(int $id): bool {
     try {
         $conexion = ConexionDB::obtenerConexion();
@@ -189,6 +215,40 @@ function eliminarVacuna(int $id): bool {
     } catch (Exception $error) {
         error_log("Error al eliminar vacuna: " . $error->getMessage());
         return false;
+    }
+}
+
+function conseguirHistorialDesparasitacion(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+
+        $sql = "
+            SELECT
+                m.id_mascota,
+                m.nombre AS mascota,
+                c.fecha,
+                d.tipo,
+                p.nombre AS producto_utilizado,
+                d.dosis,
+                d.proxima_aplicacion
+            FROM servicio_desparasitacion d
+            INNER JOIN citas c
+                ON d.id_cita = c.id_cita
+            INNER JOIN mascotas m
+                ON c.mascota = m.id_mascota
+            INNER JOIN productos p
+                ON d.producto_utilizado = p.id_producto
+            ORDER BY c.fecha DESC
+        ";
+
+        $consulta = $conexion->query($sql);
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error al obtener desparasitaciones: " 
+                  . $error->getMessage());
+        return [];
     }
 }
 
@@ -229,6 +289,14 @@ class Veterinaria {
     
     public static function eliminarVacuna(int $id): bool {
         return eliminarVacuna($id);
+    }
+
+    public static function conseguirHistorialVacuna(): array {
+        return conseguirHistorialVacuna($id);
+    }
+
+    public static function conseguirHistorialDesparasitacion(): array {
+        return conseguirHistorialDesparasitacion();
     }
 }
 ?>

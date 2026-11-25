@@ -7,6 +7,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+function vacunasVeterinario(int $id): array{
+    $historial= Veterinaria::conseguirHistorialVacuna();
+
+    return ['historial'=>$historial];
+}
+
 function listado_Vacunas(): array {
     $vacunas = Veterinaria::obtenerVacunas();
 
@@ -15,6 +21,10 @@ function listado_Vacunas(): array {
 
 function listado_Especies(): array {
     return Veterinaria::obtenerEspecies();
+}
+
+function historialDesparasitaciones(): array {
+    return Veterinaria::conseguirHistorialDesparasitacion();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
