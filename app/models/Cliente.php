@@ -239,23 +239,40 @@ class Cliente
         }
     }
 
-    // Mi perfil (cliente): actualiza solo los datos de contacto que el cliente puede cambiar
+    // Mi perfil (cliente): actualiza los datos que el cliente puede cambiar
+    // (no toca id, contraseña, fecha de registro, esta_activo, observaciones ni tokens)
     public static function actualizarPerfil(int $id, array $datos): array
     {
         try {
             $db = ConexionDB::obtenerConexion();
             $stmt = $db->prepare(
                 "UPDATE clientes SET
-                    nombre = ?, apellido = ?, telefono = ?, correo = ?, calle = ?,
+                    usuario = ?, nombre = ?, apellido = ?, fecha_nacimiento = ?, sexo = ?, rfc = ?,
+                    telefono = ?, telefono_alternativo = ?, correo = ?,
+                    calle = ?, numero_exterior = ?, numero_interior = ?, colonia = ?,
+                    ciudad = ?, estado = ?, codigo_postal = ?,
                     contacto_emergencia = ?, telefono_emergencia = ?
                  WHERE id_cliente = ?"
             );
+            // Los opcionales vacíos se guardan como NULL (estado no acepta NULL, va vacío)
+            $nulo = fn(string $campo) => ($datos[$campo] ?? '') !== '' ? $datos[$campo] : null;
             $stmt->execute([
+                $datos['usuario'],
                 $datos['nombre'],
                 $datos['apellido'],
+                $nulo('fecha_nacimiento'),
+                $nulo('sexo'),
+                $nulo('rfc'),
                 $datos['telefono'],
+                $nulo('telefono_alternativo'),
                 $datos['correo'],
-                $datos['direccion'] ?? '',
+                $nulo('calle'),
+                $nulo('numero_exterior'),
+                $nulo('numero_interior'),
+                $nulo('colonia'),
+                $nulo('ciudad'),
+                $datos['estado'] ?? '',
+                $nulo('codigo_postal'),
                 $datos['contacto_emergencia'],
                 $datos['telefono_emergencia'],
                 $id
