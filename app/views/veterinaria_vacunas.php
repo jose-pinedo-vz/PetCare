@@ -182,7 +182,7 @@ if ($modalError === 'eliminar') {
                         <td><?= htmlspecialchars($v['mascota']) ?></td>
                         <td><?= !empty($v['fecha_aplicacion']) ? htmlspecialchars((string)$v['fecha_aplicacion']) : 'Sin fecha' ?></td>
                         <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
-                        <td><?= htmlspecialchars($v['fecha_proxima']) ?></td>
+                        <td><?= !empty($v['fecha_proxima']) ? htmlspecialchars((string)$v['fecha_proxima']) : 'Sin fecha' ?></td>
                       </tr>
                     <?php endforeach; ?>
                   </tbody>

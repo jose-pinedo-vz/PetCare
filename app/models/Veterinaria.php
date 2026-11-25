@@ -160,7 +160,7 @@ function historialVacunas(): array {
                    v.fecha_aplicacion, v.lote, v.fecha_proxima
             FROM vacunas v, mascotas m, lista_vacunas lv
             WHERE v.id_mascota = m.id_mascota AND v.vacuna_puesta = lv.id AND m.esta_activo = 1
-            ORDER BY v.fecha_aplicacion DESC
+            ORDER BY v.fecha_aplicacion IS NULL, v.fecha_aplicacion DESC, v.id_vacuna DESC
             LIMIT 100
         ";
 

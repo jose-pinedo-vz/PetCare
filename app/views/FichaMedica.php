@@ -14,6 +14,8 @@ $veterinarios         = $veterinarios ?? [];
 $idConsulta           = $idConsulta ?? 0;
 $idVeterinario        = $idVeterinario ?? 1;
 $radiografiasPrevias  = $radiografiasPrevias ?? [];
+$catalogoVacunas      = $catalogoVacunas ?? [];
+$Datosconsulta        = $Datosconsulta ?? [];
 
 // Devuelve el valor viejo guardado en sesion (si hubo error) y lo borra
 function old(string $clave): string
@@ -29,10 +31,24 @@ unset($_SESSION['error']);
 $listaErrores = $_SESSION['errores'] ?? [];
 unset($_SESSION['errores']);
 $mascotaVieja = old('oldMascota');
+if ($mascotaVieja === '' && !empty($Datosconsulta['mascota'])) {
+    $mascotaVieja = (string)$Datosconsulta['mascota'];
+}
 $veterinarioViejo = old('oldid_veterinario');
 if ($veterinarioViejo === '' && $idVeterinario > 0) {
     $veterinarioViejo = (string)$idVeterinario;
 }
+$vacunasViejas = $_SESSION['oldVacunas'] ?? [];
+$vacunasProximaViejas = $_SESSION['oldVacunasProxima'] ?? [];
+$vacunasLoteViejas = $_SESSION['oldVacunasLote'] ?? [];
+$vacunasFabricanteViejas = $_SESSION['oldVacunasFabricante'] ?? [];
+unset(
+    $_SESSION['oldVacunas'],
+    $_SESSION['oldVacunasProxima'],
+    $_SESSION['oldVacunasLote'],
+    $_SESSION['oldVacunasFabricante']
+);
+$vacunasViejasStr = is_array($vacunasViejas) ? array_map('strval', $vacunasViejas) : [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -45,6 +61,42 @@ if ($veterinarioViejo === '' && $idVeterinario > 0) {
   <title>Veterinaria PetCare - Ficha veterinaria</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+  <style>
+    .rejilla-vacunas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px 16px;
+      margin-top: 8px;
+    }
+    .tarjeta-vacuna {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      background-color: var(--white);
+    }
+    .tarjeta-vacuna .titulo-vacuna {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .tarjeta-vacuna .detalle-vacuna {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+    }
+    .tarjeta-vacuna .detalle-vacuna .campo {
+      padding: 6px 10px;
+    }
+  </style>
 </head>
 <body>
 
@@ -83,7 +135,7 @@ if ($veterinarioViejo === '' && $idVeterinario > 0) {
             <select class="campo" name="mascota" id="mascota" required>
               <option value="">Selecciona una mascota</option>
               <?php foreach ($mascotas as $m): ?>
-                <option value="<?= (int)$m['id'] ?>" <?= ((string)$m['id'] === (string)$mascotaVieja) ? 'selected' : '' ?>><?= htmlspecialchars($m['nombre']) ?></option>
+                <option value="<?= (int)$m['id'] ?>" data-especie-id="<?= (int)($m['id_especie'] ?? 0) ?>" <?= ((string)$m['id'] === (string)$mascotaVieja) ? 'selected' : '' ?>><?= htmlspecialchars($m['nombre']) ?></option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -219,6 +271,49 @@ if ($veterinarioViejo === '' && $idVeterinario > 0) {
         </div>
       </fieldset>
 
+      <fieldset>
+        <legend>Vacunas aplicadas</legend>
+        <div class="campo-completo" id="contenedorVacunas">
+          <small class="nota-campo" id="notaVacunas">Selecciona primero una mascota...</small>
+          <small class="nota-campo">Marca las vacunas aplicadas durante esta consulta (se registrarán con fecha de hoy).</small>
+
+          <div class="rejilla-vacunas">
+            <?php foreach ($catalogoVacunas as $vac):
+              $idVac = (int)$vac['id'];
+              $marcada = in_array((string)$idVac, $vacunasViejasStr, true);
+              $fechaProx = is_array($vacunasProximaViejas) ? (string)($vacunasProximaViejas[$idVac] ?? '') : '';
+              $loteVac = is_array($vacunasLoteViejas) ? (string)($vacunasLoteViejas[$idVac] ?? '') : '';
+              $fabVac = is_array($vacunasFabricanteViejas) ? (string)($vacunasFabricanteViejas[$idVac] ?? '') : '';
+            ?>
+              <div class="oculto tarjeta-vacuna" data-especie-id="<?= (int)$vac['especie'] ?>">
+                <label class="titulo-vacuna">
+                  <input type="checkbox" name="vacunas[]" value="<?= $idVac ?>" disabled <?= $marcada ? 'checked' : '' ?>>
+                  <span><?= htmlspecialchars($vac['nombre']) ?></span>
+                </label>
+                <div class="detalle-vacuna oculto">
+                  <div>
+                    <label class="label-campo" for="vacuna_proxima_<?= $idVac ?>">Próxima aplicación:</label>
+                    <input type="date" class="campo" id="vacuna_proxima_<?= $idVac ?>" name="vacunas_proxima[<?= $idVac ?>]"
+                      min="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d', strtotime('+5 years')) ?>"
+                      value="<?= htmlspecialchars($fechaProx) ?>" disabled>
+                  </div>
+                  <div>
+                    <label class="label-campo" for="vacuna_lote_<?= $idVac ?>">Lote:</label>
+                    <input type="text" class="campo" id="vacuna_lote_<?= $idVac ?>" name="vacunas_lote[<?= $idVac ?>]"
+                      maxlength="20" placeholder="Opcional" value="<?= htmlspecialchars($loteVac) ?>" disabled>
+                  </div>
+                  <div>
+                    <label class="label-campo" for="vacuna_fabricante_<?= $idVac ?>">Fabricante:</label>
+                    <input type="text" class="campo" id="vacuna_fabricante_<?= $idVac ?>" name="vacunas_fabricante[<?= $idVac ?>]"
+                      maxlength="20" placeholder="Opcional" value="<?= htmlspecialchars($fabVac) ?>" disabled>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </fieldset>
+
       <div id="modal-crop">
         <div class="caja">
           <h3 id="crop-titulo" style="color: #1e293b; margin-top: 0;">Recortar radiografía</h3>
@@ -247,6 +342,68 @@ if ($veterinarioViejo === '' && $idVeterinario > 0) {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
   <script src="js/crop-radiografias.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectMascota = document.getElementById('mascota');
+      const contenedorVacunas = document.getElementById('contenedorVacunas');
+      const notaVacunas = document.getElementById('notaVacunas');
+      if (!selectMascota || !contenedorVacunas) return;
+
+      const tarjetas = Array.from(contenedorVacunas.querySelectorAll('.tarjeta-vacuna[data-especie-id]'));
+
+      function actualizarDetalleVacuna(tarjeta) {
+        const casilla = tarjeta.querySelector('input[type="checkbox"]');
+        const detalle = tarjeta.querySelector('.detalle-vacuna');
+        if (!casilla || !detalle) return;
+
+        const mostrarDetalle = !casilla.disabled && casilla.checked;
+        detalle.classList.toggle('oculto', !mostrarDetalle);
+        detalle.querySelectorAll('input').forEach((campo) => {
+          campo.disabled = !mostrarDetalle;
+          if (!mostrarDetalle) campo.value = '';
+        });
+      }
+
+      function filtrarVacunas(reiniciarSeleccion) {
+        const opcion = selectMascota.options[selectMascota.selectedIndex];
+        const especieId = opcion && opcion.value !== '' ? (opcion.dataset.especieId || '') : '';
+        let hayVacunas = false;
+
+        tarjetas.forEach((tarjeta) => {
+          const casilla = tarjeta.querySelector('input[type="checkbox"]');
+          const pertenece = especieId !== '' && especieId !== '0' && tarjeta.dataset.especieId === especieId;
+
+          tarjeta.classList.toggle('oculto', !pertenece);
+          casilla.disabled = !pertenece;
+          if (!pertenece || reiniciarSeleccion) {
+            casilla.checked = false;
+          }
+          if (pertenece) {
+            hayVacunas = true;
+          }
+          actualizarDetalleVacuna(tarjeta);
+        });
+
+        if (notaVacunas) {
+          if (selectMascota.value === '') {
+            notaVacunas.textContent = 'Selecciona primero una mascota...';
+          } else {
+            notaVacunas.textContent = hayVacunas ? '' : 'No hay vacunas registradas para esta especie.';
+          }
+        }
+      }
+
+      tarjetas.forEach((tarjeta) => {
+        const casilla = tarjeta.querySelector('input[type="checkbox"]');
+        if (casilla) {
+          casilla.addEventListener('change', () => actualizarDetalleVacuna(tarjeta));
+        }
+      });
+
+      selectMascota.addEventListener('change', () => filtrarVacunas(true));
+      filtrarVacunas(false);
+    });
+  </script>
 
 </body>
 </html>

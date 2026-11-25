@@ -18,10 +18,11 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 
 class FichaMedica
 {
-    public function insertar(array $datos): array
+    public function insertar(array $datos, array $vacunasAplicadas = []): array
     {
         try{
             $db = ConexionDB::obtenerConexion(); //Se crea la conexion
+            $db->beginTransaction();
 
             //Se insertan los datos en la tabla, los datos tienen su nombre pregrabado para controlar mejor la insersion
             $sql = "INSERT INTO ficha_medica
@@ -57,9 +58,35 @@ class FichaMedica
                 ':costo'                   => $datos['costo'],
             ]);
             $idFicha = (int)$db->lastInsertId();
+
+            if (!empty($vacunasAplicadas)) {
+                $sqlVacuna = "INSERT INTO vacunas
+                              (id_mascota, fecha_aplicacion, fecha_proxima, veterinario, lote, fabricante, observaciones, vacuna_puesta)
+                              VALUES
+                              (:id_mascota, :fecha_aplicacion, :fecha_proxima, :veterinario, :lote, :fabricante, :observaciones, :vacuna_puesta)";
+                $stmtVacuna = $db->prepare($sqlVacuna);
+
+                foreach ($vacunasAplicadas as $vacuna) {
+                    $stmtVacuna->execute([
+                        ':id_mascota'       => $datos['id_mascota'],
+                        ':fecha_aplicacion' => $vacuna['fecha_aplicacion'],
+                        ':fecha_proxima'    => $vacuna['fecha_proxima'],
+                        ':veterinario'      => $datos['id_veterinario'],
+                        ':lote'             => $vacuna['lote'],
+                        ':fabricante'       => $vacuna['fabricante'],
+                        ':observaciones'    => $vacuna['observaciones'],
+                        ':vacuna_puesta'    => $vacuna['vacuna_puesta'],
+                    ]);
+                }
+            }
+
+            $db->commit();
             return ['exito' => true, 'id' => $datos['id_consulta'], 'id_ficha' => $idFicha, 'mensaje' => 'ficha medica registrada con éxito'];
         //Sisi dice que pos si con true y si no da false y el error
         }catch (Exception $e) {
+            if (isset($db) && $db->inTransaction()) {
+                $db->rollBack();
+            }
             return ['exito' => false, 'id' => null, 'mensaje' => $e->getMessage()];
         }
     }
@@ -100,7 +127,10 @@ class FichaMedica
     public function datosConsulta(int $idConsulta): ?array
     {
         $db=ConexionDB::obtenerConexion();
-        $stmt=$db->prepare("SELECT id_cita,cliente from citas where id_cita= :consulta and atendido = 0");
+        $stmt=$db->prepare("SELECT c.id_cita, c.cliente, c.mascota, c.servicio, s.categoria AS categoria_servicio, s.nombre AS nombre_servicio
+                            FROM citas c
+                            LEFT JOIN servicios s ON s.id_servicio = c.servicio
+                            WHERE c.id_cita = :consulta AND c.atendido = 0");
         $stmt->execute([':consulta'=>$idConsulta]);
         $datos=$stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 
@@ -110,11 +140,23 @@ class FichaMedica
     public function agarraMascotas(int $idCliente): ?array
     {
         $db=ConexionDB::obtenerConexion();
-        $stmt=$db->prepare("SELECT id_mascota AS id, nombre From mascotas where id_cliente= :clientesito order by nombre");
+        $stmt=$db->prepare("SELECT m.id_mascota AS id, m.nombre, m.especie, e.id AS id_especie
+                            FROM mascotas m
+                            LEFT JOIN especies e
+                              ON LOWER(TRIM(e.especie)) COLLATE utf8mb4_unicode_ci = LOWER(TRIM(m.especie)) COLLATE utf8mb4_unicode_ci
+                            WHERE m.id_cliente = :clientesito
+                            ORDER BY m.nombre");
         $stmt->execute([':clientesito'=>$idCliente]);
         $datos=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $datos;
+    }
+
+    public function obtenerCatalogoVacunas(): array
+    {
+        $db = ConexionDB::obtenerConexion();
+        $stmt = $db->query("SELECT id, nombre, especie FROM lista_vacunas WHERE estado = 1 ORDER BY nombre ASC");
+        return $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
     }
 
     public function obtenerVeterinarios(): array
