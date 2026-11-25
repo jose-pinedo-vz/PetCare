@@ -1,17 +1,12 @@
-<?php 
-// Validar si realmente llegaron los datos por la URL (GET)
-if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['apellido'])) {
-    // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
+<?php
+$id_cliente = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$nombre_cliente = isset($_GET['nombre']) ? trim((string)$_GET['nombre']) : '';
+$apellido_cliente = isset($_GET['apellido']) ? trim((string)$_GET['apellido']) : '';
 
-    /* header("Location: empleados.php"); */
+if (!$id_cliente || $id_cliente <= 0 || $nombre_cliente === '' || $apellido_cliente === '') {
     header("Location: clientes.php");
     exit();
 }
-
-// Si sí llegaron, los guardamos con seguridad
-$id_cliente = $_GET['id'];
-$nombre_cliente = $_GET['nombre'];
-$apellido_cliente = $_GET['apellido'];
 ?>
 
 <!DOCTYPE html>
@@ -44,21 +39,21 @@ $apellido_cliente = $_GET['apellido'];
 
     <form action="../controllers/eliminar_cliente.php" method="POST">
 
-      <input type="hidden" id="id_cliente" name="id_cliente" value="<?= $id_cliente ?>">
+      <input type="hidden" id="id_cliente" name="id_cliente" value="<?= htmlspecialchars((string)$id_cliente) ?>">
 
       <div class="tarjeta">
 
         <fieldset>
           <p>
             ¿Está seguro de que desea eliminar al cliente
-            <strong><?= htmlspecialchars((string)$nombre_cliente) . ' ' . htmlspecialchars((string)$apellido_cliente) . ' (ID: ' . $id_cliente . ')' ?></strong>?
+            <strong><?= htmlspecialchars((string)$nombre_cliente) . ' ' . htmlspecialchars((string)$apellido_cliente) . ' (ID: ' . htmlspecialchars((string)$id_cliente) . ')' ?></strong>?
             Esta acción no se puede deshacer.
           </p>
         </fieldset>
 
           <div class="acciones-formulario">
-            <a class="btn-secundario" href="clientes.php">Cancelar</a>
-            <button type="submit" class="btn">Eliminar</button>
+            <a class="btn btn-secundario btn-chico" href="clientes.php">Cancelar</a>
+            <button type="submit" class="btn btn-chico">Eliminar</button>
           </div>
 
         </div>

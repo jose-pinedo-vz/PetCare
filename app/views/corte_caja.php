@@ -1,3 +1,59 @@
+<?php
+require_once __DIR__ . '/../controllers/corte_caja.php';
+
+$moneda = static fn($importe): string => '$' . number_format((float)$importe, 2);
+$monedaConSigno = static function ($importe) use ($moneda): string {
+    $importe = (float)$importe;
+    return ($importe < 0 ? '−' : '') . $moneda(abs($importe));
+};
+$nombreEmpleado = $corteAbierto['cajero_apertura']
+    ?? ($_SESSION['empleado_asociado'] ?? $_SESSION['usuario']);
+$hayCorteAbierto = $corteAbierto !== null;
+$movimientosTipos = [
+    'ingreso manual' => 'Otro ingreso de caja',
+    'nomina' => 'Nómina',
+    'retiro' => 'Dinero separado para resguardo',
+    'gasto' => 'Gasto',
+];
+$anchoGrafica = static function ($valor, $maximo): float {
+    if ((float)$maximo <= 0) {
+        return 0.0;
+    }
+
+    return max(0.0, min(100.0, ((float)$valor / (float)$maximo) * 100));
+};
+$escalaGrafica = static function ($valor): array {
+    $maximo = (float)$valor;
+    if ($maximo <= 0) {
+        return ['limite' => 100.0, 'pasos' => [100.0, 75.0, 50.0, 25.0, 0.0]];
+    }
+
+    $exponente = (int)floor(log10($maximo));
+    $magnitud = 10 ** $exponente;
+    $normalizado = $maximo / $magnitud;
+    $multiplicador = $normalizado <= 1 ? 1 : ($normalizado <= 2 ? 2 : ($normalizado <= 5 ? 5 : 10));
+    $limite = $multiplicador * $magnitud;
+
+    return [
+        'limite' => $limite,
+        'pasos' => [
+            $limite,
+            $limite * .75,
+            $limite * .50,
+            $limite * .25,
+            0.0,
+        ],
+    ];
+};
+$motivosAccesoCaja = [
+    'sin_empleado' => 'Tu cuenta no está asociada a un empleado. Pide a un administrador que vincule tu usuario con un empleado activo.',
+    'empleado_no_encontrado' => 'No se encontró el empleado asociado a tu cuenta. Pide a un administrador que revise la asociación.',
+    'empleado_inactivo' => 'El empleado asociado a tu cuenta está inactivo. Contacta a un administrador para revisar tu acceso.',
+    'puesto_no_autorizado' => 'El puesto de tu empleado no está habilitado para operar caja.',
+    'rol_puesto_no_coincide' => 'El rol de tu usuario no coincide con el puesto de tu empleado para operar caja.',
+];
+$mensajeMotivoCaja = $motivosAccesoCaja[$motivoAccesoCaja] ?? 'Tu cuenta no tiene acceso para operar caja. Contacta a un administrador.';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,208 +61,521 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veterinaria PetCare - Corte de caja</title>
     <link rel="stylesheet" href="css/estilos_base_v2.css">
+    <link rel="stylesheet" href="css/corte_caja.css">
 </head>
-<body>
+<body class="<?= $detalleCorte ? 'corte-detalle-abierto' : '' ?>">
     <div class="layout">
-        <?php $paginaActiva = 'ventas'; include __DIR__ . '/layout/sidebar.php'; ?>
+        <?php $paginaActiva = 'corte_caja'; include __DIR__ . '/layout/sidebar.php'; ?>
 
         <main class="corte-pagina">
-            <div class="migaja"><a href="Ventas.php">Punto de Venta</a> /</div>
+            <div class="migaja"><a href="Ventas.php">Punto de Venta</a> / Corte de caja</div>
+
             <header class="encabezado-pagina corte-encabezado">
-                <h1>Corte de caja</h1>
-                <p class="corte-cajero">Cajero: <strong>María López</strong> | Turno: Matutino</p>
+                <div>
+                    <span class="corte-kicker">Administración de caja</span>
+                    <h1>Corte de caja</h1>
+                </div>
+                <div class="corte-encabezado-derecha">
+                    <div class="corte-sesion" aria-label="Sesión de caja">
+                        <span class="corte-avatar" aria-hidden="true"><?= htmlspecialchars(strtoupper(substr((string)$nombreEmpleado, 0, 1))) ?></span>
+                        <span><strong><?= htmlspecialchars((string)$nombreEmpleado) ?></strong><small><?= htmlspecialchars($_SESSION['usuario']) ?> · <time id="fechaActual"><?= date('d/m/Y') ?></time></small></span>
+                    </div>
+                    <a class="btn btn-secundario btn-chico" href="Ventas.php">Regresar a venta</a>
+                </div>
             </header>
 
-            <div class="corte-layout">
-                <aside class="corte-lateral">
-                    <section class="tarjeta corte-panel" aria-labelledby="tituloNuevoCorte">
-                        <div class="corte-panel-titulo">
-                            <h2 id="tituloNuevoCorte">Nuevo corte de caja</h2>
-                            <a class="btn btn-secundario corte-volver btn-chico" href="Ventas.php">Regresar a venta</a>
-                        </div>
+            <?php if ($avisoFlash): ?>
+                <p class="corte-aviso" role="status"><?= htmlspecialchars($avisoFlash['mensaje']) ?></p>
+            <?php endif; ?>
 
-                        <form class="corte-formulario">
-                            <fieldset class="corte-tipo">
-                                <legend>Tipo de corte</legend>
-                                <label class="corte-opcion">
-                                    <input type="radio" name="tipoCorte" value="diario">
-                                    <span>Diario</span>
-                                </label>
-                                <label class="corte-opcion">
-                                    <input type="radio" name="tipoCorte" value="mensual">
-                                    <span>Mensual</span>
-                                </label>
-                            </fieldset>
+            <?php if (!$puedeOperarCaja): ?>
+                <section class="corte-acceso corte-acceso--denegado" aria-labelledby="tituloAccesoCaja" role="alert">
+                    <div class="corte-acceso-contenido">
+                        <span class="corte-kicker">Acceso no disponible</span>
+                        <h2 id="tituloAccesoCaja">No puedes operar caja todavía</h2>
+                        <p><?= htmlspecialchars($mensajeMotivoCaja) ?></p>
+                        <p class="corte-acceso-reglas">Acceso permitido: rol <strong>admin</strong> o <strong>gerente</strong> con puesto <strong>Gerente</strong>; rol <strong>vendedor</strong> con puesto <strong>Vendedor</strong>; o rol <strong>recepcionista</strong> con puesto <strong>Recepcionista</strong>. El empleado debe estar activo.</p>
+                    </div>
+                    <a class="btn btn-secundario btn-chico" href="inicio.php">Volver al inicio</a>
+                </section>
+            <?php endif; ?>
 
-                            <div class="corte-campos-fecha">
-                                <div class="corte-campo">
-                                    <label class="label-campo" for="fechaInicio">Fecha inicio</label>
-                                    <input class="campo" id="fechaInicio" type="datetime-local">
-                                </div>
-                                <div class="corte-campo">
-                                    <label class="label-campo" for="fechaFin">Fecha fin</label>
-                                    <input class="campo" id="fechaFin" type="datetime-local">
-                                </div>
-                            </div>
+            <?php if ($puedeOperarCaja): ?>
+            <nav class="corte-tabs" role="tablist" aria-label="Secciones de corte de caja">
+                <button class="corte-tab <?= $activePanel === 'diario' ? 'activa' : '' ?>" id="tab-diario" type="button" role="tab" aria-selected="<?= $activePanel === 'diario' ? 'true' : 'false' ?>" aria-controls="panel-diario" tabindex="<?= $activePanel === 'diario' ? '0' : '-1' ?>" data-tab="diario">1. Corte diario</button>
+                <button class="corte-tab <?= $activePanel === 'historial' ? 'activa' : '' ?>" id="tab-historial" type="button" role="tab" aria-selected="<?= $activePanel === 'historial' ? 'true' : 'false' ?>" aria-controls="panel-historial" tabindex="<?= $activePanel === 'historial' ? '0' : '-1' ?>" data-tab="historial">2. Historial de Cortes Z</button>
+                <?php if ($esAdministrador): ?>
+                    <button class="corte-tab <?= $activePanel === 'mensual' ? 'activa' : '' ?>" id="tab-mensual" type="button" role="tab" aria-selected="<?= $activePanel === 'mensual' ? 'true' : 'false' ?>" aria-controls="panel-mensual" tabindex="<?= $activePanel === 'mensual' ? '0' : '-1' ?>" data-tab="mensual">3. Corte mensual</button>
+                    <button class="corte-tab <?= $activePanel === 'estadisticas' ? 'activa' : '' ?>" id="tab-estadisticas" type="button" role="tab" aria-selected="<?= $activePanel === 'estadisticas' ? 'true' : 'false' ?>" aria-controls="panel-estadisticas" tabindex="<?= $activePanel === 'estadisticas' ? '0' : '-1' ?>" data-tab="estadisticas">4. Estadísticas</button>
+                <?php endif; ?>
+            </nav>
 
-                            <div class="corte-campos-finales">
+            <section class="corte-panel" id="panel-diario" role="tabpanel" aria-labelledby="tab-diario" data-panel="diario" <?= $activePanel === 'diario' ? '' : 'hidden' ?>>
+                <div class="corte-panel-encabezado">
+                    <div>
+                        <h2>Corte diario y turno en curso</h2>
+                        <p>La información del arqueo esperado se revela únicamente después de declarar el efectivo contado.</p>
+                    </div>
+                    <span class="corte-estado <?= $hayCorteAbierto ? 'abierto' : 'cerrado' ?>"><?= $hayCorteAbierto ? 'Abierto' : 'Sin corte abierto' ?></span>
+                </div>
+
+                <?php if (!$hayCorteAbierto && $idEmpleado && $puedeOperarCaja): ?>
+                    <section class="corte-apertura tarjeta">
+                        <div class="corte-apertura-campos">
+                            <form method="post" action="../controllers/corte_caja.php" class="corte-dialog-campos">
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                                <input type="hidden" name="periodo" value="<?= htmlspecialchars($periodo) ?>">
+                                <input type="hidden" name="accion" value="abrir">
                                 <div class="corte-campo">
                                     <label class="label-campo" for="turnoCorte">Turno</label>
-                                    <select class="campo" id="turnoCorte">
-                                        <option value="" selected disabled>Seleccionar turno</option>
+                                    <select class="campo" id="turnoCorte" name="turno" required>
                                         <option value="matutino">Matutino</option>
                                         <option value="vespertino">Vespertino</option>
+                                        <option value="ambos">Ambos</option>
                                     </select>
                                 </div>
                                 <div class="corte-campo">
                                     <label class="label-campo" for="fondoInicial">Fondo inicial</label>
-                                    <input class="campo" id="fondoInicial" type="number" min="0" step="0.01">
+                                    <div class="corte-input-monto">
+                                        <span aria-hidden="true">$</span>
+                                        <input class="campo" id="fondoInicial" name="fondo_inicial" type="number" min="0" step="0.01" value="<?= number_format(CorteCaja::FONDO_INICIAL, 2, '.', '') ?>" required>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <button class="btn corte-generar btn-chico" type="button">Generar corte</button>
-                        </form>
+                                <button class="btn btn-chico" type="submit">Abrir caja</button>
+                            </form>
+                        </div>
+                        <div class="corte-apertura-estado">
+                            <span class="corte-estado cerrado">Cerrado</span>
+                            <span class="corte-apertura-detalle"><strong>Sin corte abierto</strong><small>El corte quedará asociado a tu usuario.</small></span>
+                        </div>
+                    </section>
+                <?php elseif ($hayCorteAbierto && $puedeOperarCaja): ?>
+                    <section class="corte-apertura tarjeta">
+                        <div class="corte-apertura-campos">
+                            <div class="corte-campo"><span class="label-campo">Folio</span><strong><?= htmlspecialchars($corteAbierto['folio']) ?></strong></div>
+                            <div class="corte-campo"><span class="label-campo">Turno</span><strong><?= htmlspecialchars(ucfirst($corteAbierto['turno'])) ?></strong></div>
+                            <div class="corte-campo"><span class="label-campo">Fondo inicial</span><strong><?= $moneda($corteAbierto['fondo_inicial']) ?></strong></div>
+                        </div>
+                        <div class="corte-apertura-estado">
+                            <span class="corte-estado abierto">Abierto</span>
+                            <span class="corte-apertura-detalle"><strong><?= htmlspecialchars($corteAbierto['cajero_apertura']) ?></strong><small><?= htmlspecialchars(date('d/m/Y H:i', strtotime($corteAbierto['apertura']))) ?></small></span>
+                            <?php if (!$arqueoPendiente): ?>
+                                <button class="btn btn-chico" id="abrirSalida" type="button">+ Movimiento</button>
+                                <button class="btn btn-peligro btn-chico" id="abrirArqueo" type="button">Realizar arqueo</button>
+                            <?php else: ?>
+                                <span class="corte-estado">Arqueo declarado</span>
+                            <?php endif; ?>
+                        </div>
                     </section>
 
-                    <section class="tarjeta corte-panel corte-anteriores" aria-labelledby="tituloCortesAnteriores">
-                        <h2 id="tituloCortesAnteriores">Cortes anteriores</h2>
-                        <label class="visualmente-oculto" for="buscarCorte">Buscar corte por fecha o folio</label>
-                        <input class="campo corte-busqueda buscador-inteligente" id="buscarCorte" type="search" placeholder="Buscar por fecha o folio...">
+                    <p class="corte-dialog-nota" role="note">Este resumen cuenta las ventas cobradas durante este corte. Los cobros en efectivo de citas y hotel entran a la caja como movimientos de efectivo.</p>
+
+                    <section class="corte-kpis corte-kpis--periodo" aria-label="Pagos asociados a este corte">
+                        <article class="corte-kpi"><span class="corte-kpi-label">Efectivo cobrado</span><strong><?= $moneda($resumenPagosCorte['efectivo']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Tarjeta</span><strong><?= $moneda($resumenPagosCorte['tarjeta']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Transferencia</span><strong><?= $moneda($resumenPagosCorte['transferencia']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Ventas relacionadas</span><strong><?= (int)$resumenPagosCorte['ventas'] ?></strong></article>
+                        <article class="corte-kpi corte-kpi--total"><span class="corte-kpi-label">Total cobrado</span><strong><?= $moneda($resumenPagosCorte['general']) ?></strong><small><?= (int)$resumenPagosCorte['pagos'] ?> pago(s) registrado(s) en este corte</small></article>
+                    </section>
+
+                    <section class="tarjeta corte-movimientos" aria-labelledby="tituloPagosCorte">
+                        <div class="corte-seccion-titulo"><div><h2 id="tituloPagosCorte">Pagos registrados en la caja</h2><p>Solo se muestran los pagos registrados durante este corte.</p></div></div>
                         <div class="corte-tabla-envoltura">
-                            <table class="corte-tabla corte-tabla-anteriores">
-                                <thead>
-                                    <tr>
-                                        <th>Tipo</th>
-                                        <th>Fecha inicio</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
+                            <table class="corte-tabla">
+                                <thead><tr><th>Fecha</th><th>Venta</th><th>Estado de venta</th><th>Cliente</th><th>Forma de pago</th><th>Referencia</th><th class="corte-monto">Importe del pago</th><th class="corte-monto">Total de la venta</th></tr></thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Diario</td>
-                                        <td>15/10/2026</td>
-                                        <td><span class="corte-estado cerrado">Cerrado</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte diario del 15/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 15/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diario</td>
-                                        <td>14/10/2026</td>
-                                        <td><span class="corte-estado cerrado">Cerrado</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte diario del 14/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 14/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Mensual</td>
-                                        <td>01/10/2026</td>
-                                        <td><span class="corte-estado cerrado">Cerrado</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte mensual del 01/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 01/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diario</td>
-                                        <td>13/10/2026</td>
-                                        <td><span class="corte-estado abierto">Abierto</span></td>
-                                        <td><div class="corte-fila-acciones"><button class="btn btn-chico corte-accion" type="button" aria-label="Ver corte diario del 13/10/2026">Ver</button><button class="btn btn-chico corte-accion" type="button" aria-label="Descargar corte en PDF del 13/10/2026" title="Descargar corte en PDF">PDF</button></div></td>
-                                    </tr>
+                                    <?php foreach ($pagosCorte as $pago): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($pago['fecha']))) ?></td>
+                                            <td><?= htmlspecialchars($pago['folio_venta']) ?></td>
+                                            <td><?= htmlspecialchars($pago['estado_venta']) ?></td>
+                                            <td><?= htmlspecialchars($pago['cliente'] ?? 'Público general') ?></td>
+                                            <td><?= htmlspecialchars(ucfirst($pago['forma_pago'])) ?></td>
+                                            <td><?= htmlspecialchars($pago['referencia_pago'] ?? '—') ?></td>
+                                            <td class="corte-monto"><?= $moneda($pago['importe']) ?></td>
+                                            <td class="corte-monto"><?= $moneda($pago['total_venta']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php if (!$pagosCorte): ?><tr><td colspan="8">Todavía no hay pagos registrados en este corte.</td></tr><?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </section>
-                </aside>
 
-                <div class="corte-principal">
-                    <section class="corte-resumen" aria-labelledby="tituloResumenCorte">
-                        <h2 id="tituloResumenCorte">Resumen del corte</h2>
-                        <div class="corte-metricas">
-                            <article class="corte-metrica corte-metrica-destacada">
-                                <span class="corte-metrica-etiqueta">Efectivo contado</span>
-                                <!-- Backend: habilitar el campo y su boton cuando se genere el corte. -->
-                                <div class="corte-efectivo-control">
-                                    <span aria-hidden="true">$</span>
-                                    <label class="visualmente-oculto" for="efectivoContado">Cantidad de efectivo contado</label>
-                                    <input class="campo" id="efectivoContado" type="number" min="0" step="0.01" disabled>
-                                    <button class="btn btn-secundario btn-chico" type="button" disabled>Confirmar</button>
-                                </div>
-                            </article>
-                            <article class="corte-metrica">
-                                <span class="corte-metrica-etiqueta">Efectivo esperado</span>
-                                <small>Fondo inicial + ventas en efectivo</small>
-                                <strong></strong>
-                            </article>
-                            <article class="corte-metrica corte-metrica-diferencia">
-                                <span class="corte-metrica-etiqueta">Diferencia</span>
-                                <small>Contado vs. esperado</small>
-                                <strong></strong>
-                            </article>
-                            <article class="corte-metrica">
-                                <span class="corte-metrica-etiqueta">Tarjeta</span>
-                                <strong></strong>
-                            </article>
-                            <article class="corte-metrica">
-                                <span class="corte-metrica-etiqueta">Transferencia</span>
-                                <strong></strong>
-                            </article>
-                            <article class="corte-metrica">
-                                <span class="corte-metrica-etiqueta">Total de ventas</span>
-                                <strong></strong>
-                            </article>
+                    <section class="tarjeta corte-movimientos" aria-labelledby="tituloMovimientos">
+                        <div class="corte-seccion-titulo corte-movimientos-titulo">
+                            <div><h2 id="tituloMovimientos">Movimientos de efectivo</h2><p>El saldo esperado no se muestra antes de enviar el arqueo.</p></div>
+                        </div>
+                        <div class="corte-tabla-envoltura">
+                            <table class="corte-tabla">
+                                <thead><tr><th>Tipo</th><th>Concepto</th><th>Fecha y hora</th><th>Responsable</th><th class="corte-monto">Importe</th></tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="corte-tipo-movimiento entrada">Entrada</span></td>
+                                        <td>Fondo inicial</td>
+                                        <td><?= htmlspecialchars(date('H:i', strtotime($corteAbierto['apertura']))) ?></td>
+                                        <td><?= htmlspecialchars($corteAbierto['cajero_apertura']) ?></td>
+                                        <td class="corte-monto"><?= $moneda($corteAbierto['fondo_inicial']) ?></td>
+                                    </tr>
+                                    <?php foreach ($movimientosCorte as $movimiento): ?>
+                                        <?php $esIngreso = $movimiento['tipo'] === 'ingreso manual'; ?>
+                                        <tr>
+                                            <td><span class="corte-tipo-movimiento <?= $esIngreso ? 'entrada' : 'salida' ?>"><?= $esIngreso ? 'Entrada' : 'Salida' ?></span></td>
+                                            <td>
+                                                <strong><?= htmlspecialchars($movimientosTipos[$movimiento['tipo']] ?? $movimiento['tipo']) ?></strong>
+                                                <?= htmlspecialchars((string)$movimiento['concepto']) ?>
+                                                <?php if ($movimiento['beneficiario']): ?><small> · Beneficiario: <?= htmlspecialchars($movimiento['beneficiario']) ?></small><?php endif; ?>
+                                            </td>
+                                            <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($movimiento['fecha']))) ?></td>
+                                            <td><?= htmlspecialchars($movimiento['responsable']) ?></td>
+                                            <td class="corte-monto"><?= $esIngreso ? '' : '−' ?><?= $moneda($movimiento['importe']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php if (!$movimientosCorte): ?>
+                                        <tr><td colspan="5">Todavía no hay movimientos manuales en este corte.</td></tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </section>
+                <?php endif; ?>
 
-                    <section class="corte-detalle" aria-labelledby="tituloDetalleCorte">
-                        <h2 id="tituloDetalleCorte">Detalle del corte</h2>
-                        <div class="corte-detalle-contenido">
-                            <div class="corte-tabla-envoltura">
-                                <table class="corte-tabla">
-                                    <thead>
-                                        <tr>
-                                            <th>Concepto</th>
-                                            <th class="corte-monto">Monto</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Fondo inicial <small>(solo diario)</small></td>
-                                            <td class="corte-monto"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ventas en efectivo</td>
-                                            <td class="corte-monto"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ventas con tarjeta</td>
-                                            <td class="corte-monto"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ventas por transferencia</td>
-                                            <td class="corte-monto"></td>
-                                        </tr>
-                                        <tr class="corte-fila-total">
-                                            <td>Total de ventas</td>
-                                            <td class="corte-monto"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <aside class="corte-metadata">
-                                <section class="corte-bloque-meta" aria-labelledby="tituloEstadoCorte">
-                                    <h3 id="tituloEstadoCorte">Estatus del corte</h3>
-                                    <span class="corte-estado abierto">Abierto</span>
-                                </section>
-                                <section class="corte-bloque-meta" aria-labelledby="tituloObservaciones">
-                                    <label for="observacionesCorte" id="tituloObservaciones">Observaciones</label>
-                                    <textarea class="campo" id="observacionesCorte" rows="4" placeholder="Agregar observaciones..."></textarea>
-                                </section>
-                            </aside>
+                <?php if ($corteAbierto && $arqueoPendiente && $puedeOperarCaja): ?>
+                    <section class="tarjeta corte-auditoria" aria-labelledby="tituloArqueoDeclarado">
+                        <div><h2 id="tituloArqueoDeclarado">Declaración de efectivo recibida</h2><p>La declaración no se puede modificar. Cierra el corte para guardar el resultado.</p></div>
+                        <div class="corte-confirmacion-resumen">
+                            <div><span>Efectivo esperado en caja</span><strong><?= $moneda($arqueoPendiente['datos']['efectivo_esperado']) ?></strong></div>
+                            <div><span>Efectivo contado</span><strong><?= $moneda($arqueoPendiente['datos']['efectivo_contado']) ?></strong></div>
+                            <div><span>Diferencia</span><strong><?= $moneda(abs($arqueoPendiente['datos']['diferencia'])) ?></strong></div>
+                            <div><span>Resultado</span><strong><?= $arqueoPendiente['datos']['diferencia'] > 0 ? 'Sobrante' : ($arqueoPendiente['datos']['diferencia'] < 0 ? 'Faltante' : 'Caja cuadrada') ?></strong></div>
                         </div>
-
-                        <div class="corte-acciones">
-                            <button class="btn corte-cerrar btn-chico" type="button" disabled>Cerrar corte</button>
-                            <button class="btn btn-secundario btn-chico" type="button" disabled>Descargar corte en PDF</button>
-                        </div>
+                        <form method="post" action="../controllers/corte_caja.php" class="corte-acciones">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                            <input type="hidden" name="periodo" value="<?= htmlspecialchars($periodo) ?>">
+                            <input type="hidden" name="accion" value="confirmar_cierre">
+                            <input type="hidden" name="corte" value="<?= (int)$corteAbierto['id'] ?>">
+                            <button class="btn btn-peligro" type="submit">Cerrar corte de caja</button>
+                        </form>
                     </section>
+                <?php endif; ?>
+            </section>
+
+            <section class="corte-panel" id="panel-historial" role="tabpanel" aria-labelledby="tab-historial" data-panel="historial" <?= $activePanel === 'historial' ? '' : 'hidden' ?>>
+                <div class="corte-panel-encabezado">
+                    <div><h2>Historial de Cortes Z</h2><p>Consulta los cortes diarios del periodo seleccionado.</p></div>
+                    <button class="btn-secundario btn-chico" type="button" data-imprimir>Imprimir</button>
                 </div>
-            </div>
+                <form method="get" action="corte_caja.php" class="tarjeta corte-filtros">
+                    <input type="hidden" name="panel" value="historial">
+                    <div class="corte-filtro">
+                        <label class="label-campo" for="filtroPeriodo">Mes / año</label>
+                        <input class="campo" id="filtroPeriodo" name="periodo" type="month" value="<?= htmlspecialchars($periodo) ?>">
+                    </div>
+                    <div class="corte-filtro corte-filtro--buscar">
+                        <label class="label-campo" for="estadoHistorial">Estado del corte</label>
+                        <select class="campo" id="estadoHistorial" name="estado">
+                            <option value="todos" <?= $estadoHistorial === 'todos' ? 'selected' : '' ?>>Todos</option>
+                            <option value="abierto" <?= $estadoHistorial === 'abierto' ? 'selected' : '' ?>>Abiertos</option>
+                            <option value="cerrado" <?= $estadoHistorial === 'cerrado' ? 'selected' : '' ?>>Cerrados</option>
+                        </select>
+                    </div>
+                    <?php if ($esAdministrador): ?>
+                        <div class="corte-filtro">
+                            <label class="label-campo" for="filtroEmpleado">Cajero</label>
+                            <select class="campo" id="filtroEmpleado" name="empleado">
+                                <option value="">Todos los cajeros</option>
+                                <?php foreach ($empleados as $empleado): ?>
+                                    <option value="<?= (int)$empleado['id_empleado'] ?>" <?= $empleadoHistorial === (int)$empleado['id_empleado'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($empleado['nombre'] . ' ' . $empleado['apellido']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                    <button class="btn btn-chico" type="submit">Consultar</button>
+                </form>
+
+                <section class="tarjeta corte-historial" aria-labelledby="tituloHistorial">
+                    <div class="corte-seccion-titulo">
+                        <div><h2 id="tituloHistorial">Cortes registrados · <?= htmlspecialchars($periodoTexto) ?></h2><p id="resultadoHistorial"><?= count($historialCortes) ?> corte(s) consultados.</p></div>
+                    </div>
+                    <?php $tablaHistorialId = 'tablaHistorial'; include __DIR__ . '/cortes_z_tabla.php'; ?>
+                </section>
+            </section>
+
+            <?php if ($esAdministrador): ?>
+                <section class="corte-panel" id="panel-mensual" role="tabpanel" aria-labelledby="tab-mensual" data-panel="mensual" <?= $activePanel === 'mensual' ? '' : 'hidden' ?>>
+                    <div class="corte-panel-encabezado">
+                        <div><h2>Corte mensual de caja</h2><p>Selecciona un mes para consultar e imprimir resultados de sus cortes diarios cerrados. No se guarda otro registro de caja.</p></div>
+                        <button class="btn-secundario btn-chico" type="button" data-imprimir>Imprimir</button>
+                    </div>
+                    <form method="get" action="corte_caja.php" class="tarjeta corte-estadisticas-filtro">
+                        <input type="hidden" name="panel" value="mensual">
+                        <div class="corte-filtro">
+                            <label class="label-campo" for="periodoCorteMensual">Mes</label>
+                            <input class="campo" id="periodoCorteMensual" name="periodo" type="month" value="<?= htmlspecialchars($periodo) ?>" required>
+                        </div>
+                        <div class="corte-filtro">
+                            <label class="label-campo" for="empleadoMensual">Cajero</label>
+                            <select class="campo" id="empleadoMensual" name="empleado_mensual">
+                                <option value="">Todos los cajeros</option>
+                                <?php foreach ($empleados as $empleado): ?>
+                                    <option value="<?= (int)$empleado['id_empleado'] ?>" <?= $filtroEmpleadoMensual === (int)$empleado['id_empleado'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($empleado['nombre'] . ' ' . $empleado['apellido']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <button class="btn btn-chico" type="submit">Consultar resultados</button>
+                    </form>
+
+                    <?php
+                    $maxPagoMensual = max(
+                        1,
+                        $resumenMensualPeriodo['efectivo'],
+                        $resumenMensualPeriodo['tarjeta'],
+                        $resumenMensualPeriodo['transferencia']
+                    );
+                    $pagosMensualesGrafica = [
+                        ['Efectivo', (float)$resumenMensualPeriodo['efectivo'], '#493117'],
+                        ['Tarjeta', (float)$resumenMensualPeriodo['tarjeta'], '#a9875b'],
+                        ['Transferencia', (float)$resumenMensualPeriodo['transferencia'], '#829b94'],
+                    ];
+                    $escalaPagoMensual = $escalaGrafica($maxPagoMensual);
+                    $totalPagosMensuales = array_sum(array_column($pagosMensualesGrafica, 1));
+                    $segmentosMensuales = [];
+                    $inicioMensual = 0.0;
+                    foreach ($pagosMensualesGrafica as [$nombrePago, $importePago, $colorPago]) {
+                        $finMensual = $inicioMensual + ($totalPagosMensuales > 0 ? ($importePago / $totalPagosMensuales) * 100 : 0);
+                        $segmentosMensuales[] = "{$colorPago} {$inicioMensual}% {$finMensual}%";
+                        $inicioMensual = $finMensual;
+                    }
+                    $gradienteMensual = $totalPagosMensuales > 0
+                        ? 'conic-gradient(' . implode(', ', $segmentosMensuales) . ')'
+                        : 'conic-gradient(#dcd3c7 0 100%)';
+                    ?>
+                    <div class="corte-kpis corte-kpis--periodo">
+                        <article class="corte-kpi"><span class="corte-kpi-label">Cortes diarios cerrados</span><strong><?= (int)$resumenMensualPeriodo['cortes'] ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Ventas registradas</span><strong><?= $moneda($resumenMensualPeriodo['ventas_importe']) ?></strong><small><?= (int)$resumenMensualPeriodo['ventas_cantidad'] ?> venta(s)</small></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Pagos cobrados</span><strong><?= $moneda($resumenMensualPeriodo['comercial']) ?></strong><small>Vinculados a los cortes diarios</small></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Efectivo</span><strong><?= $moneda($resumenMensualPeriodo['efectivo']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Tarjeta</span><strong><?= $moneda($resumenMensualPeriodo['tarjeta']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Transferencia</span><strong><?= $moneda($resumenMensualPeriodo['transferencia']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Otros ingresos de caja</span><strong><?= $moneda($resumenMensualPeriodo['movimientos']['ingreso manual']) ?></strong><small>No son pagos de ventas</small></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Gastos operativos</span><strong><?= $moneda($resumenMensualPeriodo['gastos_operativos']) ?></strong><small>Nómina + gastos</small></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Efectivo a resguardo</span><strong><?= $moneda($resumenMensualPeriodo['retiros_resguardo']) ?></strong><small>Traspaso; no es gasto operativo</small></article>
+                    </div>
+
+                    <p class="corte-dialog-nota">Resumen de cortes diarios cerrados del periodo seleccionado.</p>
+
+                    <div class="corte-graficas">
+                        <section class="tarjeta corte-grafica" aria-labelledby="tituloFormasPagoMensual" data-grafica-grupo="mensual">
+                            <div class="corte-grafica-encabezado">
+                                <div><h2 id="tituloFormasPagoMensual">Pagos por forma de cobro</h2><p>Importes acumulados de los cortes diarios</p></div>
+                                <div class="corte-grafica-selector" role="group" aria-label="Formato de la gráfica">
+                                    <button type="button" class="activa" data-grafica-vista="barras" aria-pressed="true">Barras</button>
+                                    <button type="button" data-grafica-vista="pastel" aria-pressed="false">Pastel</button>
+                                </div>
+                            </div>
+                            <div class="corte-grafica-barras corte-grafica-barras--vertical" data-grafica-panel="barras" role="img" aria-label="Pagos por efectivo, tarjeta y transferencia">
+                                <div class="corte-barras-eje-y">
+                                    <?php foreach ($escalaPagoMensual['pasos'] as $valorEje): ?>
+                                        <span><?= '$' . number_format($valorEje, 0) ?></span>
+                                    <?php endforeach; ?>
+                                </div>
+                                <div class="corte-barras-plancha">
+                                    <?php foreach ($pagosMensualesGrafica as [$etiquetaPago, $importePago, $colorPago]): ?>
+                                        <div class="corte-barra-grupo">
+                                            <div class="corte-barra-valor"><?= $moneda($importePago) ?></div>
+                                            <div class="corte-barra-altura">
+                                                <i style="height: <?= $anchoGrafica($importePago, $escalaPagoMensual['limite']) ?>%; background: <?= $colorPago ?>;"></i>
+                                            </div>
+                                            <strong><?= htmlspecialchars($etiquetaPago) ?></strong>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="corte-dona-contenido" data-grafica-panel="pastel" role="img" aria-label="Distribución de pagos por forma de cobro" hidden>
+                                <div class="corte-dona" style="background: <?= $gradienteMensual ?>;">
+                                    <div class="corte-dona-centro"><strong><?= $moneda($totalPagosMensuales) ?></strong><span>Total cobrado</span></div>
+                                </div>
+                                <ul class="corte-leyenda">
+                                    <?php foreach ($pagosMensualesGrafica as [$nombrePago, $importePago, $colorPago]): ?>
+                                        <li>
+                                            <span class="corte-punto" style="background: <?= $colorPago ?>;"></span>
+                                            <span><?= htmlspecialchars($nombrePago) ?></span>
+                                            <strong><?= $moneda($importePago) ?></strong>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="tarjeta corte-grafica corte-grafica-origen" aria-labelledby="tituloProductosIngresosMensual">
+                            <div class="corte-grafica-encabezado"><div><h2 id="tituloProductosIngresosMensual">Productos que más ingresos generan</h2><p>Ordenados por importe vendido en el periodo</p></div></div>
+                            <div class="corte-tabla-envoltura"><table class="corte-tabla">
+                                <thead><tr><th>Producto</th><th>Unidades</th><th>Importe generado</th></tr></thead>
+                                <tbody>
+                                    <?php foreach ($resumenMensualPeriodo['mas_ingresos'] as $producto): ?>
+                                        <tr><td><?= htmlspecialchars($producto['nombre']) ?></td><td><?= (int)$producto['cantidad'] ?></td><td><?= $moneda($producto['importe']) ?></td></tr>
+                                    <?php endforeach; ?>
+                                    <?php if (!$resumenMensualPeriodo['mas_ingresos']): ?><tr><td colspan="3">No hay ventas de productos en este periodo.</td></tr><?php endif; ?>
+                                </tbody>
+                            </table></div>
+                        </section>
+                    </div>
+
+                    <section class="tarjeta corte-historial" aria-labelledby="tituloResumenMensual">
+                        <div class="corte-seccion-titulo">
+                            <div><h2 id="tituloResumenMensual">Cortes diarios del periodo · <?= htmlspecialchars($periodoTexto) ?></h2><p><?= count($cortesResumenMensual) ?> corte(s) que coinciden con los filtros.</p></div>
+                        </div>
+                        <?php $historialCortes = $cortesResumenMensual; $tablaHistorialId = 'tablaCortesMensuales'; include __DIR__ . '/cortes_z_tabla.php'; ?>
+                    </section>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($esAdministrador && $resumenMensual): ?>
+                <section class="corte-panel" id="panel-estadisticas" role="tabpanel" aria-labelledby="tab-estadisticas" data-panel="estadisticas" <?= $activePanel === 'estadisticas' ? '' : 'hidden' ?>>
+                    <div class="corte-panel-encabezado">
+                        <div><h2>Estadísticas de caja</h2><p><?= htmlspecialchars($fechaInicioEstadisticas->format('d/m/Y')) ?> – <?= htmlspecialchars($fechaFinEstadisticas->format('d/m/Y')) ?>. Solo considera cortes diarios cerrados; no suma cierres mensuales.</p></div>
+                        <button class="btn-secundario btn-chico" type="button" data-imprimir>Imprimir</button>
+                    </div>
+                    <form method="get" action="corte_caja.php" class="tarjeta corte-estadisticas-filtro">
+                        <input type="hidden" name="panel" value="estadisticas">
+                        <div class="corte-filtro">
+                            <label class="label-campo" for="fechaInicioEstadisticas">Desde</label>
+                            <input class="campo" id="fechaInicioEstadisticas" name="fecha_inicio" type="date" value="<?= htmlspecialchars($fechaInicioEstadisticas->format('Y-m-d')) ?>" required>
+                        </div>
+                        <div class="corte-filtro">
+                            <label class="label-campo" for="fechaFinEstadisticas">Hasta</label>
+                            <input class="campo" id="fechaFinEstadisticas" name="fecha_fin" type="date" value="<?= htmlspecialchars($fechaFinEstadisticas->format('Y-m-d')) ?>" required>
+                        </div>
+                        <div class="corte-filtro">
+                            <label class="label-campo" for="empleadoEstadisticas">Cajero</label>
+                            <select class="campo" id="empleadoEstadisticas" name="empleado_estadisticas">
+                                <option value="">Todos los cajeros</option>
+                                <?php foreach ($empleados as $empleado): ?>
+                                    <option value="<?= (int)$empleado['id_empleado'] ?>" <?= $filtroEmpleadoEstadisticas === (int)$empleado['id_empleado'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($empleado['nombre'] . ' ' . $empleado['apellido']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <button class="btn btn-chico" type="submit">Consultar</button>
+                    </form>
+
+                    <?php
+                    $maxPagoEstadisticas = max(
+                        1,
+                        $resumenMensual['efectivo'],
+                        $resumenMensual['tarjeta'],
+                        $resumenMensual['transferencia']
+                    );
+                    $pagosEstadisticasGrafica = [
+                        ['Efectivo', (float)$resumenMensual['efectivo'], '#493117'],
+                        ['Tarjeta', (float)$resumenMensual['tarjeta'], '#a9875b'],
+                        ['Transferencia', (float)$resumenMensual['transferencia'], '#829b94'],
+                    ];
+                    $escalaPagoEstadisticas = $escalaGrafica($maxPagoEstadisticas);
+                    $totalPagosEstadisticas = array_sum(array_column($pagosEstadisticasGrafica, 1));
+                    $segmentosEstadisticas = [];
+                    $inicioEstadisticas = 0.0;
+                    foreach ($pagosEstadisticasGrafica as [$nombrePago, $importePago, $colorPago]) {
+                        $finEstadisticas = $inicioEstadisticas + ($totalPagosEstadisticas > 0 ? ($importePago / $totalPagosEstadisticas) * 100 : 0);
+                        $segmentosEstadisticas[] = "{$colorPago} {$inicioEstadisticas}% {$finEstadisticas}%";
+                        $inicioEstadisticas = $finEstadisticas;
+                    }
+                    $gradienteEstadisticas = $totalPagosEstadisticas > 0
+                        ? 'conic-gradient(' . implode(', ', $segmentosEstadisticas) . ')'
+                        : 'conic-gradient(#dcd3c7 0 100%)';
+                    ?>
+                    <div class="corte-kpis corte-kpis--periodo">
+                        <article class="corte-kpi"><span class="corte-kpi-label">Ventas registradas</span><strong><?= $moneda($resumenMensual['ventas_importe']) ?></strong><small><?= (int)$resumenMensual['ventas_cantidad'] ?> venta(s)</small></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Pagos cobrados</span><strong><?= $moneda($resumenMensual['comercial']) ?></strong><small>Según cortes diarios cerrados</small></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Ingresos en efectivo</span><strong><?= $moneda($resumenMensual['efectivo']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Ingresos con tarjeta</span><strong><?= $moneda($resumenMensual['tarjeta']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Ingresos por transferencia</span><strong><?= $moneda($resumenMensual['transferencia']) ?></strong></article>
+                        <article class="corte-kpi"><span class="corte-kpi-label">Gastos operativos</span><strong><?= $moneda($resumenMensual['gastos_operativos']) ?></strong><small>Nómina: <?= $moneda($resumenMensual['movimientos']['nomina']) ?> · Gastos: <?= $moneda($resumenMensual['movimientos']['gasto']) ?></small></article>
+                    </div>
+
+                    <p class="corte-dialog-nota">Resumen de ventas y movimientos registrados en los cortes diarios cerrados.</p>
+
+                    <div class="corte-graficas">
+                        <section class="tarjeta corte-grafica" aria-labelledby="tituloFormasPagoEstadisticas" data-grafica-grupo="estadisticas">
+                            <div class="corte-grafica-encabezado">
+                                <div><h2 id="tituloFormasPagoEstadisticas">¿Qué forma de pago genera más?</h2><p>Importes cobrados en cortes diarios</p></div>
+                                <div class="corte-grafica-selector" role="group" aria-label="Formato de la gráfica">
+                                    <button type="button" class="activa" data-grafica-vista="barras" aria-pressed="true">Barras</button>
+                                    <button type="button" data-grafica-vista="pastel" aria-pressed="false">Pastel</button>
+                                </div>
+                            </div>
+                            <div class="corte-grafica-barras corte-grafica-barras--vertical" data-grafica-panel="barras" role="img" aria-label="Pagos por efectivo, tarjeta y transferencia">
+                                <div class="corte-barras-eje-y">
+                                    <?php foreach ($escalaPagoEstadisticas['pasos'] as $valorEje): ?>
+                                        <span><?= '$' . number_format($valorEje, 0) ?></span>
+                                    <?php endforeach; ?>
+                                </div>
+                                <div class="corte-barras-plancha">
+                                    <?php foreach ($pagosEstadisticasGrafica as [$etiquetaPago, $importePago, $colorPago]): ?>
+                                        <div class="corte-barra-grupo">
+                                            <div class="corte-barra-valor"><?= $moneda($importePago) ?></div>
+                                            <div class="corte-barra-altura">
+                                                <i style="height: <?= $anchoGrafica($importePago, $escalaPagoEstadisticas['limite']) ?>%; background: <?= $colorPago ?>;"></i>
+                                            </div>
+                                            <strong><?= htmlspecialchars($etiquetaPago) ?></strong>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="corte-dona-contenido" data-grafica-panel="pastel" role="img" aria-label="Distribución de pagos por forma de cobro" hidden>
+                                <div class="corte-dona" style="background: <?= $gradienteEstadisticas ?>;">
+                                    <div class="corte-dona-centro"><strong><?= $moneda($totalPagosEstadisticas) ?></strong><span>Total cobrado</span></div>
+                                </div>
+                                <ul class="corte-leyenda">
+                                    <?php foreach ($pagosEstadisticasGrafica as [$nombrePago, $importePago, $colorPago]): ?>
+                                        <li>
+                                            <span class="corte-punto" style="background: <?= $colorPago ?>;"></span>
+                                            <span><?= htmlspecialchars($nombrePago) ?></span>
+                                            <strong><?= $moneda($importePago) ?></strong>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section class="tarjeta corte-historial" aria-labelledby="tituloCortesZMensuales">
+                        <div class="corte-seccion-titulo"><div><h2 id="tituloCortesZMensuales">Cortes Z del periodo</h2><p><?= count($cortesEstadisticas) ?> corte(s) diario(s) cerrado(s).</p></div></div>
+                        <?php $historialCortes = $cortesEstadisticas; $tablaHistorialId = 'tablaCortesZResumen'; include __DIR__ . '/cortes_z_tabla.php'; ?>
+                    </section>
+
+                    <div class="corte-graficas">
+                        <section class="tarjeta corte-grafica" aria-labelledby="tituloProductosIngresosEstadisticas">
+                            <div class="corte-grafica-encabezado"><div><h2 id="tituloProductosIngresosEstadisticas">Productos que más ingresos generan</h2><p>Ordenados por importe vendido</p></div></div>
+                            <div class="corte-tabla-envoltura"><table class="corte-tabla">
+                                <thead><tr><th>Producto</th><th>Unidades</th><th>Importe generado</th></tr></thead>
+                                <tbody><?php foreach ($resumenMensual['mas_ingresos'] as $producto): ?>
+                                    <tr><td><?= htmlspecialchars($producto['nombre']) ?></td><td><?= (int)$producto['cantidad'] ?></td><td><?= $moneda($producto['importe']) ?></td></tr>
+                                <?php endforeach; ?><?php if (!$resumenMensual['mas_ingresos']): ?><tr><td colspan="3">Sin ventas de productos en el periodo.</td></tr><?php endif; ?></tbody>
+                            </table></div>
+                        </section>
+                    </div>
+                </section>
+            <?php endif; ?>
+            <?php endif; ?>
+
+            <p class="corte-aviso" id="avisoCorte" role="status" aria-live="polite" hidden></p>
         </main>
     </div>
+
+    <?php if ($corteAbierto): ?>
+        <?php include __DIR__ . '/modal_arqueo_efectivo.php'; ?>
+        <?php if (!$arqueoPendiente): ?>
+            <?php include __DIR__ . '/modal_registrar_salida.php'; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+    <?php if ($detalleCorte): ?>
+        <?php include __DIR__ . '/modal_detalle_corte.php'; ?>
+    <?php endif; ?>
+    <script src="js/corte_caja.js"></script>
 </body>
 </html>

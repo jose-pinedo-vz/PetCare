@@ -2,6 +2,7 @@
 //Punto de guardado
 
 date_default_timezone_set('America/Mexico_City');
+require_once __DIR__ . '/../models/Mascota.php';
 
 function validacion(array $datos, bool $actualizacion, int $idMascota, string $sets){
 
@@ -23,8 +24,9 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     // Especie obligatorio
     if (empty(trim($datos['especie']))) {
         $errores[] = "Debe especificar la especie.";
-    }else if (strlen($datos['especie']) > 20) {
-        $errores[] = "La especie no puede tener mas de 20 letras";
+    }else if (strlen($datos['especie']) > ($actualizacion ? 20 : 30)) {
+        $limiteEspecie = $actualizacion ? 20 : 30;
+        $errores[] = "La especie no puede tener mas de {$limiteEspecie} letras";
     }else if (preg_match('/\d/', $datos['especie'])) {
         $errores[] = "La especie no puede contener números.";
     }
@@ -32,10 +34,20 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     // Raza obligatorio
     if (empty(trim($datos['raza']))) {
         $errores[] = "Debe especificar la raza.";
-    }else if (strlen($datos['raza']) > 20) {
-        $errores[] = "La raza no puede tener mas de 20 letras";
+    }else if (strlen($datos['raza']) > ($actualizacion ? 20 : 30)) {
+        $limiteRaza = $actualizacion ? 20 : 30;
+        $errores[] = "La raza no puede tener mas de {$limiteRaza} letras";
     }else if (preg_match('/\d/', $datos['raza'])) {
         $errores[] = "La raza no puede contener números.";
+    }
+
+    if (
+        !$actualizacion &&
+        !empty($datos['especie']) &&
+        !empty($datos['raza']) &&
+        !Mascota::especieRazaExiste($datos['especie'], $datos['raza'])
+    ) {
+        $errores[] = "La raza seleccionada no corresponde a la especie.";
     }
 
     // Sexo obligatorio
@@ -55,6 +67,17 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         } catch (Exception $e) {
             $errores[] = "Edad: Formato de fecha no válido.";
         }
+
+        if (!empty($datos['edad'])) {
+            $fechaNacimiento = DateTime::createFromFormat('Y-m-d', $datos['edad']);
+            if ($fechaNacimiento) {
+                $fechaActual = new DateTime();
+                $intervalo = $fechaActual->diff($fechaNacimiento);
+                if ($intervalo->y > 30) {
+                    $errores[] = "Edad: La mascota no puede tener más de 30 años.";
+                }
+            }
+        }
     }
     // color opcional
     if (empty(trim($datos['color']))) {
@@ -72,8 +95,9 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     }
 
     // Peso obligatorio
-    $pesoLimpio = str_replace(',', '.', $datos['peso'] ?? '');
-    if (empty(trim($datos['peso'])) || !is_numeric($pesoLimpio)) {
+    $pesoOriginal = trim((string)($datos['peso'] ?? ''));
+    $pesoLimpio = str_replace(',', '.', $pesoOriginal);
+    if ($pesoOriginal === '' || !is_numeric($pesoLimpio)) {
         $errores[] = "El peso debe ser un valor numérico.";
     } else {
         $datos['peso'] = (float)$pesoLimpio;
@@ -103,48 +127,130 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
     if (empty(trim($datos['id_veterinario']))) {
         $datos['id_veterinario'] = NULL;
     }else {
-        $datos['id_veterinario'] = (int)$datos['id_veterinario'];
+        $idVeterinario = (int) $datos['id_veterinario'];
 
-        if (!is_numeric($datos['id_veterinario']) || $datos['id_veterinario'] <= 0) {
+        if ($idVeterinario <= 0 && !$actualizacion) {
+            $errores[] = "El veterinario seleccionado no es válido.";
+        } elseif ($idVeterinario <= 0) {
             $errores[] = "El cliente seleccionado no es valido.";
+        } elseif (!$actualizacion && !Mascota::esVeterinarioActivo($idVeterinario)) {
+            $errores[] = "El veterinario debe estar activo y tener el puesto de veterinario.";
+        } else {
+            $datos['id_veterinario'] = $idVeterinario;
         }
     }
     // Alergias obligatorio
     if (empty(trim($datos['alergias']))) {
         $errores[] = "Debe especificar las alergias.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['alergias'])) {
-        $errores[] = "Las alergias deben incluir texto explicativo, no solo números.";
+    } else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['alergias'])) {
+        if (preg_match('/\d/', $datos['alergias'])) {
+            $errores[] = "Las alergias deben incluir texto explicativo, no solo números.";
+        } else {
+            $errores[] = "Las alergias deben incluir texto explicativo.";
+        }
     }
 
     // Enfermedades obligatorio
     if (empty(trim($datos['enfermedades']))) {
         $errores[] = "Debe especificar las enfermedades.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['enfermedades'])) {
-        $errores[] = "Las enfermedades deben incluir texto explicativo, no solo números.";
+    } else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['enfermedades'])) {
+        if (preg_match('/\d/', $datos['enfermedades'])) {
+            $errores[] = "Las enfermedades deben incluir texto explicativo, no solo números.";
+        } else {
+            $errores[] = "Las enfermedades deben incluir texto explicativo.";
+        }
     }
 
     // Medicamentos obligatorio
     if (empty(trim($datos['medicamentos']))) {
         $errores[] = "Debe especificar los medicamentos.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['medicamentos'])) {
-        $errores[] = "Los medicamentos deben incluir texto explicativo, no solo números.";
+    } else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['medicamentos'])) {
+        if (preg_match('/\d/', $datos['medicamentos'])) {
+            $errores[] = "Los medicamentos deben incluir texto explicativo, no solo números.";
+        } else {
+            $errores[] = "Los medicamentos deben incluir texto explicativo.";
+        }
     }
 
     // Condiciones especiales obligatorio
     if (empty(trim($datos['condiciones_especiales']))) {
         $errores[] = "Debe especificar las condiciones especiales.";
-    }else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['condiciones_especiales'])) {
-        $errores[] = "Las condiciones especiales deben incluir texto explicativo, no solo números.";
+    } else if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['condiciones_especiales'])) {
+        if (preg_match('/\d/', $datos['condiciones_especiales'])) {
+            $errores[] = "Las condiciones especiales deben incluir texto explicativo, no solo números.";
+        } else {
+            $errores[] = "Las condiciones especiales deben incluir texto explicativo.";
+        }
     }
 
     // Vacunas Opcional
-    if (empty(trim($datos['vacunas']))) {
-        $datos['vacunas'] = null;
-    }//else{
+    /* if (empty(trim($datos['vacunas']))) { */
+    /*     $datos['vacunas'] = null; */
+    /* }//else{ */
      //   if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['vacunas'])) {
      //       $errores[] = "Las vacunas deben incluir el nombre o texto, no solo números.";
      //   }
      //}
+
+    // Vacunas Opcional
+    if (is_array($datos['vacunas'])) {
+
+        // NUEVO: id de la especie elegida (el formulario manda el nombre, no el id)
+        $idEspecieMascota = null;
+        foreach (Mascota::obtenerEspecies() as $registroEspecie) {
+            if ($registroEspecie['especie'] === $datos['especie']) {
+                $idEspecieMascota = (int)$registroEspecie['id'];
+                break;
+            }
+        }
+
+        // NUEVO: vacunas del catalogo que SI corresponden a esa especie
+        $catalogoPermitido = [];
+        foreach (Mascota::catalogoVacunasMascota() as $registroVacuna) {
+            if ((int)$registroVacuna['especie'] === $idEspecieMascota) {
+                $catalogoPermitido[] = (int)$registroVacuna['id'];
+            }
+        }
+
+        $idsVacunas = [];
+        $fechasVacunas = [];
+
+        foreach (array_unique(array_map('intval', $datos['vacunas'])) as $idVacuna) {
+
+            if (!in_array($idVacuna, $catalogoPermitido, true)) {
+                $errores[] = "Una de las vacunas seleccionadas no corresponde a la especie de la mascota.";
+                continue;
+            }
+
+            $idsVacunas[] = $idVacuna;
+
+            // La fecha es opcional: puede haberse puesto en otra veterinaria y no saberse
+            $fechaVacuna = $datos['fechas_vacunas'][$idVacuna] ?? '';
+            $fechaVacuna = trim(is_string($fechaVacuna) ? $fechaVacuna : '');
+
+            if ($fechaVacuna === '') {
+                $fechasVacunas[$idVacuna] = null;
+                continue;
+            }
+
+            $fechasVacunas[$idVacuna] = $fechaVacuna;
+            $objetoFecha = DateTime::createFromFormat('Y-m-d', $fechaVacuna);
+
+            if (!$objetoFecha || $objetoFecha->format('Y-m-d') !== $fechaVacuna) {
+                $errores[] = "La fecha de una vacuna no es válida.";
+            } elseif ($objetoFecha > new DateTime('today')) {
+                $errores[] = "La fecha de una vacuna no puede ser posterior a hoy.";
+            } elseif (!empty($datos['edad']) && $fechaVacuna < $datos['edad']) {
+                $errores[] = "La fecha de una vacuna no puede ser anterior al nacimiento de la mascota.";
+            }
+        }
+
+        $datos['vacunas'] = $idsVacunas;
+        $datos['fechas_vacunas'] = $fechasVacunas;
+
+    } elseif (empty(trim($datos['vacunas']))) {
+        $datos['vacunas'] = null;
+    }
 
     // Ultima Desaparasitacion obligatorio
     if (empty(trim($datos['ultima_desparasitacion']))) {
@@ -175,7 +281,11 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         $datos['restricciones_para_manejo'] = null;
     }else{
         if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['restricciones_para_manejo'])) {
-            $errores[] = "Las restricciones de manejo deben incluir texto explicativo, no solo números.";
+            if (preg_match('/\d/', $datos['restricciones_para_manejo'])) {
+                $errores[] = "Las restricciones de manejo deben incluir texto explicativo, no solo números.";
+            } else {
+                $errores[] = "Las restricciones de manejo deben incluir texto explicativo.";
+            }
         }
     }
 
@@ -184,7 +294,11 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         $datos['observaciones'] = null;
     }else{
         if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/u', $datos['observaciones'])) {
-            $errores[] = "Las observaciones deben incluir texto explicativo, no solo números.";
+            if (preg_match('/\d/', $datos['observaciones'])) {
+                $errores[] = "Las observaciones deben incluir texto explicativo, no solo números.";
+            } else {
+                $errores[] = "Las observaciones deben incluir texto explicativo.";
+            }
         }
     }
 
@@ -232,7 +346,6 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
         }
 
     } else {
-        require_once __DIR__ . '/../models/Mascota.php';
         if($datos['color'] === 'Otro') {
             $datos['color'] = $datos['color_espec'];
         }
@@ -248,6 +361,12 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
 
             $valoresFinales = [];
             foreach ($camposEditables as $campo) {
+
+                if ($campo === 'vacunas') {
+                    $valoresFinales[] = $mascotaActual['vacunas'] ?? null;
+                    continue; 
+                }
+
                 $valoresFinales[] = $datos[$campo] ?? null;
             }
 
@@ -259,12 +378,23 @@ function validacion(array $datos, bool $actualizacion, int $idMascota, string $s
             $exito = Mascota::actualizar($idMascota, $sets, $valoresFinales);
 
             if (!$exito) {
-              $_SESSION['errores'] = ["No se pudo guardar la mascota. Revisa que el cliente existan e intenta de nuevo"];
+              $_SESSION['errores'] = ["No se pudo guardar la mascota. Revisa que el cliente exista e intenta de nuevo."];
               $_SESSION['old'] = $datos;
               header("Location: ../views/editar_mascota.php?id_mascota=" . $idMascota);
               exit;
             }
 
+            if (is_array($datos['vacunas'] ?? null)) {
+                $exitoVacunas = Mascota::sincronizarVacunasMascota($idMascota, $datos['vacunas'], $datos['fechas_vacunas'] ?? []);
+
+                if (!$exitoVacunas) {
+                    $_SESSION['errores'] = ["La mascota se actualizo pero no se pudieron guardar sus vacunas."];
+                    $_SESSION['old'] = $datos;
+                    header('Location: ../views/editar_mascota.php?id_mascota=' . $idMascota);
+                    exit;
+                }
+            }
+            
             header('Location: ../views/mascotas.php');
             exit;
 

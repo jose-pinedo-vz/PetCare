@@ -9,6 +9,47 @@ if (file_exists(__DIR__ . '/conexion_db.php')) {
 
 class Cliente
 {
+
+    public static function estaRegistrado(string $correo, string $telefono, ?int $id_cliente = null): bool {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+
+            if ($id_cliente === null) {
+                $consulta = $conexion -> prepare(
+                    "
+                        SELECT COUNT(*)
+                        FROM clientes
+                        WHERE (correo = ? OR telefono = ?) AND esta_activo = 1
+                    "
+                );
+                $consulta -> execute([$correo, $telefono]);
+            }
+
+            else {
+                $consulta = $conexion -> prepare(
+                    "
+                        SELECT COUNT(*)
+                        FROM clientes
+                        WHERE (correo = ? OR telefono = ?) AND id_cliente != ? AND esta_activo = 1
+                    "
+                );
+                $consulta -> execute([$correo, $telefono, $id_cliente]);
+            }
+
+            $total = $consulta -> fetchColumn();
+
+            if ($total > 0) {
+                return true;
+            } else {
+                return false; 
+            }
+
+        } catch (Exception $error) {
+            error_log("Error en la funcion de que si esta registrado " . $error -> getMessage());
+            return false;
+        }
+    }
+
     public static function generarIdCliente(PDO $db): int
     {
          try {
@@ -93,6 +134,69 @@ class Cliente
         }
     }
 
+    // cliente nuevo desde la pagina publica "Crear mi cuenta".
+    // La contrasena debe llegar encriptada (password_hash)
+    public static function registrarCuenta(array $datos): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+
+            $existe = $db->prepare("SELECT COUNT(*) FROM clientes WHERE usuario = ?");
+            $existe->execute([$datos['usuario']]);
+            if ((int) $existe->fetchColumn() > 0) {
+                return ['exito' => false, 'id' => null, 'mensaje' => 'Ese nombre de usuario ya está en uso.'];
+            }
+
+            // el login es compartido: tampoco puede coincidir con el usuario de un empleado
+            $existeEmpleado = $db->prepare("SELECT COUNT(*) FROM usuarios WHERE usuario = ?");
+            $existeEmpleado->execute([$datos['usuario']]);
+            if ((int) $existeEmpleado->fetchColumn() > 0) {
+                return ['exito' => false, 'id' => null, 'mensaje' => 'Ese nombre de usuario ya está en uso.'];
+            }
+
+            $id = self::generarIdCliente($db);
+
+            $sql = "INSERT INTO clientes (
+                id_cliente, nombre, apellido, telefono, correo, calle, estado,
+                contacto_emergencia, telefono_emergencia, usuario, contrasena
+            ) VALUES (?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?)";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                $id,
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                !empty($datos['direccion']) ? $datos['direccion'] : '',
+                $datos['contacto_emergencia'],
+                $datos['telefono_emergencia'],
+                $datos['usuario'],
+                $datos['contrasena']
+            ]);
+
+            return ['exito' => true, 'id' => $id, 'mensaje' => 'Cuenta creada con éxito'];
+        } catch (Exception $e) {
+            error_log('Error en Cliente::registrarCuenta: ' . $e->getMessage());
+            return ['exito' => false, 'id' => null, 'mensaje' => 'No se pudo crear la cuenta. Intenta de nuevo.'];
+        }
+    }
+
+    // buscar un cliente activo por su nombre de usuario
+    public static function obtenerPorUsuario(string $usuario): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("SELECT id_cliente, nombre, contrasena FROM clientes WHERE usuario = ? AND esta_activo = 1");
+            $stmt->execute([$usuario]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::obtenerPorUsuario: ' . $e->getMessage());
+            return null;
+        }
+    }
+
     public static function actualizar(int $id, array $datos): array
     {
         try {
@@ -135,15 +239,68 @@ class Cliente
         }
     }
 
+    // Mi perfil (cliente): actualiza solo los datos de contacto que el cliente puede cambiar
+    public static function actualizarPerfil(int $id, array $datos): array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "UPDATE clientes SET
+                    nombre = ?, apellido = ?, telefono = ?, correo = ?, calle = ?,
+                    contacto_emergencia = ?, telefono_emergencia = ?
+                 WHERE id_cliente = ?"
+            );
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['apellido'],
+                $datos['telefono'],
+                $datos['correo'],
+                $datos['direccion'] ?? '',
+                $datos['contacto_emergencia'],
+                $datos['telefono_emergencia'],
+                $id
+            ]);
+            return ['exito' => true, 'mensaje' => 'Tus datos se guardaron correctamente.'];
+        } catch (Exception $e) {
+            error_log('Error en Cliente::actualizarPerfil: ' . $e->getMessage());
+            return ['exito' => false, 'mensaje' => 'No se pudieron guardar tus datos. Intenta de nuevo.'];
+        }
+    }
+
+    // Mi perfil (cliente): cambia la contraseña (recibe la contraseña ya encriptada)
+    public static function actualizarContrasena(int $id, string $contrasenaHash): bool
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare("UPDATE clientes SET contrasena = ? WHERE id_cliente = ?");
+            return $stmt->execute([$contrasenaHash, $id]);
+        } catch (Exception $e) {
+            error_log('Error en Cliente::actualizarContrasena: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public static function eliminar(int $id): bool
     {
         try {
             $db = ConexionDB::obtenerConexion();
+            $db->beginTransaction();
             $stmt = $db->prepare("UPDATE clientes 
                                   SET esta_activo = 0
                                   WHERE id_cliente = ?");
-            return $stmt->execute([$id]);
+            $stmt->execute([$id]);
+
+            $stmtMascotas = $db->prepare("UPDATE mascotas 
+                                          SET esta_activo = 0 
+                                          WHERE id_cliente = ?");
+            $stmtMascotas->execute([$id]);
+
+            $db->commit();
+            return true;
         } catch (Exception $e) {
+            if (isset($db) && $db->inTransaction()) {
+                $db->rollBack();
+            }
             return false;
         }
     }
@@ -161,6 +318,119 @@ class Cliente
         catch (Exception $e)
         {
             return [];
+        }
+    }
+
+    // ===== Recuperar contrasena del cliente =====
+    // En BD solo se guarda el sha256 del token (token_recuperacion es varchar(255)).
+    // Las fechas se calculan en PHP con America/Mexico_City y se pasan como parametro.
+
+    private static function ahoraMexico(string $modificar = ''): string
+    {
+        $fecha = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+        if ($modificar !== '') {
+            $fecha->modify($modificar);
+        }
+        return $fecha->format('Y-m-d H:i:s');
+    }
+
+    // Un token valido son 64 caracteres hexadecimales (bin2hex de 32 bytes)
+    private static function hashTokenRecuperacion(string $token): ?string
+    {
+        if (!preg_match('/^[0-9a-f]{64}$/', $token)) {
+            return null;
+        }
+        return hash('sha256', $token);
+    }
+
+    // Cliente activo por correo
+    public static function buscarPorCorreoActivo(string $correo): ?array
+    {
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_cliente, nombre, correo FROM clientes
+                 WHERE correo = ? AND esta_activo = 1
+                 ORDER BY id_cliente
+                 LIMIT 1"
+            );
+            $stmt->execute([$correo]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::buscarPorCorreoActivo: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Guarda el token (hasheado) con vigencia de 1 hora.
+    // Anti-abuso: si ya hay uno generado en el ultimo minuto (expira despues de ahora + 59 min)
+    // no lo reemplaza y devuelve false. La condicion va en el mismo UPDATE para que sea atomica.
+    public static function guardarTokenRecuperacion(int $idCliente, string $token): bool
+    {
+        $hash = self::hashTokenRecuperacion($token);
+        if ($hash === null) {
+            return false;
+        }
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "UPDATE clientes
+                 SET token_recuperacion = ?, token_expiracion = ?
+                 WHERE id_cliente = ? AND esta_activo = 1
+                   AND (token_expiracion IS NULL OR token_expiracion <= ?)"
+            );
+            $stmt->execute([$hash, self::ahoraMexico('+1 hour'), $idCliente, self::ahoraMexico('+59 minutes')]);
+            return $stmt->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::guardarTokenRecuperacion: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Cliente activo con ese token vigente, o null
+    public static function obtenerPorTokenRecuperacion(string $token): ?array
+    {
+        $hash = self::hashTokenRecuperacion($token);
+        if ($hash === null) {
+            return null;
+        }
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "SELECT id_cliente, nombre FROM clientes
+                 WHERE token_recuperacion = ? AND token_expiracion > ? AND esta_activo = 1
+                 LIMIT 1"
+            );
+            $stmt->execute([$hash, self::ahoraMexico()]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $cliente ?: null;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::obtenerPorTokenRecuperacion: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Cambia la contrasena (ya con password_hash) y borra el token en el mismo UPDATE.
+    // Solo afecta si el token sigue vigente, asi un token sirve una sola vez.
+    public static function actualizarContrasenaPorToken(string $token, string $contrasenaHash): bool
+    {
+        $hash = self::hashTokenRecuperacion($token);
+        if ($hash === null) {
+            return false;
+        }
+        try {
+            $db = ConexionDB::obtenerConexion();
+            $stmt = $db->prepare(
+                "UPDATE clientes
+                 SET contrasena = ?, token_recuperacion = NULL, token_expiracion = NULL
+                 WHERE token_recuperacion = ? AND token_expiracion > ? AND esta_activo = 1"
+            );
+            $stmt->execute([$contrasenaHash, $hash, self::ahoraMexico()]);
+            return $stmt->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log('Error en Cliente::actualizarContrasenaPorToken: ' . $e->getMessage());
+            return false;
         }
     }
 }

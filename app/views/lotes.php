@@ -3,6 +3,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
 require_once __DIR__ . '/../models/Lotes.php';
 $productos = Lotes::obtenerProductosActivosConProveedor();
 $lotes = Lotes::obtenerLotes();
@@ -32,13 +37,18 @@ $por_caducar = 0;
 $unidad_lotes = 0;
 $lotes_vencidos = 0;
 foreach ($lotes as $lote){
-    $fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
-    $diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
-    
-	if ($diasRestantes < 0) {
+    $cantidadLote = (int) $lote['cantidad'];
+    if ($cantidadLote <= 0) {
         $lotes_vencidos++;
-    }else if ($diasRestantes <= 15) {
-        $por_caducar++;
+    } elseif (!empty($lote['fecha_caducidad'])) {
+        $fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
+        $diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
+
+        if ($diasRestantes < 0) {
+            $lotes_vencidos++;
+        } elseif ($diasRestantes <= 15) {
+            $por_caducar++;
+        }
     }
 	$lotes_registrados++;
 	$unidad_lotes = $unidad_lotes + (int)$lote['cantidad'];
@@ -112,21 +122,27 @@ foreach ($lotes as $lote){
 				<div class="lotes-grid" id="lista-lotes">
 
 					<?php foreach ($lotes as $lote):
-        				$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
-        				$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
+						$cantidadLote = (int) $lote['cantidad'];
+						if (!empty($lote['fecha_caducidad'])) {
+							$fechaCaducidad = new DateTimeImmutable($lote['fecha_caducidad']);
+							$diasRestantes = (int) $hoy->diff($fechaCaducidad)->format('%r%a');
 
-        				if ($diasRestantes < 0) {
-        				    $estado = 'vencido';
-        				    $textoEstado = 'Vencido';
-        				} elseif ($diasRestantes <= 15) {
-        				    $estado = 'proximo';
-        				    $textoEstado = 'Por caducar';
-        				} else {
-        				    $estado = 'vigente';
-        				    $textoEstado = 'Vigente';
-        				}
+							if ($diasRestantes < 0 || $cantidadLote <= 0) {
+								$estado = 'vencido';
+								$textoEstado = 'Vencido';
+							} elseif ($diasRestantes <= 15) {
+								$estado = 'proximo';
+								$textoEstado = 'Por caducar';
+							} else {
+								$estado = 'vigente';
+								$textoEstado = 'Vigente';
+							}
+						} else {
+							$estado = $cantidadLote <= 0 ? 'vencido' : 'vigente';
+							$textoEstado = $cantidadLote <= 0 ? 'Vencido' : 'Vigente';
+						}
 
-        				$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+						$escapar = static fn($valor) => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
     				?>
 
 						<article class="lote-tarjeta" data-lote data-estado="<?= $estado ?>">
@@ -152,7 +168,7 @@ foreach ($lotes as $lote){
     			    	        </div>
     			    	        <div>
     			    	            <dt>Fecha de caducidad</dt>
-    			    	            <dd><?= $escapar($fechaCaducidad->format('Y-m-d')) ?></dd>
+						<dd><?= !empty($lote['fecha_caducidad']) ? $escapar($lote['fecha_caducidad']) : 'Sin caducidad' ?></dd>
     			    	        </div>
     			    	        <div>
     			    	            <dt>Precio de compra</dt>
@@ -192,12 +208,17 @@ foreach ($lotes as $lote){
 					<?php endforeach; ?>
 				</ul>
 			</div>
+
 		<?php endif; ?>
+		<?php require_once __DIR__ . '/../models/Lotes.php';
+		$codigo ='';
+		$codigo = Lotes::generarSiguienteLote(); ?>
+		
 		<form id="formulario-lote" action="../controllers/lotes.php" method="post" novalidate>
 			<div class="lote-formulario">
 				<div class="lote-campo">
 					<label for="lote-id">Código de lote</label>
-					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" value="<?= $escapar($loteAnterior['lote'] ?? '') ?>" required>
+					<input class="campo" id="lote-id" name="lote" type="text" maxlength="20" value="<?= $escapar($loteAnterior['lote'] ?? $codigo ?? '') ?>" readonly required>
 				</div>
 				<div class="lote-campo contenedor-buscador">
 					<label for="lote-producto">Producto</label>
@@ -234,14 +255,14 @@ foreach ($lotes as $lote){
 				</div>
 				<div class="lote-campo">
 					<label for="lote-caducidad">Fecha de caducidad</label>
-					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" value="<?= $escapar($loteAnterior['fecha_caducidad'] ?? '') ?>" required>
+					<input class="campo" id="lote-caducidad" name="fecha_caducidad" type="date" value="<?= $escapar($loteAnterior['fecha_caducidad'] ?? '') ?>">
 				</div>
 				<div class="lote-campo">
 					<label for="lote-precio">Precio de compra</label>
 					<input class="campo" id="lote-precio" name="precio_compra" type="number" min="0.01" step="0.01" value="<?= $escapar($loteAnterior['precio_compra'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">
-					<label for="lote-ubicacion">Ubicación</label>
+					<label for="lote-ubicacion">Ubicación estanteria</label>
 					<input class="campo" id="lote-ubicacion" name="ubicacion" type="text" maxlength="20" value="<?= $escapar($loteAnterior['ubicacion'] ?? '') ?>" required>
 				</div>
 				<div class="lote-campo">

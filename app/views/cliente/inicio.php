@@ -1,5 +1,8 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../models/Publico.php';
+$serviciosInicio = array_slice(Publico::servicios(), 0, 4);
+$equipoInicio = array_slice(Publico::equipo(), 0, 3);
 $paginaActiva = 'inicio';
 ?>
 <!DOCTYPE html>
@@ -21,7 +24,7 @@ $paginaActiva = 'inicio';
                 <h1 class="portada__titulo">Cuidamos a tu mascota como parte de la familia</h1>
                 <p class="portada__descripcion">Agenda su cita en línea, consulta nuestros servicios y conoce al equipo que la va a atender.</p>
                 <div class="portada__botones">
-                    <a class="boton" href="agendarCita.php">Agendar una cita</a>
+                    <a class="boton" href="agendar_cita.php">Agendar una cita</a>
                     <a class="boton boton--contorno" href="servicios.php">Ver servicios</a>
                 </div>
             </div>
@@ -36,7 +39,7 @@ $paginaActiva = 'inicio';
             <p class="seccion-inicio__subtitulo">Entra a tu cuenta para ver tus mascotas y tus citas.</p>
 
             <div class="rejilla-tarjetas">
-                <a class="tarjeta tarjeta-acceso" href="agendarCita.php">
+                <a class="tarjeta tarjeta-acceso" href="agendar_cita.php">
                     <span class="tarjeta-acceso__icono" aria-hidden="true"></span>
                     <h3 class="tarjeta-acceso__titulo">Agendar una cita</h3>
                     <p class="tarjeta-acceso__texto">Elige el servicio, el día y el horario.</p>
@@ -64,46 +67,24 @@ $paginaActiva = 'inicio';
 
         <section class="seccion-inicio" id="servicios">
             <h2 class="seccion-inicio__titulo">Nuestros servicios</h2>
-            <p class="seccion-inicio__subtitulo">Precios de ejemplo; el administrador puede cambiarlos.</p>
+            <p class="seccion-inicio__subtitulo">Precios y duración actualizados.</p>
 
             <div class="rejilla-tarjetas">
+                <?php foreach ($serviciosInicio as $srv): ?>
                 <article class="tarjeta tarjeta-servicio-mini">
-                    <div class="foto-marcador foto-marcador--servicio">Foto: baño</div>
-                    <h3 class="tarjeta-servicio-mini__titulo">Baño</h3>
-                    <p class="tarjeta-servicio-mini__texto">Baño y secado.</p>
-                    <p class="tarjeta-servicio-mini__precio">60 min · $150.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=bano">Agendar</a>
+                    <div class="foto-marcador foto-marcador--servicio"><?= htmlspecialchars($srv['nombre']) ?></div>
+                    <h3 class="tarjeta-servicio-mini__titulo"><?= htmlspecialchars($srv['nombre']) ?></h3>
+                    <p class="tarjeta-servicio-mini__texto"><?= htmlspecialchars((string)($srv['descripcion'] ?? '')) ?></p>
+                    <p class="tarjeta-servicio-mini__precio"><?= (int)$srv['duracion'] ?> min · $<?= number_format((float)$srv['precio'], 2) ?></p>
+                    <a class="boton boton--chico" href="agendar_cita.php?servicio=<?= (int)$srv['id_servicio'] ?>">Agendar</a>
                 </article>
-
-                <article class="tarjeta tarjeta-servicio-mini">
-                    <div class="foto-marcador foto-marcador--servicio">Foto: corte de pelo</div>
-                    <h3 class="tarjeta-servicio-mini__titulo">Corte de pelo</h3>
-                    <p class="tarjeta-servicio-mini__texto">Corte según el tipo de pelaje y lo que prefieras.</p>
-                    <p class="tarjeta-servicio-mini__precio">90 min · $250.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=corte_pelo">Agendar</a>
-                </article>
-
-                <article class="tarjeta tarjeta-servicio-mini">
-                    <div class="foto-marcador foto-marcador--servicio">Foto: corte de uñas</div>
-                    <h3 class="tarjeta-servicio-mini__titulo">Corte de uñas</h3>
-                    <p class="tarjeta-servicio-mini__texto">Corte y limado de uñas.</p>
-                    <p class="tarjeta-servicio-mini__precio">20 min · $60.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=corte_unas">Agendar</a>
-                </article>
-
-                <article class="tarjeta tarjeta-servicio-mini">
-                    <div class="foto-marcador foto-marcador--servicio">Foto: desparasitación</div>
-                    <h3 class="tarjeta-servicio-mini__titulo">Desparasitación</h3>
-                    <p class="tarjeta-servicio-mini__texto">Aplicación a cargo de nuestro veterinario.</p>
-                    <p class="tarjeta-servicio-mini__precio">30 min · $120.00</p>
-                    <a class="boton boton--chico" href="agendarCita.php?servicio=desparasitacion">Agendar</a>
-                </article>
+                <?php endforeach; ?>
 
                 <article class="tarjeta tarjeta--oscura tarjeta-servicio-mini">
                     <h3 class="tarjeta-servicio-mini__titulo">Hotel de mascotas</h3>
                     <p class="tarjeta-servicio-mini__texto">Hospedaje para perros, gatos y otros mamíferos pequeños. Pedimos el esquema de vacunación completo. El baño y los cortes se cobran aparte.</p>
                     <p class="tarjeta-servicio-mini__precio">Consulta disponibilidad con nosotros</p>
-                    <a class="boton boton--secundario boton--chico" href="hotel_requisitos.php">Ver requisitos</a>
+                    <a class="boton boton--secundario boton--chico" href="solicitar_reservacion.php">Reservar hotel</a>
                 </article>
             </div>
         </section>
@@ -114,23 +95,13 @@ $paginaActiva = 'inicio';
             <p class="seccion-inicio__subtitulo">Profesionales que se encargan de tu mascota.</p>
 
             <div class="rejilla-tarjetas">
+                <?php foreach ($equipoInicio as $em): ?>
                 <article class="tarjeta tarjeta-persona-mini">
-                    <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                    <h3>Dra. Pérez</h3>
-                    <p>Veterinaria · [Especialidad]</p>
+                    <div class="foto-marcador foto-marcador--avatar"><?= htmlspecialchars(mb_substr($em['nombre'], 0, 1)) ?></div>
+                    <h3><?= htmlspecialchars($em['nombre'] . ' ' . $em['apellido']) ?></h3>
+                    <p><?= htmlspecialchars($em['puesto']) ?><?= !empty($em['especialidad']) ? ' · ' . htmlspecialchars($em['especialidad']) : '' ?></p>
                 </article>
-
-                <article class="tarjeta tarjeta-persona-mini">
-                    <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                    <h3>Ana Torres</h3>
-                    <p>Estilista</p>
-                </article>
-
-                <article class="tarjeta tarjeta-persona-mini">
-                    <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                    <h3>Luis Medina</h3>
-                    <p>Estilista</p>
-                </article>
+                <?php endforeach; ?>
             </div>
 
             <div class="grupo-botones">

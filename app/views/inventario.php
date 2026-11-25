@@ -1,23 +1,37 @@
 <?php
-require_once __DIR__ . '/../Models/Productos.php';
-require_once __DIR__ . '/../models/conexion_db.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+$rolSesion = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+if (!in_array($rolSesion, ['admin', 'gerente', 'vendedor'], true)) {
+    header("Location: inicio.php");
+    exit();
+}
+$usuario = $_SESSION['usuario'];
+$empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+$horario_empleado = $_SESSION['horario_empleado'] ?? null;
+$id_empleado = $_SESSION['id_empleado'] ?? null;
+
+require_once __DIR__ . '/../models/Productos.php';
+require_once __DIR__ . '/../models/Movimientos.php';
 
 $productos = Productos::obtenerDatosProductosActivos();
+$productosConPerdida = array_values(array_filter(
+  $productos,
+  static fn ($producto): bool => (float) ($producto['precio_compra'] ?? 0) > (float) $producto['precio_venta']
+));
 $productosEnRiesgo = array_values(array_filter(
   $productos,
   static fn ($producto): bool => (int) $producto['existencia'] <= (int) $producto['existencia_minima']
 ));
 $movimientosHoy = null;
 
-try {
-  $conexion = ConexionDB::obtenerConexion();
-  $consultaMovimientos = $conexion->query(
-    "SELECT COUNT(*) FROM movimientos_inventario WHERE DATE(fecha) = CURDATE()"
-  );
-  $movimientosHoy = (int) $consultaMovimientos->fetchColumn();
-} catch (Throwable $e) {
-  error_log('Error al consultar movimientos de inventario del día: ' . $e->getMessage());
-}
+$movimientosHoy = Movimientos::movimientosHoy();
+$totalMovimientos = Movimientos::totalMovimientos();
 
 $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 ?>
@@ -33,6 +47,7 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
 </head>
 
 <body>
+
   <div class="layout">
     <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
@@ -47,6 +62,23 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
         <a href="lotes.php">2. Gestión de lotes</a>
         <a href="pedidos.php#pedidos">3. Pedidos pendientes</a>
       </nav>
+
+      <?php if ($productosConPerdida !== []): ?>
+        <div class="msg-error" role="alert">
+          <h2>Productos con posible pérdida</h2>
+          <p>El precio de compra de estos productos supera su precio de venta. Cambia el precio de venta para evitar pérdidas:</p>
+          <ul>
+            <?php foreach ($productosConPerdida as $productoConPerdida): ?>
+              <li>
+                <?= $escaparInventario($productoConPerdida['nombre']) ?>:
+                compra $<?= number_format((float) $productoConPerdida['precio_compra'], 2, '.', ',') ?>,
+                venta $<?= number_format((float) $productoConPerdida['precio_venta'], 2, '.', ',') ?>.
+                <a href="editar_producto.php?id=<?= (int) $productoConPerdida['id_producto'] ?>">Cambiar precio de venta</a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
 
       <section id="catalogo" aria-label="Catálogo de productos">
         <div class="inventario-resumen">
@@ -64,6 +96,7 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
           <div class="inventario-tarjeta">
             <h3>Movimientos hoy</h3>
             <p><?= $movimientosHoy === null ? 'No disponible' : $movimientosHoy . ' registros' ?></p>
+            <a class="btn btn-secundario btn-chico" href="movimientos_inventario.php">Ver movimientos</a>
           </div>
         </div>
 
@@ -90,9 +123,33 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
             <tbody>
               <?php if (!empty($productos)): ?>
                   <?php foreach ($productos as $producto): ?>
+                      <?php
+                        $nombreProducto = (string) $producto['nombre'];
+                        $rutaImagen = trim((string) ($producto['imagen'] ?? ''));
+                        $imagenProducto = $rutaImagen !== '' ? '../../' . ltrim($rutaImagen, '/') : '';
+                      ?>
                       <?php if ($producto['existencia'] <= $producto['existencia_minima']): ?>
                         <tr>
-                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td>
+                            <div class="foto-miniatura-celda inventario-imagen-celda">
+                              <?php if ($imagenProducto !== ''): ?>
+                                <img
+                                  class="producto-imagen foto-miniatura"
+                                  src="<?= $escaparInventario($imagenProducto) ?>"
+                                  alt="<?= $escaparInventario($nombreProducto) ?>"
+                                  title="Click para ampliar imagen"
+                                  data-full="<?= $escaparInventario($imagenProducto) ?>"
+                                  data-title="<?= $escaparInventario($nombreProducto) ?>"
+                                  role="button"
+                                  tabindex="0"
+                                  aria-label="Ampliar imagen de <?= $escaparInventario($nombreProducto) ?>"
+                                  onerror="this.hidden = true; this.nextElementSibling.hidden = false;"
+                                >
+                              <?php endif; ?>
+                              <span class="sin-foto" <?= $imagenProducto !== '' ? 'hidden' : '' ?>>Imagen no disponible</span>
+                            </div>
+                            </div>
+                          </td>
                           <td><?= $producto['codigo'] ?></td>
                           <td><?= $producto['nombre'] ?></td>
                           <td><span class="estado-chip estado-espera"><?= $producto['existencia'] ?> (bajo)</span></td>
@@ -100,12 +157,31 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
                           <td class="acciones">
                             <a class="btn btn-chico btn-info" href="orden_compra.php?id=<?= $producto['id_producto'] ?>">Nueva orden de compra</a>
                             <a class="btn btn-chico" href="editar_producto.php?id=<?= $producto['id_producto'] ?>">Editar</a>
-                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= $producto['id_producto'] ?>">Eliminar</a>
+                            <a class="btn btn-chico btn-peligro" href="eliminar_producto.php?id=<?= $producto['id_producto'] ?> &&nombre=<?= $producto['nombre'] ?>">Eliminar</a>
                           </td>
                         </tr>
                       <?php else: ?>
                         <tr>
-                          <td><img class="producto-imagen" src="../../<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>"></td>
+                          <td>
+                            <div class="foto-miniatura-celda inventario-imagen-celda">
+                              <?php if ($imagenProducto !== ''): ?>
+                                <img
+                                  class="producto-imagen foto-miniatura"
+                                  src="<?= $escaparInventario($imagenProducto) ?>"
+                                  alt="<?= $escaparInventario($nombreProducto) ?>"
+                                  title="Click para ampliar imagen"
+                                  data-full="<?= $escaparInventario($imagenProducto) ?>"
+                                  data-title="<?= $escaparInventario($nombreProducto) ?>"
+                                  role="button"
+                                  tabindex="0"
+                                  aria-label="Ampliar imagen de <?= $escaparInventario($nombreProducto) ?>"
+                                  onerror="this.hidden = true; this.nextElementSibling.hidden = false;"
+                                >
+                              <?php endif; ?>
+                              <span class="sin-foto" <?= $imagenProducto !== '' ? 'hidden' : '' ?>>Imagen no disponible</span>
+                            </div>
+                            </div>
+                          </td>
                           <td><?= $producto['codigo'] ?></td>
                           <td><?= $producto['nombre'] ?></td>
                           <td><span class="estado-chip estado-atendida"><?= $producto['existencia'] ?> (normal)</span></td>
@@ -131,6 +207,14 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+
+  <div id="modal-visor-imagen" class="modal-visor" role="dialog" aria-modal="true" aria-label="Visor de imagen" aria-hidden="true">
+    <button class="btn-cerrar-visor" type="button" aria-label="Cerrar visor de imagen">&times;</button>
+    <div class="visor-contenido">
+      <img id="imagen-ampliada" src="" alt="Imagen ampliada" title="Haz clic para cerrar">
+      <div id="pie-imagen-ampliada" class="pie-visor"></div>
+    </div>
+  </div>
 
   <dialog id="ventana-agotados" class="inventario-dialog" aria-labelledby="titulo-agotados">
     <h2 id="titulo-agotados">Productos agotados</h2>
@@ -175,6 +259,57 @@ $escaparInventario = static fn ($valor): string => htmlspecialchars((string) $va
         document.getElementById('cerrar-agotados').addEventListener('click', () => ventanaAgotados.close());
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && ventanaAgotados.open) ventanaAgotados.close();
+        });
+    </script>
+
+    <script>
+        const modalVisorImagen = document.getElementById('modal-visor-imagen');
+        const imagenAmpliada = document.getElementById('imagen-ampliada');
+        const pieImagenAmpliada = document.getElementById('pie-imagen-ampliada');
+        const cerrarVisorImagen = modalVisorImagen.querySelector('.btn-cerrar-visor');
+        let miniaturaActiva = null;
+        let overflowAnterior = '';
+
+        const abrirVisorImagen = (miniatura) => {
+            miniaturaActiva = miniatura;
+            overflowAnterior = document.body.style.overflow;
+            imagenAmpliada.src = miniatura.dataset.full || miniatura.src;
+            imagenAmpliada.alt = miniatura.alt;
+            pieImagenAmpliada.textContent = miniatura.dataset.title || '';
+            modalVisorImagen.classList.add('activo');
+            modalVisorImagen.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            cerrarVisorImagen.focus();
+        };
+
+        const cerrarVisor = () => {
+            modalVisorImagen.classList.remove('activo');
+            modalVisorImagen.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = overflowAnterior;
+            imagenAmpliada.src = '';
+            if (miniaturaActiva) miniaturaActiva.focus();
+        };
+
+        document.querySelectorAll('.foto-miniatura').forEach((miniatura) => {
+            miniatura.addEventListener('click', () => abrirVisorImagen(miniatura));
+            miniatura.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    abrirVisorImagen(miniatura);
+                }
+            });
+        });
+
+        cerrarVisorImagen.addEventListener('click', cerrarVisor);
+        modalVisorImagen.addEventListener('click', (event) => {
+            if (event.target === modalVisorImagen || event.target === imagenAmpliada) {
+                cerrarVisor();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modalVisorImagen.classList.contains('activo')) {
+                cerrarVisor();
+            }
         });
     </script>
 

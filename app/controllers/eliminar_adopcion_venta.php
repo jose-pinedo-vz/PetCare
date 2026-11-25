@@ -5,6 +5,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 }
 
 $id = filter_input(INPUT_POST, 'id_adopcion_venta', FILTER_VALIDATE_INT);
+if ($id === false || $id === null || $id <= 0) {
+    $id = filter_input(INPUT_POST, 'id_animal', FILTER_VALIDATE_INT);
+}
 
 if ($id === false || $id === null || $id <= 0) {
     header('Location: ../views/adopcion_venta.php');
@@ -13,7 +16,7 @@ if ($id === false || $id === null || $id <= 0) {
 
 require_once __DIR__ . '/../models/adopcion_venta.php';
 
-eliminar($id);
+eliminar_adopcion($id);
 
 header('Location: ../views/adopcion_venta.php');
 exit;

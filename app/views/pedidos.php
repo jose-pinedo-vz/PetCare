@@ -79,6 +79,7 @@ try {
 						$textoEstado = $estadoPedido === 'entregado'
 							? 'Entregado'
 							: ($estadoPedido === 'cancelado' ? 'Cancelado' : 'Pendiente');
+						$mostrarTotal = $estadoPedido === 'entregado';
 						?>
 					<article class="pedido-tarjeta" data-pedido data-pedido-id="<?= $idPedido ?>" data-estado="<?= $escaparPedido($estadoPedido) ?>">
 						<header class="pedido-encabezado">
@@ -98,7 +99,10 @@ try {
 							<div><span>Fecha de solicitud</span><time datetime="<?= $escaparPedido($pedido['fecha_solicitud']) ?>"><?= $escaparPedido($pedido['fecha_solicitud']) ?></time></div>
 							<div><span>Fecha esperada</span><time datetime="<?= $escaparPedido($pedido['fecha_esperada'] ?? '') ?>"><?= $escaparPedido($pedido['fecha_esperada'] ?? 'Sin definir') ?></time></div>
 						</div>
-						<div class="pedido-total"><span>Total estimado</span><strong>$<?= number_format((float) $pedido['total_estimado'], 2, '.', ',') ?></strong></div>
+						<div class="pedido-total" data-pedido-total <?= $mostrarTotal ? '' : 'hidden style="display:none"' ?>>
+							<span>Total de compra</span>
+							<strong>$<?= number_format((float) $pedido['total_estimado'], 2, '.', ',') ?></strong>
+						</div>
 						<div class="pedido-acciones">
 							<?php if ($esPendiente): ?>
 								<button class="btn pedido-registrar btn-chico" type="button" data-abrir-registro>Registrar pedido</button>
@@ -113,8 +117,14 @@ try {
 								<?php
 								$precioUnitario = (float) $productoPedido['precio_unitario'];
 								$cantidadPedido = (int) $productoPedido['cantidad'];
+								$precioDetalle = $precioUnitario > 0
+									? '$' . number_format($precioUnitario, 2, '.', ',')
+									: 'Por confirmar';
+								$subtotalDetalle = $precioUnitario > 0
+									? '$' . number_format($precioUnitario * $cantidadPedido, 2, '.', ',')
+									: 'Por confirmar';
 								?>
-								<tr><td><?= $escaparPedido($productoPedido['nombre']) ?></td><td><?= $cantidadPedido ?></td><td>$<?= number_format($precioUnitario, 2, '.', ',') ?></td><td>$<?= number_format($precioUnitario * $cantidadPedido, 2, '.', ',') ?></td></tr>
+								<tr><td><?= $escaparPedido($productoPedido['nombre']) ?></td><td><?= $cantidadPedido ?></td><td><?= $precioDetalle ?></td><td><?= $subtotalDetalle ?></td></tr>
 							<?php endforeach; ?>
 						</template>
 					</article>
@@ -129,14 +139,16 @@ try {
 			</div>
 		</main>
 	</div>
-
+	<?php require_once __DIR__ . '/../models/Lotes.php';
+		$codigo ='';
+		$codigo = Lotes::generarSiguienteLote(); ?>
 	<dialog class="lote-dialog" id="dialogo-registro-pedido" aria-labelledby="titulo-registro-pedido" data-csrf="<?= $escaparPedido($_SESSION['csrf_pedidos']) ?>">
 		<h2 id="titulo-registro-pedido">Registrar pedido</h2>
 		<form id="formulario-registro-pedido">
 			<div class="lote-formulario">
 				<div class="lote-campo">
 					<label for="pedido-id">Código de lote</label>
-					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" pattern="(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+" required>
+					<input class="campo" id="pedido-id" name="lote" type="text" maxlength="20" value="<?= $escaparPedido($codigo ?? '') ?>" readonly required>
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-producto">Producto</label>
@@ -152,14 +164,14 @@ try {
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-caducidad">Fecha de caducidad</label>
-					<input class="campo" id="pedido-caducidad" name="fecha_caducidad" type="date" required>
+					<input class="campo" id="pedido-caducidad" name="fecha_caducidad" type="date">
 				</div>
 				<div class="lote-campo">
 					<label for="pedido-precio">Precio de compra</label>
-					<input class="campo" id="pedido-precio" name="precio_compra" type="number" min="0.01" step="0.01" readonly required>
+					<input class="campo" id="pedido-precio" name="precio_compra" type="number" min="0.01" max="99999999.99" step="0.01" readonly required>
 				</div>
 				<div class="lote-campo">
-					<label for="pedido-ubicacion">Ubicación</label>
+					<label for="pedido-ubicacion">Ubicación estanteria</label>
 					<input class="campo" id="pedido-ubicacion" name="ubicacion" type="text" maxlength="20" pattern="(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+" required>
 				</div>
 				<div class="lote-campo">
@@ -208,8 +220,8 @@ try {
 					<strong>Observaciones</strong>
 					<p></p>
 				</div>
-				<div class="pedido-detalle-total">
-					<span>Total estimado</span>
+				<div class="pedido-detalle-total" id="resumen-total-pedido" hidden style="display:none">
+					<span>Total de compra</span>
 					<strong id="modal-pedido-total"></strong>
 				</div>
 			</div>
@@ -258,6 +270,10 @@ try {
 				document.getElementById('modal-pedido-esperada').textContent = fechas[1].textContent;
 				document.getElementById('modal-pedido-esperada').dateTime = fechas[1].dateTime;
 				document.getElementById('modal-pedido-total').textContent = tarjeta.querySelector('.pedido-total strong').textContent;
+				const resumenTotalPedido = document.getElementById('resumen-total-pedido');
+				const totalDisponible = tarjeta.dataset.estado === 'entregado';
+				resumenTotalPedido.hidden = !totalDisponible;
+				resumenTotalPedido.style.display = totalDisponible ? '' : 'none';
 
 				const estadoModal = document.getElementById('modal-pedido-estado');
 				estadoModal.textContent = estado.textContent;

@@ -46,7 +46,8 @@ try {
             'enfermedades' => trim($_POST['enfermedades'] ?? ''),
             'medicamentos' => trim($_POST['medicamentos'] ?? ''),
             'condiciones_especiales' => trim($_POST['condiciones_especiales'] ?? ''),
-            'vacunas' => trim($_POST['vacunas'] ?? ''),
+            'vacunas' => (array)($_POST['vacunas'] ?? []),
+            'fechas_vacunas' => (array)($_POST['fechas_vacunas'] ?? []),
             'ultima_desparasitacion' => $_POST['ultima_desparasitacion'] ?? '',
             'temperamento' => trim($_POST['temperamento'] ?? ''),
             'restricciones_para_manejo' => trim($_POST['restricciones_para_manejo'] ?? ''),
@@ -84,5 +85,11 @@ catch (\Throwable $error) {
 
     error_log("Error en actualizar_mascota.php: " . $error -> getMessage()); // esto no se muestra al usuario
 
-    echo "Ocurrio un error al actualizar los datos. Intente de nuevo mas tarde";
+    if (!empty($idMascota)) {
+        $_SESSION['errores'] = ["Ocurrio un error al actualizar los datos. Intente de nuevo mas tarde"];
+        header("Location: ../views/editar_mascota.php?id_mascota=" . $idMascota);
+        exit();
+    }
+
+    /* echo "Ocurrio un error al actualizar los datos. Intente de nuevo mas tarde"; */
 }

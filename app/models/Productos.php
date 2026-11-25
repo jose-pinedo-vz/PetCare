@@ -16,31 +16,35 @@ function IDproducto(PDO $conexion): int {
     }
 }
 
+function existeCodigoProducto(string $codigo): bool {
+    $conexion = ConexionDB::obtenerConexion();
+    $consulta = $conexion->prepare(
+        "SELECT 1 FROM productos WHERE LOWER(codigo) = LOWER(?) LIMIT 1"
+    );
+    $consulta->execute([$codigo]);
+
+    return $consulta->fetchColumn() !== false;
+}
+
 
 function insertarProducto(array $datos) {
     try {
         $conexion = ConexionDB::obtenerConexion();
     } catch (Exception $e) {
-        return ["Error BD",htmlspecialchars($e->getMessage())];
+        error_log("Error al conectar para insertar producto: " . $e->getMessage());
+        return ["Error al aguardar", "No fue posible conectar con la base de datos."];
     }
 
     try {
-        // Esta linea de codigo le indico que no guarde nada aun hasta no hacer la consulta de la segunda tabla de lotes, 
-        //lo que aguarda los datos en un espacio de memoria temporal, y si hay un error en la segunda tabla no se guarda 
-        //nada en la primera tabla ya que las dos tablas estan relacionadas
-        $conexion->beginTransaction();
-
         $id = IDproducto($conexion);
 
         $insertProd = "INSERT INTO productos (
             id_producto, codigo, nombre, id_categoria, id_proveedor, descripcion, contenido,
-            unidad_medida, precio_venta, existencia, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
+            unidad_medida, precio_venta, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
         ) VALUES (
             :id_producto, :codigo, :nombre, :id_categoria, :id_proveedor, :descripcion, :contenido,
-            :unidad_medida, :precio_venta, :existencia, :existencia_minima, :existencia_maxima, :fecha_ingreso, :imagen, :estado
+            :unidad_medida, :precio_venta, :existencia_minima, :existencia_maxima, :fecha_ingreso, :imagen, :estado
         )";
-
-    
 
         $stmtProd = $conexion->prepare($insertProd);
         $stmtProd->bindParam(":id_producto",      $id,                         PDO::PARAM_INT);
@@ -52,40 +56,18 @@ function insertarProducto(array $datos) {
         $stmtProd->bindParam(":contenido",        $datos['contenido'],         PDO::PARAM_STR);
         $stmtProd->bindParam(":unidad_medida",    $datos['unidad_medida'],     PDO::PARAM_STR);
         $stmtProd->bindParam(":precio_venta",     $datos['precio_venta'],      PDO::PARAM_STR);
-        $stmtProd->bindParam(":existencia",       $datos['existencia'],        PDO::PARAM_INT);
         $stmtProd->bindParam(":existencia_minima",$datos['existencia_minima'], PDO::PARAM_INT);
         $stmtProd->bindParam(":existencia_maxima",$datos['existencia_maxima'], PDO::PARAM_INT);
         $stmtProd->bindParam(":fecha_ingreso",    $datos['fecha_ingreso'],     PDO::PARAM_STR);
         $stmtProd->bindParam(":imagen",           $datos['imagen'],            PDO::PARAM_STR);
         $stmtProd->bindParam(":estado",           $datos['estado'],            PDO::PARAM_INT);
-        
-        
         $stmtProd->execute();
-
-        $insertLote = "INSERT INTO lote_productos (
-            id_producto, lote, fecha_caducidad, precio_compra, ubicacion, cantidad
-        ) VALUES ( 
-            :id_producto, :lote, :fecha_caducidad, :precio_compra,   :ubicacion, :cantidad
-        )";
-
-        $stmtLote = $conexion->prepare($insertLote);
-        $stmtLote->bindParam(":id_producto",      $id,                         PDO::PARAM_INT);
-        $stmtLote->bindParam(":lote",             $datos['lote'],              PDO::PARAM_STR);
-        $stmtLote->bindParam(":fecha_caducidad",  $datos['fecha_caducidad'],   PDO::PARAM_STR);
-        $stmtLote->bindParam(":precio_compra",    $datos['precio_compra'],     PDO::PARAM_STR);
-        $stmtLote->bindParam(":ubicacion",        $datos['ubicacion'],         PDO::PARAM_STR);
-        $stmtLote->bindParam(":cantidad",         $datos['existencia'],        PDO::PARAM_INT);
-
-        $stmtLote->execute();
-
-        // Si todo fue exitoso, confirmamos la transacción de guardasr los datos en ambas tablas
-        $conexion->commit();
-
     }catch(PDOException $e){
         if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1452) {
             return ["Error ID"];
         } else {
-            return["Error al aguardar",htmlspecialchars($e->getMessage())];
+            error_log("Error al insertar producto: " . $e->getMessage());
+            return ["Error al aguardar", "No fue posible guardar el producto."];
         }
     }
 }
@@ -95,10 +77,18 @@ function insertarProducto(array $datos) {
 function obtenerDatosProductos(): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT id_producto, codigo, nombre, id_categoria, id_proveedor, descripcion, contenido,
-            unidad_medida, precio_venta, existencia, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
-                FROM productos
-                ORDER BY id_producto DESC";
+        $sql = "SELECT p.id_producto, p.codigo, p.nombre, p.id_categoria, p.id_proveedor,
+                       p.descripcion, p.contenido, p.unidad_medida, p.precio_venta,
+                       COALESCE(l.existencia, 0) AS existencia,
+                       p.existencia_minima, p.existencia_maxima, p.fecha_ingreso, p.imagen, p.estado
+                FROM productos AS p
+                LEFT JOIN (
+                    SELECT id_producto, SUM(cantidad) AS existencia
+                    FROM lote_productos
+                    WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                    GROUP BY id_producto
+                ) AS l ON l.id_producto = p.id_producto
+                ORDER BY p.id_producto DESC";
 
         $resultado = $conexion->query($sql);
         if (!$resultado) {
@@ -116,11 +106,24 @@ function obtenerDatosProductos(): array {
 function obtenerDatosProductosActivos(): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT id_producto, codigo, nombre, id_categoria, id_proveedor, descripcion, contenido,
-            unidad_medida, precio_venta, existencia, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
-                FROM productos
-                WHERE estado = 1
-                ORDER BY id_producto DESC";
+        $sql = "SELECT p.id_producto, p.codigo, p.nombre, p.id_categoria, p.id_proveedor,
+                       p.descripcion, p.contenido, p.unidad_medida, p.precio_venta,
+                       COALESCE((
+                           SELECT MAX(lp.precio_compra)
+                           FROM lote_productos AS lp
+                           WHERE lp.id_producto = p.id_producto
+                       ), 0) AS precio_compra,
+                       COALESCE(l.existencia, 0) AS existencia,
+                       p.existencia_minima, p.existencia_maxima, p.fecha_ingreso, p.imagen, p.estado
+                FROM productos AS p
+                LEFT JOIN (
+                    SELECT id_producto, SUM(cantidad) AS existencia
+                    FROM lote_productos
+                    WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                    GROUP BY id_producto
+                ) AS l ON l.id_producto = p.id_producto
+                WHERE p.estado = 1
+                ORDER BY p.id_producto DESC";
 
         $resultado = $conexion->query($sql);
         if (!$resultado) {
@@ -160,11 +163,19 @@ function obtenerImagen($id) {
 function obtenerDatosProductosInactivos(): array {
     try {
         $conexion = ConexionDB::obtenerConexion();
-        $sql = "SELECT id_producto, codigo, nombre, id_categoria, id_proveedor, descripcion, contenido,
-            unidad_medida, precio_venta, existencia, existencia_minima, existencia_maxima, fecha_ingreso, imagen, estado
-                FROM productos
-                WHERE estado = 0
-                ORDER BY id_producto DESC";
+        $sql = "SELECT p.id_producto, p.codigo, p.nombre, p.id_categoria, p.id_proveedor,
+                       p.descripcion, p.contenido, p.unidad_medida, p.precio_venta,
+                       COALESCE(l.existencia, 0) AS existencia,
+                       p.existencia_minima, p.existencia_maxima, p.fecha_ingreso, p.imagen, p.estado
+                FROM productos AS p
+                LEFT JOIN (
+                    SELECT id_producto, SUM(cantidad) AS existencia
+                    FROM lote_productos
+                    WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                    GROUP BY id_producto
+                ) AS l ON l.id_producto = p.id_producto
+                WHERE p.estado = 0
+                ORDER BY p.id_producto DESC";
 
         $resultado = $conexion->query($sql);
         if (!$resultado) {
@@ -193,7 +204,172 @@ function obtenerProductoPorId(int $id): ?array {
     }
 }
 
+function obtenerProductoPorIdNew(int $id): ?array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT p.*, COALESCE(l.existencia, 0) AS existencia
+            FROM productos AS p
+            LEFT JOIN (
+                SELECT id_producto, SUM(cantidad) AS existencia
+                FROM lote_productos
+                WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                GROUP BY id_producto
+            ) AS l ON l.id_producto = p.id_producto
+            WHERE p.id_producto = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+        $producto = $consulta -> fetch(PDO::FETCH_ASSOC);
 
+        return $producto ?: null;
+
+    } catch (Exception $error) {
+        error_log("Error en obtenerMascotaPorIdNew: " . $error -> getMessage());
+        return null;
+    }
+}
+
+function obtenerNombreProveedor(int $id): ?string {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT nombre_comercial 
+            FROM proveedores 
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+        $nombre = $consulta -> fetchColumn();
+
+        return $nombre !== false ? $nombre : null;
+    } catch (Exception $error) {
+        error_log("Error al obterner el nombre del proveedor " . $error -> getMessage());
+        return null;
+    }
+}
+
+function obtenerCorreoProveedor(int $id): ?string {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT correo
+            FROM proveedores
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+
+        $correo = $consulta -> fetchColumn();
+
+        return $correo !== false ? $correo : null;
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el correo del proveedor " . $error -> getMessage());
+        return null;
+    }
+}
+
+function obtenerProductosPorProveedor(int $id_proveedor): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT p.id_producto, p.codigo, p.nombre,
+                   COALESCE(l.existencia, 0) AS existencia, p.imagen
+            FROM productos AS p
+            LEFT JOIN (
+                SELECT id_producto, SUM(cantidad) AS existencia
+                FROM lote_productos
+                WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                GROUP BY id_producto
+            ) AS l ON l.id_producto = p.id_producto
+            WHERE p.id_proveedor = ? AND p.estado = 1
+            ORDER BY p.nombre
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_proveedor]);
+
+        return $consulta -> fetchAll(PDO::FETCH_ASSOC) ? : [];
+
+    } catch (Exception $error) {
+        error_log("Error al obtener los productos del proveedor " . $error -> getMessage());
+        return [];
+    }
+}
+
+function obtenerTiempoEntregaProveedor(int $id): int {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT tiempo_entrega 
+            FROM proveedores
+            WHERE id_proveedor = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id]);
+
+        $dias = $consulta -> fetchColumn();
+
+        return $dias !== false ? (int) $dias : 0;
+    } catch (Exception $error) {
+        error_log("Error al obtener los dias de entrega " . $error -> getMessage());
+        return 0;
+    }
+}
+
+function obtenerPrecioCompra(int $id_producto): float {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT MAX(precio_compra) 
+            FROM lote_productos 
+            WHERE id_producto = ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_producto]);
+        $precio = $consulta -> fetchColumn();
+
+        return $precio !== false && $precio !== null ? (float) $precio : 0.0;
+    } catch (Exception $error) {
+        error_log("Error al obtener el precio " . $error->getMessage());
+        return 0.0;
+    }
+}
+
+function obtenerExistenciaMinima(int $id_proveedor): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT p.id_producto, p.nombre, p.codigo,
+                   COALESCE(l.existencia, 0) AS existencia,
+                   p.existencia_minima, p.unidad_medida
+            FROM productos AS p
+            LEFT JOIN (
+                SELECT id_producto, SUM(cantidad) AS existencia
+                FROM lote_productos
+                WHERE fecha_caducidad IS NULL OR fecha_caducidad >= CURDATE()
+                GROUP BY id_producto
+            ) AS l ON l.id_producto = p.id_producto
+            WHERE p.id_proveedor = ?
+              AND COALESCE(l.existencia, 0) <= p.existencia_minima
+              AND p.estado = 1
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_proveedor]);
+
+        $resultado = $consulta -> fetchAll(PDO::FETCH_ASSOC);
+
+        if ($resultado) {
+            return $resultado;
+        } else {
+            return [];
+        }
+
+    } catch (Exception $error) {
+        error_log("Error en obtener la existencia minima de un producto " . $error -> getMessage());
+        return [];
+    }
+}
 
 function ActualizarProducto(array $datos, $id){
     try{
@@ -207,7 +383,6 @@ function ActualizarProducto(array $datos, $id){
             contenido = :contenido,
             unidad_medida = :unidad_medida,
             precio_venta = :precio_venta,
-            existencia = :existencia,
             existencia_minima = :existencia_minima,
             existencia_maxima = :existencia_maxima,
             fecha_ingreso = :fecha_ingreso,
@@ -220,11 +395,10 @@ function ActualizarProducto(array $datos, $id){
         $stmtProd->bindParam(":nombre",            $datos['nombre'],            PDO::PARAM_STR);
         $stmtProd->bindParam(":id_categoria",      $datos['id_categoria'],      PDO::PARAM_INT);
         $stmtProd->bindParam(":id_proveedor",      $datos['id_proveedor'],      PDO::PARAM_INT);
-        $stmtProd->bindParam(":descripcion",       $datos['descripcion'],       PDO::PARAM_STR);
-        $stmtProd->bindParam(":contenido",         $datos['contenido'],         PDO::PARAM_STR);
-        $stmtProd->bindParam(":unidad_medida",     $datos['unidad_medida'],     PDO::PARAM_STR);
-        $stmtProd->bindParam(":precio_venta",      $datos['precio_venta'],      PDO::PARAM_STR);
-        $stmtProd->bindParam(":existencia",        $datos['existencia'],        PDO::PARAM_INT);
+        $stmtProd->bindParam(":descripcion",       $datos['descripcion'],      PDO::PARAM_STR);
+        $stmtProd->bindParam(":contenido",         $datos['contenido'],       PDO::PARAM_STR);
+        $stmtProd->bindParam(":unidad_medida",     $datos['unidad_medida'],    PDO::PARAM_STR);
+        $stmtProd->bindParam(":precio_venta",      $datos['precio_venta'],     PDO::PARAM_STR);
         $stmtProd->bindParam(":existencia_minima", $datos['existencia_minima'], PDO::PARAM_INT);
         $stmtProd->bindParam(":existencia_maxima", $datos['existencia_maxima'], PDO::PARAM_INT);
         $stmtProd->bindParam(":fecha_ingreso",     $datos['fecha_ingreso'],     PDO::PARAM_STR);
@@ -257,6 +431,25 @@ function eliminar_producto(int $id): bool
 }
 
 class Productos {
+    public static function existeCodigo(string $codigo): bool {
+        return existeCodigoProducto($codigo);
+    }
+
+    public static function existeCodigoProductoActualizar(string $codigo, int $id_producto): bool {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $consulta = $conexion->prepare(
+                "SELECT 1 FROM productos WHERE LOWER(codigo) = LOWER(?) AND id_producto != ? LIMIT 1"
+            );
+            $consulta->execute([$codigo, $id_producto]);
+
+            return $consulta->fetchColumn() !== false;
+        } catch (Exception $e) {
+            error_log("Error al verificar el código del producto: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public static function insertarProducto(array $datos){
         return insertarProducto($datos);
     }
@@ -277,6 +470,30 @@ class Productos {
         return obtenerProductoPorId($id);
     }
 
+    public static function obtenerNombreProveedor(int $id): ?string {
+        return obtenerNombreProveedor($id);
+    }
+
+    public static function obtenerCorreoProveedor(int $id): ?string {
+        return obtenerCorreoProveedor($id);
+    }
+
+    public static function obtenerProductosPorProveedor(int $id_proveedor): array {
+        return obtenerProductosPorProveedor($id_proveedor);
+    }
+
+    public static function obtenerTiempoEntregaProveedor(int $id): int {
+        return obtenerTiempoEntregaProveedor($id);
+    }
+
+    public static function obtenerExistenciaMinima(int $id_proveedor) : array {
+        return obtenerExistenciaMinima($id_proveedor);
+    }
+
+    public static function obtenerPrecioCompra(int $id_producto): float {
+        return obtenerPrecioCompra($id_producto);
+    }
+
     public static function ActualizarProducto(array $datos, $id){
         return ActualizarProducto($datos, $id);
     }
@@ -287,6 +504,25 @@ class Productos {
 
     public static function eliminar_producto(int $id){
        return eliminar_producto($id);
+    }
+
+    //catalogo para el cliente (solo lectura). La existencia sale de la suma de los lotes
+    //la tabla productos no tiene columna "existencia"
+    public static function obtenerCatalogoCliente(): array {
+        try {
+            $conexion = ConexionDB::obtenerConexion();
+            $sql = "SELECT p.id_producto, p.nombre, p.descripcion, p.precio_venta, p.imagen,
+                           COALESCE(SUM(l.cantidad), 0) AS existencia
+                    FROM productos p
+                    LEFT JOIN lote_productos l ON l.id_producto = p.id_producto
+                    WHERE p.estado = 1
+                    GROUP BY p.id_producto, p.nombre, p.descripcion, p.precio_venta, p.imagen
+                    ORDER BY p.nombre";
+            return $conexion->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            error_log("Error en obtenerCatalogoCliente: " . $e->getMessage());
+            return [];
+        }
     }
 }
 

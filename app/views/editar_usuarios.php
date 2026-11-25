@@ -1,22 +1,31 @@
 <?php
-// Mostrar nombre del usuario
 if (session_status() === PHP_SESSION_NONE)
 {
     session_start();
 }
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin')
+{
+  header("Location: inicio.php");
+  exit();
+}
 require_once __DIR__ . '/../models/usuarios_db.php';
-$empleados_disponibles=UsuariosDB::empleados_disponibles();
 $mensaje=$_SESSION['mensaje']??'';
 $error=$_SESSION['error']??'';
 unset($_SESSION['mensaje'],$_SESSION['error']);
 $idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
-if ($idUsuario === false || $idUsuario === null)
-{
+$idUsuario = filter_input(INPUT_GET, 'id_usuario', FILTER_VALIDATE_INT);
+if ($idUsuario === false || $idUsuario === null) {
     header('Location: usuarios.php');
     exit();
 }
+$user_edi = UsuariosDB::usuario_ID($idUsuario);
+$empleados_disponibles = UsuariosDB::empleados_disponibles_editar($idUsuario);
 $usuario=$_SESSION['usuario'];
-// Mostrar nombre del usuario
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,7 +40,7 @@ $usuario=$_SESSION['usuario'];
     <div class="layout">
         <?php $paginaActiva = 'usuarios'; include __DIR__ . '/layout/sidebar.php'; ?>
         <main>
-            <div class="migaja"><a href="usuarios.php" class="link-tenue">Gestión de usuarios</a> / Agregar usuarios</div>
+            <div class="migaja"><a href="usuarios.php" class="link-tenue">Gestión de usuarios</a> / Editar usuarios</div>
             <div class="encabezado-pagina">
             <h1>Editar usuarios</h1>
             </div>
@@ -46,29 +55,29 @@ $usuario=$_SESSION['usuario'];
                 <?php endif; ?>
 
                 <form action="../controllers/editar_usuario.php" method="POST">
-                    <input type="hidden" name="id" value="<?= $idUsuario ?>">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($user_edi['id_usuario']) ?>">
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Usuario (Obligatorio):</label>
-                        <input type="text" name="nuevo_usuario" class="campo" required>
+                        <input type="text" name="nuevo_usuario" class="campo" value="<?= htmlspecialchars($user_edi['usuario']) ?>" required>
                     </div>
 
                     <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Contraseña (Obligatorio):</label>
-                        <input type="password" name="nueva_password" class="campo" required>
+                        <label class="label-campo">Contraseña (dejar en blanco para mantener la actual):</label>
+                        <input type="password" name="nueva_password" class="campo" value="">
                     </div>
 
                     <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Empleado Asociado:</label>
+                        <label class="label-campo">Empleado asociado:</label>
                         <select name="empleado_asociado" class="campo" required>
                             <option value="">Seleccione un empleado</option>
                             <?php if (!empty($empleados_disponibles)): ?>
                                 <?php foreach ($empleados_disponibles as $emp): ?>
-                                    <option value="<?= htmlspecialchars($emp['id_empleado']); ?>">
-                                        <?= htmlspecialchars($emp['nombre']); ?>
+                                    <option value="<?= htmlspecialchars((string)$emp['id_empleado']); ?>" data-puesto="<?= htmlspecialchars($emp['puesto']); ?>" <?= ((int)($user_edi['empleado_asociado'] ?? 0) === (int)$emp['id_empleado']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($emp['nombre']); ?> — <?= htmlspecialchars($emp['puesto']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <option value="" disabled>No hay empleados disponibles sin usuario</option>
+                                <option value="" disabled>No hay empleados disponibles</option>
                             <?php endif; ?>
                         </select>
                     </div>
@@ -76,32 +85,22 @@ $usuario=$_SESSION['usuario'];
                     <div style="margin-bottom: 12px;">
                         <label class="label-campo">Rol:</label>
                         <select name="rol" class="campo">
-                            <option value="admin">Administrador</option>
-                            <option value="veterinario">Veterinario</option>
-                            <option value="vendedor">Vendedor</option>
-                            <option value="cliente">Cliente</option>
-                            <option value="estilista">Estilista</option>
-                            <option value="recepcionista">Recepcionista</option>
-                            <option value="hotelero">Hotelero</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <label class="label-campo">Permisos:</label>
-                        <select name="permisos" class="campo" multiple size="1">
-                            <option value="todos">Todo</option>
-                            <option value="lectura">Lectura</option>
-                            <option value="modificar">Modificcar</option>
-                            <option value="eliminar">Eliminar</option>
-                            <option value="insertar">Insertar</option>
+                            <option value="admin"           <?= ($user_edi['rol'] === 'admin') ? 'selected' : '' ?>>Administrador</option>
+                            <option value="veterinario"     <?= ($user_edi['rol'] === 'veterinario') ? 'selected' : '' ?>>Veterinario</option>
+                            <option value="cajero"          <?= ($user_edi['rol'] === 'cajero') ? 'selected' : '' ?>>Cajero</option>
+                            <option value="vendedor"        <?= ($user_edi['rol'] === 'vendedor') ? 'selected' : '' ?>>Vendedor</option>
+                            <option value="cliente"         <?= ($user_edi['rol'] === 'cliente') ? 'selected' : '' ?>>Cliente</option>
+                            <option value="estilista"       <?= ($user_edi['rol'] === 'estilista') ? 'selected' : '' ?>>Estilista</option>
+                            <option value="recepcionista"   <?= ($user_edi['rol'] === 'recepcionista') ? 'selected' : '' ?>>Recepcionista</option>
+                            <option value="hotelero"        <?= ($user_edi['rol'] === 'hotelero') ? 'selected' : '' ?>>Hotelero</option>
                         </select>
                     </div>
 
                     <div style="margin-bottom: 20px;">
                         <label class="label-campo">Estado:</label>
                         <select name="estado" class="campo">
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
+                            <option value="activo"      <?= ($user_edi['permisos'] === 'activo') ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo"    <?= ($user_edi['permisos'] === 'inactivo') ? 'selected' : '' ?>>Inactivo</option>
                         </select>
                     </div>
 
@@ -114,6 +113,41 @@ $usuario=$_SESSION['usuario'];
   <footer>
     <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
   </footer>
+  <script>
+    (() => {
+      const rol = document.querySelector('[name="rol"]');
+      const empleado = document.querySelector('[name="empleado_asociado"]');
+      if (!rol || !empleado) return;
 
+      const rolPorPuesto = {
+        'administrador': 'admin',
+        'gerente': 'admin',
+        'veterinario': 'veterinario',
+        'veterinario/a': 'veterinario',
+        'vendedor': 'vendedor',
+        'estilista': 'estilista',
+        'recepcionista': 'recepcionista',
+        'hotelero': 'hotelero',
+        'cajero': 'cajero'
+      };
+
+      function sincronizarRolConEmpleado() {
+        const opcionSeleccionada = empleado.options[empleado.selectedIndex];
+        const puesto = (opcionSeleccionada?.dataset?.puesto || '').trim().toLowerCase();
+        const rolDetectado = rolPorPuesto[puesto];
+
+        if (rolDetectado && rol.querySelector(`option[value="${rolDetectado}"]`)) {
+          rol.value = rolDetectado;
+        }
+      }
+
+      empleado.addEventListener('change', sincronizarRolConEmpleado);
+
+      // Si al abrir el formulario ya viene un empleado seleccionado, sincroniza el rol
+      if (empleado.value) {
+        sincronizarRolConEmpleado();
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -1,49 +1,28 @@
 <?php
 declare(strict_types=1);
 date_default_timezone_set('America/Mexico_City');
-//requiere_once hace que se cargue el archivo que se le pone en este
-require_once __DIR__ . '/../models/fichaMedicaModelo.php';
-
-require_once __DIR__ . '/../models/citas.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
-};
+}
 
-$idVeterinario = (int)($_SESSION['id_usuario'] ?? 1);
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
+require_once __DIR__ . '/../models/fichaMedicaModelo.php';
+require_once __DIR__ . '/../models/citas.php';
+require_once __DIR__ . '/../controllers/ImagenController.php';
+
+$ficha = new FichaMedica();
+$idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
+$idVeterinario = $ficha->obtenerEmpleadoDeUsuario($idUsuario);
 $idConsulta = (int)($_GET['id_consulta'] ?? $_POST['id_consulta'] ?? $_SESSION['id_consulta'] ?? 0);
-
-$ficha=new FichaMedica();
 
 function errorSession(string $error, int $idConsulta = 0) : void
 {
-    $_SESSION['error'] = $error;
-    $_SESSION['errores'] = [$error];
-    $_SESSION['oldid_consulta'] = $_POST['id_consulta'] ?? '';
-    $_SESSION['oldMascota'] = $_POST['mascota'] ?? '';
-    $_SESSION['oldid_veterinario'] = $_POST['id_veterinario'] ?? '';
-    $_SESSION['oldSintomas'] = $_POST['sintomas'] ?? '';
-    $_SESSION['oldTemperatura'] = $_POST['temperatura'] ?? '';
-    $_SESSION['oldPeso'] = $_POST['peso'] ?? '';
-    $_SESSION['oldFrecuenciaC'] = $_POST['frecuenciaC'] ?? '';
-    $_SESSION['oldFrecuenciaR'] = $_POST['frecuenciaR'] ?? '';
-    $_SESSION['oldTratamiento'] = $_POST['tratamiento'] ?? '';
-    $_SESSION['oldMedicamento'] = $_POST['Medicamento'] ?? '';
-    $_SESSION['oldIndicacion'] = $_POST["indicaciones"] ?? '';
-    $_SESSION['oldDosis'] = $_POST['Dosis'] ?? '';
-    $_SESSION['oldEstudiosaA'] = $_POST['estudiosA'] ?? '';
-    $_SESSION['oldDiagnostico'] = $_POST['diagnostico'] ?? '';
-    $_SESSION['oldFecha'] = $_POST['fecha'] ?? '';
-    $_SESSION['oldPrecio'] = $_POST['precio'] ?? '';
-    $_SESSION['oldObservaciones'] = $_POST['observaciones'] ?? '';
-
-    $id = $idConsulta > 0 ? $idConsulta : (int)($_POST['id_consulta'] ?? 0);
-    if ($id > 0) {
-        header("Location: ../controllers/FichaMedicaController.php?id_consulta=" . $id);
-    } else {
-        header("Location: ../views/citas.php");
-    }
-    exit();
+    guardarErroresYSesion([$error], $idConsulta);
 }
 
 function guardarErroresYSesion(array $errores, int $idConsulta) : void
@@ -67,6 +46,10 @@ function guardarErroresYSesion(array $errores, int $idConsulta) : void
     $_SESSION['oldFecha'] = $_POST['fecha'] ?? '';
     $_SESSION['oldPrecio'] = $_POST['precio'] ?? '';
     $_SESSION['oldObservaciones'] = $_POST['observaciones'] ?? '';
+    $_SESSION['oldVacunas'] = $_POST['vacunas'] ?? [];
+    $_SESSION['oldVacunasProxima'] = $_POST['vacunas_proxima'] ?? [];
+    $_SESSION['oldVacunasLote'] = $_POST['vacunas_lote'] ?? [];
+    $_SESSION['oldVacunasFabricante'] = $_POST['vacunas_fabricante'] ?? [];
 
     $id = $idConsulta > 0 ? $idConsulta : (int)($_POST['id_consulta'] ?? 0);
     if ($id > 0) {
@@ -83,10 +66,13 @@ if ($Datosconsulta===null){
     header("Location: ../views/citas.php");
     exit();
 }
-$idCliente=(int)$Datosconsulta['id_cliente'];
+$idCliente=(int)$Datosconsulta['cliente'];
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $mascotas = $ficha->agarraMascotas($idCliente);
+    $veterinarios = $ficha->obtenerVeterinarios();
+    $radiografiasPrevias = $ficha->obtenerRadiografias($idConsulta);
+    $catalogoVacunas = $ficha->obtenerCatalogoVacunas();
     require __DIR__ . '/../views/FichaMedica.php';   // la vista usa $mascotas e $idConsulta
     exit();
 }
@@ -125,15 +111,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
     // Validar veterinario
     if ($veterinario === '' || !ctype_digit($veterinario) || (int)$veterinario <= 0) {
         $errores[] = "Debe estar asignado a un veterinario válido.";
+    } elseif (!$ficha->existeVeterinario((int)$veterinario)) {
+        $errores[] = "El veterinario seleccionado no es válido o no existe en el sistema.";
     }
 
-    // Validar mascota perteneciente al cliente
+    $mascotaSeleccionada = null;
+    $idEspecieMascota = 0;
     if ($mascota === '' || !ctype_digit($mascota) || (int)$mascota <= 0) {
         $errores[] = "Debe seleccionar una mascota válida.";
     } else {
         $mascotasCliente = $ficha->agarraMascotas($idCliente);
-        $idsMascotas = array_map(fn($m) => (int)$m['id'], $mascotasCliente);
-        if (!in_array((int)$mascota, $idsMascotas, true)) {
+        foreach ($mascotasCliente as $m) {
+            if ((int)$m['id'] === (int)$mascota) {
+                $mascotaSeleccionada = $m;
+                $idEspecieMascota = (int)($m['id_especie'] ?? 0);
+                break;
+            }
+        }
+        if ($mascotaSeleccionada === null) {
             $errores[] = "La mascota seleccionada no pertenece al cliente de esta consulta.";
         }
     }
@@ -253,6 +248,123 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         }
     }
 
+    // Validar imágenes de radiografías (opcionales)
+    $archivosRadiografias = [];
+    if (isset($_FILES['radiografias'])) {
+        $archivosRadiografias = ImagenController::normalizarArchivosMultiples($_FILES['radiografias']);
+    }
+
+    $tiposPermitidosImg = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    $maxSizeImg = 10485760 / 2; // 5 MB
+
+    foreach ($archivosRadiografias as $archivoRx) {
+        if ($archivoRx['error'] !== UPLOAD_ERR_OK) {
+            $errores[] = "Error al transferir la radiografía '{$archivoRx['name']}' (código: {$archivoRx['error']}).";
+            continue;
+        }
+        if ($archivoRx['size'] > $maxSizeImg) {
+            $errores[] = "La radiografía '{$archivoRx['name']}' excede el límite de 5 MB.";
+            continue;
+        }
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $tipoMime = finfo_file($finfo, $archivoRx['tmp_name']);
+        finfo_close($finfo);
+        if (!in_array($tipoMime, $tiposPermitidosImg, true)) {
+            $errores[] = "El archivo '{$archivoRx['name']}' no es un formato de imagen permitido (solo JPG, PNG, WEBP o GIF).";
+        }
+    }
+
+    $vacunasAplicadas = [];
+    $vacunasRaw = $_POST['vacunas'] ?? [];
+    $vacunasProximaRaw = is_array($_POST['vacunas_proxima'] ?? null) ? $_POST['vacunas_proxima'] : [];
+    $vacunasLoteRaw = is_array($_POST['vacunas_lote'] ?? null) ? $_POST['vacunas_lote'] : [];
+    $vacunasFabricanteRaw = is_array($_POST['vacunas_fabricante'] ?? null) ? $_POST['vacunas_fabricante'] : [];
+
+    if (!is_array($vacunasRaw)) {
+        $errores[] = "El formato de las vacunas seleccionadas no es válido.";
+    } elseif (!empty($vacunasRaw)) {
+        $mapaVacunas = [];
+        foreach ($ficha->obtenerCatalogoVacunas() as $vacCat) {
+            $mapaVacunas[(int)$vacCat['id']] = $vacCat;
+        }
+
+        $hoyVacuna = date('Y-m-d');
+        $maxFechaVacuna = (new DateTime('+5 years'))->format('Y-m-d');
+        $idsVacunasVistos = [];
+
+        foreach ($vacunasRaw as $rawIdVacuna) {
+            $idVacunaStr = is_int($rawIdVacuna) || is_string($rawIdVacuna) ? trim((string)$rawIdVacuna) : '';
+            if ($idVacunaStr === '' || !ctype_digit($idVacunaStr) || (int)$idVacunaStr <= 0) {
+                $errores[] = "El identificador de una de las vacunas seleccionadas no es válido.";
+                continue;
+            }
+
+            $idVacuna = (int)$idVacunaStr;
+            if (isset($idsVacunasVistos[$idVacuna])) {
+                continue;
+            }
+            $idsVacunasVistos[$idVacuna] = true;
+
+            if (!isset($mapaVacunas[$idVacuna])) {
+                $errores[] = "Una de las vacunas seleccionadas no existe o no está activa.";
+                continue;
+            }
+
+            if ($mascotaSeleccionada !== null && (int)$mapaVacunas[$idVacuna]['especie'] !== $idEspecieMascota) {
+                $errores[] = "La vacuna '{$mapaVacunas[$idVacuna]['nombre']}' no corresponde a la especie de la mascota seleccionada.";
+                continue;
+            }
+
+            $fechaProximaVal = null;
+            $fechaProximaStr = is_string($vacunasProximaRaw[$idVacuna] ?? null) ? trim($vacunasProximaRaw[$idVacuna]) : '';
+            if ($fechaProximaStr !== '') {
+                $fProx = DateTime::createFromFormat('Y-m-d', $fechaProximaStr);
+                if (!$fProx || $fProx->format('Y-m-d') !== $fechaProximaStr) {
+                    $errores[] = "La fecha de próxima aplicación de '{$mapaVacunas[$idVacuna]['nombre']}' no es válida.";
+                } elseif ($fechaProximaStr < $hoyVacuna) {
+                    $errores[] = "La próxima aplicación de '{$mapaVacunas[$idVacuna]['nombre']}' no puede ser anterior a hoy.";
+                } elseif ($fechaProximaStr > $maxFechaVacuna) {
+                    $errores[] = "La próxima aplicación de '{$mapaVacunas[$idVacuna]['nombre']}' no puede ser mayor a 5 años en el futuro.";
+                } else {
+                    $fechaProximaVal = $fechaProximaStr;
+                }
+            }
+
+            $loteVal = null;
+            $loteStr = is_string($vacunasLoteRaw[$idVacuna] ?? null) ? preg_replace('/\s+/u', ' ', trim($vacunasLoteRaw[$idVacuna])) : '';
+            if ($loteStr !== '') {
+                if (mb_strlen($loteStr) > 20) {
+                    $errores[] = "El lote de '{$mapaVacunas[$idVacuna]['nombre']}' no puede exceder los 20 caracteres.";
+                } elseif (!preg_match('/^[\p{L}\p{N}\s\-\.\/]+$/u', $loteStr)) {
+                    $errores[] = "El lote de '{$mapaVacunas[$idVacuna]['nombre']}' contiene caracteres no permitidos.";
+                } else {
+                    $loteVal = $loteStr;
+                }
+            }
+
+            $fabricanteVal = null;
+            $fabricanteStr = is_string($vacunasFabricanteRaw[$idVacuna] ?? null) ? preg_replace('/\s+/u', ' ', trim($vacunasFabricanteRaw[$idVacuna])) : '';
+            if ($fabricanteStr !== '') {
+                if (mb_strlen($fabricanteStr) > 20) {
+                    $errores[] = "El fabricante de '{$mapaVacunas[$idVacuna]['nombre']}' no puede exceder los 20 caracteres.";
+                } elseif (!preg_match('/\p{L}/u', $fabricanteStr) || !preg_match('/^[\p{L}\p{N}\s\-\.\/\(\)]+$/u', $fabricanteStr)) {
+                    $errores[] = "El fabricante de '{$mapaVacunas[$idVacuna]['nombre']}' debe contener letras válidas.";
+                } else {
+                    $fabricanteVal = $fabricanteStr;
+                }
+            }
+
+            $vacunasAplicadas[] = [
+                'vacuna_puesta'    => $idVacuna,
+                'fecha_aplicacion' => $hoyVacuna,
+                'fecha_proxima'    => $fechaProximaVal,
+                'lote'             => $loteVal,
+                'fabricante'       => $fabricanteVal,
+                'observaciones'    => null,
+            ];
+        }
+    }
+
     if (count($errores) > 0) {
         guardarErroresYSesion($errores, $idConsulta);
     }
@@ -278,10 +390,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST")
         'costo' => $costoVal,
     ];
 
-    $resultado = $ficha->insertar($datos);
+    $resultado = $ficha->insertar($datos, $vacunasAplicadas);
 
     if ($resultado['exito'] === false) {
         guardarErroresYSesion(["No se logró guardar la ficha médica en la base de datos: " . ($resultado['mensaje'] ?? '')], $idConsulta);
+    }
+
+    $idFicha = $resultado['id_ficha'] ?? null;
+
+    // Subir y registrar las imágenes de radiografías
+    foreach ($archivosRadiografias as $archivoRx) {
+        $subida = ImagenController::subir($archivoRx, 'radiografias', 'rx_');
+        if ($subida['exito']) {
+            $ficha->guardarRadiografia((int)$consulta, $idFicha, (int)$mascota, $subida['ruta']);
+        } else {
+            error_log("Error al subir radiografía: " . $subida['mensaje']);
+        }
     }
 
     actualzarCita($idConsulta);
@@ -297,14 +421,3 @@ function actualzarCita(int $idCita)
     $res = $contulta->pendinteDepago($idConsulta);
 }
 ?>
-
-<!-- Session ayuda a crear sesiones en lo que el cliente permanece en una pagina web
-
-Lo que mas me intereso es el uso de $_SESSION que es una variable global que se usa
-siempre que se este dentro de la sesion, funciona como un array $_SESSION[Usuario]="Tal"
-Esto hace que si lo defino en la pagina de login y lo necesito en la pagina de mascotas 
-pueda usarlo sin problema porque esta guardado en la misma sesion, una vez no lo necesite se
-puede borrar todo con session_destroy(); o se podria borrar solo una variable con
-unset($_SESSION["valor1"]);-->
-
-<!-- _POST() Sirve para enviar variables unicamente entre 2 paginas, solo eso -->

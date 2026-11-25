@@ -20,7 +20,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'enfermedades'           => trim($_POST['enfermedades'] ?? ''),
         'medicamentos'           => trim($_POST['medicamentos'] ?? ''),
         'condiciones_especiales' => trim($_POST['condiciones_especiales'] ?? ''),
-        'vacunas'                => trim($_POST['vacunas'] ?? ''),
+        /* 'vacunas'                => trim($_POST['vacunas'] ?? ''), */
+        'vacunas'                => (array)($_POST['vacunas'] ?? []),
+        'fechas_vacunas'         => (array)($_POST['fechas_vacunas'] ?? []),
         'ultima_desparasitacion' => $_POST['ultima_desparasitacion'] ?? '',
         'temperamento'           => trim($_POST['temperamento'] ?? ''),
         'restricciones_para_manejo' => trim($_POST['restricciones_para_manejo'] ?? ''),

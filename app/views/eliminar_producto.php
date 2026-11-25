@@ -1,6 +1,6 @@
 <?php
 // Validar si realmente llegaron los datos por la URL (GET)
-if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['imagen'])) {
+if (!isset($_GET['id']) || !isset($_GET['nombre'])) {
     // Si alguien entra por la fuerza sin ID, lo mandamos de regreso a la tabla
     header("Location: inventario.php");
     exit();
@@ -9,7 +9,7 @@ if (!isset($_GET['id']) || !isset($_GET['nombre']) || !isset($_GET['imagen'])) {
 // Si sí llegaron, los guardamos con seguridad
 $id_producto = (int) $_GET['id'];
 $nombre = $_GET['nombre'];
-$imagen = $_GET['imagen'];
+//$imagen = $_GET['imagen'];
 ?>
 
 <!DOCTYPE html>
@@ -29,12 +29,12 @@ $imagen = $_GET['imagen'];
   <?php $paginaActiva = 'inventario'; include __DIR__ . '/layout/sidebar.php'; ?>
 
     <main>
-      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de Inventario</a> / Eliminar</div>
+      <div class="migaja"><a href="inventario.php" class="link-tenue">Gestión de inventario</a> / Eliminar</div>
       <div class="encabezado-pagina">
         <h1>Eliminar producto</h1>
       </div>
       <form action="../controllers/eliminar_producto.php" method="POST">
-  
+
       <input type="hidden" id="id_proveedor" name="id_proveedor" value="<?= (int)$id_producto ?>">
 
       <div class="tarjeta">

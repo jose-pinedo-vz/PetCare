@@ -1,5 +1,30 @@
 <?php
+// Mostrar nombre del usuario
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario']))
+{
+  header("Location: ../views/login.php");
+  exit();
+}
+$usuario=$_SESSION['usuario'];
+$empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+$horario_empleado = $_SESSION['horario_empleado'] ?? null;
+// Mostrar nombre del usuario
+
 $sbActiva = $paginaActiva ?? '';
+
+$rolSidebar = strtolower(trim((string)($_SESSION['rol'] ?? '')));
+$puestoSidebar = strtolower(trim((string)($_SESSION['puesto_empleado'] ?? '')));
+$puestosPorRol = [
+    'admin' => ['gerente'],
+    'gerente' => ['gerente'],
+    'vendedor' => ['vendedor'],
+    'recepcionista' => ['recepcionista'],
+];
+$puedeOperarCajaSidebar = isset($puestosPorRol[$rolSidebar])
+    && in_array($puestoSidebar, $puestosPorRol[$rolSidebar], true);
 
 $sbModulos = [
     'inicio'        => ['Inicio',            'inicio.php'],
@@ -10,15 +35,61 @@ $sbModulos = [
     'proveedores'   => ['Proveedores',       'proveedores.php'],
     'inventario'    => ['Inventario',        'inventario.php'],
     'ventas'        => ['Ventas',            'Ventas.php'],
+    'corte_caja'    => ['Corte de caja',      'corte_caja.php'],
     'servicios'     => ['Servicios',         'servicios.php'],
     'adopcion'      => ['Adopción y venta',  'adopcion_venta.php'],
-    'hotel'      => ['Hotel',  'hotel.php'],
+    'hotel'         => ['Hotel',             'hotel.php'],
     'veterinaria'   => ['Veterinaria',       'veterinaria_Inicio.php'],
     'pagos'         => ['Pagos de servicios','Ventas.php#pagos'],
     'pagos_tarjeta' => ['Pagos con tarjeta', null],
     'usuarios'      => ['Usuarios',          'usuarios.php'],
     'configuracion' => ['Configuración',     null],
 ];
+
+$modulosPorRol = [
+    'admin' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'empleados', 'proveedores',
+        'inventario', 'ventas', 'corte_caja', 'servicios', 'adopcion', 'hotel',
+        'veterinaria', 'usuarios'
+    ],
+    'gerente' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'proveedores', 'inventario',
+        'ventas', 'corte_caja', 'servicios', 'adopcion', 'hotel', 'veterinaria'
+    ],
+    'veterinario' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'servicios', 'veterinaria'
+    ],
+    'estilista' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'servicios'
+    ],
+    'vendedor' => [
+        'inicio', 'clientes', 'mascotas', 'inventario', 'ventas', 'corte_caja',
+        'adopcion', 'servicios'
+    ],
+    'recepcionista' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'ventas', 'corte_caja',
+        'servicios', 'hotel', 'adopcion'
+    ],
+    'hotelero' => [
+        'inicio', 'clientes', 'mascotas', 'citas', 'hotel'
+    ],
+];
+
+if (isset($modulosPorRol[$rolSidebar])) {
+    $permitidos = $modulosPorRol[$rolSidebar];
+    foreach (array_keys($sbModulos) as $clave) {
+        if (!in_array($clave, $permitidos, true)) {
+            unset($sbModulos[$clave]);
+        }
+    }
+}
+
+if ($rolSidebar !== 'admin') {
+    unset($sbModulos['empleados'], $sbModulos['usuarios']);
+}
+if (!$puedeOperarCajaSidebar) {
+    unset($sbModulos['corte_caja']);
+}
 ?>
     <aside class="sidebar" id="menu-principal">
       <div class="marca">
@@ -44,8 +115,8 @@ $sbModulos = [
       </nav>
 
       <div class="sesion">
-        <span>Empleado: Nombre del Empleado</span>
-        <a href="#">Cerrar sesión</a>
+        <span>Empleado: <strong><?php echo htmlspecialchars($empleado_asociado); ?></strong></span>
+        <a href="../controllers/Login.php?action=logout">Cerrar sesión</a> 
       </div>
     </aside>
 

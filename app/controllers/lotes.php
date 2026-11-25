@@ -39,20 +39,22 @@ if ($idProducto === false || $idProducto < 1) {
     $errores[] = 'Selecciona un producto válido.';
 }
 
-$fecha = DateTimeImmutable::createFromFormat(
-    '!Y-m-d',
-    $datos['fecha_caducidad'],
-    new DateTimeZone('America/Mexico_City')
-);
-$erroresFecha = DateTimeImmutable::getLastErrors();
-if (
-    $fecha === false
-    || ($erroresFecha !== false && ($erroresFecha['warning_count'] > 0 || $erroresFecha['error_count'] > 0))
-    || $fecha->format('Y-m-d') !== $datos['fecha_caducidad']
-) {
-    $errores[] = 'La fecha de caducidad no tiene un formato válido.';
-} elseif ($fecha < new DateTimeImmutable('today', new DateTimeZone('America/Mexico_City'))) {
-    $errores[] = 'La fecha de caducidad no puede ser anterior a hoy.';
+if ($datos['fecha_caducidad'] !== '') {
+    $fecha = DateTimeImmutable::createFromFormat(
+        '!Y-m-d',
+        $datos['fecha_caducidad'],
+        new DateTimeZone('America/Mexico_City')
+    );
+    $erroresFecha = DateTimeImmutable::getLastErrors();
+    if (
+        $fecha === false
+        || ($erroresFecha !== false && ($erroresFecha['warning_count'] > 0 || $erroresFecha['error_count'] > 0))
+        || $fecha->format('Y-m-d') !== $datos['fecha_caducidad']
+    ) {
+        $errores[] = 'La fecha de caducidad no tiene un formato válido.';
+    } elseif ($fecha < new DateTimeImmutable('today', new DateTimeZone('America/Mexico_City'))) {
+        $errores[] = 'La fecha de caducidad no puede ser anterior a hoy.';
+    }
 }
 
 if ($datos['precio_compra'] === '') {
@@ -67,8 +69,8 @@ if ($datos['ubicacion'] === '') {
     $errores[] = 'La ubicación es obligatoria.';
 } elseif (strlen($datos['ubicacion']) > 20) {
     $errores[] = 'La ubicación no puede tener más de 20 caracteres.';
-} elseif (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ\-_]+$/', $datos['ubicacion'])) {
-    $errores[] = 'La ubicación debe contener al menos una letra, un número y sin caracteres especiales.';
+} elseif (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9ñÑ_-]+$/', $datos['ubicacion'])) {
+    $errores[] = 'La ubicación debe contener al menos una letra, un número y solo se permiten guiones (-) o guiones bajos (_) ejemplo: A-001/estante-1A.';
 }
 
 if ($datos['cantidad'] === '') {
@@ -110,7 +112,7 @@ try {
     $registrado = Lotes::registrarLote([
         'id_producto' => $idProducto,
         'lote' => $datos['lote'],
-        'fecha_caducidad' => $datos['fecha_caducidad'],
+        'fecha_caducidad' => $datos['fecha_caducidad'] !== '' ? $datos['fecha_caducidad'] : null,
         'precio_compra' => $datos['precio_compra'],
         'ubicacion' => $datos['ubicacion'],
         'cantidad' => $cantidad,

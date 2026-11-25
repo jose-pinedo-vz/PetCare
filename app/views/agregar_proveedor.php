@@ -1,6 +1,14 @@
 <?php
     // Iniciar la sesión al principio
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) 
+    {
+        session_start();
+    }
+    if (!isset($_SESSION['usuario']))
+    {
+        header("Location: ../views/login.php");
+        exit();
+    }
 
     // Obtener errores y datos enviados previamente (si existen)
     $errores = $_SESSION['errores'] ?? [];
@@ -21,7 +29,7 @@
     <script src="js/codigo_Postal.js?v=2"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 </head>
 
@@ -75,7 +83,7 @@
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -128,11 +136,11 @@
                           required>
                     </div>
 
-                    
- 
+
+
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -156,7 +164,7 @@
                     <div>
                         <label class="label-campo" for="codigo_postal">Código postal *:</label>
                         <input type="text" class="campo" id="codigo_postal" name="codigo_postal" maxlength="10" required
-            
+
                         value="<?php echo htmlspecialchars((string)($old['codigo_postal'] ?? '')); unset($old['CodigoPostal_clientes']); ?>">
                     </div>
 
@@ -212,7 +220,7 @@
 
                     </div>
                 </div>
-            </fieldset>    
+            </fieldset>
 
                 <fieldset>
 
@@ -225,18 +233,16 @@
                             Condición de pago *:
                         </label>
 
-                        <input
-                          type="text"
-                          class="campo"
-                          id="condicion_pago"
-                          name="condicion_pago"
-                          maxlength="60"
-                          value="<?= htmlspecialchars($old['condicion_pago'] ?? '') ?>">
+                        <select class="campo" id="condicion_pago" name="condicion_pago" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="Tarjeta" <?= (($old['condicion_pago'] ?? '') === 'Tarjeta' || ($old['condicion_pago'] ?? '') === 'Targeta') ? 'selected' : '' ?>>Tarjeta</option>
+                            <option value="Efectivo" <?= (strtolower($old['condicion_pago'] ?? '') === 'efectivo') ? 'selected' : '' ?>>Efectivo</option>
+                        </select>
                     </div>
 
                     <div>
                         <label class="label-campo" for="tiempo_entrega">
-                            Tiempo de entrega (Días) *:
+                            Tiempo de entrega (días) *:
                         </label>
 
                         <input
@@ -271,7 +277,7 @@
 
         </form>
 
-    
+
       </div>
     </main>
 

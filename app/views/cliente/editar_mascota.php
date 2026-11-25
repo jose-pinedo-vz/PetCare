@@ -1,6 +1,38 @@
 <?php
 session_start();
+if (empty($_SESSION['id_cliente'])) {
+    header('Location: iniciar_sesion.php');
+    exit;
+}
 $paginaActiva = 'mascotas';
+
+require_once __DIR__ . '/../../models/Mascota.php';
+
+//la mascota viene en la URL: editar_mascota.php?id_mascota=3
+$idMascota = (int) ($_GET['id_mascota'] ?? 0);
+$mascota = Mascota::obtenerPorId($idMascota);
+
+//si no existe, esta borrada o es de otro cliente, se regresa a la lista
+if (!$mascota || !$mascota['esta_activo'] || (int) $mascota['id_cliente'] !== (int) $_SESSION['id_cliente']) {
+    $_SESSION['errores'] = ['No se encontró la mascota.'];
+    header('Location: mis_mascotas.php');
+    exit;
+}
+
+//errores y datos escritos 
+$errores = $_SESSION['errores'] ?? [];
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['errores'], $_SESSION['old']);
+
+//si hay datos escritos se usan esos; si no, los de la base de datos
+$v = function (string $campo) use ($old, $mascota) {
+    return htmlspecialchars((string) ($old[$campo] ?? $mascota[$campo] ?? ''));
+};
+
+//la BD guarda fecha de nacimiento; el formulario pide años
+$edadAnios = $old['edad'] ?? round((new DateTime($mascota['edad']))->diff(new DateTime('today'))->days / 365.25, 1);
+
+$foto = rutaFotoMascota($mascota['fotografia']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,90 +52,100 @@ $paginaActiva = 'mascotas';
             <h1 class="tarjeta__titulo">Editar mascota</h1>
             <p class="tarjeta__subtitulo">Los campos con <span class="campo__obligatorio">*</span> son obligatorios.</p>
 
-            <form action="actualizar_mascota.php" method="post" enctype="multipart/form-data">
+            <?php if ($errores): ?>
+                <div class="aviso aviso--error">
+                    <?php foreach ($errores as $error): ?>
+                        <p><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <form action="../../controllers/cliente_editar_mascota.php" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="id_mascota" value="<?= (int) $mascota['id_mascota'] ?>">
 
                 <div class="formulario-con-foto">
                     <div>
-                        <div class="foto-marcador foto-marcador--subir">Foto de la mascota</div>
+                        <?php if ($foto): ?>
+                            <img class="foto-marcador foto-marcador--subir" src="../../../<?= htmlspecialchars($foto) ?>" alt="Foto de <?= $v('nombre') ?>">
+                        <?php else: ?>
+                            <div class="foto-marcador foto-marcador--subir">Foto de la mascota</div>
+                        <?php endif; ?>
                         <div class="campo">
                             <label class="campo__etiqueta" for="fotografia">Cambiar foto</label>
                             <input class="campo__entrada" type="file" id="fotografia" name="fotografia" accept="image/*">
-                            <input type="hidden" name="fotografia_actual" value="">
                         </div>
                     </div>
 
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="p. ej. Luna" value="Luna" required>
+                            <input class="campo__entrada" type="text" id="nombre" name="nombre" placeholder="p. ej. Luna" value="<?= $v('nombre') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="especie">Especie <span class="campo__obligatorio">*</span></label>
                             <select class="campo__entrada" id="especie" name="especie" required>
-                                <option value="Perro" selected>Perro</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Otro">Otro</option>
+                                <?php foreach (['Perro', 'Gato', 'Otro'] as $opcion): ?>
+                                    <option value="<?= $opcion ?>" <?= $v('especie') === $opcion ? 'selected' : '' ?>><?= $opcion ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="raza">Raza</label>
-                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador" value="Labrador">
+                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="p. ej. Labrador" value="<?= $v('raza') ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="sexo">Sexo <span class="campo__obligatorio">*</span></label>
                             <select class="campo__entrada" id="sexo" name="sexo" required>
-                                <option value="Hembra" selected>Hembra</option>
-                                <option value="Macho">Macho</option>
+                                <?php foreach (['Hembra', 'Macho'] as $opcion): ?>
+                                    <option value="<?= $opcion ?>" <?= $v('sexo') === $opcion ? 'selected' : '' ?>><?= $opcion ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="edad">Edad (años) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" value="3" required>
+                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="p. ej. 3" min="0" step="0.1" value="<?= htmlspecialchars((string) $edadAnios) ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="peso">Peso (kg) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" value="24" required>
+                            <input class="campo__entrada" type="number" id="peso" name="peso" placeholder="p. ej. 24" min="0" step="0.1" value="<?= $v('peso') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="color">Color</label>
-                            <input class="campo__entrada" type="text" id="color" name="color">
+                            <input class="campo__entrada" type="text" id="color" name="color" value="<?= $v('color') ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="temperamento">Temperamento</label>
                             <select class="campo__entrada" id="temperamento" name="temperamento">
-                                <option value="">No estoy seguro</option>
-                                <option value="Tranquilo">Tranquilo</option>
-                                <option value="Juguetón">Juguetón</option>
-                                <option value="Nervioso">Nervioso</option>
-                                <option value="Reactivo">Reactivo o agresivo</option>
+                                <?php foreach (['' => 'No estoy seguro', 'Tranquilo' => 'Tranquilo', 'Juguetón' => 'Juguetón', 'Nervioso' => 'Nervioso', 'Reactivo' => 'Reactivo o agresivo'] as $valor => $texto): ?>
+                                    <option value="<?= $valor ?>" <?= $v('temperamento') === $valor ? 'selected' : '' ?>><?= $texto ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="tamanio">Tamaño</label>
                             <select class="campo__entrada" id="tamanio" name="tamanio">
-                                <option value="Pequeño">Pequeño</option>
-                                <option value="Mediano">Mediano</option>
-                                <option value="Grande" selected>Grande</option>
-                                <option value="Gigante">Gigante</option>
+                                <?php foreach (['Pequeño', 'Mediano', 'Grande', 'Gigante'] as $opcion): ?>
+                                    <option value="<?= $opcion ?>" <?= $v('tamanio') === $opcion ? 'selected' : '' ?>><?= $opcion ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="campo campo--ancho-completo">
                             <label class="campo__etiqueta" for="alergias">Alergias</label>
-                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"></textarea>
+                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"><?= $v('alergias') ?></textarea>
                         </div>
 
                         <div class="campo campo--ancho-completo">
                             <label class="campo__etiqueta" for="condiciones_especiales">Condiciones especiales</label>
-                            <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3"></textarea>
+                            <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3"><?= $v('condiciones_especiales') ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -119,5 +161,38 @@ $paginaActiva = 'mascotas';
     <footer class="pie-pagina">
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
+    <script>
+    // Vista previa: al elegir una foto se muestra de inmediato.
+    // Todavía NO se guarda; se sube hasta dar clic en el botón del formulario.
+    (function () {
+        const campo = document.getElementById('fotografia');
+        const original = document.querySelector('.foto-marcador--subir');
+        if (!campo || !original) return;
+
+        let vista = null;
+
+        campo.addEventListener('change', function () {
+            const archivo = campo.files[0];
+
+            // Si quita la foto o elige algo que no es imagen, regresamos la original
+            if (!archivo || !archivo.type.startsWith('image/')) {
+                if (vista) { vista.replaceWith(original); vista = null; }
+                return;
+            }
+
+            if (!vista) {
+                vista = document.createElement('img');
+                vista.className = original.className;
+                vista.alt = 'Vista previa de la foto';
+                vista.style.objectFit = 'cover';
+                vista.style.padding = '0';
+                original.replaceWith(vista);
+            } else {
+                URL.revokeObjectURL(vista.src);
+            }
+            vista.src = URL.createObjectURL(archivo);
+        });
+    })();
+    </script>
 </body>
 </html>

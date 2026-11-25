@@ -70,6 +70,10 @@ function errorSession(string $error) : void {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (strtolower((string)($_SESSION['rol'] ?? '')) !== 'admin') {
+        header("Location: ../views/inicio.php");
+        exit();
+    }
 
     $errores = [];
 
@@ -94,13 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $horario = trim($_POST['horario'] ?? '');
 
     // VALIDACION REGEX
-    $patronNombre = '/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u';
-
+    /* $patronNombre = '/^[\p{L}]{2,}(?: [\p{L}]{2,})*$/u'; */
+    $patronNombre = '/^(?:[\p{L}]{2,}\.?|[\p{L}]\.)(?: (?:[\p{L}]{2,}\.?|[\p{L}]\.))*$/u';
+    
     $patronCiudadEstado = '/^[\p{L}]{2,}(?:[\s.\'-][\p{L}]{2,})*$/u';
 
     $soloCodigo_postal = '/^[0-9]{5}$/';
 
-    $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista'];
+    $puestosValidos = ['Gerente', 'Veterinario/a', 'Veterinario', 'Vendedor', 'Estilista', 'Recepcionista', 'Hotelero'];
     $horariosValidos = ['Matutino', 'Vespertino'];
 
     $patronNumero = '/^[a-zA-Z0-9\-\/]{1,15}$/';
@@ -249,15 +254,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($esVeterinario) {
         if ($num_cedula_profesional === '') {
-            $errores[] = "El número de cédula profesional es obligatorio para el puesto de Veterinario/a.";
+            $errores[] = "El número de cédula profesional es obligatorio para el puesto de Veterinario.";
+        }
+        if ($especialidad === '') {
+            $errores[] = "La especialidad es obligatoria para el puesto de Veterinario.";
         }
     } else {
         if ($num_cedula_profesional !== '') {
-            $errores[] = "El número de cédula profesional solo aplica para el puesto de Veterinario/a.";
+            $errores[] = "El número de cédula profesional solo aplica para el puesto de Veterinario.";
             $num_cedula_profesional = '';
         }
         if ($especialidad !== '') {
-            $errores[] = "La especialidad solo aplica para el puesto de Veterinario/a.";
+            $errores[] = "La especialidad solo aplica para el puesto de Veterinario.";
             $especialidad = '';
         }
     }

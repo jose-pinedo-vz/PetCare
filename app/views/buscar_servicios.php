@@ -1,10 +1,4 @@
-<?php
-require_once __DIR__ . '/../models/Ventas_db.php';
-
-$servicios = Ventas::obtenerServicios(conexionDB::obtenerConexion());
-?>
-
-<dialog class="inventario-dialog producto-dialog servicio-dialog" id="modalBuscarServicio" aria-labelledby="tituloBuscarServicio">
+<dialog class="inventario-dialog producto-dialog servicio-dialog" id="modalBuscarServicio" aria-labelledby="tituloBuscarServicio" style="width: 92vw; max-width: 1200px;">
     <div class="producto-dialog-encabezado">
         <h1 id="tituloBuscarServicio">Buscar servicio</h1>
         <form method="dialog">
@@ -16,7 +10,7 @@ $servicios = Ventas::obtenerServicios(conexionDB::obtenerConexion());
         <label class="visualmente-oculto" for="buscarServicio">Buscar servicio</label>
         <input class="campo buscador-inteligente" id="buscarServicio" type="search" placeholder="Escribe el nombre o categoría del servicio..." autocomplete="off">
 
-        <div class="tabla-envoltura busqueda-tabla servicio-tabla-envoltura">
+        <div class="tabla-envoltura busqueda-tabla servicio-tabla-envoltura" style="max-height: 65vh; overflow-y: auto;">
             <table class="servicio-tabla">
                 <thead>
                     <tr>
@@ -25,33 +19,26 @@ $servicios = Ventas::obtenerServicios(conexionDB::obtenerConexion());
                         <th>Descripción</th>
                         <th>Duración</th>
                         <th>Precio</th>
-                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php if (empty($servicios)): ?>
-                        <tr>
-                            <td colspan="7" class="vacio">Escribe para buscar servicios.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($servicios as $s): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars((string)$s['nombre']); ?></td>
-                                <td><?php echo htmlspecialchars($s['categoria'] ?? ''); ?></td>
-                                <td><?php echo htmlspecialchars($s['descripcion']); ?></td>
-                                <td><?php echo htmlspecialchars($s['duracion']); ?></td>
-                                <td>$<?php echo number_format($s['precio'], 2); ?></td>
-                                <td><?php echo htmlspecialchars($s['estado']); ?></td>
-                                <td>
-                                    <a class="btn btn-chico btn-info" href="../controllers/busca_servicio.php?accion=agregar_servicio&nombre=<?php echo urlencode($s['nombre']); ?>&categoria=<?php echo urlencode($s['categoria']); ?>&descripcion=<?php echo urlencode($s['descripcion']); ?>&duracion=<?php echo urlencode($s['duracion']); ?>&precio=<?php echo urlencode($s['precio']); ?>&estado=<?php echo urlencode($s['estado']); ?>">Seleccionar</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                <tbody id="resultadosServicios">
+                    <tr><td colspan="6" class="vacio">Escribe para buscar servicios.</td></tr>
                 </tbody>
             </table>
         </div>
-        <p class="busqueda-mensaje" id="mensajeBusqueda" role="status" aria-live="polite"></p>
+        <p class="busqueda-mensaje" id="mensajeBusquedaServicio" role="status" aria-live="polite"></p>
+
+        <h2 style="margin-top: 16px;">Citas con saldo por cobrar</h2>
+        <div class="tabla-envoltura busqueda-tabla" style="max-height: 30vh; overflow-y: auto;">
+            <table class="servicio-tabla">
+                <thead>
+                    <tr><th>Folio</th><th>Cliente / mascota</th><th>Servicio</th><th>Saldo</th><th>Acción</th></tr>
+                </thead>
+                <tbody id="resultadosCitas">
+                    <tr><td colspan="5" class="vacio">Cargando citas...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </dialog>

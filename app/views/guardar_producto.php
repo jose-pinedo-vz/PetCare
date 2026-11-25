@@ -11,15 +11,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'descripcion'           => trim($_POST['descripcion'] ?? ''),
         'contenido'             => trim($_POST['contenido'] ?? ''),
         'unidad_medida'         => trim($_POST['unidad_medida'] ?? ''),
-        'precio_compra'         => trim($_POST['precio_compra'] ?? ''),
         'precio_venta'          => trim($_POST['precio_venta'] ?? ''),
-        'existencia'            => trim($_POST['existencia'] ?? ''),
         'existencia_minima'     => trim($_POST['existencia_minima'] ?? ''),
         'existencia_maxima'     => trim($_POST['existencia_maxima'] ?? ''),
-        'fecha_ingreso'         => trim($_POST['fecha_ingreso'] ?? ''),
-        'fecha_caducidad'       => trim($_POST['fecha_caducidad'] ?? ''),
-        'lote'                  => trim($_POST['lote'] ?? ''),
-        'ubicacion'             => trim($_POST['ubicacion'] ?? ''),
         'imagen'                => $_FILES['imagen'] ?? null,
         'estado'                => $_POST['estado'] ?? ''
     ];

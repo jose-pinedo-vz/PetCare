@@ -37,4 +37,24 @@ class Imagen
             return false;
         }
     }
+
+    /**
+     * Guarda la ruta de una radiografía en la base de datos
+     */
+    public static function registrarRadiografia(int $id_consulta, string $ruta, ?int $id_ficha = null, ?int $id_mascota = null): bool
+    {
+        try {
+            $pdo = ConexionDB::obtenerConexion();
+            $stmt = $pdo->prepare("INSERT INTO radiografias (id_consulta, id_ficha, id_mascota, ruta, fecha_subida) VALUES (:id_consulta, :id_ficha, :id_mascota, :ruta, NOW())");
+            return $stmt->execute([
+                ':id_consulta' => $id_consulta,
+                ':id_ficha'    => $id_ficha,
+                ':id_mascota'  => $id_mascota,
+                ':ruta'        => $ruta
+            ]);
+        } catch (Exception $e) {
+            error_log("Error al registrar radiografía en BD: " . $e->getMessage());
+            return false;
+        }
+    }
 }

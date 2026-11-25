@@ -2,7 +2,8 @@
 require_once __DIR__ . '/../models/Productos.php';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $id_producto = $_POST['id_producto'];
+    $id_producto = (int)($_POST['id_producto'] ?? 0);
+    $productoActual = Productos::obtenerProductoPorId($id_producto);
 
     $archivo = $_FILES['imagen'] ?? null;
 
@@ -26,10 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         'contenido'             => trim($_POST['contenido'] ?? ''),
         'unidad_medida'         => trim($_POST['unidad_medida'] ?? ''),
         'precio_venta'          => trim($_POST['precio_venta'] ?? ''),
-        'existencia'            => trim($_POST['existencia'] ?? ''),
         'existencia_minima'     => trim($_POST['existencia_minima'] ?? ''),
         'existencia_maxima'     => trim($_POST['existencia_maxima'] ?? ''),
-        'fecha_ingreso'         => trim($_POST['fecha_ingreso'] ?? ''),
+        'fecha_ingreso'         => trim((string)($productoActual['fecha_ingreso'] ?? '')),
         'imagen'                => $imagen,
         'estado'                => trim($_POST['estado'] ?? '')
     ];
@@ -52,9 +52,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
     // El codigo es obligatorio
     if (empty($datos['codigo'])) {
-        $errores[] = "El codigo es obligatorio.";
-    }else if (!preg_match('/^(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-Z0-9\-_]+$/', $datos['codigo'])) {
-        $errores[] = "El código debe contener al menos una letra, un número y sin caracteres especiales.";
+        $errores[] = "El código es obligatorio.";
+    } else if (!preg_match('/^(\d+|(?=.*[a-zA-ZñÑ])(?=.*\d)[a-zA-ZñÑ0-9\-_]+)$/', $datos['codigo'])) {
+        $errores[] = "El código debe contener solo números ejemplo: 123, o combinar letras con al menos un número ejemplo: PRD-01 (sin caracteres especiales).";
+    }else if (Productos::existeCodigoProductoActualizar($datos['codigo'], $id)) {
+        $errores[] = "El código del producto ya está registrado.";
     }
 
     //El nombre es obligatorio
@@ -117,6 +119,16 @@ if (session_status() === PHP_SESSION_NONE) {
         $errores[] = "La unidad de medida no puede tener mas de 5 caracteres";
     }
 
+    if (isset($datos['contenido']) && isset($datos['unidad_medida'])) {
+        if (filter_var($datos['contenido'], FILTER_VALIDATE_INT) === false && $datos['unidad_medida'] === 'pza') {
+            $errores[] = "El contenido debe ser entero si la unidad de medida es 'Pieza'.";
+        }else if (filter_var($datos['contenido'], FILTER_VALIDATE_INT) === false && $datos['unidad_medida'] === 'paq') {
+            $errores[] = "El contenido debe ser entero si la unidad de medida es 'Paquete'.";
+        }else if (filter_var($datos['contenido'], FILTER_VALIDATE_INT) === false && $datos['unidad_medida'] === 'caja') {
+            $errores[] = "El contenido debe ser entero si la unidad de medida es 'Caja'.";
+        }
+    }
+
     //El precio de venta es obligatorio
     if (empty($datos['precio_venta'])) {
         $errores[] = "El precio de venta es obligatorio.";
@@ -133,16 +145,14 @@ if (session_status() === PHP_SESSION_NONE) {
         }
     }
 
-
-    //La existencia es obligatorio
-    if (empty($datos['existencia'])) {
-        $errores[] = "La existencia es obligatoria.";
-    }else if(!(int)$datos['existencia']){
-        $errores[] = "La existencia debe ser un valor numerico.";
-    }else if ((int)$datos['existencia'] < 0) {
-        $errores[] = "La existencia debe ser un valor mayor a 0.";
-    }else{
-        $datos['existencia']=(int)$datos['existencia'];
+    $precioCompraLote = Productos::obtenerPrecioCompra((int) $id);
+    if (
+        $precioCompraLote > 0
+        && is_numeric($datos['precio_venta'])
+        && (float) $datos['precio_venta'] < $precioCompraLote
+    ) {
+        $errores[] = "El precio de venta no puede ser menor que el precio de compra registrado en lotes ($"
+            . number_format($precioCompraLote, 2, '.', ',') . ").";
     }
 
     //La existencia minima es obligatorio

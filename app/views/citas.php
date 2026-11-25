@@ -10,47 +10,131 @@ if (session_status() === PHP_SESSION_NONE)
 <?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  function mostrarProximasCitas()
+  // $empleado_asociado = $_SESSION['empleado_asociado'] ?? null;
+  // echo "Empleado: " . $empleado_asociado;
+
+  // echo $usuario="User: " . $_SESSION['usuario'];
+
+  // $consultarEmpleado = consultarEmpleado($usuario);
+  $datos = estraerDatosConsultas();
+  $servicios = serviciosIdYNombre();
+  $miNombre = strtolower(nombreDelUsuario((string)($_SESSION['usuario'] ?? '')));
+
+
+  function mostrarProximasCitas(array $datos,array $servicios,string $miNombre)
   {
-    $datos = estraerDatosConsultas();
-    // echo $datos[0]['atendido'];
+    $responsables = responsablesNombreEId();
+    $ahora = date('Y-m-d H:i:s');
     foreach ($datos as $d)
     {
-      if ($d['atendido'] === 0)
-      {?>
-        <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
-          <p><strong>Nombre del dueño:</strong> <?php echo $d['nombre']; ?> </p>
-          <p><strong>Fecha:</strong> <?php echo $d['fecha']; ?> </p>
-          <p><strong>Motivo de consulta:</strong><?php echo "<br>".$d['motivo']; ?></p>
-          <a class="btn" href="../controllers/FichaMedicaController.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Consulta</a>
-        </div>
+      $estadocita = trim($d['estado_cita'] ?? '');
+      if ($estadocita == "pendiente")
+      {
+        $esVencida = !empty($d['fecha']) && ($d['fecha'] < $ahora);
+        $esFutura = !empty($d['fecha']) && (strtotime((string)$d['fecha']) > time());
+        $onclickConsulta = $esFutura ? 'onclick="return confirm(\'Esta cita está programada para una fecha futura (' . htmlspecialchars($d['fecha']) . '). ¿Desea iniciar la atención ahora?\');"' : '';
+      ?>
+        <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td>
+            <?php echo htmlspecialchars($d['fecha']); ?>
+            <?php if ($esVencida): ?>
+              <span class="estado-chip" style="background:#dc3545; color:#fff; font-size:11px; padding:2px 6px; border-radius:4px; margin-left:6px;">Vencida</span>
+            <?php endif; ?>
+          </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
+
+          <?php if (($miNombre !== '' && strtolower($responsables[$d['empleado']] ?? '') === $miNombre) || strtolower((string)($_SESSION['rol'] ?? '')) === 'admin') { ?>
+          <td>
+            <a class="btn btn-chico" href="../controllers/redireccionarCita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>" <?php echo $onclickConsulta; ?>>Consulta</a>
+            <a class="btn btn-chico btn-peligro" onclick="cancelarCita(<?php echo $d['id_consulta']; ?>, event)">Cancelar</a>
+            <a class="btn btn-chico btn-aviso btn-chico" href="reprogramar_cita.php?id_consulta=<?php echo urlencode((string)$d['id_consulta']); ?>">Reprogramar</a>
+            <a class="btn btn-chico btn-peligro" onclick="noAsistioCita(<?php echo $d['id_consulta']; ?>, event)">No asistió</a>
+          </td>
+          <?php
+          }else
+              {
+                ?><td><h3>Solo el responsable puede ejecutar esta accion.</h3></td><?php
+              }
+          ?>
+        </tr>
       <?php }
     }
   }
-?>
 
-<!-- se encrga de mostrar todas las citas ya concretadas pero pendientes de pago -->
-<?php
   // unicamente llama a funciones dentro de cotroller, de ahi saca los datos
   // y los muestra dentro de otro div
-  function mostrarCitasAtendidas()
+  function mostrarCitasAtendidas(array $datos,array $servicios)
   {
-    $datos = estraerDatosConsultas();
+    // $datos = estraerDatosConsultas();
 
-    foreach($datos as $d)
+    // arregl oque traiga todos los servicios del servidor, una sola consluta
+    // junto con los servidores sera tambine el id, con esos 2 datos
+    //$responsables = responsablesNombreEId();
+    foreach ($datos as $d)
     {
-      if ($d['atendido'] === 1)
+      $estadocita = trim($d['estado_cita'] ?? '');
+      if ($estadocita == "atendida")
       {?>
-        <div class="Card_cita" data-nombre="<?php echo strtolower($d['nombre']); ?>">
-          <p><strong>Paciente: </strong> <?php echo $d['nombre']; ?> </p>
-          <p><strong>Fecha: </strong> <?php echo $d['fecha']; ?> </p>
-          <p><strong>Motivo de consulta: </strong> <?php echo "<br>".$d['motivo']; ?> </p>
-          <button class="btn" type="button">Pagar</button>
-        </div>
+        <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          
+          <td>
+            <a class="btn" href="Ventas.php">Pagar</a>
+          </td>
+
+        </tr>
       <?php }
     }
   }
+
+  function mostrarCanseladas(array $datos,array $servicios, string $miNombre)
+  {
+    $responsables = responsablesNombreEId();
+    foreach ($datos as $d)
+    {
+      $estadocita = trim($d['estado_cita'] ?? '');
+      if ($estadocita == "cancelada" && $d['estado'] !== 'No asistio' && $d['estado'] !== 'No asistió')
+      {?>
+        <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+          <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+          <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+          <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+          <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+          <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
+
+        </tr>
+      <?php }
+    }
+  }
+
+    function mostrarInAsistidas(array $datos,array $servicios)
+    {
+      $responsables = responsablesNombreEId();
+      foreach ($datos as $d)
+      {
+        if ($d['estado'] === 'No asistio' || $d['estado'] === 'No asistió')
+        {?>
+          <tr data-nombre="<?php echo strtolower($d['nombre']); ?>" data-fecha="<?php echo strtolower($d['fecha']); ?>">
+            <td><?php echo htmlspecialchars($d['nombre']); ?> </td>
+            <td><?php echo htmlspecialchars($d['fecha']); ?> </td>
+            <td><?php echo htmlspecialchars($d['motivo']); ?></td>
+            <td><?php echo htmlspecialchars($servicios[$d['servicio']] ?? 'Sin servicio'); ?></td>
+            <td><?php echo htmlspecialchars($responsables[$d['empleado']] ?? 'Sin Responsable'); ?></td>
+
+          </tr>
+        <?php }
+      }
+    }
+  
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -61,8 +145,7 @@ if (session_status() === PHP_SESSION_NONE)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Citas</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <script src="js/citas.js"></script>
-
+  <script src="js/citas.js?v=4"></script>
 </head>
 
 <body>
@@ -74,72 +157,161 @@ if (session_status() === PHP_SESSION_NONE)
 
     <?php $paginaActiva = 'citas';
     include __DIR__ . '/layout/sidebar.php'; ?>
+
+    
   <main>
-      <div class="migaja">Gestión de citas /</div>
-      <div class="encabezado-pagina">
-        <h1>Citas</h1>
-      </div>
+    
+    <div id="contenedor-modal"></div>
+    <div id="mainAOcultar">
 
-      <div class="tarjeta">
-
-    <div class="barra-acciones">
-      <a class="btn" href="agendarCita.php">+ Agendar cita</a>
-    </div>
-
-    <div class="contenedor_citas">
-      <style>
-        .contenedor-busqueda {
-          display: flex;
-          align-items: center;
-          gap: 15px; /* Espacio de separación entre cada elemento */
-          width: 100%;
-      }
-
-      .contenedor-busqueda input.campo {
-          flex: 1; /* Hace que el campo de texto crezca y ocupe el espacio del centro */
-      }
-      </style>
-
-
-      <div class="contenedor-busqueda">
-        <h3>Buscar</h3>
-        <input type="text" class="campo buscador-inteligente" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez">
-        <select class="select" id="fecha">
-          <option value="todos">Todas</option>
-          <option value="hoy">Hoy</option>
-          <option value="semana">Esta semana</option>
-          <option value="mes">Este mes</option>
-        </select>
-    </div>
-
-
-      <div class="panel_contenido">
-        <!-- Sección de espera  -->
-
-
-        <div class="contenedor_citas">
-          <div class="boton_control">
-            <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
-            <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
-          </div>
-
-          <div id="seccion_espera" class="seccion-panel">
-            <h3>Citas en espera</h3>
-            <?php mostrarProximasCitas(); ?>
-          </div>
-
-            <!-- Sección de atendidos-->
-            <div id="seccion_atendidos" class="seccion-panel oculto">
-              <h3>Citas atendidas (pendientes de pago)</h3>
-              <?php mostrarCitasAtendidas(); ?>
-            </div>
-
-          </div>
+        <div class="migaja">Gestión de citas /</div>
+        <div class="encabezado-pagina">
+          <h1>Citas</h1>
         </div>
 
+        <div class="tarjeta">
+      
+      <div class="barra-acciones">
+        <a class="btn" href="agendarCita.php">+ Agendar cita</a>
       </div>
-    </div>
 
+      
+
+      <div class="contenedor_citas">
+        <!-- <div class="boton_control">
+          <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active">En espera</button>
+          <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active">Atendidas</button>
+        </div> -->
+        <div></div>
+
+        <style>
+          .contenedor-busqueda {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Espacio de separación entre cada elemento */
+            width: 100%;
+        }
+
+        .contenedor-busqueda input.campo {
+            flex: 1; /* Hace que el campo de texto crezca y ocupe el espacio del centro */
+        }
+        </style>
+
+
+        <div class="contenedor-busqueda">
+          <h3>Buscar</h3>
+          <input type="text" class="campo" id="buscarNombre" name="motivoConsulta" placeholder="Nombre Ej. Juan Perez">
+          <select class="select" id="fecha">
+            <option value="todos">Todas</option>
+            <option value="hoy">Hoy</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mes</option>
+          </select>
+      </div>
+        
+
+        <div class="panel_contenido">
+          <!-- Sección de espera  -->
+          
+
+          <div class="contenedor_citas">
+            <div class="boton_control">
+              <button type="button" onclick="mostrarSeccion('espera', event)" class="btn btn_active active btn-chico">En espera</button>
+              <button type="button" onclick="mostrarSeccion('atendidas', event)" class="btn btn_active btn-chico">Atendidas</button>
+              <button type="button" onclick="mostrarSeccion('canseladas', event)" class="btn btn_active btn-chico">Canceladas</button>
+              <button type="button" onclick="mostrarSeccion('no_asistio', event)" class="btn btn_active btn-chico">No asistió</button>
+
+            </div>
+
+            <div id="seccion_espera" class="seccion-panel">
+              <h3>Citas en espera</h3>
+              <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                      <th>Responsable:</th>
+                      <th>Acciones:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarProximasCitas($datos, $servicios, $miNombre); ?>
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+              
+              <!-- Sección de atendidos-->
+              <div id="seccion_atendidos" class="seccion-panel oculto">
+                <h3>Citas atendidas (pendientes de pago)</h3>
+                <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                      <th>Acciones:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarCitasAtendidas($datos, $servicios, $miNombre); ?>
+                  </tbody>
+                </table>
+              </div>
+              </div>
+
+              <div id="seccion_canselado" class="seccion-panel oculto">
+              <h3>Citas canceladas</h3>
+              <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                      <th>Responsable:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarCanseladas($datos, $servicios, $miNombre); ?>
+                  </tbody>
+                </table>
+              </div>
+              </div>
+
+              <div id="seccion_no_asitio" class="seccion-panel oculto">
+              <h3>No asistió a la cita</h3>
+              <div class="tabla-envoltura"> 
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre del dueño:</th>
+                      <th>Fecha:</th>
+                      <th>Motivo de consulta:</th>
+                      <th>Servicio:</th>
+                      <th>Responsable:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php mostrarInAsistidas($datos, $servicios); ?>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    
+        </div>
       </div>
     </main>
 

@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+$errores = $_SESSION['errores'] ?? [];
+$exito = $_SESSION['exito'] ?? '';
+unset($_SESSION['errores'], $_SESSION['exito']);
+
 $paginaActiva = '';
 ?>
 <!DOCTYPE html>
@@ -17,8 +22,21 @@ $paginaActiva = '';
         <div class="tarjeta tarjeta--formulario">
             <h1 class="tarjeta__titulo">Iniciar sesión</h1>
             <p class="tarjeta__subtitulo">Entra para ver tus mascotas y tus citas.</p>
+            <?php if ($errores): ?>
+                <div class="aviso aviso--error">
+                    <?php foreach ($errores as $error): ?>
+                        <p><?= htmlspecialchars($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($exito !== ''): ?>
+                <div class="aviso aviso--exito">
+                    <p><?= htmlspecialchars($exito) ?></p>
+                </div>
+            <?php endif; ?>
 
-            <form action="validar_login.php" method="post">
+            <form action="../../controllers/Login.php" method="post">
+                <input type="hidden" name="origen" value="cliente">
                 <div class="formulario-rejilla">
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="usuario">Usuario</label>
@@ -27,7 +45,7 @@ $paginaActiva = '';
 
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="contrasena">Contraseña</label>
-                        <input class="campo__entrada" type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+                        <input class="campo__entrada" type="password" id="contrasena" name="password" placeholder="••••••••" required>
                     </div>
                 </div>
 

@@ -15,15 +15,16 @@
 <body>
 
   <div class="portal-container card">
-    <h3>🏛️ Portal Banca en Línea</h3>
+    <h3>Portal banca en línea</h3>
     <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 15px;">Consulta tus credenciales y tu CVV Dinámico (se renueva cada 5 min).</p>
 
     <form id="search-card-form">
       <div class="form-group">
-        <label for="search_number">Número de Tarjeta (16 dígitos)</label>
+        <label for="search_number">Número de tarjeta (16 dígitos)</label>
         <input type="text" id="search_number" name="card_number" placeholder="0000 0000 0000 0000" required>
       </div>
-      <button type="submit" class="pay-btn">Consultar Mi Tarjeta</button>
+      <button type="submit" class="pay-btn">Consultar mi tarjeta</button>
+      <a href="crear_cuenta.php" class="create-btn">Crear cuenta</a>
     </form>
 
     <div id="card-details" style="display: none; margin-top: 25px;">
@@ -34,27 +35,26 @@
         <strong id="res-titular">-</strong>
       </div>
       <div class="data-row">
-        <span>Número de Tarjeta:</span>
+        <span>Número de tarjeta:</span>
         <strong id="res-numero">-</strong>
       </div>
       <div class="data-row">
-        <span>Saldo Disponible:</span>
+        <span>Saldo disponible:</span>
         <strong id="res-saldo" style="color: #10b981;">-</strong>
       </div>
       <div class="data-row">
-        <span>Fecha de Expiración:</span>
+        <span>Fecha de expiración:</span>
         <div>
           <strong id="res-expiry">••/••</strong>
-          <button type="button" class="toggle-btn" onclick="toggleField('res-expiry', 'expiry')">Mostrar</button>
+          <button type="button" class="toggle-btn" onclick="toggleField('res-expiry', 'expiry', this)">Mostrar</button>
         </div>
       </div>
       <div class="data-row">
         <span>CVV Dinámico:</span>
         <div style="text-align: right;">
           <strong id="res-cvv">•••</strong>
-          <button type="button" class="toggle-btn" onclick="toggleField('res-cvv', 'cvv')">Mostrar</button>
+          <button type="button" class="toggle-btn" onclick="toggleField('res-cvv', 'cvv', this)">Mostrar</button>
           <br>
-          <span class="timer-badge" id="timer-text">Expira en: --:--</span>
         </div>
       </div>
     </div>
@@ -63,70 +63,63 @@
   <script>
     let realData = { expiry: '', cvv: '' };
     let isVisible = { expiry: false, cvv: false };
-    let countdownInterval;
-    let secondsLeft = 0;
-
-    document.getElementById('search-card-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      consultarTarjeta();
-    });
-
+    
+    document.getElementById('search-card-form')
+        .addEventListener('submit', function(e) {
+            e.preventDefault();
+            consultarTarjeta();
+        });
+    
     async function consultarTarjeta() {
-      const form = document.getElementById('search-card-form');
-      const formData = new FormData(form);
-      const res = await fetch('obtener_datos_tarjeta.php', { method: 'POST', body: formData });
-      const data = await res.json();
-
-      if (data.status === 'success') {
-        document.getElementById('res-titular').textContent = data.titular;
-        document.getElementById('res-numero').textContent = data.numero_tarjeta;
-        document.getElementById('res-saldo').textContent = `$${data.saldo} MXN`;
-        
-        realData.expiry = data.expiracion;
-        realData.cvv = data.cvv;
-        secondsLeft = data.segundos_restantes;
-
-        if (isVisible.cvv) {
-          document.getElementById('res-cvv').textContent = realData.cvv;
+        const form = document.getElementById('search-card-form');
+    
+        try {
+            const res = await fetch('obtener_datos_tarjeta.php', {
+                method: 'POST',
+                body: new FormData(form)
+            });
+    
+            const data = await res.json();
+    
+            if (data.status !== 'success') {
+                alert(data.mensaje);
+                return;
+            }
+    
+            document.getElementById('res-titular').textContent = data.titular;
+            document.getElementById('res-numero').textContent = data.numero_tarjeta;
+            document.getElementById('res-saldo').textContent = `$${data.saldo} MXN`;
+    
+            realData.expiry = data.expiracion;
+            realData.cvv = data.cvv;
+    
+            isVisible.expiry = false;
+            isVisible.cvv = false;
+    
+            document.getElementById('res-expiry').textContent = '••/••';
+            document.getElementById('res-cvv').textContent = '•••';
+    
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.textContent = 'Mostrar';
+            });
+    
+            document.getElementById('card-details').style.display = 'block';
+    
+        } catch (error) {
+            alert('No se pudo consultar la tarjeta.');
         }
-
-        document.getElementById('card-details').style.display = 'block';
-        iniciarContador();
-      } else {
-        alert(data.mensaje);
-      }
     }
-
-    function toggleField(elementId, field) {
-      const element = document.getElementById(elementId);
-      const btn = event.target;
-
-      if (!isVisible[field]) {
-        element.textContent = realData[field];
-        btn.textContent = 'Ocultar';
-        isVisible[field] = true;
-      } else {
-        element.textContent = field === 'expiry' ? '••/••' : '•••';
-        btn.textContent = 'Mostrar';
-        isVisible[field] = false;
-      }
-    }
-
-    function iniciarContador() {
-      clearInterval(countdownInterval);
-      
-      countdownInterval = setInterval(() => {
-        if (secondsLeft <= 0) {
-          clearInterval(countdownInterval);
-          consultarTarjeta(); // Auto-renovar CVV cuando el tiempo llegue a cero
-          return;
-        }
-
-        secondsLeft--;
-        const mins = Math.floor(secondsLeft / 60);
-        const secs = secondsLeft % 60;
-        document.getElementById('timer-text').textContent = `Expira en: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      }, 1000);
+    
+    function toggleField(elementId, field, btn) {
+        const element = document.getElementById(elementId);
+    
+        isVisible[field] = !isVisible[field];
+    
+        element.textContent = isVisible[field]
+            ? realData[field]
+            : field === 'expiry' ? '••/••' : '•••';
+    
+        btn.textContent = isVisible[field] ? 'Ocultar' : 'Mostrar';
     }
   </script>
 </body>

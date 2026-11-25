@@ -1,6 +1,12 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../models/Publico.php';
 $paginaActiva = 'equipo';
+$tipo = $_GET['tipo'] ?? '';
+if (!in_array($tipo, ['veterinarios', 'estilistas', 'hotel'], true)) {
+    $tipo = '';
+}
+$equipo = Publico::equipo($tipo);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,54 +26,30 @@ $paginaActiva = 'equipo';
         </div>
 
         <nav class="pestanas">
-            <a class="pestanas__opcion es-activo" href="nuestro_equipo.php">Todos</a>
-            <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=veterinarios">Veterinarios</a>
-            <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=estilistas">Estilistas</a>
-            <a class="pestanas__opcion" href="nuestro_equipo.php?tipo=hotel">Hotel</a>
+            <a class="pestanas__opcion<?= $tipo === '' ? ' es-activo' : '' ?>" href="nuestro_equipo.php">Todos</a>
+            <a class="pestanas__opcion<?= $tipo === 'veterinarios' ? ' es-activo' : '' ?>" href="nuestro_equipo.php?tipo=veterinarios">Veterinarios</a>
+            <a class="pestanas__opcion<?= $tipo === 'estilistas' ? ' es-activo' : '' ?>" href="nuestro_equipo.php?tipo=estilistas">Estilistas</a>
+            <a class="pestanas__opcion<?= $tipo === 'hotel' ? ' es-activo' : '' ?>" href="nuestro_equipo.php?tipo=hotel">Hotel</a>
         </nav>
 
         <section class="rejilla-tarjetas">
-
+            <?php foreach ($equipo as $em): ?>
             <article class="tarjeta tarjeta-empleado">
-                <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                <h2 class="tarjeta-empleado__nombre">Dra. Pérez</h2>
-                <span class="tarjeta-empleado__puesto">Veterinaria</span>
-                <p class="tarjeta-empleado__detalle">[Especialidad]</p>
-                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
+                <div class="foto-marcador foto-marcador--avatar"><?= htmlspecialchars(mb_substr($em['nombre'], 0, 1)) ?></div>
+                <h2 class="tarjeta-empleado__nombre"><?= htmlspecialchars($em['nombre'] . ' ' . $em['apellido']) ?></h2>
+                <span class="tarjeta-empleado__puesto"><?= htmlspecialchars($em['puesto']) ?></span>
+                <?php if (!empty($em['especialidad'])): ?>
+                    <p class="tarjeta-empleado__detalle">Especialidad: <?= htmlspecialchars($em['especialidad']) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($em['num_cedula_profesional'])): ?>
+                    <p class="tarjeta-empleado__detalle">Cédula profesional: <?= (int)$em['num_cedula_profesional'] ?></p>
+                <?php endif; ?>
             </article>
-
-            <article class="tarjeta tarjeta-empleado">
-                <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                <h2 class="tarjeta-empleado__nombre">Dr. Ramírez</h2>
-                <span class="tarjeta-empleado__puesto">Veterinario</span>
-                <p class="tarjeta-empleado__detalle">[Especialidad]</p>
-                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
-            </article>
-
-            <article class="tarjeta tarjeta-empleado">
-                <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                <h2 class="tarjeta-empleado__nombre">Ana Torres</h2>
-                <span class="tarjeta-empleado__puesto">Estilista</span>
-                <p class="tarjeta-empleado__detalle">[Años de experiencia]</p>
-                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
-            </article>
-
-            <article class="tarjeta tarjeta-empleado">
-                <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                <h2 class="tarjeta-empleado__nombre">Luis Medina</h2>
-                <span class="tarjeta-empleado__puesto">Estilista</span>
-                <p class="tarjeta-empleado__detalle">[Años de experiencia]</p>
-                <p class="tarjeta-empleado__detalle">[Certificaciones]</p>
-            </article>
-
-            <article class="tarjeta tarjeta-empleado">
-                <div class="foto-marcador foto-marcador--avatar">Foto</div>
-                <h2 class="tarjeta-empleado__nombre">[Nombre]</h2>
-                <span class="tarjeta-empleado__puesto">Encargado del hotel</span>
-                <p class="tarjeta-empleado__detalle">[Descripción breve]</p>
-            </article>
-
+            <?php endforeach; ?>
         </section>
+        <?php if (empty($equipo)): ?>
+            <p class="aviso">Por ahora no hay personal para mostrar.</p>
+        <?php endif; ?>
 
     </main>
 

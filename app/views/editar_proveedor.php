@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tiempo_entrega'   => trim($_POST['tiempo_entrega'] ?? ''),
         'observaciones'    => trim($_POST['observaciones'] ?? '')
     ];
-    actualizar_proveedor($idProveedor, $datos); 
+    actualizar_proveedor($idProveedor, $datos);
 }
 
 $proveedor = obtenerProveedorPorId($idProveedor);
@@ -40,6 +40,11 @@ $proveedor = obtenerProveedorPorId($idProveedor);
 if (!$proveedor) {
     header("Location: proveedores.php");
     exit;
+}
+
+if (isset($_SESSION['old'])) {
+    $proveedor = array_merge($proveedor, $_SESSION['old']);
+    unset($_SESSION['old']);
 }
 ?>
 <!DOCTYPE html>
@@ -104,7 +109,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="nombre_comercial">
-                            Nombre Comercial *:
+                            Nombre comercial *:
                         </label>
 
                         <input
@@ -159,7 +164,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="correo">
-                            Correo Electrónico:
+                            Correo electrónico:
                         </label>
 
                         <input
@@ -225,7 +230,7 @@ if (!$proveedor) {
 
                     <div>
                         <label class="label-campo" for="codigo_postal">
-                            Código Postal:
+                            Código postal:
                         </label>
 
                         <input
@@ -252,13 +257,16 @@ if (!$proveedor) {
                             Condición de pago *:
                         </label>
 
-                        <input
-                            type="text"
-                            class="campo"
-                            id="condicion_pago"
-                            name="condicion_pago"
-                            maxlength="60"
-                            value="<?= htmlspecialchars($proveedor['condicion_pago'] ?? '') ?>">
+                        <select class="campo" id="condicion_pago" name="condicion_pago" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="Tarjeta" <?= (($proveedor['condicion_pago'] ?? '') === 'Tarjeta' || ($proveedor['condicion_pago'] ?? '') === 'Targeta') ? 'selected' : '' ?>>Tarjeta</option>
+                            <option value="Efectivo" <?= (strtolower($proveedor['condicion_pago'] ?? '') === 'efectivo') ? 'selected' : '' ?>>Efectivo</option>
+                            <?php 
+                            $valActual = $proveedor['condicion_pago'] ?? '';
+                            if ($valActual !== '' && !in_array(strtolower($valActual), ['tarjeta', 'targeta', 'efectivo'])): ?>
+                                <option value="<?= htmlspecialchars($valActual) ?>" selected><?= htmlspecialchars($valActual) ?></option>
+                            <?php endif; ?>
+                        </select>
                     </div>
 
                     <div>
@@ -300,7 +308,7 @@ if (!$proveedor) {
 
         </form>
 
-    
+
       </div>
     </main>
 

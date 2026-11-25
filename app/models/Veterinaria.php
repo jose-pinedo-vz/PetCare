@@ -108,7 +108,12 @@ function citasHoyVeterinaria(string $fecha): array {
 function obtenerVacunas(): array{
     try{
         $conexion=ConexionDB::obtenerConexion();
-        $sql="select id, nombre, especie from lista_vacunas where estado=1";
+        /* $sql="select id, nombre, especie from lista_vacunas where estado=1"; */
+        $sql="
+            SELECT lv.id, lv.nombre, lv.especie, e.especie AS nombre_especie
+            FROM lista_vacunas lv, especies e
+            WHERE lv.especie = e.id AND lv.estado=1
+        ";
 
         $resultado = $conexion -> query($sql);
 
@@ -121,6 +126,80 @@ function obtenerVacunas(): array{
     } catch (Exception $error){
         error_log("Error al obtener las vacunas ".$error->getMessage());
         return [];
+    }
+}
+
+function historialVacunasMascota(int $id_mascota): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT lv.nombre AS vacuna, v.fecha_aplicacion,
+                   (SELECT CONCAT(e.nombre, ' ', e.apellido) 
+                   FROM empleados e 
+                   WHERE e.id_empleado = v.veterinario) AS veterinario
+            FROM vacunas v, lista_vacunas lv
+            WHERE v.vacuna_puesta = lv.id AND v.id_mascota = ?
+            ORDER BY v.fecha_aplicacion IS NULL, v.fecha_aplicacion DESC
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$id_mascota]);
+
+        return $consulta -> fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el historial de las vacunas de la mascota " . $error -> getMessage());
+        return [];
+    }
+}
+
+function historialVacunas(): array {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT m.id_mascota, m.nombre AS mascota, lv.nombre AS tipo_vacunas,
+                   v.fecha_aplicacion, v.lote, v.fecha_proxima
+            FROM vacunas v, mascotas m, lista_vacunas lv
+            WHERE v.id_mascota = m.id_mascota AND v.vacuna_puesta = lv.id AND m.esta_activo = 1
+            ORDER BY v.fecha_aplicacion IS NULL, v.fecha_aplicacion DESC, v.id_vacuna DESC
+            LIMIT 100
+        ";
+
+        $resultado = $conexion -> query($sql);
+
+        if (!$resultado) {
+            return [];
+        }
+
+        return $resultado -> fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (Exception $error) {
+        error_log("Error al obtener el historial de vacunas " . $error -> getMessage());
+        return [];
+    }
+}
+
+function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {
+    try {
+        $conexion = ConexionDB::obtenerConexion();
+        $sql = "
+            SELECT COUNT(*)
+            FROM lista_vacunas
+            WHERE LOWER(nombre) = LOWER(?) AND especie = ? AND estado = 1 AND id != ?
+        ";
+        $consulta = $conexion -> prepare($sql);
+        $consulta -> execute([$nombre, $especie, $id ?? 0]);
+
+        $resultado = (int) $consulta -> fetchColumn() > 0;
+
+        if (!$resultado) {
+            return false;
+        }
+
+        return $resultado;
+
+    } catch (Exception $error) {
+        error_log("Error en obtener si esta repedida la vacuna " . $error -> getMessage());
+        return false;
     }
 }
 
@@ -176,31 +255,31 @@ function editarVacuna(int $id, string $nombre, int $especie): bool {
     }
 }
 
-function conseguirHistorialVacuna(int $id){
-    try{
-        $conexion = ConexionDB::obtenerConexion();
-
-        $sql = "select
-                    v.id_mascota,
-                    v.fecha_aplicacion,
-                    lv.nombre AS vacuna,
-                    v.lote,
-                    v.fecha_proxima
-                from vacunas v
-                inner join lista_vacunas lv
-                    ON v.vacuna_puesta = lv.id
-                where v.id_mascota = ?
-                order by v.fecha_aplicacion DESC";
-        $consulta = $conexion->prepare($sql);
-        $consulta->execute([$id]);
-
-        return $consulta-fetchall(PDO::FETCH_ASSOC);
-
-    } catch (Exception $error){
-        error_log("Error al eliminar vacuna: " . $error->getMessage());
-        return false;
-    }
-}
+/* function conseguirHistorialVacuna(int $id){ */
+/*     try{ */
+/*         $conexion = ConexionDB::obtenerConexion(); */
+/**/
+/*         $sql = "select */
+/*                     v.id_mascota, */
+/*                     v.fecha_aplicacion, */
+/*                     lv.nombre AS vacuna, */
+/*                     v.lote, */
+/*                     v.fecha_proxima */
+/*                 from vacunas v */
+/*                 inner join lista_vacunas lv */
+/*                     ON v.vacuna_puesta = lv.id */
+/*                 where v.id_mascota = ? */
+/*                 order by v.fecha_aplicacion DESC"; */
+/*         $consulta = $conexion->prepare($sql); */
+/*         $consulta->execute([$id]); */
+/**/
+/*         return $consulta-fetchall(PDO::FETCH_ASSOC); */
+/**/
+/*     } catch (Exception $error){ */
+/*         error_log("Error al eliminar vacuna: " . $error->getMessage()); */
+/*         return false; */
+/*     } */
+/* } */
 
 function eliminarVacuna(int $id): bool {
     try {
@@ -275,6 +354,18 @@ class Veterinaria {
         return obtenerVacunas();
     }
 
+    public static function historialVacunasMascota(int $id_mascota): array {
+        return historialVacunasMascota($id_mascota);
+    }
+
+    public static function historialVacunas(): array {
+        return historialVacunas();
+    }
+
+    public static function estaRepetida(string $nombre, int $especie, ?int $id = null): bool {
+        return estaRepetida($nombre, $especie, $id);
+    }
+
     public static function obtenerEspecies(): array {
         return obtenerEspecies();
     }
@@ -291,9 +382,9 @@ class Veterinaria {
         return eliminarVacuna($id);
     }
 
-    public static function conseguirHistorialVacuna(): array {
-        return conseguirHistorialVacuna($id);
-    }
+    /* public static function conseguirHistorialVacuna(): array { */
+    /*     return conseguirHistorialVacuna($id); */
+    /* } */
 
     public static function conseguirHistorialDesparasitacion(): array {
         return conseguirHistorialDesparasitacion();
