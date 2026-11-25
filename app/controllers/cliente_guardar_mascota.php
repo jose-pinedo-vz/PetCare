@@ -21,6 +21,11 @@ $temperamento = trim($_POST['temperamento'] ?? '');
 $tamanio = trim($_POST['tamanio'] ?? '');
 $alergias = trim($_POST['alergias'] ?? '');
 $condiciones_especiales = trim($_POST['condiciones_especiales'] ?? '');
+$enfermedades = trim($_POST['enfermedades'] ?? '');
+$medicamentos = trim($_POST['medicamentos'] ?? '');
+$ultima_desparasitacion = trim($_POST['ultima_desparasitacion'] ?? '');
+$restricciones_para_manejo = trim($_POST['restricciones_para_manejo'] ?? '');
+$observaciones = trim($_POST['observaciones'] ?? '');
 
 $errores = [];
 // nombre, especie, raza y color (mismas reglas en registrar y editar)
@@ -53,6 +58,17 @@ if ($temperamento !== '' && preg_match('/\d/', $temperamento)) {
 } elseif (mb_strlen($temperamento) > 100) {
     $errores[] = 'El temperamento no puede tener más de 100 caracteres.';
 }
+
+// alergias, enfermedades, medicamentos, desparasitacion, etc. (mismos campos que el empleado)
+validarSaludMascotaCliente($errores, [
+    'alergias' => $alergias,
+    'enfermedades' => $enfermedades,
+    'medicamentos' => $medicamentos,
+    'condiciones_especiales' => $condiciones_especiales,
+    'ultima_desparasitacion' => $ultima_desparasitacion,
+    'restricciones_para_manejo' => $restricciones_para_manejo,
+    'observaciones' => $observaciones,
+], $edad);
 
 if (count($errores) > 0) {
     $_SESSION['errores'] = $errores;
@@ -93,7 +109,12 @@ $resultado = Mascota::insertar([
     'id_cliente' => $idCliente,
     'alergias' => $alergias,
     'condiciones_especiales' => $condiciones_especiales,
-    'temperamento' => $temperamento
+    'temperamento' => $temperamento,
+    'enfermedades' => $enfermedades,
+    'medicamentos' => $medicamentos,
+    'ultima_desparasitacion' => $ultima_desparasitacion !== '' ? $ultima_desparasitacion : null,
+    'restricciones_para_manejo' => $restricciones_para_manejo,
+    'observaciones' => $observaciones
 ]);
 
 if (is_array($resultado)) {

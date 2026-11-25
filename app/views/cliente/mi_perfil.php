@@ -254,7 +254,6 @@ $diezDigitos = 'inputmode="numeric" minlength="10" maxlength="10" pattern="[0-9]
 
                     <!-- Dirección -->
                     <h3 class="perfil-seccion__subtitulo">Dirección (opcional)</h3>
-                    <p class="perfil-seccion__texto">Si la capturas, llénala completa. Escribe tu código postal para llenar colonia, ciudad y estado.</p>
                     <div class="formulario-rejilla">
                         <div class="campo campo--ancho-completo">
                             <label class="campo__etiqueta" for="calle">Calle</label>

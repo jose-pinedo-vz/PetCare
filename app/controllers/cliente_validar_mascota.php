@@ -45,3 +45,41 @@ function validarCamposMascotaCliente(array &$errores, string $nombre, string $es
     }
     return $color;
 }
+
+// Campos de salud y manejo (los mismos del formulario del empleado).
+// Para el cliente son opcionales; si escribe algo debe incluir texto, no solo números.
+function validarSaludMascotaCliente(array &$errores, array $datos, string $fechaNacimiento): void
+{
+    $textos = [
+        'alergias'                  => 'Las alergias',
+        'enfermedades'              => 'Las enfermedades',
+        'medicamentos'              => 'Los medicamentos',
+        'condiciones_especiales'    => 'Las condiciones especiales',
+        'restricciones_para_manejo' => 'Las restricciones para manejo',
+        'observaciones'             => 'Las observaciones',
+    ];
+    foreach ($textos as $campo => $texto) {
+        $valor = $datos[$campo] ?? '';
+        if ($valor === '') {
+            continue;
+        }
+        if (!preg_match('/\p{L}/u', $valor)) {
+            $errores[] = $texto . ' deben incluir texto, no solo números o símbolos.';
+        } elseif (mb_strlen($valor) > 500) {
+            $errores[] = $texto . ' no pueden tener más de 500 caracteres.';
+        }
+    }
+
+    // Última desparasitación: opcional; no futura ni antes de que naciera
+    $desparasitacion = $datos['ultima_desparasitacion'] ?? '';
+    if ($desparasitacion !== '') {
+        $fecha = DateTime::createFromFormat('!Y-m-d', $desparasitacion);
+        if (!$fecha || $fecha->format('Y-m-d') !== $desparasitacion) {
+            $errores[] = 'La fecha de la última desparasitación no es válida.';
+        } elseif ($fecha > new DateTime('today')) {
+            $errores[] = 'La última desparasitación no puede ser posterior a hoy.';
+        } elseif ($fechaNacimiento !== '' && $desparasitacion < $fechaNacimiento) {
+            $errores[] = 'La última desparasitación no puede ser antes de la fecha de nacimiento.';
+        }
+    }
+}

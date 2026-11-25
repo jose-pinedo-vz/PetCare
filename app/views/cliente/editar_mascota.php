@@ -108,11 +108,6 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="temperamento">Temperamento</label>
-                            <textarea class="campo__entrada" id="temperamento" name="temperamento" rows="2" maxlength="100" placeholder="Ej. Dócil, juguetón, tímido"><?= $v('temperamento') ?></textarea>
-                        </div>
-
-                        <div class="campo">
                             <label class="campo__etiqueta" for="tamanio">Tamaño</label>
                             <select class="campo__entrada" id="tamanio" name="tamanio">
                                 <?php foreach (['Pequeño', 'Mediano', 'Grande', 'Gigante'] as $opcion): ?>
@@ -121,14 +116,50 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                             </select>
                         </div>
 
+                        <!-- Salud y cuidados (mismos campos que el formulario del empleado) -->
                         <div class="campo campo--ancho-completo">
-                            <label class="campo__etiqueta" for="alergias">Alergias</label>
-                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Ej. Polen, pollo, penicilina"><?= $v('alergias') ?></textarea>
+                            <h2 class="tarjeta__subtitulo">Salud y cuidados</h2>
+                            <p class="campo__ayuda">Si no aplica, déjalo vacío. Nuestro veterinario lo revisará en la consulta.</p>
                         </div>
 
-                        <div class="campo campo--ancho-completo">
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="alergias">Alergias</label>
+                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="3" maxlength="500" placeholder="Ej. Polen, pollo, penicilina"><?= $v('alergias') ?></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="enfermedades">Enfermedades</label>
+                            <textarea class="campo__entrada" id="enfermedades" name="enfermedades" rows="3" maxlength="500" placeholder="Ej. Diabetes, displasia de cadera"><?= $v('enfermedades') ?></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="medicamentos">Medicamentos</label>
+                            <textarea class="campo__entrada" id="medicamentos" name="medicamentos" rows="3" maxlength="500" placeholder="Ej. Insulina cada 12 horas"><?= $v('medicamentos') ?></textarea>
+                        </div>
+
+                        <div class="campo">
                             <label class="campo__etiqueta" for="condiciones_especiales">Condiciones especiales</label>
-                            <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3"><?= $v('condiciones_especiales') ?></textarea>
+                            <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3" maxlength="500" placeholder="Ej. Ciego de un ojo"><?= $v('condiciones_especiales') ?></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="ultima_desparasitacion">Última desparasitación</label>
+                            <input class="campo__entrada" type="date" id="ultima_desparasitacion" name="ultima_desparasitacion" max="<?= date('Y-m-d') ?>" value="<?= substr($v('ultima_desparasitacion'), 0, 10) ?>">
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="temperamento">Temperamento</label>
+                            <textarea class="campo__entrada" id="temperamento" name="temperamento" rows="2" maxlength="100" placeholder="Ej. Dócil, juguetón, tímido"><?= $v('temperamento') ?></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="restricciones_para_manejo">Restricciones para manejo</label>
+                            <textarea class="campo__entrada" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="3" maxlength="500" placeholder="Ej. Usar bozal, no tocar las orejas"><?= $v('restricciones_para_manejo') ?></textarea>
+                        </div>
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="observaciones">Observaciones</label>
+                            <textarea class="campo__entrada" id="observaciones" name="observaciones" rows="3" maxlength="500" placeholder="Ej. Se pone nervioso con otros perros"><?= $v('observaciones') ?></textarea>
                         </div>
                     </div>
                 </div>
