@@ -177,14 +177,22 @@ if ($modalError === 'eliminar') {
                     </tr>
                   </thead>
                   <tbody id="tablaMascotas">
-                    <?php foreach ($vacunas as $v): ?>
-                      <tr>
-                        <td><?= htmlspecialchars($v['mascota']) ?></td>
-                        <td><?= !empty($v['fecha_aplicacion']) ? htmlspecialchars((string)$v['fecha_aplicacion']) : 'Sin fecha' ?></td>
-                        <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
-                        <td><?= !empty($v['fecha_proxima']) ? htmlspecialchars((string)$v['fecha_proxima']) : 'Sin fecha' ?></td>
-                      </tr>
-                    <?php endforeach; ?>
+                    <?php if (count($vacunas) > 0) : ?>
+                        <?php foreach ($vacunas as $v): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($v['mascota']) ?></td>
+                                <td><?= !empty($v['fecha_aplicacion']) ? htmlspecialchars((string)$v['fecha_aplicacion']) : 'Sin fecha' ?></td>
+                                <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
+                                <td><?= !empty($v['fecha_proxima']) ? htmlspecialchars((string)$v['fecha_proxima']) : 'Sin fecha' ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center;">
+                                No hay vacunas registradas
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                   </tbody>
                 </table>
               </div>
@@ -201,6 +209,7 @@ if ($modalError === 'eliminar') {
                         <th>Tipo</th>
                         <th>Producto</th>
                         <th>Dosis</th>
+                        <th>Proxima aplicacion</th>
                       </tr>
                     </thead>
                     <tbody id="tablaDespara">
@@ -212,7 +221,7 @@ if ($modalError === 'eliminar') {
                               <td><?= htmlspecialchars($d['tipo']) ?></td>                        
                               <td><?= htmlspecialchars($d['producto_utilizado']) ?></td>                        
                               <td><?= htmlspecialchars((string)$d['dosis']) ?></td>                        
-                              <!-- <td><?= date('d/m/Y', strtotime($d['proxima_aplicacion'])) ?></td>   -->                      
+                              <td><?= date('d/m/Y', strtotime($d['proxima_aplicacion'])) ?></td>
                             </tr>
                         <?php endforeach; ?>
                       <?php else: ?>
