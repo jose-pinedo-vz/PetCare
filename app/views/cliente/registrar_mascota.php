@@ -95,26 +95,21 @@ $paginaActiva = 'mascotas';
                             </select>
                         </div>
 
-                        <!-- Salud y cuidados (mismos campos que el formulario del empleado) -->
-                        <div class="campo campo--ancho-completo">
-                            <h2 class="tarjeta__subtitulo">Salud y cuidados</h2>
-                            <p class="campo__ayuda">Si no aplica, déjalo vacío. Nuestro veterinario lo revisará en la consulta.</p>
-                        </div>
 
-                        <div class="campo">
+                        <!--<div class="campo">
                             <label class="campo__etiqueta" for="alergias">Alergias</label>
                             <textarea class="campo__entrada" id="alergias" name="alergias" rows="3" maxlength="500" placeholder="Ej. Polen, pollo, penicilina"><?= htmlspecialchars($old['alergias'] ?? '') ?></textarea>
-                        </div>
+                        </div>-->
 
-                        <div class="campo">
+                        <!--<div class="campo">
                             <label class="campo__etiqueta" for="enfermedades">Enfermedades</label>
                             <textarea class="campo__entrada" id="enfermedades" name="enfermedades" rows="3" maxlength="500" placeholder="Ej. Diabetes, displasia de cadera"><?= htmlspecialchars($old['enfermedades'] ?? '') ?></textarea>
-                        </div>
+                        </div>-->
 
-                        <div class="campo">
+                        <!--<div class="campo">
                             <label class="campo__etiqueta" for="medicamentos">Medicamentos</label>
                             <textarea class="campo__entrada" id="medicamentos" name="medicamentos" rows="3" maxlength="500" placeholder="Ej. Insulina cada 12 horas"><?= htmlspecialchars($old['medicamentos'] ?? '') ?></textarea>
-                        </div>
+                        </div>-->
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="condiciones_especiales">Condiciones especiales</label>
@@ -131,15 +126,15 @@ $paginaActiva = 'mascotas';
                             <textarea class="campo__entrada" id="temperamento" name="temperamento" rows="2" maxlength="100" placeholder="Ej. Dócil, juguetón, tímido"><?= htmlspecialchars($old['temperamento'] ?? '') ?></textarea>
                         </div>
 
-                        <div class="campo">
+                        <!--<div class="campo">
                             <label class="campo__etiqueta" for="restricciones_para_manejo">Restricciones para manejo</label>
                             <textarea class="campo__entrada" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="3" maxlength="500" placeholder="Ej. Usar bozal, no tocar las orejas"><?= htmlspecialchars($old['restricciones_para_manejo'] ?? '') ?></textarea>
-                        </div>
+                        </div>-->
 
-                        <div class="campo">
+                        <!--<div class="campo">
                             <label class="campo__etiqueta" for="observaciones">Observaciones</label>
                             <textarea class="campo__entrada" id="observaciones" name="observaciones" rows="3" maxlength="500" placeholder="Ej. Se pone nervioso con otros perros"><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
 
