@@ -95,16 +95,17 @@
     };
 
     const actualizarEstadoTarjeta = (tarjeta, estado, totalEstimado = 0) => {
-        tarjeta.dataset.estado = estado;
+        const estadoNormalizado = String(estado || '').toLocaleLowerCase('es');
+        tarjeta.dataset.estado = estadoNormalizado;
         const insignia = tarjeta.querySelector('.pedido-encabezado .historial-estado');
-        const clase = estado === 'entregado' ? 'pagada' : estado === 'cancelado' ? 'cancelada' : 'pendiente';
-        const texto = estado === 'entregado' ? 'Entregado' : estado === 'cancelado' ? 'Cancelado' : 'Pendiente';
+        const clase = ['entregado', 'pagado'].includes(estadoNormalizado) ? 'pagada' : estadoNormalizado === 'cancelado' ? 'cancelada' : 'pendiente';
+        const texto = estadoNormalizado === 'entregado' ? 'Entregado' : estadoNormalizado === 'pagado' ? 'Pagado' : estadoNormalizado === 'cancelado' ? 'Cancelado' : 'Pendiente';
         insignia.textContent = texto;
         insignia.className = `historial-estado ${clase}`;
 
         const resumenTotal = tarjeta.querySelector('[data-pedido-total]');
         if (resumenTotal) {
-            if (estado === 'entregado') {
+            if (['entregado', 'pagado'].includes(estadoNormalizado)) {
                 resumenTotal.querySelector('strong').textContent = formatoDinero(totalEstimado);
                 establecerVisibilidad(resumenTotal, true);
             } else {
@@ -279,6 +280,7 @@
         try {
             const datos = await solicitar(`${api}?accion=detalles&id=${encodeURIComponent(tarjeta.dataset.pedidoId)}`);
             const pedido = datos.pedido;
+            const estadoPedido = String(pedido.estado || '').toLocaleLowerCase('es');
             pedidoActivo = pedido.clave_compra;
             document.getElementById('modal-pedido-folio').textContent = `ORD-${pedido.clave_compra}`;
             document.getElementById('modal-pedido-proveedor').textContent = pedido.proveedor;
@@ -291,13 +293,14 @@
             document.getElementById('modal-pedido-total').textContent = formatoDinero(pedido.total_estimado);
             establecerVisibilidad(
                 document.getElementById('resumen-total-pedido'),
-                pedido.estado === 'entregado'
+                ['entregado', 'pagado'].includes(estadoPedido)
             );
             const estadoModal = document.getElementById('modal-pedido-estado');
-            estadoModal.textContent = pedido.estado === 'entregado'
+            estadoModal.textContent = estadoPedido === 'entregado'
                 ? 'Entregado'
-                : pedido.estado === 'cancelado' ? 'Cancelado' : 'Pendiente';
-            estadoModal.className = `historial-estado ${pedido.estado === 'entregado' ? 'pagada' : pedido.estado === 'cancelado' ? 'cancelada' : 'pendiente'}`;
+                : estadoPedido === 'pagado' ? 'Pagado'
+                : estadoPedido === 'cancelado' ? 'Cancelado' : 'Pendiente';
+            estadoModal.className = `historial-estado ${['entregado', 'pagado'].includes(estadoPedido) ? 'pagada' : estadoPedido === 'cancelado' ? 'cancelada' : 'pendiente'}`;
 
             const cuerpo = document.getElementById('modal-pedido-productos');
             cuerpo.replaceChildren(...pedido.productos.map((producto) => {

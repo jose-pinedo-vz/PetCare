@@ -10,6 +10,58 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$accion = $_POST['accion'] ?? '';
+if ($accion === 'eliminar') {
+    $token = $_POST['csrf'] ?? '';
+    $idProducto = filter_var($_POST['id_producto'] ?? null, FILTER_VALIDATE_INT);
+    $lote = $_POST['lote'] ?? '';
+
+    if (
+        !is_string($token)
+        || !isset($_SESSION['csrf_lotes'])
+        || !hash_equals($_SESSION['csrf_lotes'], $token)
+    ) {
+        $_SESSION['mensaje_lotes'] = [
+            'tipo' => 'error',
+            'texto' => 'La sesión expiró. Recarga la página e inténtalo nuevamente.',
+        ];
+    } elseif (
+        $idProducto === false
+        || $idProducto < 1
+        || !is_string($lote)
+        || trim($lote) === ''
+        || strlen($lote) > 20
+    ) {
+        $_SESSION['mensaje_lotes'] = [
+            'tipo' => 'error',
+            'texto' => 'Los datos del lote no son válidos.',
+        ];
+    } else {
+        try {
+            if (Lotes::eliminarLote($idProducto, trim($lote))) {
+                $_SESSION['mensaje_lotes'] = [
+                    'tipo' => 'success',
+                    'texto' => 'El lote se eliminó correctamente.',
+                ];
+            } else {
+                $_SESSION['mensaje_lotes'] = [
+                    'tipo' => 'error',
+                    'texto' => 'No se encontró el lote para eliminar.',
+                ];
+            }
+        } catch (Throwable $e) {
+            error_log('Error al eliminar lote: ' . $e->getMessage());
+            $_SESSION['mensaje_lotes'] = [
+                'tipo' => 'error',
+                'texto' => 'No se pudo eliminar el lote. Inténtalo nuevamente.',
+            ];
+        }
+    }
+
+    header('Location: ../views/lotes.php#lotes');
+    exit;
+}
+
 $obtenerCampo = static function (string $campo): string {
     $valor = $_POST[$campo] ?? '';
     return is_string($valor) ? trim($valor) : '';

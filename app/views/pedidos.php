@@ -62,6 +62,7 @@ try {
 					<select id="filtro-estado-pedido" class="campo pedidos-filtro-estado">
 						<option value="">Todos los estados</option>
 						<option value="confirmado">Entregado</option>
+						<option value="pagado">Pagado</option>
 						<option value="pendiente">Pendiente</option>
 						<option value="cancelado">Cancelado</option>
 					</select>
@@ -73,13 +74,14 @@ try {
 						$idPedido = (int) $pedido['clave_compra'];
 						$estadoPedido = strtolower((string) $pedido['estado']);
 						$esPendiente = $estadoPedido === 'pendiente';
-						$claseEstado = $estadoPedido === 'entregado'
+						$esPagado = $estadoPedido === 'pagado';
+						$claseEstado = in_array($estadoPedido, ['entregado', 'pagado'], true)
 							? 'pagada'
 							: ($estadoPedido === 'cancelado' ? 'cancelada' : 'pendiente');
 						$textoEstado = $estadoPedido === 'entregado'
 							? 'Entregado'
-							: ($estadoPedido === 'cancelado' ? 'Cancelado' : 'Pendiente');
-						$mostrarTotal = $estadoPedido === 'entregado';
+							: ($esPagado ? 'Pagado' : ($estadoPedido === 'cancelado' ? 'Cancelado' : 'Pendiente'));
+						$mostrarTotal = in_array($estadoPedido, ['entregado', 'pagado'], true);
 						?>
 					<article class="pedido-tarjeta" data-pedido data-pedido-id="<?= $idPedido ?>" data-estado="<?= $escaparPedido($estadoPedido) ?>">
 						<header class="pedido-encabezado">
@@ -271,7 +273,7 @@ try {
 				document.getElementById('modal-pedido-esperada').dateTime = fechas[1].dateTime;
 				document.getElementById('modal-pedido-total').textContent = tarjeta.querySelector('.pedido-total strong').textContent;
 				const resumenTotalPedido = document.getElementById('resumen-total-pedido');
-				const totalDisponible = tarjeta.dataset.estado === 'entregado';
+				const totalDisponible = ['entregado', 'pagado'].includes(tarjeta.dataset.estado);
 				resumenTotalPedido.hidden = !totalDisponible;
 				resumenTotalPedido.style.display = totalDisponible ? '' : 'none';
 

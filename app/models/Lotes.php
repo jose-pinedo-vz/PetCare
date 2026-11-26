@@ -63,6 +63,20 @@ Class Lotes
         return $stmt->fetchColumn() !== false;
     }
 
+    public static function eliminarLote(int $idProducto, string $lote): bool {
+        $conexion = ConexionDB::obtenerConexion();
+        $stmt = $conexion->prepare(
+            "DELETE FROM lote_productos
+             WHERE id_producto = :id_producto AND lote = :lote"
+        );
+        $stmt->execute([
+            ':id_producto' => $idProducto,
+            ':lote' => $lote,
+        ]);
+
+        return $stmt->rowCount() === 1;
+    }
+
     public static function registrarLote(array $datos): bool {
         $conexion = ConexionDB::obtenerConexion();
         $sql = "INSERT INTO lote_productos (

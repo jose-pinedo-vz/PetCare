@@ -8,9 +8,15 @@ if (!isset($_SESSION['usuario'])) {
     exit();
 }
 
+if (empty($_SESSION['csrf_lotes'])) {
+    $_SESSION['csrf_lotes'] = bin2hex(random_bytes(32));
+}
+
 require_once __DIR__ . '/../models/Lotes.php';
 $productos = Lotes::obtenerProductosActivosConProveedor();
 $lotes = Lotes::obtenerLotes();
+$mensajeLotes = $_SESSION['mensaje_lotes'] ?? null;
+unset($_SESSION['mensaje_lotes']);
 
 $erroresLote = $_SESSION['errores'] ?? [];
 $loteAnterior = $_SESSION['old'] ?? [];
@@ -82,6 +88,11 @@ foreach ($lotes as $lote){
 			</nav>
 
 			<section id="lotes" aria-label="Gestión de lotes">
+				<?php if (is_array($mensajeLotes) && isset($mensajeLotes['texto'])): ?>
+					<p class="<?= ($mensajeLotes['tipo'] ?? '') === 'error' ? 'msg-error' : 'msg-success' ?>" role="<?= ($mensajeLotes['tipo'] ?? '') === 'error' ? 'alert' : 'status' ?>">
+						<?= $escapar($mensajeLotes['texto']) ?>
+					</p>
+				<?php endif; ?>
 				<div class="lotes-resumen" aria-label="Resumen de lotes">
 					<div class="lote-resumen-tarjeta">
 						<span>Lotes registrados</span>
@@ -184,6 +195,13 @@ foreach ($lotes as $lote){
     			    	        <span>Cantidad disponible</span>
     			    	        <strong><?= $escapar($lote['cantidad']) ?></strong>
     			    	    </div>
+						<form class="lote-eliminar-formulario" action="../controllers/lotes.php" method="post" data-confirmar-eliminacion-lote>
+							<input type="hidden" name="accion" value="eliminar">
+							<input type="hidden" name="csrf" value="<?= $escapar($_SESSION['csrf_lotes']) ?>">
+							<input type="hidden" name="id_producto" value="<?= (int) $lote['id_producto'] ?>">
+							<input type="hidden" name="lote" value="<?= $escapar($lote['lote']) ?>">
+							<button class="btn btn-peligro btn-chico" type="submit" aria-label="Eliminar lote <?= $escapar($lote['lote']) ?>">Eliminar lote</button>
+						</form>
     			    	</article>
     				<?php endforeach; ?>
 				</div>
@@ -301,6 +319,14 @@ foreach ($lotes as $lote){
 		buscarLote.addEventListener('input', filtrarLotes);
 		filtroLote.addEventListener('change', filtrarLotes);
 		filtrarLotes();
+
+		document.querySelectorAll('[data-confirmar-eliminacion-lote]').forEach((formulario) => {
+			formulario.addEventListener('submit', (evento) => {
+				if (!window.confirm('¿Eliminar permanentemente este lote?')) {
+					evento.preventDefault();
+				}
+			});
+		});
 	</script>
 	<script src="js/lotes.js" defer></script>
 </body>
