@@ -79,8 +79,7 @@ unset($_SESSION['error']);
         }
 
         main .panel-inicio {
-            /* flex: 1; */
-            flex: 1 0 auto;
+            flex: 1;
             min-height: 0;
             align-items: stretch;
         }
@@ -106,16 +105,14 @@ unset($_SESSION['error']);
         }
 
         .columna-lateral .tarjeta:last-child {
-            /* flex: 0 1 auto; */
-            flex: 1 1 0;
+            flex: 0 1 auto;
             min-height: 0;
             display: flex;
             flex-direction: column;
         }
 
         .columna-lateral .tarjeta:last-child .tabla-envoltura {
-            /* flex: 0 1 auto; */
-            flex: 1 1 0;
+            flex: 0 1 auto;
             min-height: 0;
             max-height: none;
         }
