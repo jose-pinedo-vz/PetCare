@@ -55,7 +55,7 @@ if (!empty($cliente['fecha_nacimiento'])) {
     $fechaNacimientoTexto = date('d/m/Y', strtotime($cliente['fecha_nacimiento']));
 }
 
-// Dirección en una sola línea: Calle 12 Int. 3, Col. Centro, C.P. 44100, Guadalajara, Jalisco
+// Dirección en una sola línea: Calle 12 Int. 3, Col. San Francisco, C.P. 99700, Tlaltenango, Zacatecas
 $calleNumero = trim(($cliente['calle'] ?? '') . ' ' . ($cliente['numero_exterior'] ?? ''));
 if (!empty($cliente['numero_interior'])) {
     $calleNumero .= ' Int. ' . $cliente['numero_interior'];
@@ -272,24 +272,24 @@ $diezDigitos = 'inputmode="numeric" minlength="10" maxlength="10" pattern="[0-9]
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="codigo_postal">Código postal</label>
-                            <input class="campo__entrada" type="text" id="codigo_postal" name="codigo_postal" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" title="5 dígitos" placeholder="Ej. 44100" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= valorPerfil($old, $cliente, 'codigo_postal') ?>">
+                            <input class="campo__entrada" type="text" id="codigo_postal" name="codigo_postal" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" title="5 dígitos" placeholder="Ej. 99700" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= valorPerfil($old, $cliente, 'codigo_postal') ?>">
                             <small class="campo__ayuda" id="cp_mensaje"></small>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="colonia">Colonia</label>
-                            <input class="campo__entrada" type="text" id="colonia" name="colonia" maxlength="60" list="lista_colonias" placeholder="Ej. Centro" value="<?= valorPerfil($old, $cliente, 'colonia') ?>">
+                            <input class="campo__entrada" type="text" id="colonia" name="colonia" maxlength="60" list="lista_colonias" placeholder="Ej. San Francisco" value="<?= valorPerfil($old, $cliente, 'colonia') ?>">
                             <datalist id="lista_colonias"></datalist>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="ciudad">Ciudad</label>
-                            <input class="campo__entrada" type="text" id="ciudad" name="ciudad" maxlength="60" placeholder="Ej. Guadalajara" value="<?= valorPerfil($old, $cliente, 'ciudad') ?>">
+                            <input class="campo__entrada" type="text" id="ciudad" name="ciudad" maxlength="60" placeholder="Ej. Tlaltenango" value="<?= valorPerfil($old, $cliente, 'ciudad') ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="estado">Estado</label>
-                            <input class="campo__entrada" type="text" id="estado" name="estado" maxlength="60" placeholder="Ej. Jalisco" value="<?= valorPerfil($old, $cliente, 'estado') ?>">
+                            <input class="campo__entrada" type="text" id="estado" name="estado" maxlength="60" placeholder="Ej. Zacatecas" value="<?= valorPerfil($old, $cliente, 'estado') ?>">
                         </div>
                     </div>
 

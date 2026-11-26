@@ -83,8 +83,8 @@ $paginaActiva = 'inicio';
                 <article class="tarjeta tarjeta--oscura tarjeta-servicio-mini">
                     <h3 class="tarjeta-servicio-mini__titulo">Hotel de mascotas</h3>
                     <p class="tarjeta-servicio-mini__texto">Hospedaje para perros, gatos y otros mamíferos pequeños. Pedimos el esquema de vacunación completo. El baño y los cortes se cobran aparte.</p>
-                    <p class="tarjeta-servicio-mini__precio">Consulta disponibilidad con nosotros</p>
-                    <a class="boton boton--secundario boton--chico" href="solicitar_reservacion.php">Reservar hotel</a>
+                    <!-- Las reservaciones de hotel se hacen en sucursal; un empleado las registra en su panel -->
+                    <p class="tarjeta-servicio-mini__precio">Reserva en sucursal: visítanos con tu mascota y nuestro equipo registrará tu reservación.</p>
                 </article>
             </div>
         </section>
@@ -117,23 +117,23 @@ $paginaActiva = 'inicio';
                     <h3 class="bloque-informacion__titulo">Quiénes somos</h3>
 
                     <h4 class="bloque-informacion__dato">Misión</h4>
-                    <p class="bloque-informacion__valor">[Texto de la misión del negocio]</p>
+                    <p class="bloque-informacion__valor">Cuidar la salud y el bienestar de cada mascota con atención veterinaria, estética y hospedaje de calidad, tratando a cada animal con el cariño y respeto que merece, y acompañando a sus familias con información clara y un trato cercano.</p>
 
                     <h4 class="bloque-informacion__dato">Visión</h4>
-                    <p class="bloque-informacion__valor">[Texto de la visión del negocio]</p>
+                    <p class="bloque-informacion__valor">Ser la veterinaria de confianza de Tlaltenango y la región, reconocida por la calidad de nuestros servicios, la preparación de nuestro equipo y por hacer que cada visita sea una experiencia tranquila para las mascotas y sus dueños.</p>
                 </article>
 
                 <article class="tarjeta">
                     <h3 class="bloque-informacion__titulo">Contacto</h3>
 
                     <h4 class="bloque-informacion__dato">Teléfono</h4>
-                    <p class="bloque-informacion__valor">[Teléfono]</p>
+                    <p class="bloque-informacion__valor">437 954 1234</p>
 
                     <h4 class="bloque-informacion__dato">WhatsApp</h4>
-                    <p class="bloque-informacion__valor">[WhatsApp]</p>
+                    <p class="bloque-informacion__valor">437 105 4321</p>
 
                     <h4 class="bloque-informacion__dato">Dirección</h4>
-                    <p class="bloque-informacion__valor">[Dirección]</p>
+                    <p class="bloque-informacion__valor">Av. de las Mascotas 123, Col. San Francisco, Tlaltenango de Sánchez Román, Zacatecas, C.P. 99700</p>
 
                     <h4 class="bloque-informacion__dato">Horario</h4>
                     <p class="bloque-informacion__valor">9:00 a 19:00</p>
