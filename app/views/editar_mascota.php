@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../models/Mascota.php';
 require_once __DIR__ . '/../models/Cliente.php';
+require_once __DIR__ . '/../controllers/fecha.php';
 
 
 $idMascota = filter_input(INPUT_GET, 'id_mascota', FILTER_VALIDATE_INT);
@@ -409,8 +410,8 @@ foreach ($especies as $registroEspecie) {
                     }
                 ?>
                 <div class="tarjeta-vacuna">
-                    <span class="titulo-vacuna"> ✔ <?php echo $escapar($catVac['nombre']) ?> </span>
-                    <small class="nota-campo">Aplicada en la clinica <?php echo $info['fecha_clinica'] !== '' ? ' el ' . $escapar($info['fecha_clinica']) : '' ?></small>
+                    <span class="titulo-vacuna"><?php echo $escapar($catVac['nombre']) ?> </span>
+                    <small class="nota-campo">Aplicada en la clinica <?php echo $info['fecha_clinica'] !== '' ? ' el ' . formatearFechaEsp($escapar($info['fecha_clinica'])) : '' ?></small>
                 </div>
                 <?php endforeach; ?>
         

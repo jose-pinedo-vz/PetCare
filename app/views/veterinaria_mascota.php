@@ -47,10 +47,86 @@ unset($_SESSION['error']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Veterinaria PetCare - Datos Mascota</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
-  <style>
+  <style> 
     .columna-lateral .barra-acciones {
-    margin-top: 16px;
+        margin-top: 16px;
+        flex-shrink: 0;
     }
+
+    .columna-principal {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .tarjeta .tabla-envoltura {
+        overflow-y: auto;
+    }
+
+    .tarjeta .tabla-envoltura thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    @media (min-width: 769px) {
+        main {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        main .panel-inicio {
+            /* flex: 1; */
+            flex: 1 0 auto;
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .columna-principal,
+        .columna-lateral {
+            min-height: 0;
+        }
+
+        .columna-principal .tarjeta {
+            flex: 0 0 auto;
+        }
+
+        .columna-lateral {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .columna-lateral .tarjeta {
+            flex: 0 0 auto;
+        }
+
+        .columna-lateral .tarjeta:last-child {
+            /* flex: 0 1 auto; */
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .columna-lateral .tarjeta:last-child .tabla-envoltura {
+            /* flex: 0 1 auto; */
+            flex: 1 1 0;
+            min-height: 0;
+            max-height: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tarjeta .tabla-envoltura {
+            max-height: 360px;
+        }
+    }
+
   </style>
 </head>
 

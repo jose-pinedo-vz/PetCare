@@ -159,7 +159,7 @@ function historialVacunas(): array {
             SELECT m.id_mascota, m.nombre AS mascota, lv.nombre AS tipo_vacunas,
                    v.fecha_aplicacion, v.lote, v.fecha_proxima
             FROM vacunas v, mascotas m, lista_vacunas lv
-            WHERE v.id_mascota = m.id_mascota AND v.vacuna_puesta = lv.id AND m.esta_activo = 1
+            WHERE v.id_mascota = m.id_mascota AND v.vacuna_puesta = lv.id AND m.esta_activo = 1 AND v.fecha_proxima IS NOT NULL
             ORDER BY v.fecha_aplicacion IS NULL, v.fecha_aplicacion DESC, v.id_vacuna DESC
             LIMIT 100
         ";

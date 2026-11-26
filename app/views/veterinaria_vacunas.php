@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../controllers/veterinaria_vacunas.php';
+require_once __DIR__ . '/../controllers/fecha.php';
 
 $lista_vacunas=listado_Vacunas()['listaVacunas'];
 
@@ -48,76 +49,84 @@ if ($modalError === 'eliminar') {
   <link rel="stylesheet" href="css/estilos_base_v2.css">
 
   <style>
-    #modalAgregar input.campo,
-    #modalEditar input.campo {
-      margin-bottom: 14px;
-    }
+        #modalAgregar input.campo,
+        #modalEditar input.campo {
+            margin-bottom: 14px;
+        }
 
-    .columna-lateral .tarjeta > .btn {
-      margin-top: 12px;
-      align-self: flex-start;
-      flex-shrink: 0;
-    }
-    /* Espacio entre las dos tarjetas de historial */
-  .columna-principal {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+        .columna-lateral .tarjeta > .btn {
+            margin-top: 12px;
+            align-self: flex-start;
+            flex-shrink: 0;
+        }
 
-  /* Cada tabla tiene su propio scroll y el encabezado se queda fijo */
-  .tarjeta .tabla-envoltura {
-    overflow-y: auto;
-  }
+        .columna-principal {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
-  .tarjeta .tabla-envoltura thead th {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
+        .tarjeta .tabla-envoltura {
+            overflow-y: auto;
+        }
 
-  /* Escritorio: la pantalla ocupa exactamente el alto de la ventana */
-  @media (min-width: 769px) {
-    main {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      box-sizing: border-box;
-      overflow-y: auto;
-    }
+        .tarjeta .tabla-envoltura thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
 
-    main .panel-inicio {
-      flex: 1;
-      min-height: 0;
-      align-items: stretch;
-    }
+        @media (min-width: 769px) {
+            main {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                box-sizing: border-box;
+                overflow-y: auto;
+            }
 
-    .columna-lateral,
-    .columna-principal {
-      min-height: 0;
-    }
+            main .panel-inicio {
+                flex: 1;
+                min-height: 0;
+                align-items: stretch;
+            }
 
-    /* Todas las tarjetas se reparten el alto disponible */
-    .columna-lateral .tarjeta,
-    .columna-principal .tarjeta {
-      flex: 1 1 0;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-    }
+            .columna-lateral,
+            .columna-principal {
+                min-height: 0;
+            }
 
-    .tarjeta .tabla-envoltura {
-      flex: 1;
-      min-height: 0;
-    }
-  }
+            .columna-lateral .tarjeta,
+            .columna-principal .tarjeta {
+                flex: 0 1 auto;
+                display: flex;
+                flex-direction: column;
+                min-height: 0;
+            }
 
-  /* Celular: sin alto fijo, pero con tope para que las tablas no se alarguen */
-  @media (max-width: 768px) {
-    .tarjeta .tabla-envoltura {
-      max-height: 360px;
-    }
-  }
+            .columna-lateral .tarjeta {
+                max-height: 100%;
+            }
+            .columna-principal .tarjeta {
+                max-height: calc(50% - 8px);
+                /* flex: 1 1 0; */
+                /* min-height: 0; */
+                /* display: flex; */
+                /* flex-direction: column; */
+            }
+
+            .tarjeta .tabla-envoltura {
+                /* flex: 1; */
+                flex: 0 1 auto;
+                min-height: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tarjeta .tabla-envoltura {
+                max-height: 360px;
+            }
+        }
   </style>
 </head>
 
@@ -181,9 +190,9 @@ if ($modalError === 'eliminar') {
                         <?php foreach ($vacunas as $v): ?>
                             <tr>
                                 <td><?= htmlspecialchars($v['mascota']) ?></td>
-                                <td><?= !empty($v['fecha_aplicacion']) ? htmlspecialchars((string)$v['fecha_aplicacion']) : 'Sin fecha' ?></td>
+                                <td><?= !empty($v['fecha_aplicacion']) ? formatearFechaEsp(htmlspecialchars((string)$v['fecha_aplicacion'])) : 'Sin fecha' ?></td>
                                 <td><?= htmlspecialchars($v['tipo_vacunas']) ?></td>
-                                <td><?= !empty($v['fecha_proxima']) ? htmlspecialchars((string)$v['fecha_proxima']) : 'Sin fecha' ?></td>
+                                <td><?= !empty($v['fecha_proxima']) ? formatearFechaEsp(htmlspecialchars((string)$v['fecha_proxima'])) : 'Sin fecha' ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
