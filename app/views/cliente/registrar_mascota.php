@@ -111,10 +111,10 @@ $paginaActiva = 'mascotas';
                             <textarea class="campo__entrada" id="medicamentos" name="medicamentos" rows="3" maxlength="500" placeholder="Ej. Insulina cada 12 horas"><?= htmlspecialchars($old['medicamentos'] ?? '') ?></textarea>
                         </div>-->
 
-                        <div class="campo">
+                        <!--<div class="campo">
                             <label class="campo__etiqueta" for="condiciones_especiales">Condiciones especiales</label>
                             <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3" maxlength="500" placeholder="Ej. Ciego de un ojo"><?= htmlspecialchars($old['condiciones_especiales'] ?? '') ?></textarea>
-                        </div>
+                        </div>-->
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="ultima_desparasitacion">Última desparasitación</label>
