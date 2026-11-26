@@ -16,7 +16,13 @@ $idMascota = (int)($_GET['mascota'] ?? $_GET['id_mascota'] ?? 0);
 $fecha = (string)($_GET['fecha'] ?? '');
 $hora = (string)($_GET['hora'] ?? '');
 $error = $_SESSION['error_cita'] ?? '';
-unset($_SESSION['error_cita']);
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['error_cita'], $_SESSION['old']);
+
+// Valor anterior del formulario, ya escapado
+$v = function (string $clave) use ($old): string {
+    return htmlspecialchars(is_string($old[$clave] ?? null) ? $old[$clave] : '');
+};
 $srv = $idServicio ? CitasCliente::servicio($idServicio) : null;
 $ocupadas = ($srv && $fecha !== '') ? CitasCliente::horasOcupadas($idServicio, $fecha) : [];
 $minFecha = date('Y-m-d');
@@ -92,7 +98,7 @@ $minFecha = date('Y-m-d');
                     <div class="formulario-rejilla">
                         <div class="campo campo--ancho-completo">
                             <label class="campo__etiqueta" for="motivo">Motivo o comentarios</label>
-                            <textarea class="campo__entrada" id="motivo" name="motivo" rows="3" maxlength="250"></textarea>
+                            <textarea class="campo__entrada" id="motivo" name="motivo" rows="3" maxlength="250"><?= $v('motivo') ?></textarea>
                         </div>
                     </div>
 
@@ -121,8 +127,18 @@ $minFecha = date('Y-m-d');
         </div>
     </main>
     <script>
+    // Al cambiar servicio, mascota o fecha la pagina se recarga para mostrar los horarios;
+    // el motivo se guarda un momento en el navegador para no perderlo en la recarga.
+    var motivo = document.getElementById('motivo');
+    try {
+        var guardado = sessionStorage.getItem('cita_motivo');
+        if (guardado !== null && motivo.value === '') motivo.value = guardado;
+        sessionStorage.removeItem('cita_motivo');
+    } catch (e) {}
+
     function recargar() {
         var f = document.getElementById('formCita');
+        try { sessionStorage.setItem('cita_motivo', motivo.value); } catch (e) {}
         var q = new URLSearchParams({
             servicio: f.servicio.value, mascota: f.mascota.value, fecha: f.fecha.value, hora: ''
         });

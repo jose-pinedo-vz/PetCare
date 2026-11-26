@@ -2,7 +2,13 @@
 session_start();
 $errores = $_SESSION['errores'] ?? [];
 $exito = $_SESSION['exito'] ?? '';
+$old = $_SESSION['old'] ?? [];
 unset($_SESSION['errores'], $_SESSION['exito'], $_SESSION['old']);
+
+// Valor anterior del formulario, ya escapado
+$v = function (string $clave) use ($old): string {
+    return htmlspecialchars(is_string($old[$clave] ?? null) ? $old[$clave] : '');
+};
 $paginaActiva = '';
 ?>
 <!DOCTYPE html>
@@ -38,7 +44,7 @@ $paginaActiva = '';
                 <div class="formulario-rejilla">
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="correo">Correo electrónico</label>
-                        <input class="campo__entrada" type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
+                        <input class="campo__entrada" type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" value="<?= $v('correo') ?>" required>
                     </div>
                 </div>
 
