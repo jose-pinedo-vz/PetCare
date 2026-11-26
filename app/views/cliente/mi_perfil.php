@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Página privada: si no hay sesión de cliente, al login
+
 if (empty($_SESSION['id_cliente'])) {
     header('Location: iniciar_sesion.php');
     exit;
@@ -15,19 +15,18 @@ require_once __DIR__ . '/../../models/Mascota.php';
 $idCliente = (int) $_SESSION['id_cliente'];
 $cliente = Cliente::obtenerPorId($idCliente);
 
-// Si no se pudieron leer los datos (cuenta borrada o falla de la base), lo mandamos a inicio
+
 if (!$cliente) {
     header('Location: inicio.php');
     exit;
 }
 
-// Mensajes que manda el controlador
+
 $errores = $_SESSION['perfil_errores'] ?? [];
 $exito   = $_SESSION['perfil_exito'] ?? '';
 $old     = $_SESSION['perfil_old'] ?? [];
 unset($_SESSION['perfil_errores'], $_SESSION['perfil_exito'], $_SESSION['perfil_old']);
 
-// Modo edición: mi_perfil.php?editar=1
 $editando = isset($_GET['editar']);
 
 // Contador para la portada
@@ -55,19 +54,26 @@ if (!empty($cliente['fecha_nacimiento'])) {
     $fechaNacimientoTexto = date('d/m/Y', strtotime($cliente['fecha_nacimiento']));
 }
 
-// Dirección en una sola línea: Calle 12 Int. 3, Col. San Francisco, C.P. 99700, Tlaltenango, Zacatecas
-$calleNumero = trim(($cliente['calle'] ?? '') . ' ' . ($cliente['numero_exterior'] ?? ''));
-if (!empty($cliente['numero_interior'])) {
-    $calleNumero .= ' Int. ' . $cliente['numero_interior'];
-}
-$partesDireccion = array_filter([
-    $calleNumero,
-    !empty($cliente['colonia']) ? 'Col. ' . $cliente['colonia'] : '',
-    !empty($cliente['codigo_postal']) ? 'C.P. ' . $cliente['codigo_postal'] : '',
-    $cliente['ciudad'] ?? '',
-    $cliente['estado'] ?? '',
-], fn($parte) => trim((string) $parte) !== '');
-$direccionTexto = implode(', ', $partesDireccion);
+// Vista principal: cada campo de la tabla clientes por sección (columna => etiqueta), igual que el formulario
+$seccionesPerfil = [
+    'Datos personales' => [
+        'nombre' => 'Nombres', 'apellido' => 'Apellidos', 'usuario' => 'Usuario',
+        'fecha_nacimiento' => 'Fecha de nacimiento', 'sexo' => 'Sexo', 'rfc' => 'RFC',
+    ],
+    'Contacto' => [
+        'telefono' => 'Teléfono', 'telefono_alternativo' => 'Teléfono alternativo', 'correo' => 'Correo',
+    ],
+    'Dirección' => [
+        'calle' => 'Calle', 'numero_exterior' => 'Número exterior', 'numero_interior' => 'Número interior',
+        'codigo_postal' => 'Código postal', 'colonia' => 'Colonia', 'ciudad' => 'Ciudad', 'estado' => 'Estado',
+    ],
+    'Contacto de emergencia' => [
+        'contacto_emergencia' => 'Nombre', 'telefono_emergencia' => 'Teléfono',
+    ],
+];
+// La fecha se muestra como 25/11/1990
+$datosVista = $cliente;
+$datosVista['fecha_nacimiento'] = $fechaNacimientoTexto;
 
 // Fecha mínima para ser mayor de edad
 $fechaMaxima = date('Y-m-d', strtotime('-18 years'));
@@ -133,60 +139,17 @@ $diezDigitos = 'inputmode="numeric" minlength="10" maxlength="10" pattern="[0-9]
 
             <?php if (!$editando): ?>
 
-                <dl class="perfil-datos">
-                    <div class="perfil-datos__fila">
-                        <dt>Nombre</dt>
-                        <dd><?= htmlspecialchars($nombreCompleto) ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Usuario</dt>
-                        <dd><?= datoPerfil($cliente, 'usuario') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Fecha de nacimiento</dt>
-                        <dd><?= $fechaNacimientoTexto !== '' ? htmlspecialchars($fechaNacimientoTexto) : datoPerfil($cliente, 'fecha_nacimiento') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Sexo</dt>
-                        <dd><?= datoPerfil($cliente, 'sexo') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>RFC</dt>
-                        <dd><?= datoPerfil($cliente, 'rfc') ?></dd>
-                    </div>
-                </dl>
-
-                <h3 class="perfil-seccion__subtitulo">Contacto</h3>
-                <dl class="perfil-datos">
-                    <div class="perfil-datos__fila">
-                        <dt>Teléfono</dt>
-                        <dd><?= datoPerfil($cliente, 'telefono') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Teléfono alternativo</dt>
-                        <dd><?= datoPerfil($cliente, 'telefono_alternativo') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Correo</dt>
-                        <dd><?= datoPerfil($cliente, 'correo') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Dirección</dt>
-                        <dd><?= $direccionTexto !== '' ? htmlspecialchars($direccionTexto) : '<span class="perfil-datos__vacio">Sin registrar</span>' ?></dd>
-                    </div>
-                </dl>
-
-                <h3 class="perfil-seccion__subtitulo">Contacto de emergencia</h3>
-                <dl class="perfil-datos">
-                    <div class="perfil-datos__fila">
-                        <dt>Nombre</dt>
-                        <dd><?= datoPerfil($cliente, 'contacto_emergencia') ?></dd>
-                    </div>
-                    <div class="perfil-datos__fila">
-                        <dt>Teléfono</dt>
-                        <dd><?= datoPerfil($cliente, 'telefono_emergencia') ?></dd>
-                    </div>
-                </dl>
+                <?php foreach ($seccionesPerfil as $tituloSeccion => $camposSeccion): ?>
+                    <h3 class="perfil-seccion__subtitulo"><?= htmlspecialchars($tituloSeccion) ?></h3>
+                    <dl class="perfil-datos">
+                        <?php foreach ($camposSeccion as $campo => $etiqueta): ?>
+                            <div class="perfil-datos__fila">
+                                <dt><?= htmlspecialchars($etiqueta) ?></dt>
+                                <dd><?= datoPerfil($datosVista, $campo) ?></dd>
+                            </div>
+                        <?php endforeach; ?>
+                    </dl>
+                <?php endforeach; ?>
 
             <?php else: ?>
 

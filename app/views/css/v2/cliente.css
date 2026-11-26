@@ -1257,3 +1257,47 @@ img.foto-marcador         { width: 100%; object-fit: cover; }
         gap: 2px;
     }
 }
+
+/* ===== Recorte de foto de mascota =====
+   Mismo recorte cuadrado que el empleado (js/crop-mascota.js + Cropper.js).
+   Los ids son los mismos que usa modulos.css; aquí solo cambian los colores. */
+#preview-crop {
+    display: none;
+}
+
+#modal-crop {
+    display: none; /* el JS lo cambia a flex al elegir una foto */
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(73, 49, 23, .7);
+}
+
+#modal-crop .caja {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: var(--radio-tarjeta);
+    background: var(--color-blanco);
+}
+
+#modal-crop .caja h3 {
+    margin: 0 0 12px;
+    color: var(--color-cafe-oscuro);
+}
+
+#imagen-a-recortar {
+    display: block;
+    max-width: 100%;
+    max-height: 60vh;
+}
+
+.crop-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+}

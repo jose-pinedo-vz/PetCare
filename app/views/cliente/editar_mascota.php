@@ -38,6 +38,7 @@ $foto = rutaFotoMascota($mascota['fotografia']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar mascota</title>
     <link rel="stylesheet" href="../css/v2/cliente.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 </head>
 <body>
     <?php include __DIR__ . '/../layout/menu_cliente.php'; ?>
@@ -63,13 +64,15 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                 <div class="formulario-con-foto">
                     <div>
                         <?php if ($foto): ?>
-                            <img class="foto-marcador foto-marcador--subir" src="../../../<?= htmlspecialchars($foto) ?>" alt="Foto de <?= $v('nombre') ?>">
+                            <img class="foto-marcador foto-marcador--subir" id="foto-actual" src="../../../<?= htmlspecialchars($foto) ?>" alt="Foto de <?= $v('nombre') ?>">
                         <?php else: ?>
-                            <div class="foto-marcador foto-marcador--subir">Foto de la mascota</div>
+                            <div class="foto-marcador foto-marcador--subir" id="foto-actual">Foto de la mascota</div>
                         <?php endif; ?>
+                        <img id="preview-crop" class="foto-marcador foto-marcador--subir" alt="Vista previa de la foto recortada">
                         <div class="campo">
                             <label class="campo__etiqueta" for="fotografia">Cambiar foto</label>
                             <input class="campo__entrada" type="file" id="fotografia" name="fotografia" accept="image/*">
+                            <small class="campo__ayuda">Al elegir una foto se abrirá un cuadro para recortarla en cuadrado.</small>
                         </div>
                     </div>
 
@@ -164,6 +167,17 @@ $foto = rutaFotoMascota($mascota['fotografia']);
                     <button class="boton" type="submit">Guardar cambios</button>
                     <a class="boton boton--contorno" href="mis_mascotas.php">Cancelar</a>
                 </div>
+                <!-- Recorte cuadrado de la foto (el mismo del lado del empleado) -->
+                <div id="modal-crop">
+                    <div class="caja">
+                        <h3>Recortar foto (cuadrado)</h3>
+                        <img id="imagen-a-recortar" alt="Imagen a recortar">
+                        <div class="crop-acciones">
+                            <button type="button" id="btn-cancelar-crop" class="boton boton--contorno boton--chico">Cancelar</button>
+                            <button type="button" id="btn-recortar" class="boton boton--chico">Recortar y usar</button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </main>
@@ -171,37 +185,18 @@ $foto = rutaFotoMascota($mascota['fotografia']);
     <footer class="pie-pagina">
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
+    <!-- Recorte de la foto: mismo código que el formulario del empleado -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="../js/crop-mascota.js"></script>
     <script>
-    // Vista previa: al elegir una foto se muestra de inmediato.
-    // Todavía NO se guarda; se sube hasta dar clic en el botón del formulario.
+    // Cuando ya hay foto recortada se oculta la foto anterior (o el recuadro vacío)
     (function () {
-        const campo = document.getElementById('fotografia');
-        const original = document.querySelector('.foto-marcador--subir');
-        if (!campo || !original) return;
-
-        let vista = null;
-
-        campo.addEventListener('change', function () {
-            const archivo = campo.files[0];
-
-            // Si quita la foto o elige algo que no es imagen, regresamos la original
-            if (!archivo || !archivo.type.startsWith('image/')) {
-                if (vista) { vista.replaceWith(original); vista = null; }
-                return;
-            }
-
-            if (!vista) {
-                vista = document.createElement('img');
-                vista.className = original.className;
-                vista.alt = 'Vista previa de la foto';
-                vista.style.objectFit = 'cover';
-                vista.style.padding = '0';
-                original.replaceWith(vista);
-            } else {
-                URL.revokeObjectURL(vista.src);
-            }
-            vista.src = URL.createObjectURL(archivo);
-        });
+        const recortada = document.getElementById('preview-crop');
+        const anterior = document.getElementById('foto-actual');
+        if (!recortada || !anterior) return;
+        new MutationObserver(function () {
+            anterior.style.display = recortada.getAttribute('src') ? 'none' : '';
+        }).observe(recortada, { attributes: true, attributeFilter: ['src'] });
     })();
     </script>
 </body>
