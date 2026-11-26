@@ -1,5 +1,5 @@
 (() => {
-    const tabs = Array.from(document.querySelectorAll('.corte-tab[role="tab"]'));
+    const tabs = Array.from(document.querySelectorAll('.corte-tab[role="tab"][data-tab]'));
     const panels = Array.from(document.querySelectorAll('.corte-panel[role="tabpanel"]'));
     const dialogArqueo = document.getElementById('modalArqueo');
     const dialogMovimiento = document.getElementById('modalSalida');
