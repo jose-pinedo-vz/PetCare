@@ -55,15 +55,16 @@ $servicios = Publico::servicios();
                     <ul class="tarjeta-servicio__requisitos">
                         <li>Esquema de vacunación completo (se revisa al llegar).</li>
                         <li>Baño y cortes se cobran aparte.</li>
-                        <li>La reservación la confirma nuestro equipo.</li>
+                        <li>La reservación se hace en sucursal y la registra nuestro equipo.</li>
                     </ul>
                     <div class="grupo-etiquetas">
-                        <span class="etiqueta etiqueta--sobre-oscuro">Precio por noche (por definir)</span>
+                        <span class="etiqueta etiqueta--sobre-oscuro">Desde $150 por noche (según tamaño)</span>
                     </div>
                 </div>
 
                 <div class="tarjeta-servicio__precio">
-                    <a class="boton boton--secundario" href="solicitar_reservacion.php">Solicitar reservación</a>
+                    <!-- Las reservaciones de hotel se hacen en sucursal; un empleado las registra en su panel -->
+                    <p class="tarjeta-servicio__texto">Reserva en sucursal: visítanos con tu mascota.</p>
                 </div>
             </article>
 

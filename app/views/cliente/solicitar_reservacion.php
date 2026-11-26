@@ -1,4 +1,9 @@
 <?php
+// Desactivado: las reservaciones de hotel se hacen en sucursal y las registra un empleado.
+// El codigo de abajo se conserva por si se vuelve a habilitar; para eso, quitar estas 2 lineas.
+header('Location: servicios.php');
+exit;
+
 session_start();
 if (empty($_SESSION['id_cliente'])) {
     header('Location: iniciar_sesion.php');
