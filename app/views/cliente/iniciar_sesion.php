@@ -3,7 +3,13 @@ session_start();
 
 $errores = $_SESSION['errores'] ?? [];
 $exito = $_SESSION['exito'] ?? '';
-unset($_SESSION['errores'], $_SESSION['exito']);
+$old = $_SESSION['old'] ?? [];
+unset($_SESSION['errores'], $_SESSION['exito'], $_SESSION['old']);
+
+// Valor anterior del formulario, ya escapado
+$v = function (string $clave) use ($old): string {
+    return htmlspecialchars(is_string($old[$clave] ?? null) ? $old[$clave] : '');
+};
 
 $paginaActiva = '';
 ?>
@@ -40,7 +46,7 @@ $paginaActiva = '';
                 <div class="formulario-rejilla">
                     <div class="campo campo--ancho-completo">
                         <label class="campo__etiqueta" for="usuario">Usuario</label>
-                        <input class="campo__entrada" type="text" id="usuario" name="usuario" required>
+                        <input class="campo__entrada" type="text" id="usuario" name="usuario" value="<?= $v('usuario') ?>" required>
                     </div>
 
                     <div class="campo campo--ancho-completo">

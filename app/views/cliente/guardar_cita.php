@@ -17,6 +17,8 @@ $hora = (string)($_POST['hora'] ?? '');
 $res = CitasCliente::agendar((int)$_SESSION['id_cliente'], $idMascota, $idServicio, $fecha, $hora, (string)($_POST['motivo'] ?? ''));
 if (!$res['ok']) {
     $_SESSION['error_cita'] = $res['error'];
+    // El motivo no viaja en la URL (puede ser informacion de salud); se guarda en sesion
+    $_SESSION['old'] = ['motivo' => (string)($_POST['motivo'] ?? '')];
     header('Location: agendar_cita.php?' . http_build_query(['servicio' => $idServicio, 'mascota' => $idMascota, 'fecha' => $fecha]));
     exit;
 }

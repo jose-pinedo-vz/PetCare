@@ -29,8 +29,6 @@ $nombre = htmlspecialchars($mascota['nombre']);
 $foto   = rutaFotoMascota($mascota['fotografia']);
 
 
-$vacunas = trim($mascota['vacunas'] ?? '');
-$tieneVacunas = $vacunas !== '' && strtolower($vacunas) !== 'ninguna';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -97,15 +95,20 @@ $tieneVacunas = $vacunas !== '' && strtolower($vacunas) !== 'ninguna';
                     <dt class="bloque-informacion__dato">Condiciones especiales</dt>
                     <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'condiciones_especiales', 'Ninguna') ?></dd>
 
+                    <dt class="bloque-informacion__dato">Enfermedades</dt>
+                    <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'enfermedades', 'Ninguna') ?></dd>
+
+                    <dt class="bloque-informacion__dato">Medicamentos</dt>
+                    <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'medicamentos', 'Ninguno') ?></dd>
+
+                    <dt class="bloque-informacion__dato">Restricciones para manejo</dt>
+                    <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'restricciones_para_manejo', 'Ninguna') ?></dd>
+
+                    <dt class="bloque-informacion__dato">Observaciones</dt>
+                    <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'observaciones', 'Ninguna') ?></dd>
+
                     <dt class="bloque-informacion__dato">Vacunas</dt>
-                    <dd class="bloque-informacion__valor">
-                        <?php if ($tieneVacunas): ?>
-                            <span class="etiqueta etiqueta--exito">Registradas</span>
-                            <?= htmlspecialchars($vacunas) ?>
-                        <?php else: ?>
-                            <span class="etiqueta">Sin vacunas registradas</span>
-                        <?php endif; ?>
-                    </dd>
+                    <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'vacunas', 'Ninguna') ?></dd>
 
                     <dt class="bloque-informacion__dato">Última desparasitación</dt>
                     <dd class="bloque-informacion__valor"><?= datoMascota($mascota, 'ultima_desparasitacion') ?></dd>

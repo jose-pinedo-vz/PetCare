@@ -116,6 +116,14 @@ a {
     margin-top: 8px;
 }
 
+/* En la tarjeta de mascota: "Agendar cita" ocupa todo el ancho y Editar / Eliminar se reparten abajo */
+.tarjeta-mascota .grupo-botones--compacto .boton {
+    flex: 1 1 0;
+}
+.tarjeta-mascota .grupo-botones--compacto .boton:first-child {
+    flex-basis: 100%;
+}
+
 .encabezado-pagina {
     display: flex;
     justify-content: space-between;
@@ -395,6 +403,11 @@ a {
     gap: 6px;
 }
 
+/* Un campo con el atributo hidden no se muestra (ej. "¿Qué color?" hasta elegir Otro) */
+.campo[hidden] {
+    display: none;
+}
+
 .campo--ancho-completo {
     flex-basis: 100%;
 }
@@ -469,9 +482,14 @@ textarea.campo__entrada {
 
 .foto-marcador--hero      { flex: 1 1 400px; height: 380px; }
 .foto-marcador--servicio  { height: 130px; }
-.foto-marcador--mascota   { height: 170px; }
+/* Fotos de mascota: el mismo cuadrado de 240 x 240 al subirla, en Mis mascotas y en el detalle
+   (la foto se recorta en cuadrado con crop-mascota.js) */
+.foto-marcador--mascota   { width: 240px; height: 240px; border-radius: 20px; align-self: center; }
 img.foto-marcador         { width: 100%; object-fit: cover; }
 .foto-marcador--subir     { width: 240px; height: 240px; gap: 12px; border-radius: 20px; }
+img.foto-marcador--mascota,
+img.foto-marcador--ficha,
+img.foto-marcador--subir  { width: 240px; padding: 0; } /* la foto llena todo el cuadrado */
 
 .foto-marcador--avatar {
     width: 120px;
@@ -646,9 +664,11 @@ img.foto-marcador         { width: 100%; object-fit: cover; }
 }
 
 /*12*/
+/* La tarjeta mide lo mismo que la foto (240px) + su padding (22px por lado) + borde,
+   así la foto llena todo el ancho y no quedan huecos a los lados */
 .tarjeta-mascota {
-    flex: 1 1 320px;
-    max-width: 350px;
+    flex: 0 0 286px;
+    width: 286px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -666,8 +686,8 @@ img.foto-marcador         { width: 100%; object-fit: cover; }
 }
 
 .tarjeta-agregar {
-    flex: 1 1 320px;
-    max-width: 350px;
+    flex: 0 0 286px;
+    width: 286px;
     min-height: 340px;
     display: flex;
     flex-direction: column;
@@ -1060,8 +1080,10 @@ img.foto-marcador         { width: 100%; object-fit: cover; }
 }
 /* Ficha de la mascota (detalle_mascota) */
 .foto-marcador--ficha {
-    height: 220px;
-    margin-bottom: 20px;
+    width: 240px;
+    height: 240px;
+    border-radius: 20px;
+    margin: 0 auto 20px;
 }
 
 /* Mensajes de los formularios */
@@ -1251,4 +1273,48 @@ img.foto-marcador         { width: 100%; object-fit: cover; }
         grid-template-columns: 1fr;
         gap: 2px;
     }
+}
+
+/* ===== Recorte de foto de mascota =====
+   Mismo recorte cuadrado que el empleado (js/crop-mascota.js + Cropper.js).
+   Los ids son los mismos que usa modulos.css; aquí solo cambian los colores. */
+#preview-crop {
+    display: none;
+}
+
+#modal-crop {
+    display: none; /* el JS lo cambia a flex al elegir una foto */
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(73, 49, 23, .7);
+}
+
+#modal-crop .caja {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: var(--radio-tarjeta);
+    background: var(--color-blanco);
+}
+
+#modal-crop .caja h3 {
+    margin: 0 0 12px;
+    color: var(--color-cafe-oscuro);
+}
+
+#imagen-a-recortar {
+    display: block;
+    max-width: 100%;
+    max-height: 60vh;
+}
+
+.crop-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
 }

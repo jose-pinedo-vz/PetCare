@@ -376,6 +376,15 @@ class Mascota {
         }
     }
 
+    // Colores para el desplegable (la BD no tiene tabla de colores; es la misma lista del formulario del empleado)
+    public static function coloresDisponibles(): array {
+        return [
+            'Blanco', 'Negro', 'Gris', 'Café', 'Amarillo', 'Verde', 'Rojo',
+            'Blanco y negro', 'Café y blanco', 'Café y amarillo', 'Blanco y gris',
+            'Verde y amarillo', 'Blanco, amarillo y negro',
+        ];
+    }
+
     public static function especieRazaExiste(string $especie, string $raza): bool {
         try {
             $conexion = ConexionDB::obtenerConexion();

@@ -105,6 +105,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST')
 if ($error !== '' && ($_POST['origen'] ?? '') === 'cliente')
 {
     $_SESSION['errores']=['Usuario o contraseña incorrectos.'];
+    // se recuerda el usuario escrito (nunca la contraseña) para no volver a teclearlo
+    $_SESSION['old']=['usuario'=>is_string($_POST['usuario'] ?? null) ? trim($_POST['usuario']) : ''];
     header("Location: ../views/cliente/iniciar_sesion.php");
     exit();
 }

@@ -3,7 +3,12 @@ session_start();
 
 $errores = $_SESSION['errores'] ?? [];
 $old = $_SESSION['old'] ?? [];
-unset($_SESSION['errores'], $_SESSION['old']);
+unset($_SESSION['errores'], $_SESSION['old'], $_SESSION['nombre']);
+
+// Valor anterior del formulario, ya escapado (las contraseñas nunca se guardan)
+$v = function (string $clave) use ($old): string {
+    return htmlspecialchars(is_string($old[$clave] ?? null) ? $old[$clave] : '');
+};
 
 $paginaActiva = '';
 ?>
@@ -40,13 +45,12 @@ $paginaActiva = '';
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="usuario">Usuario <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="usuario" name="usuario" placeholder="Ej. maria.lopez" required
-                                value="<?php echo htmlspecialchars((string)($_SESSION['nombre'] ?? '')); unset($_SESSION['nombre']); ?>">
+                            <input class="campo__entrada" type="text" id="usuario" name="usuario" placeholder="Ej. maria.lopez" value="<?= $v('usuario') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="correo">Correo electrónico <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
+                            <input class="campo__entrada" type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" value="<?= $v('correo') ?>" required>
                         </div>
 
                         <div class="campo">
@@ -67,22 +71,22 @@ $paginaActiva = '';
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombres">Nombre(s) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="nombres" name="nombres" required>
+                            <input class="campo__entrada" type="text" id="nombres" name="nombres" value="<?= $v('nombres') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="apellidos">Apellidos <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="apellidos" name="apellidos" required>
+                            <input class="campo__entrada" type="text" id="apellidos" name="apellidos" value="<?= $v('apellidos') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="telefono">Teléfono <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="tel" id="telefono" name="telefono" placeholder="10 dígitos" maxlength="10" pattern="[0-9]{10}" required>
+                            <input class="campo__entrada" type="tel" id="telefono" name="telefono" placeholder="10 dígitos" maxlength="10" pattern="[0-9]{10}" value="<?= $v('telefono') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="direccion">Dirección (opcional)</label>
-                            <input class="campo__entrada" type="text" id="direccion" name="direccion">
+                            <input class="campo__entrada" type="text" id="direccion" name="direccion" value="<?= $v('direccion') ?>">
                         </div>
                     </div>
                 </fieldset>
@@ -93,12 +97,12 @@ $paginaActiva = '';
                     <div class="formulario-rejilla">
                         <div class="campo">
                             <label class="campo__etiqueta" for="emergencia_nombre">Nombre <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="text" id="emergencia_nombre" name="emergencia_nombre" required>
+                            <input class="campo__entrada" type="text" id="emergencia_nombre" name="emergencia_nombre" value="<?= $v('emergencia_nombre') ?>" required>
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="emergencia_telefono">Teléfono <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="tel" id="emergencia_telefono" name="emergencia_telefono" maxlength="10" pattern="[0-9]{10}" required>
+                            <input class="campo__entrada" type="tel" id="emergencia_telefono" name="emergencia_telefono" maxlength="10" pattern="[0-9]{10}" value="<?= $v('emergencia_telefono') ?>" required>
                         </div>
                     </div>
                 </fieldset>

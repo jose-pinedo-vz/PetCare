@@ -18,6 +18,7 @@ $paginaActiva = 'mascotas';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar mascota</title>
     <link rel="stylesheet" href="../css/v2/cliente.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 </head>
 
 <body>
@@ -42,10 +43,12 @@ $paginaActiva = 'mascotas';
 
                 <div class="formulario-con-foto">
                     <div>
-                        <div class="foto-marcador foto-marcador--subir">Foto de tu mascota</div>
+                        <div class="foto-marcador foto-marcador--subir" id="foto-actual">Foto de tu mascota</div>
+                        <img id="preview-crop" class="foto-marcador foto-marcador--subir" alt="Vista previa de la foto recortada">
                         <div class="campo">
                             <label class="campo__etiqueta" for="fotografia">Subir foto</label>
                             <input class="campo__entrada" type="file" id="fotografia" name="fotografia" accept="image/*">
+                            <small class="campo__ayuda">Al elegir una foto se abrirá un cuadro para recortarla en cuadrado.</small>
                         </div>
                     </div>
 
@@ -53,35 +56,32 @@ $paginaActiva = 'mascotas';
                         <div class="campo">
                             <label class="campo__etiqueta" for="nombre">Nombre <span class="campo__obligatorio">*</span></label>
                             <input class="campo__entrada" type="text" id="nombre" name="nombre"
-                                placeholder="Ej. Luna" required
+                                placeholder="Ej. Luna" required maxlength="20" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+" title="Solo letras y espacios, sin números ni símbolos"
                                 value="<?= htmlspecialchars($old['nombre'] ?? '') ?>">
                         </div>
 
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="especie">Especie <span class="campo__obligatorio">*</span></label>
-                            <select class="campo__entrada" id="especie" name="especie" required>
-                                <option value="Perro">Perro</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="raza">Raza</label>
-                            <input class="campo__entrada" type="text" id="raza" name="raza" placeholder="Ej. Labrador" value="<?= htmlspecialchars($old['raza'] ?? '') ?>">
-                        </div>
+                        <?php
+                        // Especie, raza y color salen de la BD (desplegables)
+                        $valEspecie   = (string) ($old['especie'] ?? '');
+                        $valRaza      = (string) ($old['raza'] ?? '');
+                        $valColor     = (string) ($old['color'] ?? '');
+                        $valColorOtro = (string) ($old['color_otro'] ?? '');
+                        include __DIR__ . '/_campos_especie_raza_color.php';
+                        ?>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="sexo">Sexo <span class="campo__obligatorio">*</span></label>
                             <select class="campo__entrada" id="sexo" name="sexo" required>
-                                <option value="Hembra">Hembra</option>
-                                <option value="Macho">Macho</option>
+                                <option value="">Elige el sexo</option>
+                                <?php foreach (['Macho', 'Hembra'] as $opcion): ?>
+                                    <option value="<?= $opcion ?>" <?= ($old['sexo'] ?? '') === $opcion ? 'selected' : '' ?>><?= $opcion ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="edad">Edad (años) <span class="campo__obligatorio">*</span></label>
-                            <input class="campo__entrada" type="number" id="edad" name="edad" placeholder="Ej. 3" min="0" step="0.1" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
+                            <label class="campo__etiqueta" for="edad">Fecha de nacimiento <span class="campo__obligatorio">*</span></label>
+                            <input class="campo__entrada" type="date" id="edad" name="edad" min="<?= date('Y-m-d', strtotime('-40 years')) ?>" max="<?= date('Y-m-d') ?>" required value="<?= htmlspecialchars($old['edad'] ?? '') ?>">
                         </div>
 
                         <div class="campo">
@@ -90,46 +90,71 @@ $paginaActiva = 'mascotas';
                         </div>
 
                         <div class="campo">
-                            <label class="campo__etiqueta" for="color">Color</label>
-                            <input class="campo__entrada" type="text" id="color" name="color" value="<?= htmlspecialchars($old['color'] ?? '') ?>">
+                            <label class="campo__etiqueta" for="tamanio">Tamaño</label>
+                            <select class="campo__entrada" id="tamanio" name="tamanio">
+                                <?php foreach (['Pequeño', 'Mediano', 'Grande', 'Gigante'] as $opcion): ?>
+                                    <option value="<?= $opcion ?>" <?= ($old['tamanio'] ?? '') === $opcion ? 'selected' : '' ?>><?= $opcion ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+
+                        <!--<div class="campo">
+                            <label class="campo__etiqueta" for="alergias">Alergias</label>
+                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="3" maxlength="500" placeholder="Ej. Polen, pollo, penicilina"><?= htmlspecialchars($old['alergias'] ?? '') ?></textarea>
+                        </div>-->
+
+                        <!--<div class="campo">
+                            <label class="campo__etiqueta" for="enfermedades">Enfermedades</label>
+                            <textarea class="campo__entrada" id="enfermedades" name="enfermedades" rows="3" maxlength="500" placeholder="Ej. Diabetes, displasia de cadera"><?= htmlspecialchars($old['enfermedades'] ?? '') ?></textarea>
+                        </div>-->
+
+                        <!--<div class="campo">
+                            <label class="campo__etiqueta" for="medicamentos">Medicamentos</label>
+                            <textarea class="campo__entrada" id="medicamentos" name="medicamentos" rows="3" maxlength="500" placeholder="Ej. Insulina cada 12 horas"><?= htmlspecialchars($old['medicamentos'] ?? '') ?></textarea>
+                        </div>-->
+
+                        <!--<div class="campo">
+                            <label class="campo__etiqueta" for="condiciones_especiales">Condiciones especiales</label>
+                            <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3" maxlength="500" placeholder="Ej. Ciego de un ojo"><?= htmlspecialchars($old['condiciones_especiales'] ?? '') ?></textarea>
+                        </div>-->
+
+                        <div class="campo">
+                            <label class="campo__etiqueta" for="ultima_desparasitacion">Última desparasitación</label>
+                            <input class="campo__entrada" type="date" id="ultima_desparasitacion" name="ultima_desparasitacion" max="<?= date('Y-m-d') ?>" value="<?= substr(htmlspecialchars($old['ultima_desparasitacion'] ?? ''), 0, 10) ?>">
                         </div>
 
                         <div class="campo">
                             <label class="campo__etiqueta" for="temperamento">Temperamento</label>
-                            <select class="campo__entrada" id="temperamento" name="temperamento">
-                                <option value="">No estoy seguro</option>
-                                <option value="Tranquilo">Tranquilo</option>
-                                <option value="Juguetón">Juguetón</option>
-                                <option value="Nervioso">Nervioso</option>
-                                <option value="Reactivo">Reactivo o agresivo</option>
-                            </select>
+                            <textarea class="campo__entrada" id="temperamento" name="temperamento" rows="2" maxlength="100" placeholder="Ej. Dócil, juguetón, tímido"><?= htmlspecialchars($old['temperamento'] ?? '') ?></textarea>
                         </div>
 
-                        <div class="campo">
-                            <label class="campo__etiqueta" for="tamanio">Tamaño</label>
-                            <select class="campo__entrada" id="tamanio" name="tamanio">
-                                <option value="Pequeño">Pequeño</option>
-                                <option value="Mediano">Mediano</option>
-                                <option value="Grande">Grande</option>
-                                <option value="Gigante">Gigante</option>
-                            </select>
-                        </div>
+                        <!--<div class="campo">
+                            <label class="campo__etiqueta" for="restricciones_para_manejo">Restricciones para manejo</label>
+                            <textarea class="campo__entrada" id="restricciones_para_manejo" name="restricciones_para_manejo" rows="3" maxlength="500" placeholder="Ej. Usar bozal, no tocar las orejas"><?= htmlspecialchars($old['restricciones_para_manejo'] ?? '') ?></textarea>
+                        </div>-->
 
-                        <div class="campo campo--ancho-completo">
-                            <label class="campo__etiqueta" for="alergias">Alergias o cuidados</label>
-                            <textarea class="campo__entrada" id="alergias" name="alergias" rows="4" placeholder="Cuéntanos si hay algo que debamos saber"></textarea>
-                        </div>
-
-                        <div class="campo campo--ancho-completo">
-                            <label class="campo__etiqueta" for="condiciones_especiales">Condiciones especiales</label>
-                            <textarea class="campo__entrada" id="condiciones_especiales" name="condiciones_especiales" rows="3"></textarea>
-                        </div>
+                        <!--<div class="campo">
+                            <label class="campo__etiqueta" for="observaciones">Observaciones</label>
+                            <textarea class="campo__entrada" id="observaciones" name="observaciones" rows="3" maxlength="500" placeholder="Ej. Se pone nervioso con otros perros"><?= htmlspecialchars($old['observaciones'] ?? '') ?></textarea>
+                        </div>-->
                     </div>
                 </div>
 
                 <div class="grupo-botones">
                     <button class="boton" type="submit">Guardar mascota</button>
                     <a class="boton boton--contorno" href="mis_mascotas.php">Cancelar</a>
+                </div>
+                <!-- Recorte cuadrado de la foto (el mismo del lado del empleado) -->
+                <div id="modal-crop">
+                    <div class="caja">
+                        <h3>Recortar foto (cuadrado)</h3>
+                        <img id="imagen-a-recortar" alt="Imagen a recortar">
+                        <div class="crop-acciones">
+                            <button type="button" id="btn-cancelar-crop" class="boton boton--contorno boton--chico">Cancelar</button>
+                            <button type="button" id="btn-recortar" class="boton boton--chico">Recortar y usar</button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -138,37 +163,18 @@ $paginaActiva = 'mascotas';
     <footer class="pie-pagina">
         <p>&copy; 2026 Veterinaria PetCare. Todos los derechos reservados.</p>
     </footer>
+    <!-- Recorte de la foto: mismo código que el formulario del empleado -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="../js/crop-mascota.js"></script>
     <script>
-    // Vista previa: al elegir una foto se muestra de inmediato.
-    // Todavía NO se guarda; se sube hasta dar clic en el botón del formulario.
+    // Cuando ya hay foto recortada se oculta la foto anterior (o el recuadro vacío)
     (function () {
-        const campo = document.getElementById('fotografia');
-        const original = document.querySelector('.foto-marcador--subir');
-        if (!campo || !original) return;
-
-        let vista = null;
-
-        campo.addEventListener('change', function () {
-            const archivo = campo.files[0];
-
-            // Si quita la foto o elige algo que no es imagen, regresamos la original
-            if (!archivo || !archivo.type.startsWith('image/')) {
-                if (vista) { vista.replaceWith(original); vista = null; }
-                return;
-            }
-
-            if (!vista) {
-                vista = document.createElement('img');
-                vista.className = original.className;
-                vista.alt = 'Vista previa de la foto';
-                vista.style.objectFit = 'cover';
-                vista.style.padding = '0';
-                original.replaceWith(vista);
-            } else {
-                URL.revokeObjectURL(vista.src);
-            }
-            vista.src = URL.createObjectURL(archivo);
-        });
+        const recortada = document.getElementById('preview-crop');
+        const anterior = document.getElementById('foto-actual');
+        if (!recortada || !anterior) return;
+        new MutationObserver(function () {
+            anterior.style.display = recortada.getAttribute('src') ? 'none' : '';
+        }).observe(recortada, { attributes: true, attributeFilter: ['src'] });
     })();
     </script>
 </body>
