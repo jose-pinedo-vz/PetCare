@@ -80,8 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_empleado = !empty($_POST['id_empleado']) ? (int)$_POST['id_empleado'] : null;
 
 
-    $nombre = preg_replace('/\s+/u', ' ', trim($_POST['nombre'] ?? ''));
-    $apellido = preg_replace('/\s+/u', ' ', trim($_POST['apellido'] ?? ''));
+    $nombre = trim(preg_replace('/\s+/u', ' ', $_POST['nombre'] ?? ''));
+    $apellido = trim(preg_replace('/\s+/u', ' ', $_POST['apellido'] ?? ''));
     $telefono = trim($_POST['telefono'] ?? '');
     $correo = trim($_POST['correo'] ?? '');
     $calle = preg_replace('/\s+/u', ' ', trim($_POST['calle'] ?? ''));
@@ -248,6 +248,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores[] = "El puesto es obligatorio.";
     } else if (!in_array($puesto, $puestosValidos, true)) {
         $errores[] = "El puesto seleccionado no es válido.";
+    } else if ($puesto !== 'Veterinario') {
+        $especialidad = '';
+        $num_cedula_profesional = '';
     }
 
     $esVeterinario = in_array($puesto, ['Veterinario', 'Veterinario/a'], true);

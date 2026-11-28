@@ -52,6 +52,12 @@ unset($_SESSION['error']);
   <title>Veterinaria PetCare - Agregar empleado</title>
   <link rel="stylesheet" href="css/estilos_base_v2.css">
   <script src="js/codigo_Postal.js?v=2"></script>
+  <style>
+    .campo:disabled {
+        opacity: 0.9;
+        cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
 
@@ -184,7 +190,7 @@ unset($_SESSION['error']);
           <div>
             <label class="label-campo" for="puesto">Puesto *:</label>
             <select class="campo" id="puesto" name="puesto" required>
-              <option value="">Selecciona un puesto</option>
+              <option value="" selected disabled>Selecciona un puesto</option>
               <option value="Gerente"       <?= $puestoViejo === 'Gerente'       ? 'selected' : '' ?>>Gerente</option>
               <option value="Veterinario" <?= $puestoViejo === 'Veterinario' ? 'selected' : '' ?>>Veterinario</option>
               <option value="Vendedor"      <?= $puestoViejo === 'Vendedor'      ? 'selected' : '' ?>>Vendedor</option>
@@ -256,6 +262,14 @@ document.addEventListener('DOMContentLoaded', function() {
         especialidad.required = esVet;
         cedula.required = esVet;
 
+        especialidad.disabled = !esVet;
+        cedula.disabled = !esVet;
+
+        if (!esVet) {
+            especialidad.value = '';
+            cedula.value = '';
+        }
+
         astEsp.textContent = esVet ? ' *' : '';
         astCedu.textContent = esVet ? ' *' : '';
 
@@ -265,6 +279,46 @@ document.addEventListener('DOMContentLoaded', function() {
     puesto.addEventListener('change', actualizarCamposVeterinario);
     actualizarCamposVeterinario();
 });
+
+const formulario = document.querySelector('form');
+const botonGuardar = formulario.querySelector('button[type="submit"]');
+
+const inputNombre = document.getElementById('nombre');
+const inputApellido = document.getElementById('apellido');
+
+function limpiarEspacios(campo) {
+    let texto = campo.value;
+    texto = texto.replace(/\s+/g, ' ');
+    texto = texto.trim();
+    campo.value = texto;
+}
+
+function manejarSalidaDelCampo() {
+    limpiarEspacios(this);
+}
+
+function manejarTeclaPresionada(evento) {
+    if (evento.key === 'Enter') {
+        limpiarEspacios(this);
+    }
+}
+
+function manejarClicGuardar() {
+    limpiarEspacios(inputNombre);
+    limpiarEspacios(inputApellido);
+}
+
+limpiarEspacios(inputNombre);
+limpiarEspacios(inputApellido);
+
+inputNombre.addEventListener('blur', manejarSalidaDelCampo);
+inputApellido.addEventListener('blur', manejarSalidaDelCampo);
+
+inputNombre.addEventListener('keydown', manejarTeclaPresionada);
+inputApellido.addEventListener('keydown', manejarTeclaPresionada);
+
+botonGuardar.addEventListener('click', manejarClicGuardar);
+
 </script>
 
 </body>
